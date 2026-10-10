@@ -32,6 +32,7 @@ describe('Electron single-instance service', () => {
   it('registers a second-instance focus handler after acquiring the lock', () => {
     let secondInstanceHandler: (() => void) | undefined
     const window = {
+      isDestroyed: () => false,
       isVisible: () => false,
       isMinimized: () => false,
       show: vi.fn(),

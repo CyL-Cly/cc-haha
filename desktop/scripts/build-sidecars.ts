@@ -1,4 +1,5 @@
-import { chmod, copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
+import { chmod, copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 import path from 'node:path'
 import {
   getBundledRipgrepName,
@@ -14,6 +15,8 @@ import {
   resolveCuHelperArch,
   type CuHelperArch,
 } from './cu-helper-build-target'
+import { assertGoSidecarEnvironment } from '../electron/services/sidecarBackend'
+import { createGoSidecarBuildPlan, removeLegacyBusinessSidecars } from './go-sidecar-build'
 
 const desktopRoot = path.resolve(import.meta.dir, '..')
 const repoRoot = path.resolve(desktopRoot, '..')
@@ -34,35 +37,17 @@ const targetTriple =
   process.env.CARGO_BUILD_TARGET ||
   (await detectHostTriple())
 
-const bunTarget = mapTargetTripleToBun(targetTriple)
-
-// 编译前先扫一遍 src/ 把所有缺失的 ant-internal 模块在磁盘上 stub 出来。
-// 见 desktop/scripts/scan-missing-imports.ts。
-console.log('[build-sidecars] scanning for missing imports...')
-const scanProc = Bun.spawn(
-  ['bun', 'run', path.join(desktopRoot, 'scripts/scan-missing-imports.ts')],
-  { cwd: repoRoot, stdout: 'inherit', stderr: 'inherit' },
-)
-const scanExit = await scanProc.exited
-if (scanExit !== 0) {
-  throw new Error(`[build-sidecars] scan-missing-imports failed (exit ${scanExit})`)
-}
+assertGoSidecarEnvironment(process.env)
 
 await mkdir(binariesDir, { recursive: true })
 await stageRipgrepLicenses(binariesDir)
 await stageHostRipgrepForOfflineBuild()
 
-// 单一合并 sidecar：server / cli 共享一份 bun runtime + 共享依赖代码。
-// 调用方（Electron sidecar manager / legacy Tauri host / conversationService）
-// 通过第一个 positional 参数选择 'server' 或 'cli' 模式，详见 desktop/sidecars/claude-sidecar.ts。
-await compileExecutable({
-  entrypoint: path.join(desktopRoot, 'sidecars/claude-sidecar.ts'),
-  outfileBase: path.join(binariesDir, `claude-sidecar-${targetTriple}`),
-  productName: 'Claude Code Sidecar',
-  bunTarget,
-})
+// Server and CLI share the Go executable. No TS business launcher is packaged.
+await compileGoExecutable()
+await removeLegacyBusinessSidecars(binariesDir)
 
-console.log(`[build-sidecars] Built desktop sidecar for ${targetTriple} (${bunTarget})`)
+console.log(`[build-sidecars] Built Go desktop sidecar for ${targetTriple}`)
 
 // macOS-only: build + bundle the native `cu-helper` Computer Use binary.
 // On Windows/Linux this is skipped entirely so the Python helper path is
@@ -126,6 +111,43 @@ async function stageHostRipgrepForOfflineBuild() {
   console.log(`[build-sidecars] staged host ripgrep for offline build: ${destination}`)
 }
 
+async function compileGoExecutable() {
+  const telemetryDir = await mkdtemp(path.join(tmpdir(), 'cc-haha-go-build-telemetry-'))
+  await chmod(telemetryDir, 0o700)
+  await writeFile(path.join(telemetryDir, 'mode'), 'off\n', { mode: 0o600 })
+  try {
+    const packageJson = JSON.parse(await readFile(path.join(repoRoot, 'package.json'), 'utf8')) as { version: string }
+    const plan = createGoSidecarBuildPlan({
+      repoRoot,
+      binariesDir,
+      triple: targetTriple,
+      version: process.env.CLAUDE_CODE_LOCAL_VERSION ?? packageJson.version,
+      telemetryDir,
+      env: process.env,
+    })
+    const probe = Bun.spawn([plan.command, 'env', '-json', 'GOTELEMETRY', 'GOTELEMETRYDIR'], {
+      cwd: plan.cwd, env: plan.env, stdout: 'pipe', stderr: 'inherit',
+    })
+    const [raw, probeExit] = await Promise.all([new Response(probe.stdout).text(), probe.exited])
+    if (probeExit !== 0) throw new Error(`[build-sidecars] Go telemetry probe failed (exit ${probeExit})`)
+    const observed = JSON.parse(raw) as { GOTELEMETRY: string; GOTELEMETRYDIR: string }
+    if (observed.GOTELEMETRY !== 'off' || observed.GOTELEMETRYDIR !== telemetryDir) {
+      throw new Error('[build-sidecars] Go telemetry must be off in the private build directory')
+    }
+    const build = Bun.spawn([plan.command, ...plan.args], {
+      cwd: plan.cwd, env: plan.env, stdout: 'inherit', stderr: 'inherit',
+    })
+    const buildExit = await build.exited
+    if (buildExit !== 0) throw new Error(`[build-sidecars] Go sidecar build failed (exit ${buildExit})`)
+    if (targetTriple.includes('apple-darwin') && process.platform === 'darwin') {
+      await signMacBinary(plan.outputPath)
+    }
+    console.log(`[build-sidecars] Go CLI / Server -> ${plan.outputPath}`)
+  } finally {
+    await rm(telemetryDir, { recursive: true, force: true })
+  }
+}
+
 async function hasMatchingRipgrepManifest(
   manifestPath: string,
   expectedTargetTriple: string,
@@ -160,109 +182,6 @@ async function detectHostTriple() {
   }
 
   throw new Error(`[build-sidecars] Unsupported host platform/arch: ${platform}/${arch}`)
-}
-
-function mapTargetTripleToBun(triple: string) {
-  switch (triple) {
-    case 'aarch64-apple-darwin':
-      return 'bun-darwin-arm64'
-    case 'x86_64-apple-darwin':
-      return 'bun-darwin-x64'
-    case 'x86_64-pc-windows-msvc':
-      // Prefer baseline on Windows x64 so older CPUs do not crash before the
-      // desktop app can even start the local sidecar process.
-      return 'bun-windows-x64-baseline'
-    case 'aarch64-pc-windows-msvc':
-      return 'bun-windows-arm64'
-    case 'x86_64-unknown-linux-gnu':
-      return 'bun-linux-x64-baseline'
-    case 'aarch64-unknown-linux-gnu':
-      return 'bun-linux-arm64'
-    case 'x86_64-unknown-linux-musl':
-      return 'bun-linux-x64-musl'
-    case 'aarch64-unknown-linux-musl':
-      return 'bun-linux-arm64-musl'
-    default:
-      throw new Error(`[build-sidecars] Unsupported target triple: ${triple}`)
-  }
-}
-
-async function compileExecutable({
-  entrypoint,
-  outfileBase,
-  productName,
-  bunTarget,
-}: {
-  entrypoint: string
-  outfileBase: string
-  productName: string
-  bunTarget: string
-}) {
-  const result = await Bun.build({
-    entrypoints: [entrypoint],
-    features: ['TRANSCRIPT_CLASSIFIER'],
-    // minify whitespace + identifiers + dead-code 大概能省 5-15% 的二进制大小，
-    // 代价是 stack trace 里的函数名变成短名 —— 终端用户场景可接受。
-    minify: { whitespace: true, identifiers: true, syntax: true },
-    sourcemap: 'none',
-    target: 'bun',
-    // 运行时可选 npm 包保持 external，避免将原生模块嵌入 sidecar。
-    // sharp 由 desktop/package.json 声明并随 Electron 应用分发；其他
-    // provider/telemetry 模块在未安装时由 try/catch 或 feature() gate 兜底。
-    external: [
-      // OpenTelemetry exporters（开 OTEL_* env 时才加载）
-      '@opentelemetry/exporter-trace-otlp-grpc',
-      '@opentelemetry/exporter-trace-otlp-http',
-      '@opentelemetry/exporter-trace-otlp-proto',
-      '@opentelemetry/exporter-logs-otlp-grpc',
-      '@opentelemetry/exporter-logs-otlp-http',
-      '@opentelemetry/exporter-logs-otlp-proto',
-      '@opentelemetry/exporter-metrics-otlp-grpc',
-      '@opentelemetry/exporter-metrics-otlp-http',
-      '@opentelemetry/exporter-metrics-otlp-proto',
-      '@opentelemetry/exporter-prometheus',
-      // 替代 LLM provider —— 默认不用，用户自装
-      '@aws-sdk/client-bedrock',
-      '@aws-sdk/client-sts',
-      '@anthropic-ai/bedrock-sdk',
-      '@anthropic-ai/foundry-sdk',
-      '@anthropic-ai/vertex-sdk',
-      '@azure/identity',
-      // ant-internal / 可选工具
-      '@anthropic-ai/mcpb',
-      'fflate',
-      'sharp',
-      'react-devtools-core',
-    ],
-    compile: {
-      target: bunTarget,
-      outfile: outfileBase,
-      autoloadTsconfig: true,
-      autoloadPackageJson: true,
-      windows: {
-        title: productName,
-        publisher: 'Claude Code',
-        description: productName,
-        hideConsole: true,
-      },
-    },
-  })
-
-  if (!result.success) {
-    const logs = result.logs.map((log) => log.message).join('\n')
-    throw new Error(`[build-sidecars] Failed to compile ${productName}:\n${logs}`)
-  }
-
-  const outputPath = result.outputs[0]?.path ?? outfileBase
-  console.log(`[build-sidecars] ${productName} -> ${outputPath}`)
-
-  // macOS Apple System Policy (ASP) requires valid code signatures on all
-  // executables. Bun-compiled binaries ship with an invalid/empty signature
-  // that causes "load code signature error 4" and SIGKILL at launch.
-  // Fix: strip the broken signature, then re-sign.
-  if (process.platform === 'darwin') {
-    await signMacBinary(outputPath)
-  }
 }
 
 /**

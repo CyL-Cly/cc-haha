@@ -42,6 +42,7 @@ import type { UIMessage } from '../types/chat'
 import type { CLITask } from '../types/cliTask'
 
 type TranslationFn = ReturnType<typeof useTranslation>
+type RunDisplayStatus = SubagentRunStatus | 'idle'
 const LIVE_RUN_REFRESH_MS = 2000
 const EMPTY_DISMISSED_BACKGROUND_TASK_KEYS: string[] = []
 const EMPTY_RUN_TASKS: CLITask[] = []
@@ -483,13 +484,15 @@ export function TeamMemberRunPage({
     return () => stopMemberPolling()
   }, [member?.agentId, member?.status, refresh, startMemberPolling, stopMemberPolling, tabId])
 
-  const status: SubagentRunStatus = snapshot?.deletedAt || member?.status === 'completed'
+  const status: RunDisplayStatus = snapshot?.deletedAt || member?.status === 'completed'
     ? 'completed'
     : member?.status === 'error'
       ? 'failed'
       : member?.status === 'running'
         ? 'running'
-        : 'unknown'
+        : member?.status === 'idle'
+          ? 'idle'
+          : 'unknown'
   const teamName = snapshot?.team.name ?? useTeamStore.getState().getTeamByMemberSessionId(tabId)?.name
   const canSendMessage = Boolean(member && !snapshot?.deletedAt && member.status !== 'completed')
   // The member's own `TaskUpdate` calls are the only record of the order it
@@ -607,7 +610,7 @@ function AgentSessionView({
   workflowOwnerAliases?: string[]
   activityMessages?: UIMessage[]
   title: string
-  status?: SubagentRunStatus
+  status?: RunDisplayStatus
   identity: string
   details?: ReactNode
   backLabel: string
@@ -873,7 +876,7 @@ function latestRunModel(messages: UIMessage[] | undefined): string | undefined {
   return undefined
 }
 
-function StatusBadge({ status, t }: { status: SubagentRunStatus; t: TranslationFn }) {
+function StatusBadge({ status, t }: { status: RunDisplayStatus; t: TranslationFn }) {
   return (
     <Badge tone={statusTone(status)} size="xs" bordered>
       {getSubagentStatusLabel(status, t)}
@@ -881,14 +884,14 @@ function StatusBadge({ status, t }: { status: SubagentRunStatus; t: TranslationF
   )
 }
 
-function statusTone(status: SubagentRunStatus): BadgeTone {
+function statusTone(status: RunDisplayStatus): BadgeTone {
   if (status === 'completed') return 'success'
   if (status === 'failed' || status === 'stopped') return 'danger'
   if (status === 'running') return 'brand'
   return 'neutral'
 }
 
-function getSubagentStatusLabel(status: SubagentRunStatus, t: TranslationFn) {
+function getSubagentStatusLabel(status: RunDisplayStatus, t: TranslationFn) {
   switch (status) {
     case 'completed':
       return t('subagentRun.status.completed')
@@ -898,6 +901,8 @@ function getSubagentStatusLabel(status: SubagentRunStatus, t: TranslationFn) {
       return t('subagentRun.status.stopped')
     case 'running':
       return t('subagentRun.status.running')
+    case 'idle':
+      return t('session.activity.status.idle')
     case 'unknown':
       return t('subagentRun.status.unknown')
   }

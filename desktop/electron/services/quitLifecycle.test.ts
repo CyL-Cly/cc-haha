@@ -48,7 +48,7 @@ function quitFixture(failingStep?: string, rejectServer = false, rejectPublicAcc
     },
     getServerRuntime: () => {
       cleanup('server')()
-      return { stopAllAndWait: () => serverDone }
+      return { closeAndWait: () => serverDone }
     },
     console: { error: vi.fn() },
   }
@@ -68,6 +68,7 @@ describe('Electron quit lifecycle', () => {
     expect(fixture.exit).not.toHaveBeenCalled()
     await settle()
     expect(fixture.calls).toEqual(['window', 'tray', 'terminal', 'preview', 'pet', 'publicAccess', 'server'])
+    expect(fixture.exit).not.toHaveBeenCalled()
 
     fixture.finishServer()
     await settle()

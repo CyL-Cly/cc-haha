@@ -65,6 +65,7 @@ import { createRendererUrlMatcher, installMicrophonePermissions } from './servic
 import { resolveRendererEntry } from './services/rendererEntry'
 import { installRendererLifecycle } from './services/rendererLifecycle'
 import { writeWindowSmokeSnapshot } from './services/windowSmoke'
+import { isolateElectronSmokeState } from './services/smokeState'
 import { loadAndRevealMainWindow } from './services/windowStartup'
 import {
   PetWindowController,
@@ -118,6 +119,7 @@ let trayController: TrayController | null = null
 // stdio, and an unguarded write failure there surfaces as a crash dialog.
 installStdioWriteFailureGuards()
 installMacOsChromiumKeychainPromptGuard(app)
+isolateElectronSmokeState(app)
 
 function appRoot() {
   return app.isPackaged ? app.getAppPath() : process.cwd()
@@ -1068,7 +1070,7 @@ app.on('before-quit', event => {
         // must never bypass the sidecar's graceful shutdown.
         console.error('[desktop] public access cleanup failed during quit')
       }
-      await getServerRuntime().stopAllAndWait()
+      await getServerRuntime().closeAndWait()
     } catch (error) {
       console.error('[desktop] graceful server shutdown failed', error)
     } finally {

@@ -275,6 +275,7 @@ describe('Electron window service', () => {
 
   it('shows, restores, and focuses the hidden main window when a tray or notification action reopens it', () => {
     const window = {
+      isDestroyed: () => false,
       isVisible: () => false,
       isMinimized: () => true,
       show: vi.fn(),
@@ -291,6 +292,41 @@ describe('Electron window service', () => {
     expect(window.show).toHaveBeenCalledTimes(1)
     expect(window.restore).toHaveBeenCalledTimes(1)
     expect(window.focus).toHaveBeenCalledTimes(1)
+  })
+
+  it('ignores activation of a destroyed window while quit cleanup drains the sidecar', () => {
+    const destroyedAccess = vi.fn(() => { throw new TypeError('Object has been destroyed') })
+    const app = { show: vi.fn() }
+    const window = {
+      isDestroyed: () => true,
+      isVisible: destroyedAccess,
+      isMinimized: destroyedAccess,
+      show: destroyedAccess,
+      restore: destroyedAccess,
+      focus: destroyedAccess,
+    }
+
+    expect(() => showMainWindow(window as never, app)).not.toThrow()
+    expect(app.show).not.toHaveBeenCalled()
+    expect(destroyedAccess).not.toHaveBeenCalled()
+  })
+
+  it('does not access a window destroyed by the native application activation', () => {
+    let destroyed = false
+    const destroyedAccess = vi.fn(() => { throw new TypeError('Object has been destroyed') })
+    const app = { show: vi.fn(() => { destroyed = true }) }
+    const window = {
+      isDestroyed: () => destroyed,
+      isVisible: destroyedAccess,
+      isMinimized: destroyedAccess,
+      show: destroyedAccess,
+      restore: destroyedAccess,
+      focus: destroyedAccess,
+    }
+
+    expect(() => showMainWindow(window as never, app)).not.toThrow()
+    expect(app.show).toHaveBeenCalledTimes(1)
+    expect(destroyedAccess).not.toHaveBeenCalled()
   })
 
   it('hides instead of closing until the app is explicitly quitting', () => {

@@ -388,7 +388,7 @@ function pendingMessagesWithoutTranscriptEcho(
   const availableEchoes = transcriptMessages.filter((message): message is Extract<UIMessage, { type: 'user_text' }> => (
     message.type === 'user_text' &&
     message.pending !== true &&
-    !message.teammateFrom
+    (!message.teammateFrom || message.teammateFrom === 'user')
   ))
   return pendingMessages.filter((pendingMessage) => {
     const matchIndex = availableEchoes.findIndex((message) => (
@@ -523,7 +523,7 @@ function memberReplySettlement(
     if (
       message.type === 'user_text' &&
       message.pending !== true &&
-      !message.teammateFrom &&
+      (!message.teammateFrom || message.teammateFrom === 'user') &&
       !awaiting.baselineMessageKeys.has(memberMessageKey(message)) &&
       message.content === awaiting.content &&
       Math.abs(message.timestamp - awaiting.sentAt) <= MEMBER_TRANSCRIPT_MATCH_WINDOW_MS
@@ -537,7 +537,7 @@ function memberReplySettlement(
   let turnEnd = messages.length
   const nextPromptOffset = messages.slice(promptIndex + 1).findIndex((message) => (
     message.type === 'user_text' &&
-    !message.teammateFrom
+    (!message.teammateFrom || message.teammateFrom === 'user')
   ))
   if (nextPromptOffset >= 0) {
     turnEnd = promptIndex + 1 + nextPromptOffset

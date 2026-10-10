@@ -223,8 +223,9 @@ type MacOsWindowVisibilityApp = {
 }
 
 export function showMainWindow(window: BrowserWindow | null, app?: MacOsWindowVisibilityApp) {
-  if (!window) return
+  if (!window || window.isDestroyed()) return
   app?.show?.()
+  if (window.isDestroyed()) return
   if (!window.isVisible()) window.show()
   if (window.isMinimized()) window.restore()
   window.focus()

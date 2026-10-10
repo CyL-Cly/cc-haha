@@ -16,6 +16,7 @@ import {
   writeFileSync,
 } from 'node:fs'
 import { homedir, tmpdir } from 'node:os'
+import { buildClaudeCliArgs, resolveClaudeCliLauncher } from '../../../src/utils/desktopBundledCli'
 import {
   appendHostDiagnostic,
   buildSidecarEnv,
@@ -37,6 +38,7 @@ import {
   reserveServerPort,
   resolveBundledRipgrepExecutable,
   resolveHostTriple,
+  resolveSidecarExecutable,
   resolveWindowsTaskkillExecutable,
   RIPGREP_PATH_ENV,
   SERVER_STATE_FILE,
@@ -118,8 +120,53 @@ describe('Electron sidecar manager', () => {
       '--port',
       '49321',
     ])
+    expect(plan.command).toBe(resolveSidecarExecutable('/app/desktop', resolveHostTriple()))
+    expect(plan.env.CLAUDE_CLI_PATH).toBe(plan.command)
     expect(plan.env.CLAUDE_H5_AUTO_PUBLIC_URL).toBe('1')
     expect(plan.env.CLAUDE_H5_DIST_DIR).toBe(path.join('/app/desktop', 'dist'))
+  })
+
+  it('selects one Go binary for the server and SDK children, overriding a TS or mock CLI', () => {
+    const plan = createServerPlan({
+      desktopRoot: '/app/desktop', appRoot: '/app', port: 49321,
+      env: { CLAUDE_CLI_PATH: '/checkout/mock-sdk-cli.ts' },
+    })
+    expect(plan.command).toBe(resolveSidecarExecutable('/app/desktop', resolveHostTriple()))
+    expect(plan.env.CLAUDE_CLI_PATH).toBe(plan.command)
+    expect(plan.args).toEqual(['server', '--app-root', '/app', '--host', '0.0.0.0', '--port', '49321'])
+    const launcher = resolveClaudeCliLauncher({ cliPath: plan.env.CLAUDE_CLI_PATH })
+    expect(launcher?.kind).toBe('sidecar')
+    expect(buildClaudeCliArgs(launcher!, ['--print', '--input-format', 'stream-json'], '/app')).toEqual([
+      plan.command, 'cli', '--app-root', '/app', '--print', '--input-format', 'stream-json',
+    ])
+  })
+
+  it('never falls back to a TS sidecar when the selected Go executable is missing', () => {
+    const plan = createServerPlan({
+      desktopRoot: '/app/desktop', appRoot: '/app', port: 49321, env: { CC_HAHA_BACKEND: 'go' },
+    })
+    const spawnFn = vi.fn()
+    const checkedPaths: string[] = []
+    expect(() => spawnSidecar(plan, {
+      existsSyncFn: filename => { checkedPaths.push(String(filename)); return false },
+      spawnFn: spawnFn as unknown as typeof import('node:child_process').spawn,
+    })).toThrow(`Electron sidecar binary not found: ${plan.command}`)
+    expect(checkedPaths).toEqual([plan.command])
+    expect(spawnFn).not.toHaveBeenCalled()
+  })
+
+  it('selects Go for adapters and rejects unknown backend selections before launch', () => {
+    const plan = createAdapterPlan({
+      desktopRoot: '/app/desktop', appRoot: '/app', serverUrl: 'http://127.0.0.1:49321',
+      flag: '--telegram', env: { CC_HAHA_BACKEND: 'go', CLAUDE_CLI_PATH: '/checkout/old.ts' },
+    })
+    expect(plan.command).toBe(resolveSidecarExecutable('/app/desktop', resolveHostTriple()))
+    expect(plan.env.CLAUDE_CLI_PATH).toBe(plan.command)
+    expect(plan.env.ADAPTER_SERVER_URL).toBe('ws://127.0.0.1:49321')
+    expect(plan.args).toEqual(['adapters', '--app-root', '/app', '--telegram'])
+    expect(() => createServerPlan({
+      desktopRoot: '/app/desktop', appRoot: '/app', port: 49321, env: { CC_HAHA_BACKEND: 'auto' },
+    })).toThrow('The desktop backend is Go')
   })
 
   it('can keep sidecar binaries and H5 assets unpacked while pointing app-root at app.asar', () => {

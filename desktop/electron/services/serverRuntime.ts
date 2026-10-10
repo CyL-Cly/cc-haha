@@ -137,6 +137,8 @@ export class ElectronServerRuntime {
   private lifecycleGeneration = 0
   private startingServer: ServerStartState | null = null
   private adapterRestartPromise: Promise<void> | null = null
+  private shutdownWaiters = 0
+  private closed = false
 
   constructor(options: ServerRuntimeOptions) {
     this.onServerUnavailable = options.onServerUnavailable
@@ -151,6 +153,7 @@ export class ElectronServerRuntime {
   }
 
   async startServer(): Promise<string> {
+    this.assertStartAllowed()
     if (this.server) return this.server.url
     if (this.startPromise) return this.startPromise
     this.assertRestartCircuitAllowsStart()
@@ -167,6 +170,7 @@ export class ElectronServerRuntime {
   }
 
   async getServerUrl(): Promise<string> {
+    this.assertStartAllowed()
     if (this.server) return this.server.url
     if (this.startPromise) return await this.startServer()
     this.assertRestartCircuitAllowsStart()
@@ -228,6 +232,27 @@ export class ElectronServerRuntime {
   }
 
   async stopAllAndWait(timeoutMs = SERVER_SHUTDOWN_TIMEOUT_MS): Promise<void> {
+    ++this.shutdownWaiters
+    try {
+      await this.drainSidecars(timeoutMs)
+    } finally {
+      --this.shutdownWaiters
+    }
+  }
+
+  async closeAndWait(timeoutMs = SERVER_SHUTDOWN_TIMEOUT_MS): Promise<void> {
+    // Renderer recovery can still arrive while before-quit awaits cleanup.
+    // Final host shutdown must reject those requests even after children drain.
+    this.closed = true
+    await this.stopAllAndWait(timeoutMs)
+  }
+
+  private assertStartAllowed(): void {
+    if (this.closed) throw new Error('server runtime closed')
+    if (this.shutdownWaiters > 0) throw new Error('server shutdown in progress')
+  }
+
+  private async drainSidecars(timeoutMs: number): Promise<void> {
     const serverChildren = new Set<SidecarChild>()
     if (this.startingServer) serverChildren.add(this.startingServer.child)
     if (this.server) serverChildren.add(this.server.child)

@@ -236,6 +236,36 @@ describe('ElectronServerRuntime', () => {
     expect(bridge.stop).toHaveBeenCalledTimes(1)
   })
 
+  it('rejects renderer recovery while the owned server is draining shutdown', async () => {
+    const runtime = createRuntime()
+    await runtime.startServer()
+    const child = sidecarMocks.serverChildren[0]!
+    const stopping = runtime.stopAllAndWait(100)
+    try {
+      await expect(runtime.getServerUrl()).rejects.toThrow('server shutdown in progress')
+      await expect(runtime.startServer()).rejects.toThrow('server shutdown in progress')
+      expect(sidecarMocks.serverChildren).toHaveLength(1)
+    } finally {
+      child.emit('exit', 0, null)
+      await stopping
+      runtime.stopAll()
+    }
+  })
+
+  it('keeps final host shutdown closed after cleanup and late renderer requests', async () => {
+    const runtime = createRuntime()
+    await runtime.startServer()
+    const child = sidecarMocks.serverChildren[0]!
+    const closing = runtime.closeAndWait(100)
+    await expect(runtime.getServerUrl()).rejects.toThrow('server runtime closed')
+    child.emit('exit', 0, null)
+    await closing
+
+    await expect(runtime.getServerUrl()).rejects.toThrow('server runtime closed')
+    await expect(runtime.startServer()).rejects.toThrow('server runtime closed')
+    expect(sidecarMocks.serverChildren).toHaveLength(1)
+  })
+
   it('waits for real server shutdown cleanup before the first restart attempt', async () => {
     const root = mkdtempSync(path.join(tmpdir(), 'cc-haha-electron-restart-'))
     const activeTurn = path.join(root, 'active-turn')
@@ -298,7 +328,10 @@ describe('ElectronServerRuntime', () => {
       await runtime.startServer()
       expect(existsSync(activeTurn)).toBe(true)
 
-      await runtime.stopAllAndWait(2_000)
+      const stopping = runtime.stopAllAndWait(2_000)
+      await expect(runtime.getServerUrl()).rejects.toThrow('server shutdown in progress')
+      expect(serverStarts).toBe(1)
+      await stopping
 
       expect(existsSync(activeTurn)).toBe(false)
       await runtime.startServer()

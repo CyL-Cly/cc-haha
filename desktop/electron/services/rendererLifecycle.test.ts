@@ -57,6 +57,15 @@ afterEach(() => {
 })
 
 describe('Electron renderer lifecycle recovery', () => {
+  it('records the native loading-complete boundary separately from the document load event', () => {
+    const harness = createHarness()
+    harness.window.webContents.emit('did-finish-load')
+    harness.window.webContents.emit('did-stop-loading')
+    expect(harness.writeSnapshot.mock.calls).toEqual([['did-finish-load'], ['did-stop-loading']])
+    expect(harness.window.webContents.reload).not.toHaveBeenCalled()
+    expect(harness.onRecoveryExhausted).not.toHaveBeenCalled()
+  })
+
   it('reloads after the first renderer exit and reports repeated failure only once', () => {
     vi.useFakeTimers()
     const harness = createHarness()

@@ -754,6 +754,45 @@ describe('teamStore incremental transcript polling', () => {
     ).toEqual(['First reply', 'Second reply'])
   })
 
+  it.each(['user', 'team-lead'])('reconciles a real inbox transcript from %s with a pending direct message', async (sender) => {
+    const content = 'Read the fresh physical input and report its marker'
+    const timestamp = new Date().toISOString()
+    getWorkbenchMock.mockResolvedValue(workbench('v1', 'completed'))
+    getMemberTranscriptMock
+      .mockResolvedValueOnce({ messages: [], signature: 'before-inbox', cursor: 'before-inbox', afterOrdinal: 0 })
+      .mockResolvedValue({
+        messages: [
+          {
+            id: 'actual-inbox-echo',
+            type: 'user',
+            content: `<teammate-message teammate_id="${sender}">\n${content}\n</teammate-message>`,
+            timestamp,
+          },
+          {
+            id: 'actual-inbox-reply',
+            type: 'assistant',
+            content: [{ type: 'text', text: 'Fresh marker verified' }],
+            timestamp,
+          },
+        ],
+        signature: 'after-inbox',
+        cursor: 'after-inbox',
+        afterOrdinal: 2,
+      })
+    await useTeamStore.getState().fetchWorkbench('team-workbench')
+    const sessionId = 'team-member:worker@team-workbench'
+    await useTeamStore.getState().refreshMemberSession(sessionId)
+    useChatStore.getState().sendMessage(sessionId, content)
+    await vi.waitFor(() => {
+      expect(useChatStore.getState().sessions[sessionId]?.messages.some(message => message.type === 'assistant_text' && message.content === 'Fresh marker verified')).toBe(true)
+    })
+    const session = useChatStore.getState().sessions[sessionId]!
+    expect(session.messages.filter(message => message.type === 'user_text' && message.pending === true)).toHaveLength(sender === 'user' ? 0 : 1)
+    expect(session.chatState).toBe(sender === 'user' ? 'idle' : 'thinking')
+    expect(session.messages.find(message => message.type === 'user_text' && message.teammateFrom === sender)).toMatchObject({ content, teammateFrom: sender })
+    expect(sendMemberMessageMock).toHaveBeenCalledTimes(1)
+  })
+
   it('does not restart a deleted member session after an in-flight delivery resolves', async () => {
     vi.useFakeTimers()
     const delivery = deferred<{ ok: true }>()

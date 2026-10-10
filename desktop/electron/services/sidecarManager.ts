@@ -23,6 +23,7 @@ import net from 'node:net'
 import os from 'node:os'
 import path from 'node:path'
 import { isBrowserSafePort } from '../../src/lib/browserSafePort'
+import { assertGoSidecarEnvironment, sidecarBinaryName } from './sidecarBackend'
 
 export const SERVER_BIND_HOST = '0.0.0.0'
 export const SERVER_CONTROL_HOST = '127.0.0.1'
@@ -76,9 +77,11 @@ export function resolveHostTriple(platform = process.platform, arch = process.ar
   throw new Error(`Unsupported Electron sidecar platform: ${platform}/${arch}`)
 }
 
-export function resolveSidecarExecutable(desktopRoot: string, triple = resolveHostTriple()): string {
-  const base = path.join(desktopRoot, 'src-tauri', 'binaries', `claude-sidecar-${triple}`)
-  return process.platform === 'win32' ? `${base}.exe` : base
+export function resolveSidecarExecutable(
+  desktopRoot: string,
+  triple = resolveHostTriple(),
+): string {
+  return path.join(desktopRoot, 'src-tauri', 'binaries', sidecarBinaryName(triple))
 }
 
 export function resolveBundledRipgrepExecutable(
@@ -656,10 +659,13 @@ export function createServerPlan({
   h5DistDir?: string
   env?: NodeJS.ProcessEnv
 }): SidecarPlan {
+  assertGoSidecarEnvironment(env)
+  const command = resolveSidecarExecutable(desktopRoot, resolveHostTriple())
+  const sidecarEnv = buildSidecarEnv(withBundledRipgrepPath(env, desktopRoot), h5DistDir)
   return {
-    command: resolveSidecarExecutable(desktopRoot),
+    command,
     args: ['server', '--app-root', appRoot, '--host', bindHost, '--port', String(port)],
-    env: buildSidecarEnv(withBundledRipgrepPath(env, desktopRoot), h5DistDir),
+    env: { ...sidecarEnv, CLAUDE_CLI_PATH: command },
   }
 }
 
@@ -692,11 +698,14 @@ export function createAdapterPlan({
   h5DistDir?: string
   env?: NodeJS.ProcessEnv
 }): SidecarPlan {
+  assertGoSidecarEnvironment(env)
+  const command = resolveSidecarExecutable(desktopRoot, resolveHostTriple())
   return {
-    command: resolveSidecarExecutable(desktopRoot),
+    command,
     args: ['adapters', '--app-root', appRoot, flag],
     env: {
       ...buildSidecarEnv(withBundledRipgrepPath(env, desktopRoot), h5DistDir),
+      CLAUDE_CLI_PATH: command,
       ADAPTER_SERVER_URL: httpToWebSocketUrl(serverUrl),
     },
   }

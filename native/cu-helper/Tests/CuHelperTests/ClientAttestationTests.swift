@@ -146,6 +146,45 @@ struct ClientAttestationTests {
         )
     }
 
+    @Test("accepts exact Go sidecar names without relaxing signature or ancestry")
+    func acceptsGoSidecarNames() {
+        for name in ["claude-sidecar-go-aarch64-apple-darwin", "claude-sidecar-go-x86_64-apple-darwin"] {
+            var goServer = server
+            goServer.executablePath = appRoot
+                + "/Contents/Resources/app.asar.unpacked/src-tauri/binaries/" + name
+            #expect(HelperClientPolicy.authorizeDaemon(
+                peer: goServer, ancestors: [host], helper: helper
+            ) == .allow)
+            let supervisor = helperProcess(pid: 501, parentPID: goServer.pid)
+            let worker = helperProcess(pid: 502, parentPID: supervisor.pid)
+            #expect(HelperClientPolicy.authorizeOneShot(
+                command: "check_permissions",
+                processChain: [worker, supervisor, goServer, host], helper: helper
+            ) == .allow)
+
+            var invalid = goServer
+            invalid.signatureValid = false
+            #expect(HelperClientPolicy.authorizeDaemon(
+                peer: invalid, ancestors: [host], helper: helper
+            ) == .deny)
+            invalid = goServer
+            invalid.leafCertificate = Data([0x00])
+            #expect(HelperClientPolicy.authorizeDaemon(
+                peer: invalid, ancestors: [host], helper: helper
+            ) == .deny)
+            invalid = goServer
+            invalid.executablePath += "-spoof"
+            #expect(HelperClientPolicy.authorizeDaemon(
+                peer: invalid, ancestors: [host], helper: helper
+            ) == .deny)
+            invalid = goServer
+            invalid.parentPID = 777
+            #expect(HelperClientPolicy.authorizeDaemon(
+                peer: invalid, ancestors: [host], helper: helper
+            ) == .deny)
+        }
+    }
+
     @Test("requires valid signatures and the helper's exact Team ID and leaf signer")
     func rejectsSignatureMismatch() {
         var invalid = cli

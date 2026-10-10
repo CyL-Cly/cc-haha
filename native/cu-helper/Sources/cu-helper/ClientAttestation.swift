@@ -211,6 +211,8 @@ enum HelperClientPolicy {
         let name = String(path.dropFirst(directory.count))
         return name == "claude-sidecar-aarch64-apple-darwin"
             || name == "claude-sidecar-x86_64-apple-darwin"
+            || name == "claude-sidecar-go-aarch64-apple-darwin"
+            || name == "claude-sidecar-go-x86_64-apple-darwin"
     }
 }
 

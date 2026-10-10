@@ -1636,6 +1636,35 @@ describe('SubagentRunPage', () => {
     expect(within(panel).queryByText('Do not project the shared transcript task')).not.toBeInTheDocument()
   })
 
+  it('shows an idle team member as available and follows its next running turn', async () => {
+    const member = {
+      agentId: 'reader@idle-team',
+      name: 'reader',
+      role: 'Explore',
+      // Source and Go both project isActive=false to this concrete status.
+      status: 'idle' as const,
+    }
+    const team = { name: 'idle-team', leadSessionId: 'idle-lead', members: [member] }
+    getMemberTranscriptMock.mockResolvedValue({ messages: [] })
+    useTeamStore.setState({ activeTeam: team })
+    useTeamStore.getState().openMemberSession(member, team)
+    const tabId = memberSessionId(member.agentId)
+    render(<TeamMemberRunPage tabId={tabId} leadSessionId="idle-lead" agentId={member.agentId} title="reader" />)
+
+    await screen.findByTestId('team-member-conversation')
+    const header = screen.getByTestId('session-header')
+    expect(within(header).getByText('Idle')).toBeInTheDocument()
+    expect(within(header).queryByText('Unknown')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('team-member-readonly-note')).not.toBeInTheDocument()
+    expect(screen.getByRole('textbox')).toBeInTheDocument()
+
+    const runningMember = { ...member, status: 'running' as const }
+    act(() => useTeamStore.getState().openMemberSession(runningMember, { ...team, members: [runningMember] }))
+    expect(within(header).getByText('Running')).toBeInTheDocument()
+    act(() => useTeamStore.getState().openMemberSession(member, team))
+    expect(within(header).getByText('Idle')).toBeInTheDocument()
+  })
+
   it('shows transcript loading immediately instead of an empty member conversation', async () => {
     const transcript = deferred<Awaited<ReturnType<typeof getMemberTranscriptMock>>>()
     const member = {

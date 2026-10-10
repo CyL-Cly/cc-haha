@@ -32,11 +32,6 @@ function readJson(pathname: string): { scripts?: Record<string, string> } {
   }
 }
 
-function extractWindowsX64BunTarget(source: string) {
-  const match = source.match(/case 'x86_64-pc-windows-msvc':[\s\S]*?return '([^']+)'/)
-  return match?.[1] ?? null
-}
-
 type SidecarProcess = {
   child: ChildProcessWithoutNullStreams
   exited: Promise<{ code: number | null; signal: NodeJS.Signals | null }>
@@ -362,16 +357,19 @@ async function terminateCompiledSidecar(processHandle: SidecarProcess): Promise<
 }
 
 describe('build-sidecars Windows x64 target mapping', () => {
-  it('uses the baseline Bun runtime so older CPUs do not crash with Illegal Instruction', () => {
-    expect(extractWindowsX64BunTarget(readBuildScript())).toBe('bun-windows-x64-baseline')
+  it('packages only the Go business executable and never builds the legacy TS launcher', () => {
+    const source = readBuildScript()
+    expect(source).toContain('await compileGoExecutable()')
+    expect(source).not.toContain('sidecars/claude-sidecar.ts')
+    expect(source).not.toContain('scan-missing-imports')
+    expect(source).not.toContain('Bun.build(')
   })
 
-  it('compiles the sidecar with the transcript classifier feature', () => {
-    expect(readBuildScript()).toContain("features: ['TRANSCRIPT_CLASSIFIER']")
-  })
-
-  it('starts the development CLI with the transcript classifier feature', () => {
-    expect(readCliLauncher()).toContain('--feature=TRANSCRIPT_CLASSIFIER')
+  it('starts the development CLI through the Go launcher', () => {
+    const launcher = readCliLauncher()
+    expect(launcher).toContain('native/claude-haha-$platform-$architecture')
+    expect(launcher).toContain('exec "$binary" "$@"')
+    expect(launcher).not.toContain('--feature=TRANSCRIPT_CLASSIFIER')
   })
 
   it('wires the opt-in compiled sidecar smoke into the native gate', () => {

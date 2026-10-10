@@ -79,6 +79,9 @@ export function installRendererLifecycle({
     if (recoveryAttempted) recordDiagnostic('[recovery-loaded]')
     writeSnapshot('did-finish-load')
   })
+  window.webContents.on('did-stop-loading', () => {
+    writeSnapshot('did-stop-loading')
+  })
   window.webContents.on('did-fail-load', (
     _event,
     errorCode,

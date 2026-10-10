@@ -23,7 +23,7 @@ describe('app mode restart lifecycle', () => {
     const handler = source.match(/app\.on\('before-quit',[\s\S]*\n\}\)\s*$/)?.[0]
 
     expect(handler).toContain('event.preventDefault()')
-    expect(handler).toContain('getServerRuntime().stopAllAndWait()')
-    expect(handler).toMatch(/stopAllAndWait\(\)[\s\S]*app\.quit\(\)/)
+    expect(handler).toContain('getServerRuntime().closeAndWait()')
+    expect(handler).toMatch(/closeAndWait\(\)[\s\S]*app\.quit\(\)/)
   })
 })
