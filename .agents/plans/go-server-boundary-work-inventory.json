@@ -1,0 +1,319 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-10-06T04:31:42.017984+00:00",
+  "scope": "Planning-only subdivision of existing D01-D35; no implementation, runtime, UI or model execution",
+  "counts": {
+    "boundaryTasks": 16,
+    "sourceFiles": 20
+  },
+  "tasks": [
+    {
+      "id": "SB01",
+      "ownershipAndScope": "D33/D35 健康探针与 ready",
+      "currentEvidence": "Go 有 `/health`，完整安装候选待验收",
+      "workToDo": "保留探针与业务初始化的独立性；Electron 的 ready、URL、版本和服务身份来自实际 Go 进程；端口冲突、启动失败与超时回报准确",
+      "acceptanceToDo": "从应用图标启动，健康探针不等待索引/模型/迁移；仅在实际服务 ready 后呈现可用桌面；错误、重启和退出均可观察",
+      "implementationClosed": false,
+      "acceptanceClosed": false,
+      "evidenceFiles": [
+        "src/server/index.ts",
+        "backend/internal/server/server.go",
+        "desktop/electron/services/sidecarManager.ts"
+      ]
+    },
+    {
+      "id": "SB02",
+      "ownershipAndScope": "D13/D21–D24/D26/D34 索引启动",
+      "currentEvidence": "原版启动 local/search coordinator；Go NewDesktopServer 未绑定这些原协调服务",
+      "workToDo": "接会话主索引、全文、Trace、定时运行和活动聚合生产器；迁移、重建、watch/reconcile、损坏恢复和主索引优先于全文的启动顺序；保留旧文件与数据库兼容",
+      "acceptanceToDo": "冷启动、增量变更、重建和中途退出后的数据正确；侧栏、搜索、统计与 Trace 读取同一真实状态；后台索引不阻塞健康探针",
+      "implementationClosed": false,
+      "acceptanceClosed": false,
+      "evidenceFiles": [
+        "src/server/index.ts",
+        "backend/internal/application/server.go"
+      ]
+    },
+    {
+      "id": "SB03",
+      "ownershipAndScope": "D15–D17/D30/D31/D33 凭据分流",
+      "currentEvidence": "Go 有 local/H5 认证；SDK/collaboration/pet 的完整分流缺失或拒绝",
+      "workToDo": "分别接 local、H5、内部 SDK、协作会话、Pet 和公网设备的原认证入口；保持原 bearer/query、Origin、preflight 和认证失败语义；凭据各自进入实际消费者",
+      "acceptanceToDo": "正常桌面和各专用客户端能访问原允许路径；原拒绝路径及字段仍被拒绝；刷新/撤销/重连使用正确凭据",
+      "implementationClosed": false,
+      "acceptanceClosed": false,
+      "evidenceFiles": [
+        "src/server/index.ts",
+        "backend/internal/server/auth.go",
+        "src/server/sessionCollaborationAuth.ts"
+      ]
+    },
+    {
+      "id": "SB04",
+      "ownershipAndScope": "D26/D31/D33 Pets 投影",
+      "currentEvidence": "`backend/internal/server/auth.go` 对 Pet 凭据直接 403",
+      "workToDo": "迁移原 Pet HTTP 白名单、最多 9 个会话/offset=0 的投影、成员检查、pet 偏好；WS 只接原允许消息与脱敏输出；保持单个活动 Pet 连接切会话的关闭行为",
+      "acceptanceToDo": "Pet 可读原限定会话、正常文本追问/停止/同步；无法发 slash、附件、审批或读取完整敏感消息；脱敏字段和会话切换与原版一致",
+      "implementationClosed": false,
+      "acceptanceClosed": false,
+      "evidenceFiles": [
+        "src/server/petAccessPolicy.ts",
+        "src/server/api/sessions.ts",
+        "src/server/ws/handler.ts",
+        "backend/internal/server/auth.go"
+      ]
+    },
+    {
+      "id": "SB05",
+      "ownershipAndScope": "D11/D31/D32 原 SDK 通道",
+      "currentEvidence": "Go 无 `/sdk/:sessionId` 专用注册",
+      "workToDo": "接原 session token、连接身份、sessionId 校验、SDK message/control 转换、回调/应答、重连和关闭；与桌面 WS 使用同一实际运行会话",
+      "acceptanceToDo": "原 SDK 客户端经原路径连接、输入、审批、停止和恢复；令牌失效/会话结束及时关闭；不能用 SPA HTML 或另一个 `/ws/` 名称代替",
+      "implementationClosed": false,
+      "acceptanceClosed": false,
+      "evidenceFiles": [
+        "src/server/index.ts",
+        "backend/internal/server/server.go",
+        "src/server/ws/handler.ts"
+      ]
+    },
+    {
+      "id": "SB06",
+      "ownershipAndScope": "D12/D31 内部会话协作",
+      "currentEvidence": "Go 整组未实现；原版在普通 Origin/CORS 分派前识别 5 个 action",
+      "workToDo": "接 POST list/read/create/send/wait；使用 `x-session-id` + Bearer 会话凭据、无 Origin 的原内部认证；接宿主注册/解除、等待取消与实际消息投递",
+      "acceptanceToDo": "原 Agent 协作工具和 UI 候选共用真实服务；鉴权失败、超时、取消、投递和结果可核对；关闭宿主后不遗留等待",
+      "implementationClosed": false,
+      "acceptanceClosed": false,
+      "evidenceFiles": [
+        "src/server/index.ts",
+        "src/server/sessionCollaborationAuth.ts",
+        "backend/internal/server/server.go"
+      ]
+    },
+    {
+      "id": "SB07",
+      "ownershipAndScope": "D15/D16/D29 OAuth 回调",
+      "currentEvidence": "Go 顶层未注册原 callback 路径",
+      "workToDo": "接 `/callback`、`/auth/callback`、`/callback/openai`，复用相应登录事务/state、错误、凭据提交/刷新和页面结果；保留原 provider 的回调差异",
+      "acceptanceToDo": "从原登录入口到浏览器回调再到真实请求完整贯通；重复/过期/取消/失败回调不写错账号；回调不落入 H5 SPA fallback",
+      "implementationClosed": false,
+      "acceptanceClosed": false,
+      "evidenceFiles": [
+        "src/server/index.ts",
+        "src/services/openaiAuth/client.ts",
+        "backend/internal/server/server.go"
+      ]
+    },
+    {
+      "id": "SB08",
+      "ownershipAndScope": "D28/D34 Workspace 预览文件",
+      "currentEvidence": "`/preview-fs/` 被 Go 明确拒绝",
+      "workToDo": "接 session 工作目录的实际解析、原预览文件服务、认证/CORS、路径/符号链接边界、Range/MIME/cache 和文件缺失错误",
+      "acceptanceToDo": "HTML、图片、文档及音视频按原 URL 打开；资源、Range、编码路径和工作目录恢复正确；不能以 shell HTML 代替请求文件",
+      "implementationClosed": false,
+      "acceptanceClosed": false,
+      "evidenceFiles": [
+        "src/server/index.ts",
+        "src/server/api/previewFs.ts",
+        "backend/internal/server/server.go"
+      ]
+    },
+    {
+      "id": "SB09",
+      "ownershipAndScope": "D28/D33 本地文件服务",
+      "currentEvidence": "Go 无 `/local-file/` 专用处理",
+      "workToDo": "接原 absolute local file 路径、HOME/tmp/已登记 root 范围、认证、响应和资源读取；由实际工作区变更登记访问 root",
+      "acceptanceToDo": "原 AI 产物和本地文件链接可打开；跨平台/中文/编码路径正确；目录范围、缺失/拒绝响应与原版一致",
+      "implementationClosed": false,
+      "acceptanceClosed": false,
+      "evidenceFiles": [
+        "src/server/index.ts",
+        "src/server/api/localFile.ts",
+        "backend/internal/server/server.go",
+        "backend/internal/server/static.go"
+      ]
+    },
+    {
+      "id": "SB10",
+      "ownershipAndScope": "D29/D31 Provider 代理",
+      "currentEvidence": "`/proxy/` 被 Go 明确拒绝，兼容 provider env 也有守卫",
+      "workToDo": "接 `/proxy/v1/messages` 与 provider 专用路径，原协议/媒体转换、实际所选 provider 凭据、headers/beta、流式数据、重试和错误体；绑定真实 ProviderService",
+      "acceptanceToDo": "原支持 provider 的请求与工具/媒体往返可用；流式结束/错误/停止、模型切换和重启配置一致；基本 CRUD 不关闭此项",
+      "implementationClosed": false,
+      "acceptanceClosed": false,
+      "evidenceFiles": [
+        "src/server/index.ts",
+        "backend/internal/server/server.go",
+        "backend/internal/server/providerconfig/environment.go"
+      ]
+    },
+    {
+      "id": "SB11",
+      "ownershipAndScope": "D30/D33/D34 PublicAccessServer",
+      "currentEvidence": "Go 未注册 `/api/public-access`；Electron 管理壳仍在",
+      "workToDo": "接独立控制与公网 listener：status/enable/origin/disable、pairing approve/reject/revoke、远端 session/pair/claim；保留设备/私有配置文件、cookie、过期、限流和 socket 清理",
+      "acceptanceToDo": "Electron 正常开启/配对/批准/撤销；listener、设备记录与重启恢复正确；关闭/撤销使对应访问失效，不拿 H5 token 流程替代",
+      "implementationClosed": false,
+      "acceptanceClosed": false,
+      "evidenceFiles": [
+        "src/server/index.ts",
+        "src/server/publicAccess.ts",
+        "desktop/electron/services/publicAccess.ts",
+        "backend/internal/server/server.go"
+      ]
+    },
+    {
+      "id": "SB12",
+      "ownershipAndScope": "D29/D30 远端细粒度能力",
+      "currentEvidence": "Go 对远端 providers/settings 整组 403",
+      "workToDo": "迁移原远端路径/方法矩阵、Provider 投影、通用设置读写与补丁校验；隐藏兼容扩展字段保留，API key/image key 脱敏和 hasApiKey 字段保持原语义",
+      "acceptanceToDo": "H5 原 providers/general 操作可用；可编辑字段保存，隐藏字段不被覆盖；原禁用路径和敏感信息继续受保护",
+      "implementationClosed": false,
+      "acceptanceClosed": false,
+      "evidenceFiles": [
+        "src/server/remoteBrowserPolicy.ts",
+        "backend/internal/server/server.go"
+      ]
+    },
+    {
+      "id": "SB13",
+      "ownershipAndScope": "D11/D26–D31 请求断开",
+      "currentEvidence": "原 API 用 `settleResponseOnRequestAbort` 返回 499；Go 的完整操作边界待核对",
+      "workToDo": "逐业务接请求结束/监听清理，区分 HTTP 等待结束、WS 断开、Agent 停止与已经提交的副作用；原函数只竞争响应，不自动取消已创建的业务 Promise",
+      "acceptanceToDo": "客户端断开后的响应、写入和操作状态符合原版；不能把所有断连改成 Agent 取消；不会因重试重复已完成副作用",
+      "implementationClosed": false,
+      "acceptanceClosed": false,
+      "evidenceFiles": [
+        "src/server/requestLifecycle.ts",
+        "src/server/index.ts",
+        "backend/internal/server/server.go"
+      ]
+    },
+    {
+      "id": "SB14",
+      "ownershipAndScope": "D28/D30/D33 H5 静态资源",
+      "currentEvidence": "Go 有 H5 静态服务，完整包/专用路径分流待验收",
+      "workToDo": "接打包 dist/asar.unpacked、GET/HEAD、MIME/cache/资源404；保留非秘密 shell/assets 在认证前可加载；专用服务路径先分派，不能误用 SPA fallback",
+      "acceptanceToDo": "无 token 可加载原 bootstrap，再完成二维码/认证；真实包内资源和刷新可用；SDK/回调/文件 URL 得到其业务响应",
+      "implementationClosed": false,
+      "acceptanceClosed": false,
+      "evidenceFiles": [
+        "src/server/index.ts",
+        "backend/internal/server/static.go",
+        "backend/internal/server/server.go"
+      ]
+    },
+    {
+      "id": "SB15",
+      "ownershipAndScope": "D29/D32/D33 CLI launcher 启动",
+      "currentEvidence": "原 Server 启动异步确保 bundled launcher；Go 相关管理 API 未接",
+      "workToDo": "接实际 bundled Go 二进制的安装、检测、PATH/启动关联、版本、修复/卸载和平台路径；启动安装错误可观察且不阻塞健康探针",
+      "acceptanceToDo": "从独立终端及桌面 Terminal 均使用同一普通 Go CLI；更新/卸载/路径有空格及权限失败保持原流程",
+      "implementationClosed": false,
+      "acceptanceClosed": false,
+      "evidenceFiles": [
+        "src/server/index.ts",
+        "src/server/services/desktopCliLauncherService.ts",
+        "backend/internal/server/settings.go"
+      ]
+    },
+    {
+      "id": "SB16",
+      "ownershipAndScope": "D08/D09/D12/D30/D33/D34 启停所有权",
+      "currentEvidence": "原 Server 启动 Team watcher、cron、索引及协作宿主；Go 已有部分 session/进程 close",
+      "workToDo": "将全部后台服务纳入实际 Go 生命周期：启动一次、避免重复调度/监听；关停索引、watcher、cron、协作等待、公网 listener、会话/工具子进程及未完成写入；保留信号和清理顺序",
+      "acceptanceToDo": "启动/重启/退出/失败后无遗留进程、端口、订阅或重复任务；已完成写入可恢复，正在执行的任务按原语义结束或恢复",
+      "implementationClosed": false,
+      "acceptanceClosed": false,
+      "evidenceFiles": [
+        "src/server/index.ts",
+        "backend/internal/application/server.go",
+        "backend/internal/server/server.go"
+      ]
+    }
+  ],
+  "sourceSnapshot": [
+    {
+      "file": "backend/internal/application/server.go",
+      "sha256": "ef81e8f59e8e9e4c3e8e63a90b69ae07f53d6c5fd7ab29831583683adb01e598"
+    },
+    {
+      "file": "backend/internal/server/auth.go",
+      "sha256": "af099e0b817f399df9639450fc2d79fa18f73e3ae620fa53040683db23a1f075"
+    },
+    {
+      "file": "backend/internal/server/providerconfig/environment.go",
+      "sha256": "27cfbe865219173b4ea6c6286f52280d3049a9db7c6aabd04fd0825041da85f2"
+    },
+    {
+      "file": "backend/internal/server/server.go",
+      "sha256": "6a18846e3ce2b7af2ce4798049e63671b6296b09fb679542c312166b7f1e801c"
+    },
+    {
+      "file": "backend/internal/server/settings.go",
+      "sha256": "852639f55d6ae52b37007ed6b1ac1e5dcd67bee69509b8255eeec5d499701820"
+    },
+    {
+      "file": "backend/internal/server/static.go",
+      "sha256": "c7855771064c2f553379c46716c086b2388a9a9b4fabde9016f6ca36d470e456"
+    },
+    {
+      "file": "desktop/electron/services/publicAccess.ts",
+      "sha256": "076d26b8416d442a5d91c17aebe40d5bb738a61b4ef28752e82086e9cf87e0df"
+    },
+    {
+      "file": "desktop/electron/services/sidecarManager.ts",
+      "sha256": "f9ea5b36e06cb7cfc35bedc8d0dd8b46a43414a50c1d57351804e2c6385369ea"
+    },
+    {
+      "file": "src/server/api/localFile.ts",
+      "sha256": "b787a622c3ed6a0dcb645e6a08dade64335670880e43fc950de3817c08e1c447"
+    },
+    {
+      "file": "src/server/api/previewFs.ts",
+      "sha256": "479423e505f148534890cc82d0b5c74b68a1b35bc95ab4b673acce02b657559a"
+    },
+    {
+      "file": "src/server/api/sessions.ts",
+      "sha256": "b18530f0dfb48d688198def6eda5db09468a82bc7ca3836d227b7880d74e00be"
+    },
+    {
+      "file": "src/server/index.ts",
+      "sha256": "361381e2b8cc362775252333458c672ee6ef46235df6347e1da7fcc5b69b2f42"
+    },
+    {
+      "file": "src/server/petAccessPolicy.ts",
+      "sha256": "05cbbfeef17406c0dffde935146cd583379fd2c566e9309dd3d9b7592d23f536"
+    },
+    {
+      "file": "src/server/publicAccess.ts",
+      "sha256": "fe4e8105e3c0ef2c74caae4cc48340a791ab9e8a61dde92b5e50808775e4ca49"
+    },
+    {
+      "file": "src/server/remoteBrowserPolicy.ts",
+      "sha256": "9291cf90f56bfc51d6ade375d1b4b4ce937d87b28fb3742b2f6aad229d372134"
+    },
+    {
+      "file": "src/server/requestLifecycle.ts",
+      "sha256": "0f01a67eee7a9ac4e1d68393b7a4fdd4d1690ed5c11f13bc5ac2e0ed5147672e"
+    },
+    {
+      "file": "src/server/services/desktopCliLauncherService.ts",
+      "sha256": "b0d4cea98a2e881ac4c8d1197f1d9096473a2b91a204360043b0acdc66b85a1d"
+    },
+    {
+      "file": "src/server/sessionCollaborationAuth.ts",
+      "sha256": "9d96f7757b4009d91308fd89faae3abb78604b08e1865b0e4b238c10971d6453"
+    },
+    {
+      "file": "src/server/ws/handler.ts",
+      "sha256": "609609b97d962ebddc5f748015397f6a00e6f6eab5127c7c468a4c1f9e4ea8cd"
+    },
+    {
+      "file": "src/services/openaiAuth/client.ts",
+      "sha256": "68f1d088886325dac14bf1894a8803ee2c862b40b774da022ed2bdeed7796c9f"
+    }
+  ],
+  "fullMigrationComplete": false
+}

@@ -1,0 +1,608 @@
+{
+  "date": "2026-10-06",
+  "kind": "static-inventory-only",
+  "status": "passed",
+  "workPackages": 35,
+  "mainOpenCheckboxes": 115,
+  "desktopMissingFamilies": 23,
+  "missingHttpCallSites": 168,
+  "desktopInputHashes": 650,
+  "cliTuiInputHashes": 260,
+  "sourceDrift": 0,
+  "brokenLinks": 0,
+  "cliTuiCounts": {
+    "normalRegisteredCommandNodes": 36,
+    "staticArgvRowsIncludingConditional": 58,
+    "normalRootOptionRows": 81,
+    "rootOptionsExplicitlyRejected": 60,
+    "finiteObservedSlashNameUnion": 61,
+    "staticSlashDefinitionsExternalAndInternal": 116,
+    "bundledDefinitionModules": 19,
+    "bootstrapBranches": 16,
+    "originalLiteralTerminalActions": 98,
+    "originalPublicSchemaTerminalActions": 87,
+    "stdioDiscriminantsAllDirections": 43,
+    "sourceSnapshot": 260
+  },
+  "documentation": [
+    "go-migration-worklist.md",
+    "go-desktop-parity-todo.md",
+    "go-desktop-api-checklist.md",
+    "go-cli-tui-work-checklist.md",
+    "go-migration-next-todo.md"
+  ],
+  "runtimeTests": "not run this window",
+  "modelCalls": "not run this window",
+  "uiActions": "not run this window",
+  "productImplementationChanges": "none this window",
+  "migrationComplete": false,
+  "latestWorklistReview": {
+    "reviewedAt": "2026-10-06T00:21:35.952502+00:00",
+    "workPackageRows": 35,
+    "originalRequirementsRetained": 95,
+    "sourceDrift": 0,
+    "brokenLinks": 0,
+    "routeMissingFamiliesVerified": 24,
+    "missingHttpCallSites": 170,
+    "productTests": "not run",
+    "uiActions": "not run",
+    "modelCalls": "not run",
+    "productionEdits": "none",
+    "fullMigrationComplete": false,
+    "currentComponentStatus": "Connector components exist; Server/API/runtime consumers remain unbound",
+    "documentsChanged": [
+      "go-migration-worklist.md",
+      "go-migration-next-todo.md",
+      "go-work-inventory-review.json"
+    ]
+  },
+  "pageOwnershipReview": {
+    "reviewedAt": "2026-10-06T00:25:02.942247+00:00",
+    "electronSettingsPages": 17,
+    "contentTypesIncludingLegacyWorkbench": 12,
+    "unassignedPages": 0,
+    "sourceDrift": 0,
+    "brokenLinks": 0,
+    "originalRequirementsRetained": 95,
+    "mainOpenCheckboxes": 115,
+    "changedArtifacts": [
+      "go-migration-worklist.md",
+      "go-migration-next-todo.md",
+      "go-desktop-parity-todo.md",
+      "go-desktop-api-checklist.md",
+      "go-desktop-full-api-inventory.json",
+      "go-work-inventory-review.json"
+    ],
+    "runtimeTests": "not run",
+    "modelCalls": "not run",
+    "uiActions": "not run",
+    "productionEdits": "none",
+    "fullMigrationComplete": false
+  },
+  "currentWorkOnlyReview": {
+    "reviewedAt": "2026-10-06T01:27:23.579126+00:00",
+    "workPackageRows": 35,
+    "mainOpenCheckboxes": 115,
+    "originalRequirementsRetained": 95,
+    "desktopInputHashes": 649,
+    "cliTuiInputHashes": 260,
+    "sourceDrift": 0,
+    "routeMissingFamiliesVerified": [
+      "scheduled-tasks",
+      "search",
+      "agents",
+      "teams",
+      "workflows",
+      "haha-oauth",
+      "haha-openai-oauth",
+      "haha-grok-oauth",
+      "adapters",
+      "skills",
+      "market",
+      "mcp",
+      "connectors",
+      "plugins",
+      "computer-use",
+      "diagnostics",
+      "doctor",
+      "activity-stats",
+      "open-targets",
+      "memory",
+      "voice",
+      "traces",
+      "session-collaboration",
+      "conversations"
+    ],
+    "missingHttpCallSites": 170,
+    "componentSnapshot": [
+      {
+        "file": "backend/internal/pluginregistry/builtin.go",
+        "sha256": "5022df0b9c5085b727a2d398233a8ed9a9ce1074022204c65289b4ef0aa90659"
+      },
+      {
+        "file": "backend/internal/pluginregistry/components.go",
+        "sha256": "db12dfe39c389f476688c8abb7e2a72a9da9b8d12ff95be02ad4e4d3b57c61fb"
+      },
+      {
+        "file": "backend/internal/pluginregistry/dependencies.go",
+        "sha256": "b2463332df6df75d6519e7c52a23e2e2015173d82fb684256450ffb3af4afb8e"
+      },
+      {
+        "file": "backend/internal/pluginregistry/entry.go",
+        "sha256": "fb5689fc95c687015b98e03a9cceb3134320247e9b8c79b02d2122de4e08e8f0"
+      },
+      {
+        "file": "backend/internal/pluginregistry/loader.go",
+        "sha256": "581deef3b568fd8f71b56a1d175a760e6eb3790548562850da4b1ad98b49d5ef"
+      },
+      {
+        "file": "backend/internal/pluginregistry/policy.go",
+        "sha256": "177e14665310ebe39c4becf882ee390fe0b3030b66ae5fad92a279de1ed9d4a6"
+      },
+      {
+        "file": "backend/internal/pluginschema/data/declarations.json",
+        "sha256": "7b114131a388c103184576cd629382533ee6d6346c9bcf04420b6920341f21f8"
+      },
+      {
+        "file": "backend/internal/pluginschema/schema.go",
+        "sha256": "f156d06a3060b0dd8325ee7c74f6b8d09c3409fcb7c2ec93d8b4fbb3126c5dcc"
+      },
+      {
+        "file": "backend/internal/mcpclient/client.go",
+        "sha256": "7d4983ac6f321ec718685bb90f7f549d90c9dc1a6b9489110062bf00eff990a9"
+      },
+      {
+        "file": "backend/internal/mcpclient/http.go",
+        "sha256": "677f8f6282a33a12486b2f63fc1eba97d2a2b1003f2d923021cfcb08eee3d67d"
+      },
+      {
+        "file": "backend/internal/mcpclient/methods.go",
+        "sha256": "50455161da3663433392db0d859186a83e23ae20bfc2d594bae5cc9eb6a2623c"
+      },
+      {
+        "file": "backend/internal/mcpclient/process_unix.go",
+        "sha256": "4a3d63ac75e1f653d8e4eeb7fbe99f4a3c574d04969e0a0e05173233a9361e83"
+      },
+      {
+        "file": "backend/internal/mcpclient/process_windows.go",
+        "sha256": "8618bed5619f154a62e3f08d327732a9bd5c2c472a0e39741108ee7653ae8268"
+      },
+      {
+        "file": "backend/internal/mcpclient/stdio.go",
+        "sha256": "0f2dac9a114b89c185ecd4b8362ffd9336b246d9700b1df068e6340796e31697"
+      },
+      {
+        "file": "backend/internal/mcpclient/types.go",
+        "sha256": "a084048f26cedc78fd0fcb13f3ab4cf2ee9e4bc96c872538c5e157ffbbae074b"
+      },
+      {
+        "file": "backend/internal/mcpclient/windows_quote.go",
+        "sha256": "0d9e562906a473601ad1227ac48d7aeb4dfd4ffe734c2ebeedb2187e39603d81"
+      },
+      {
+        "file": "backend/internal/skillregistry/detail.go",
+        "sha256": "30b93bbef44a7ed742a8d6d869c2a2ceb93c7ebf67c6b5db17c1f6b2899c2f96"
+      },
+      {
+        "file": "backend/internal/skillregistry/registry.go",
+        "sha256": "590ee356aecc75a0293b8668864a9c98c6f13077714d6de28fb54b840ecf18ac"
+      }
+    ],
+    "componentIntegration": "skillregistry/pluginregistry/mcpclient have no production Server/bootstrap/Harness consumers; pluginregistry references skillregistry as an unbound producer seam",
+    "documentsChanged": [
+      "go-migration-worklist.md",
+      "go-desktop-parity-todo.md",
+      "go-migration-next-todo.md",
+      "go-work-scope-audit.json",
+      "go-work-inventory-review.json"
+    ],
+    "runtimeTests": "not run",
+    "uiActions": "not run",
+    "modelCalls": "not run",
+    "productionEdits": "none",
+    "fullMigrationComplete": false
+  },
+  "latestUserRequestedInventoryReview": {
+    "reviewedAt": "2026-10-06T02:25:11.319081+00:00",
+    "kind": "source-and-documentation-only",
+    "staticChecks": "passed",
+    "workPackages": 35,
+    "openMainTasks": 115,
+    "originalRequirementsRetained": 95,
+    "desktopInputHashes": 649,
+    "cliTuiInputHashes": 260,
+    "sourceDrift": [],
+    "brokenLinks": [],
+    "missingApiFamilies": [
+      "scheduled-tasks",
+      "search",
+      "agents",
+      "teams",
+      "workflows",
+      "haha-oauth",
+      "haha-openai-oauth",
+      "haha-grok-oauth",
+      "adapters",
+      "skills",
+      "market",
+      "mcp",
+      "connectors",
+      "plugins",
+      "computer-use",
+      "diagnostics",
+      "doctor",
+      "activity-stats",
+      "open-targets",
+      "memory",
+      "voice",
+      "traces",
+      "session-collaboration",
+      "conversations"
+    ],
+    "missingHttpCallSites": 170,
+    "conditionalReleaseClassification": "remaining work; conditional/internal/test entries are retained in the index",
+    "componentSnapshot": [
+      {
+        "file": "backend/internal/pluginregistry/builtin.go",
+        "sha256": "f4be4c4d505452f1018d70f52f07c800794d75e4084b724c40c8bc320e6506e4"
+      },
+      {
+        "file": "backend/internal/pluginregistry/components.go",
+        "sha256": "e9e864853ca79ef6e019c3ec2e05ed8c072adb954b2fe0009997b035045ada03"
+      },
+      {
+        "file": "backend/internal/pluginregistry/copy.go",
+        "sha256": "e5e6fb1c5435e5e385421fab37158e005de31b6ec2ea50c09780aff9eec41d89"
+      },
+      {
+        "file": "backend/internal/pluginregistry/dependencies.go",
+        "sha256": "b2463332df6df75d6519e7c52a23e2e2015173d82fb684256450ffb3af4afb8e"
+      },
+      {
+        "file": "backend/internal/pluginregistry/directories.go",
+        "sha256": "04159d87326faf3aab98ccda8b4f91084db817435b31649f20836e451eeaa339"
+      },
+      {
+        "file": "backend/internal/pluginregistry/entry.go",
+        "sha256": "fb5689fc95c687015b98e03a9cceb3134320247e9b8c79b02d2122de4e08e8f0"
+      },
+      {
+        "file": "backend/internal/pluginregistry/git_install.go",
+        "sha256": "c47d83519339ef4da5bf57415f7b535acf90bfaf3d789ae289345b81381656f5"
+      },
+      {
+        "file": "backend/internal/pluginregistry/installed.go",
+        "sha256": "b1b5be87c193b557cfa138d55da5b2c538d6a1ada803db2f22263b133a47d6fc"
+      },
+      {
+        "file": "backend/internal/pluginregistry/loader.go",
+        "sha256": "3851dd561d94973072f381c71917a4f3ae6000c4ef71fd4de2cce2df09a9ba08"
+      },
+      {
+        "file": "backend/internal/pluginregistry/materialize.go",
+        "sha256": "0237b9d9306cee703baefce7aeba8d99647b326c561bd2b6824a924010aa88fe"
+      },
+      {
+        "file": "backend/internal/pluginregistry/policy.go",
+        "sha256": "177e14665310ebe39c4becf882ee390fe0b3030b66ae5fad92a279de1ed9d4a6"
+      },
+      {
+        "file": "backend/internal/pluginregistry/version.go",
+        "sha256": "7628f10dae434454fd992b25144365a6e802a0bd7e75938569fce81694f55773"
+      },
+      {
+        "file": "backend/internal/pluginschema/schema.go",
+        "sha256": "db1050706cc01647d4329d4f90b2807526845c7375799515d06ab8b9c7d0132e"
+      },
+      {
+        "file": "backend/internal/pluginzip/inflate.go",
+        "sha256": "c31b4dbe71369714717d490102344231d24c857048acd2cfa304a161b38b4c96"
+      },
+      {
+        "file": "backend/internal/pluginzip/platform_unix.go",
+        "sha256": "3c9ea0beeba101494c438454132ab096a58becd4ad0b84a59ae6dcf1188800a6"
+      },
+      {
+        "file": "backend/internal/pluginzip/platform_windows.go",
+        "sha256": "e8405b4b3384af88f7ee11d98fa2d2bb8da80e0a61618e75e71101102dc658aa"
+      },
+      {
+        "file": "backend/internal/pluginzip/service.go",
+        "sha256": "0adf10d59bf2ca30975cf7a4fca675d84c3fac911902e54b929b328d8f84b8fd"
+      },
+      {
+        "file": "backend/internal/pluginzip/zip.go",
+        "sha256": "703e70a50469b6c75b352509cee7d7005a46aa7aac9056b85078af546bd8439b"
+      },
+      {
+        "file": "backend/internal/skillregistry/detail.go",
+        "sha256": "30b93bbef44a7ed742a8d6d869c2a2ceb93c7ebf67c6b5db17c1f6b2899c2f96"
+      },
+      {
+        "file": "backend/internal/skillregistry/registry.go",
+        "sha256": "590ee356aecc75a0293b8668864a9c98c6f13077714d6de28fb54b840ecf18ac"
+      },
+      {
+        "file": "backend/internal/mcpclient/client.go",
+        "sha256": "7d4983ac6f321ec718685bb90f7f549d90c9dc1a6b9489110062bf00eff990a9"
+      },
+      {
+        "file": "backend/internal/mcpclient/http.go",
+        "sha256": "677f8f6282a33a12486b2f63fc1eba97d2a2b1003f2d923021cfcb08eee3d67d"
+      },
+      {
+        "file": "backend/internal/mcpclient/methods.go",
+        "sha256": "50455161da3663433392db0d859186a83e23ae20bfc2d594bae5cc9eb6a2623c"
+      },
+      {
+        "file": "backend/internal/mcpclient/process_unix.go",
+        "sha256": "4a3d63ac75e1f653d8e4eeb7fbe99f4a3c574d04969e0a0e05173233a9361e83"
+      },
+      {
+        "file": "backend/internal/mcpclient/process_windows.go",
+        "sha256": "8618bed5619f154a62e3f08d327732a9bd5c2c472a0e39741108ee7653ae8268"
+      },
+      {
+        "file": "backend/internal/mcpclient/stdio.go",
+        "sha256": "0f2dac9a114b89c185ecd4b8362ffd9336b246d9700b1df068e6340796e31697"
+      },
+      {
+        "file": "backend/internal/mcpclient/types.go",
+        "sha256": "a084048f26cedc78fd0fcb13f3ab4cf2ee9e4bc96c872538c5e157ffbbae074b"
+      },
+      {
+        "file": "backend/internal/mcpclient/windows_quote.go",
+        "sha256": "0d9e562906a473601ad1227ac48d7aeb4dfd4ffe734c2ebeedb2187e39603d81"
+      }
+    ],
+    "productionIntegration": "plugin/Skill/MCP components remain unbound in NewDesktopServer and shared Harness; no production bootstrap constructor calls for the new installed/materializer/ZIP services",
+    "newProductTests": "not run",
+    "newUiActions": "not run",
+    "newModelCalls": "not run",
+    "productionEdits": "none",
+    "documentsChanged": [
+      "go-migration-worklist.md",
+      "go-desktop-parity-todo.md",
+      "go-migration-next-todo.md",
+      "go-work-scope-audit.md",
+      "go-work-scope-audit.json",
+      "go-work-inventory-review.json"
+    ],
+    "fullMigrationComplete": false
+  },
+  "latestImplementationConsumerReview": {
+    "reviewedAt": "2026-10-06T03:05:53.960151+00:00",
+    "evidence": "artifacts/go-native-plugin-settings/report.json",
+    "serverSettingsAndStyles": "native plugin/installed/materializer/ZIP producers bound to shared state and store",
+    "managementApiAndHarness": "incomplete",
+    "routeMissingFamilies": 24,
+    "missingHttpCallSites": 170,
+    "fullMigrationComplete": false
+  },
+  "latestWorkOnlyInventoryReview": {
+    "reviewedAt": "2026-10-06T03:18:01.441624+00:00",
+    "scope": "User requested work inventory only; static reads and document checks, no new product reproduction",
+    "staticChecks": "passed",
+    "workPackages": 35,
+    "openMainTasks": 115,
+    "originalRequirementsRetained": 95,
+    "missingApiFamilies": [
+      "scheduled-tasks",
+      "search",
+      "agents",
+      "teams",
+      "workflows",
+      "haha-oauth",
+      "haha-openai-oauth",
+      "haha-grok-oauth",
+      "adapters",
+      "skills",
+      "market",
+      "mcp",
+      "connectors",
+      "plugins",
+      "computer-use",
+      "diagnostics",
+      "doctor",
+      "activity-stats",
+      "open-targets",
+      "memory",
+      "voice",
+      "traces",
+      "session-collaboration",
+      "conversations"
+    ],
+    "missingHttpCallSites": 170,
+    "desktopInputHashes": 649,
+    "cliTuiInputHashes": 260,
+    "sourceDrift": [],
+    "brokenLinks": [],
+    "currentBindings": "Server plugin settings and Output Style are bound; extension management APIs and complete CLI/Harness consumers remain unfinished",
+    "unfinishedSkillCommandDrafts": "5 existing files; no production consumers or accepted validation; retained as pending work",
+    "newRuntimeTests": "not run",
+    "newUiActions": "not run",
+    "newModelCalls": "not run",
+    "rootEdits": "planning documents only",
+    "fullMigrationComplete": false,
+    "updatedDocuments": [
+      "go-migration-worklist.md",
+      "go-migration-next-todo.md",
+      "go-work-inventory-review.json"
+    ]
+  },
+  "latestReleaseConditionWorkReview": {
+    "reviewedAt": "2026-10-06T03:26:21.366859+00:00",
+    "previousGoalTurnClassification": "progress: authoritative worklist expanded and stale binding statements corrected",
+    "currentScope": "work inventory and static release-condition classification only; full D01-D35 goal unchanged",
+    "staticChecks": "passed",
+    "originalWorkPackages": 35,
+    "originalRequirementsRetained": 95,
+    "openMainTasks": 115,
+    "toolExpressionsPreserved": 49,
+    "bundledModulesPreserved": 19,
+    "cliBootstrapPreserved": 16,
+    "additionalDesktopWorkerRequirements": 1,
+    "newMatrixCurrentInputHashes": 43,
+    "originalBuildBlobsVerified": 2,
+    "originalInputDrift": [],
+    "brokenLinks": [],
+    "otherReleaseProfiles": "not yet fully verified; T02 remains open",
+    "productTests": "not run",
+    "uiActions": "not run",
+    "modelCalls": "not run",
+    "productionEdits": "none; planning artifacts only",
+    "fullMigrationComplete": false
+  },
+  "latestSkillsImplementationReview": {
+    "reviewedAt": "2026-10-06T03:52:49.671212+00:00",
+    "evidence": "artifacts/go-native-skills-api/report.json",
+    "skillsListDetail": "actual native settings/plugin producer bound",
+    "skillsMentionsAndRuntime": "unfinished",
+    "missingApiFamilies": 23,
+    "missingHttpCallSites": 168,
+    "desktopHashes": 650,
+    "cliHashes": 260,
+    "originalRequirementsRetained": 95,
+    "sourceDrift": [],
+    "fullMigrationComplete": false
+  },
+  "latestPlanningOnlyReview": {
+    "reviewedAt": "2026-10-06T04:26:27.329270+00:00",
+    "userInstruction": "当前只梳理全部要干的活，不复现、不实现",
+    "staticChecks": "passed",
+    "workPackages": 35,
+    "openMainTasks": 115,
+    "originalRequirementsRetained": 95,
+    "missingApiFamilies": 23,
+    "missingHttpCallSites": 168,
+    "httpStatusCounts": {
+      "missing-family-explicit-501": 131,
+      "routed-family-review-subroute-and-behavior": 67,
+      "missing-subroute-explicit-501": 13,
+      "missing-special-server-resource-no-Go-registration": 6,
+      "missing-subroute-default-501": 18,
+      "partial-repository-worktree-launch-rejected": 1,
+      "partial-workflow-reconstruction-rejected": 1,
+      "unresolved-static-expression": 3
+    },
+    "inputHashChecks": {
+      "go-desktop-full-api-inventory.json": 650,
+      "go-cli-tui-work-inventory.json": 260,
+      "go-release-condition-work-matrix.json": 43
+    },
+    "sourceDrift": 0,
+    "localLinksChecked": 1897,
+    "brokenLinks": 0,
+    "productImplementationChanges": "none this turn",
+    "runtimeTests": "not run this turn",
+    "uiActions": "not run this turn",
+    "modelCalls": "not run this turn",
+    "benchmark": "not run this turn",
+    "fullMigrationComplete": false
+  },
+  "latestBoundaryPlanningReview": {
+    "reviewedAt": "2026-10-06T04:31:42.017984+00:00",
+    "previousGoalTurn": "progress: updated authoritative worklist and static inventory review",
+    "workPackages": 35,
+    "mainOpenTasks": 115,
+    "originalRequirementsRetained": 95,
+    "additionalBoundarySubtasks": 16,
+    "inputHashChecks": {
+      "go-desktop-full-api-inventory.json": 650,
+      "go-cli-tui-work-inventory.json": 260,
+      "go-release-condition-work-matrix.json": 43,
+      "go-server-boundary-work-inventory.json": 20
+    },
+    "sourceDrift": 0,
+    "localLinksChecked": 2030,
+    "brokenLinks": 0,
+    "runtimeTests": "not run this turn",
+    "uiActions": "not run this turn",
+    "modelCalls": "not run this turn",
+    "productionEdits": "none this turn",
+    "fullMigrationComplete": false
+  },
+  "latestScopeCompletionAudit": {
+    "reviewedAt": "2026-10-06T04:33:56.905722+00:00",
+    "previousGoalTurn": "progress: added 16 Server boundary tasks, source evidence and exact requirement anchors",
+    "inventoryDeliverable": "complete against the latest explicit human request; original implementation requirements remain open",
+    "originalRequirementsAudited": 95,
+    "exactCurrentRequirementAndLineMatches": 95,
+    "mainWorkPackages": 35,
+    "mainOpenTasks": 115,
+    "boundarySubtasks": 16,
+    "sourceInventoryCoverage": {
+      "httpCallSites": 240,
+      "originalApiHandlers": 40,
+      "clientWsControls": 11,
+      "nativeIpcHandlers": 89,
+      "toolRegistrationExpressions": 49,
+      "argvDeclarations": 58,
+      "rootOptions": 81,
+      "slashDefinitions": 116,
+      "bundledModules": 19,
+      "bootstrapBranches": 16,
+      "terminalActions": 98,
+      "stdioDiscriminants": 43
+    },
+    "latestHumanScope": "不是让你去复现；当前就是梳理要干的活",
+    "nextAction": "Task-scope clarification requested once: retain planning-only scope or start implementing the full migration",
+    "scopeQuestion": "pending; no answer or implementation authorization inferred",
+    "productImplementationChanges": "none this turn",
+    "runtimeTests": "not run this turn",
+    "uiActions": "not run this turn",
+    "modelCalls": "not run this turn",
+    "fullMigrationComplete": false,
+    "goalCompleteClaimed": false
+  },
+  "scopeBlockerAudit": {
+    "condition": "Latest explicit human instruction limits the work to inventory; that inventory has been delivered. Full implementation would exceed that current phase instruction until task scope is clarified.",
+    "firstVerifiedAt": "2026-10-06T04:35:28.784764+00:00",
+    "consecutiveGoalTurnsAtImpasse": 3,
+    "clarificationRequestedOnce": true,
+    "clarificationAnswered": false,
+    "safeIndependentWorkCompleted": "Final inventory completeness and exact requirement-anchor audit",
+    "fullObjectivePreserved": true,
+    "goalStatusChanged": false,
+    "lastRevalidatedAt": "2026-10-06T04:37:11.647052+00:00",
+    "previousGoalTurn": "no progress: planning-only phase still applies; no task-scope answer",
+    "currentGoalTurn": "no progress: same scope restriction verified a third consecutive turn; all independent inventory work delivered",
+    "currentSourceEvidence": {
+      "originalRequirementsRetained": 95,
+      "sourceDrift": 0,
+      "wholeMissingApiFamilies": 23,
+      "fullMigrationComplete": false
+    },
+    "blockedAuditThresholdMet": true,
+    "completionAudit": "not achieved: full implementation, native E2E and Benchmark requirements remain incomplete; inventory-only completion does not close the full goal",
+    "nextRequiredExternalChange": "Human clarification selecting the implementation phase or otherwise changing the current planning-only scope",
+    "statusAction": "update_goal blocked required after this verified audit",
+    "supersededByHumanInstruction": "啥玩意儿呀！我不是让你梳理，我让你干活呀，去全部实现呀！",
+    "active": false,
+    "resolution": "Human explicitly selected full implementation; no task-scope question remains pending."
+  },
+  "currentImplementationPhase": {
+    "updatedAt": "2026-10-06T05:20:59.733365+00:00",
+    "humanScope": "啥玩意儿呀！我不是让你梳理，我让你干活呀，去全部实现呀！",
+    "phase": "implementation",
+    "fullMigrationComplete": false,
+    "goalCompleteClaimed": false,
+    "scopeQuestion": "resolved by explicit human instruction",
+    "actualCompletedBindings": [
+      "Memory REST in NewDesktopServer",
+      "Open Targets HTTP in NewDesktopServer",
+      "native plugin option shared settings/secure storage binding"
+    ],
+    "validation": [
+      "five-package actual Source-enabled race passed",
+      "Skill invalidation callback concurrency regression plus actual Source-enabled race passed",
+      "Secure storage native I/O Source comparison plus race passed",
+      "native plugin option actual persistence regression plus race passed"
+    ],
+    "notRun": [
+      "current candidate React/Electron E2E",
+      "current candidate live model",
+      "paired full Benchmark"
+    ]
+  }
+}

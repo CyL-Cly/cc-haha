@@ -1,0 +1,1976 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-10-06T03:24:24.371838+00:00",
+  "scope": "Static release-condition supplement to the original D01-D35 objective; planning only, no product execution. All original requirements retained.",
+  "baseline": {
+    "kind": "repository original build configuration; not proof of installed shipping binary",
+    "features": [
+      "TRANSCRIPT_CLASSIFIER"
+    ],
+    "defaultUserProfile": "external; internal user conditions explicitly retained",
+    "evidence": [
+      {
+        "revision": "6b9d2aec1d9321a4dfff90d16b51f10c1ab984c8",
+        "file": "desktop/scripts/build-sidecars.ts",
+        "sha256": "975e8ce730c01d1443b114c3a065e9cf1043a3619071bcd0af7191328a157bcf",
+        "line": 203,
+        "literal": "features: ['TRANSCRIPT_CLASSIFIER']"
+      },
+      {
+        "revision": "6b9d2aec1d9321a4dfff90d16b51f10c1ab984c8",
+        "file": "bin/claude-haha",
+        "sha256": "3061b5053d5bee7f08f607ff67a6413fc1791f3be139ddab62e014f75490f373",
+        "line": 22,
+        "literal": "--feature=TRANSCRIPT_CLASSIFIER"
+      }
+    ],
+    "otherReleaseProfiles": "must be verified separately; this matrix does not close full shipping classification"
+  },
+  "counts": {
+    "toolRegistrationExpressions": 49,
+    "bundledDefinitionModules": 19,
+    "cliBootstrapBranches": 16,
+    "additionalDesktopWorkers": 1,
+    "toolClassifications": {
+      "注册项": 13,
+      "平台条件": 2,
+      "运行条件": 8,
+      "内部用户条件": 4,
+      "本基线 feature 关闭": 14,
+      "宿主条件": 1,
+      "发行必需": 1,
+      "桌面条件": 1,
+      "配置条件": 2,
+      "测试专用": 1,
+      "专用消费者": 2
+    }
+  },
+  "toolEntries": [
+    {
+      "id": "RT01",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 206,
+        "expression": "AgentTool"
+      },
+      "classification": "注册项",
+      "condition": "原 base registry 包含该项；仍须移植 Tool.isEnabled、deny rules 与宿主消费者",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 206
+      },
+      "remainingWork": "已有部分工具入口：Agent；原缺失分支和完整默认消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT02",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 207,
+        "expression": "TaskOutputTool"
+      },
+      "classification": "注册项",
+      "condition": "原 base registry 包含该项；仍须移植 Tool.isEnabled、deny rules 与宿主消费者",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 207
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT03",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 208,
+        "expression": "...(isBashToolEnabled() ? [BashTool] : [])"
+      },
+      "classification": "平台条件",
+      "condition": "非 Windows 有 Bash；Windows 仅有 Git Bash 时有 Bash",
+      "conditionSource": {
+        "file": "src/utils/shell/shellToolUtils.ts",
+        "line": 14
+      },
+      "remainingWork": "已有部分工具入口：Bash；原缺失分支和完整默认消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT04",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 212,
+        "expression": "...(hasEmbeddedSearchTools() ? [] : [GlobTool, GrepTool])"
+      },
+      "classification": "运行条件",
+      "condition": "EMBEDDED_SEARCH_TOOLS 与 entrypoint 决定是否用嵌入搜索替代 Glob/Grep",
+      "conditionSource": {
+        "file": "src/utils/embeddedTools.ts",
+        "line": 16
+      },
+      "remainingWork": "已有部分工具入口：Glob/Grep；原缺失分支和完整默认消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT05",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 213,
+        "expression": "ExitPlanModeV2Tool"
+      },
+      "classification": "注册项",
+      "condition": "原 base registry 包含该项；仍须移植 Tool.isEnabled、deny rules 与宿主消费者",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 213
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT06",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 214,
+        "expression": "FileReadTool"
+      },
+      "classification": "注册项",
+      "condition": "原 base registry 包含该项；仍须移植 Tool.isEnabled、deny rules 与宿主消费者",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 214
+      },
+      "remainingWork": "已有部分工具入口：Read；原缺失分支和完整默认消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT07",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 215,
+        "expression": "FileEditTool"
+      },
+      "classification": "注册项",
+      "condition": "原 base registry 包含该项；仍须移植 Tool.isEnabled、deny rules 与宿主消费者",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 215
+      },
+      "remainingWork": "已有部分工具入口：Edit；原缺失分支和完整默认消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT08",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 216,
+        "expression": "FileWriteTool"
+      },
+      "classification": "注册项",
+      "condition": "原 base registry 包含该项；仍须移植 Tool.isEnabled、deny rules 与宿主消费者",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 216
+      },
+      "remainingWork": "已有部分工具入口：Write；原缺失分支和完整默认消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT09",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 217,
+        "expression": "NotebookEditTool"
+      },
+      "classification": "注册项",
+      "condition": "原 base registry 包含该项；仍须移植 Tool.isEnabled、deny rules 与宿主消费者",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 217
+      },
+      "remainingWork": "已有部分工具入口：NotebookEdit；原缺失分支和完整默认消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT10",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 218,
+        "expression": "WebFetchTool"
+      },
+      "classification": "注册项",
+      "condition": "原 base registry 包含该项；仍须移植 Tool.isEnabled、deny rules 与宿主消费者",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 218
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT11",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 219,
+        "expression": "TodoWriteTool"
+      },
+      "classification": "注册项",
+      "condition": "TodoWrite 的实际 isEnabled/宿主过滤还须保留；不能与 Task 工具互相替代",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 344
+      },
+      "remainingWork": "已有部分工具入口：TodoWrite；原缺失分支和完整默认消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT12",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 220,
+        "expression": "WebSearchTool"
+      },
+      "classification": "运行条件",
+      "condition": "模型/设置选择的 WebSearch provider 不为 disabled；原外部 provider/fallback 继续保留",
+      "conditionSource": {
+        "file": "src/tools/WebSearchTool/backend.ts",
+        "line": 105
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT13",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 221,
+        "expression": "TaskStopTool"
+      },
+      "classification": "注册项",
+      "condition": "原 base registry 包含该项；仍须移植 Tool.isEnabled、deny rules 与宿主消费者",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 221
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT14",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 222,
+        "expression": "AskUserQuestionTool"
+      },
+      "classification": "注册项",
+      "condition": "原 base registry 包含该项；仍须移植 Tool.isEnabled、deny rules 与宿主消费者",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 222
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT15",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 223,
+        "expression": "SkillTool"
+      },
+      "classification": "注册项",
+      "condition": "原 base registry 包含该项；仍须移植 Tool.isEnabled、deny rules 与宿主消费者",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 223
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT16",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 224,
+        "expression": "EnterPlanModeTool"
+      },
+      "classification": "注册项",
+      "condition": "原 base registry 包含该项；仍须移植 Tool.isEnabled、deny rules 与宿主消费者",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 224
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT17",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 225,
+        "expression": "...(process.env.USER_TYPE === 'ant' ? [ConfigTool] : [])"
+      },
+      "classification": "内部用户条件",
+      "condition": "USER_TYPE === ant；默认 external 不注册，保留原条件",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 225
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT18",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 226,
+        "expression": "...(process.env.USER_TYPE === 'ant' ? [TungstenTool] : [])"
+      },
+      "classification": "内部用户条件",
+      "condition": "USER_TYPE === ant；默认 external 不注册，保留原条件",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 226
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT19",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 227,
+        "expression": "...(SuggestBackgroundPRTool ? [SuggestBackgroundPRTool] : [])"
+      },
+      "classification": "内部用户条件",
+      "condition": "USER_TYPE === ant；默认 external 不注册，保留原条件",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 227
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT20",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 228,
+        "expression": "...(WebBrowserTool ? [WebBrowserTool] : [])"
+      },
+      "classification": "本基线 feature 关闭",
+      "condition": "WEB_BROWSER_TOOL；不能以运行时配置打开编译关闭分支",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 123
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT21",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 229,
+        "expression": "...(isTodoV2Enabled()\n      ? [TaskCreateTool, TaskGetTool, TaskUpdateTool, TaskListTool]\n      : [])"
+      },
+      "classification": "宿主条件",
+      "condition": "交互宿主启用；非交互仅 CLAUDE_CODE_ENABLE_TASKS truthy 时启用",
+      "conditionSource": {
+        "file": "src/utils/tasks.ts",
+        "line": 201
+      },
+      "remainingWork": "已有部分工具入口：TaskCreate/Get/Update/List；原缺失分支和完整默认消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT22",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 232,
+        "expression": "...(OverflowTestTool ? [OverflowTestTool] : [])"
+      },
+      "classification": "本基线 feature 关闭",
+      "condition": "OVERFLOW_TEST_TOOL；不能以运行时配置打开编译关闭分支",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 113
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT23",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 233,
+        "expression": "...(CtxInspectTool ? [CtxInspectTool] : [])"
+      },
+      "classification": "本基线 feature 关闭",
+      "condition": "CONTEXT_COLLAPSE；不能以运行时配置打开编译关闭分支",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 116
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT24",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 234,
+        "expression": "...(TerminalCaptureTool ? [TerminalCaptureTool] : [])"
+      },
+      "classification": "本基线 feature 关闭",
+      "condition": "TERMINAL_PANEL；不能以运行时配置打开编译关闭分支",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 119
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT25",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 235,
+        "expression": "...(isEnvTruthy(process.env.ENABLE_LSP_TOOL) ? [LSPTool] : [])"
+      },
+      "classification": "运行条件",
+      "condition": "ENABLE_LSP_TOOL truthy 且至少一个实际 LSP server 健康",
+      "conditionSource": {
+        "file": "src/services/lsp/manager.ts",
+        "line": 100
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT26",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 236,
+        "expression": "...(isWorktreeModeEnabled() ? [EnterWorktreeTool, ExitWorktreeTool] : [])"
+      },
+      "classification": "发行必需",
+      "condition": "Worktree gate 恒为 true；不是内部用户能力",
+      "conditionSource": {
+        "file": "src/utils/worktreeModeEnabled.ts",
+        "line": 9
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT27",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 237,
+        "expression": "getSendMessageTool()"
+      },
+      "classification": "运行条件",
+      "condition": "外部用户 opt-in + killswitch；General 显式关闭优先",
+      "conditionSource": {
+        "file": "src/utils/agentSwarmsEnabled.ts",
+        "line": 31
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT28",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 238,
+        "expression": "...sessionCollaborationTools"
+      },
+      "classification": "桌面条件",
+      "condition": "合法 loopback endpoint、独立 token 与 session ID 同时存在",
+      "conditionSource": {
+        "file": "src/tools/SessionCollaborationTool/bridge.ts",
+        "line": 1
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT29",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 239,
+        "expression": "...(ListPeersTool ? [ListPeersTool] : [])"
+      },
+      "classification": "本基线 feature 关闭",
+      "condition": "UDS_INBOX；不能以运行时配置打开编译关闭分支",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 132
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT30",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 240,
+        "expression": "...(isAgentSwarmsEnabled()\n      ? [getTeamCreateTool(), getTeamPlanTool(), getTeamDeleteTool()]\n      : [])"
+      },
+      "classification": "运行条件",
+      "condition": "外部用户 Teams opt-in + killswitch；与 SendMessage 共用同一 gate",
+      "conditionSource": {
+        "file": "src/utils/agentSwarmsEnabled.ts",
+        "line": 31
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT31",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 243,
+        "expression": "...(VerifyPlanExecutionTool ? [VerifyPlanExecutionTool] : [])"
+      },
+      "classification": "运行条件",
+      "condition": "CLAUDE_CODE_VERIFY_PLAN 字面值 true；不是编译 feature gate",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 106
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT32",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 244,
+        "expression": "...(process.env.USER_TYPE === 'ant' && REPLTool ? [REPLTool] : [])"
+      },
+      "classification": "内部用户条件",
+      "condition": "USER_TYPE === ant；默认 external 不注册，保留原条件",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 244
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT33",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 245,
+        "expression": "getWorkflowTool()"
+      },
+      "classification": "运行条件",
+      "condition": "默认可用；env、managed disableWorkflows、用户 enableWorkflows/disableWorkflows 控制",
+      "conditionSource": {
+        "file": "src/utils/workflows/enabled.ts",
+        "line": 47
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT34",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 246,
+        "expression": "...(SleepTool ? [SleepTool] : [])"
+      },
+      "classification": "本基线 feature 关闭",
+      "condition": "PROACTIVE OR KAIROS；不能以运行时配置打开编译关闭分支",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 28
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT35",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 247,
+        "expression": "...cronTools"
+      },
+      "classification": "本基线 feature 关闭",
+      "condition": "AGENT_TRIGGERS；不能以运行时配置打开编译关闭分支",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 31
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT36",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 248,
+        "expression": "...(RemoteTriggerTool ? [RemoteTriggerTool] : [])"
+      },
+      "classification": "本基线 feature 关闭",
+      "condition": "AGENT_TRIGGERS_REMOTE；不能以运行时配置打开编译关闭分支",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 39
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT37",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 249,
+        "expression": "...(MonitorTool ? [MonitorTool] : [])"
+      },
+      "classification": "本基线 feature 关闭",
+      "condition": "MONITOR_TOOL；不能以运行时配置打开编译关闭分支",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 42
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT38",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 250,
+        "expression": "BriefTool"
+      },
+      "classification": "本基线 feature 关闭",
+      "condition": "KAIROS OR KAIROS_BRIEF；不能以运行时配置打开编译关闭分支",
+      "conditionSource": {
+        "file": "src/tools/BriefTool/BriefTool.ts",
+        "line": 126
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT39",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 251,
+        "expression": "ImageGenTool"
+      },
+      "classification": "配置条件",
+      "condition": "实际 image provider runtime config 非空，保留 OAuth/API key 分支",
+      "conditionSource": {
+        "file": "src/services/imageGeneration/config.ts",
+        "line": 30
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT40",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 252,
+        "expression": "ImageEditTool"
+      },
+      "classification": "配置条件",
+      "condition": "与 ImageGen 共用实际 image provider runtime config",
+      "conditionSource": {
+        "file": "src/services/imageGeneration/config.ts",
+        "line": 30
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT41",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 253,
+        "expression": "...(SendUserFileTool ? [SendUserFileTool] : [])"
+      },
+      "classification": "本基线 feature 关闭",
+      "condition": "KAIROS；不能以运行时配置打开编译关闭分支",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 28
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT42",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 254,
+        "expression": "...(PushNotificationTool ? [PushNotificationTool] : [])"
+      },
+      "classification": "本基线 feature 关闭",
+      "condition": "KAIROS OR KAIROS_PUSH_NOTIFICATION；不能以运行时配置打开编译关闭分支",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 49
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT43",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 255,
+        "expression": "...(SubscribePRTool ? [SubscribePRTool] : [])"
+      },
+      "classification": "本基线 feature 关闭",
+      "condition": "KAIROS_GITHUB_WEBHOOKS；不能以运行时配置打开编译关闭分支",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 53
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT44",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 256,
+        "expression": "...(powerShellTool ? [powerShellTool] : [])"
+      },
+      "classification": "平台条件",
+      "condition": "仅 Windows；显式 false 关闭，外部用户无 Git Bash 时默认回退 PowerShell",
+      "conditionSource": {
+        "file": "src/utils/shell/shellToolUtils.ts",
+        "line": 14
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT45",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 257,
+        "expression": "...(SnipTool ? [SnipTool] : [])"
+      },
+      "classification": "本基线 feature 关闭",
+      "condition": "HISTORY_SNIP；不能以运行时配置打开编译关闭分支",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 129
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT46",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 258,
+        "expression": "...(process.env.NODE_ENV === 'test' ? [TestingPermissionTool] : [])"
+      },
+      "classification": "测试专用",
+      "condition": "NODE_ENV === test；不得在生产默认注册",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 258
+      },
+      "remainingWork": "保持同基线不可用条件；其他原发行 profile/内部需求待核定，不从原索引删除",
+      "closed": false
+    },
+    {
+      "id": "RT47",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 259,
+        "expression": "ListMcpResourcesTool"
+      },
+      "classification": "专用消费者",
+      "condition": "base registry 有定义，但 getTools 特殊排除；资源服务另行接入，不能直接塞入默认工具",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 320
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT48",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 260,
+        "expression": "ReadMcpResourceTool"
+      },
+      "classification": "专用消费者",
+      "condition": "与 ListMcpResources 相同，核对原资源消费者",
+      "conditionSource": {
+        "file": "src/tools.ts",
+        "line": 320
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    },
+    {
+      "id": "RT49",
+      "source": {
+        "file": "src/tools.ts",
+        "line": 263,
+        "expression": "...(isToolSearchEnabledOptimistic() ? [ToolSearchTool] : [])"
+      },
+      "classification": "运行条件",
+      "condition": "ENABLE_TOOL_SEARCH mode、provider/base URL 乐观判断与实际模型/阈值检查",
+      "conditionSource": {
+        "file": "src/utils/toolSearch.ts",
+        "line": 270
+      },
+      "remainingWork": "当前普通 Go builtin registry 未含该项；对应业务/消费者仍待做",
+      "closed": false
+    }
+  ],
+  "bundledSkills": [
+    {
+      "file": "src/skills/bundled/remember.ts",
+      "names": [
+        "remember"
+      ],
+      "classification": "内部用户条件",
+      "condition": "注册函数内 USER_TYPE !== ant 时直接 return",
+      "sourcePlaceholder": false,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/remember.ts",
+        "line": 1,
+        "sha256": "25e7d7aa7bdc0907d47f4cbb81d38aab277cb4a4a373f9fc75df67367f89698e"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    },
+    {
+      "file": "src/skills/bundled/loremIpsum.ts",
+      "names": [
+        "lorem-ipsum"
+      ],
+      "classification": "内部用户条件",
+      "condition": "注册函数内 USER_TYPE !== ant 时直接 return",
+      "sourcePlaceholder": false,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/loremIpsum.ts",
+        "line": 1,
+        "sha256": "41d75b099b28f85bbfbb7f4c88457ca6c1b920bed198f1ce70055fba8b5f78d6"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    },
+    {
+      "file": "src/skills/bundled/verify.ts",
+      "names": [
+        "verify"
+      ],
+      "classification": "内部用户条件",
+      "condition": "注册函数内 USER_TYPE !== ant 时直接 return",
+      "sourcePlaceholder": false,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/verify.ts",
+        "line": 1,
+        "sha256": "8f18167c99b4cc91539ccea953696276c5df49af70e0b62e542be0fe72b35a78"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    },
+    {
+      "file": "src/skills/bundled/loop.ts",
+      "names": [
+        "loop"
+      ],
+      "classification": "本基线 feature 关闭",
+      "condition": "AGENT_TRIGGERS",
+      "sourcePlaceholder": false,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/loop.ts",
+        "line": 1,
+        "sha256": "76774d64cacf1f9c5465aa9f0682d1966f79608ae707ab80149784633dace3e0"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    },
+    {
+      "file": "src/skills/bundled/claudeApi.ts",
+      "names": [
+        "claude-api"
+      ],
+      "classification": "本基线 feature 关闭",
+      "condition": "BUILDING_CLAUDE_APPS",
+      "sourcePlaceholder": false,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/claudeApi.ts",
+        "line": 1,
+        "sha256": "31ad5270631761564ee6b30542016585baadef6579e834cdb05ca8051a2b7feb"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    },
+    {
+      "file": "src/skills/bundled/debug.ts",
+      "names": [
+        "debug"
+      ],
+      "classification": "发行注册",
+      "condition": "initBundledSkills 注册；仍须移植实际 Prompt/执行消费者",
+      "sourcePlaceholder": false,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/debug.ts",
+        "line": 1,
+        "sha256": "7af2331e37a66fba2e87bcdd8e2bbb2bdc052b4afc9bb8b281ae979c850a37f4"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    },
+    {
+      "file": "src/skills/bundled/stuck.ts",
+      "names": [
+        "stuck"
+      ],
+      "classification": "内部用户条件",
+      "condition": "注册函数内 USER_TYPE !== ant 时直接 return",
+      "sourcePlaceholder": false,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/stuck.ts",
+        "line": 1,
+        "sha256": "9083fb39d7e6b2ebbdffbdd7e5f88b17c72252ef165f5c9f04c85720255ccd65"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    },
+    {
+      "file": "src/skills/bundled/scheduleRemoteAgents.ts",
+      "names": [
+        "schedule"
+      ],
+      "classification": "本基线 feature 关闭",
+      "condition": "AGENT_TRIGGERS_REMOTE",
+      "sourcePlaceholder": false,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/scheduleRemoteAgents.ts",
+        "line": 1,
+        "sha256": "130d3f1f34fbe1c6536b145930ab4383ff5dde17fb7918d8a4fcc3a9bdfb7e58"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    },
+    {
+      "file": "src/skills/bundled/computerUse.ts",
+      "names": [
+        "computer-use"
+      ],
+      "classification": "平台/配置条件",
+      "condition": "macOS/Windows、kill switch、stored enabled/default 与 3 秒缓存失效",
+      "sourcePlaceholder": false,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/computerUse.ts",
+        "line": 1,
+        "sha256": "b6fae41e6498237e625589bf0d3debc6ad2e0283bb59da02e3c940d8c1d63584"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    },
+    {
+      "file": "src/skills/bundled/dream.ts",
+      "names": [],
+      "classification": "本基线 feature 关闭",
+      "condition": "KAIROS OR KAIROS_DREAM",
+      "sourcePlaceholder": true,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/dream.ts",
+        "line": 1,
+        "sha256": "f39776e5d683466e83bf8477642045f44045122cc9108b21ccf956f76bb4fcb5"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    },
+    {
+      "file": "src/skills/bundled/batch.ts",
+      "names": [
+        "batch"
+      ],
+      "classification": "发行注册",
+      "condition": "initBundledSkills 注册；仍须移植实际 Prompt/执行消费者",
+      "sourcePlaceholder": false,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/batch.ts",
+        "line": 1,
+        "sha256": "d8124772cf84c9c01b8322092dca5ae362a3e20a9bc25a2862abe7c1175e7983"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    },
+    {
+      "file": "src/skills/bundled/updateConfig.ts",
+      "names": [
+        "update-config"
+      ],
+      "classification": "发行注册",
+      "condition": "initBundledSkills 注册；仍须移植实际 Prompt/执行消费者",
+      "sourcePlaceholder": false,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/updateConfig.ts",
+        "line": 1,
+        "sha256": "a4d496d694b3fa4009f82b27dd2eb35a8dcd2c9d8329e1bc1298bfb5ab5f0008"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    },
+    {
+      "file": "src/skills/bundled/hunter.ts",
+      "names": [],
+      "classification": "本基线 feature 关闭",
+      "condition": "REVIEW_ARTIFACT",
+      "sourcePlaceholder": true,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/hunter.ts",
+        "line": 1,
+        "sha256": "f39776e5d683466e83bf8477642045f44045122cc9108b21ccf956f76bb4fcb5"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    },
+    {
+      "file": "src/skills/bundled/keybindings.ts",
+      "names": [
+        "keybindings-help"
+      ],
+      "classification": "运行条件",
+      "condition": "注册后 isKeybindingCustomizationEnabled；userInvocable false 不代表模型侧不用迁移",
+      "sourcePlaceholder": false,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/keybindings.ts",
+        "line": 1,
+        "sha256": "c0ff99ea747de51c2a90c3486ce7aaef233e7970c2eded00fe49d87972e65bfa"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    },
+    {
+      "file": "src/skills/bundled/imagegen.ts",
+      "names": [
+        "imagegen"
+      ],
+      "classification": "配置条件",
+      "condition": "所选会话的 image provider env；Server mentions 必须用目标 provider env",
+      "sourcePlaceholder": false,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/imagegen.ts",
+        "line": 1,
+        "sha256": "14490685ff6568489e3b1e6830ee7f85b01b492e652d6c9a8829923e48d3457b"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    },
+    {
+      "file": "src/skills/bundled/claudeInChrome.ts",
+      "names": [
+        "claude-in-chrome"
+      ],
+      "classification": "宿主/配置条件",
+      "condition": "交互宿主、已安装扩展及 ant/发布 gate；初始化判定缓存",
+      "sourcePlaceholder": false,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/claudeInChrome.ts",
+        "line": 1,
+        "sha256": "60634e7a161be23f93846d60953adcc7f6f6a405a2ec7cbdb6d4ae75b71b73a2"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    },
+    {
+      "file": "src/skills/bundled/skillify.ts",
+      "names": [
+        "skillify"
+      ],
+      "classification": "内部用户条件",
+      "condition": "注册函数内 USER_TYPE !== ant 时直接 return",
+      "sourcePlaceholder": false,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/skillify.ts",
+        "line": 1,
+        "sha256": "b94bfabd47e177da752793059e5a9c9e8dc035caaf3f61452c0e8b8e1d63329e"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    },
+    {
+      "file": "src/skills/bundled/runSkillGenerator.ts",
+      "names": [],
+      "classification": "本基线 feature 关闭",
+      "condition": "RUN_SKILL_GENERATOR",
+      "sourcePlaceholder": true,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/runSkillGenerator.ts",
+        "line": 1,
+        "sha256": "f39776e5d683466e83bf8477642045f44045122cc9108b21ccf956f76bb4fcb5"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    },
+    {
+      "file": "src/skills/bundled/simplify.ts",
+      "names": [
+        "simplify"
+      ],
+      "classification": "发行注册",
+      "condition": "initBundledSkills 注册；仍须移植实际 Prompt/执行消费者",
+      "sourcePlaceholder": false,
+      "sourceDefinition": {
+        "file": "src/skills/bundled/simplify.ts",
+        "line": 1,
+        "sha256": "ff4a670c3814776594231f4e85b796a81e20aba9168d165dcf4ee87f3464463e"
+      },
+      "registrationSource": {
+        "file": "src/skills/bundled/index.ts",
+        "line": 1,
+        "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+      },
+      "remainingWork": "原注册、Prompt、文件、参数、可用性与实际消费者；本基线关闭项保留在条件索引",
+      "closed": false
+    }
+  ],
+  "cliBootstrap": [
+    {
+      "id": "B001",
+      "tokens": [
+        "--computer-use-repl-worker"
+      ],
+      "predicate": "args[0] === \"--computer-use-repl-worker\"",
+      "buildConditionSatisfied": true,
+      "source": {
+        "file": "src/entrypoints/cli.tsx",
+        "line": 37,
+        "sha256": "85f2e4b7fb6e4f1c74805ac480096cdb52842a929a0235b68f0e50be54a66944"
+      },
+      "targets": [
+        {
+          "file": "src/utils/computerUse/replWorker.ts",
+          "line": 1,
+          "sha256": "8c3a5fbc14433fd4fbac584f40aed2c758bf8beb71e42f1419326c75c55d0eb8"
+        }
+      ],
+      "goStatus": "shipping-gates-native-worker-runtime-port-required",
+      "workPackages": [
+        "D19",
+        "D32",
+        "D33",
+        "D35"
+      ],
+      "closed": false,
+      "remainingWork": "迁移独立 Computer Use REPL worker 分派与 kernel 协议；隔离普通 CLI 配置、凭据和模式初始化，补取消/退出/清理"
+    },
+    {
+      "id": "B002",
+      "tokens": [
+        "--version",
+        "-V",
+        "-v"
+      ],
+      "predicate": "args.length === 1 && (args[0] === \"--version\" || args[0] === \"-v\" || args[0] === \"-V\")",
+      "buildConditionSatisfied": true,
+      "source": {
+        "file": "src/entrypoints/cli.tsx",
+        "line": 31,
+        "sha256": "85f2e4b7fb6e4f1c74805ac480096cdb52842a929a0235b68f0e50be54a66944"
+      },
+      "targets": [],
+      "goStatus": "single-argument-version-fast-route-present",
+      "workPackages": [
+        "D32",
+        "D33",
+        "D35"
+      ],
+      "closed": false,
+      "remainingWork": "保留单参数 version 快速入口，核对三个别名、输出和退出；已有入口不关闭其他 CLI 初始化"
+    },
+    {
+      "id": "B003",
+      "tokens": [
+        "--dump-system-prompt"
+      ],
+      "predicate": "feature(\"DUMP_SYSTEM_PROMPT\") && args[0] === \"--dump-system-prompt\"",
+      "buildConditionSatisfied": false,
+      "source": {
+        "file": "src/entrypoints/cli.tsx",
+        "line": 57,
+        "sha256": "85f2e4b7fb6e4f1c74805ac480096cdb52842a929a0235b68f0e50be54a66944"
+      },
+      "targets": [
+        {
+          "file": "src/constants/prompts.ts",
+          "line": 1,
+          "sha256": "1e6c50bd162e27048c6438882e8e82adcdd0d6d71e7d7233166f48cc042a3ba8"
+        },
+        {
+          "file": "src/utils/config.ts",
+          "line": 1,
+          "sha256": "94b8a31de7cd2694406462c64051216680b3fadb554c80d156f945bd7cac8513"
+        },
+        {
+          "file": "src/utils/model/model.ts",
+          "line": 1,
+          "sha256": "ed752e318af199eac8c283e3c7893d2d57f3fb4e10c2ac79a9c7b17f1a259bbb"
+        }
+      ],
+      "goStatus": "shipping-gates-native-worker-runtime-port-required",
+      "workPackages": [
+        "D32",
+        "D33",
+        "D35"
+      ],
+      "closed": false,
+      "remainingWork": "原基线 DUMP_SYSTEM_PROMPT 关闭；保留 gate，其他发行启用时迁移实际 Prompt 生产器与输出"
+    },
+    {
+      "id": "B004",
+      "tokens": [
+        "--claude-in-chrome-mcp"
+      ],
+      "predicate": "process.argv[2] === \"--claude-in-chrome-mcp\"",
+      "buildConditionSatisfied": true,
+      "source": {
+        "file": "src/entrypoints/cli.tsx",
+        "line": 79,
+        "sha256": "85f2e4b7fb6e4f1c74805ac480096cdb52842a929a0235b68f0e50be54a66944"
+      },
+      "targets": [
+        {
+          "file": "src/utils/claudeInChrome/mcpServer.ts",
+          "line": 1,
+          "sha256": "1426ad9ee1e5889d940d357a26d5b6ddf1f08fdcfa98cff68d8042327369a5f1"
+        }
+      ],
+      "goStatus": "shipping-gates-native-worker-runtime-port-required",
+      "workPackages": [
+        "D32",
+        "D33",
+        "D35"
+      ],
+      "closed": false,
+      "remainingWork": "接 Chrome MCP worker 的实际 server/工具/传输、配置和生命周期；配套浏览器扩展与权限链"
+    },
+    {
+      "id": "B005",
+      "tokens": [
+        "--chrome-native-host"
+      ],
+      "predicate": "process.argv[2] === \"--chrome-native-host\"",
+      "buildConditionSatisfied": true,
+      "source": {
+        "file": "src/entrypoints/cli.tsx",
+        "line": 86,
+        "sha256": "85f2e4b7fb6e4f1c74805ac480096cdb52842a929a0235b68f0e50be54a66944"
+      },
+      "targets": [
+        {
+          "file": "src/utils/claudeInChrome/chromeNativeHost.ts",
+          "line": 1,
+          "sha256": "08f41ac9883235f602c40c85bd7b1767d71b4cde6e61453f7abc7883213f13d1"
+        }
+      ],
+      "goStatus": "shipping-gates-native-worker-runtime-port-required",
+      "workPackages": [
+        "D32",
+        "D33",
+        "D35"
+      ],
+      "closed": false,
+      "remainingWork": "接 Chrome native host 消息协议、扩展发现/安装注册、管道/子进程、平台路径与退出清理"
+    },
+    {
+      "id": "B006",
+      "tokens": [
+        "--computer-use-mcp"
+      ],
+      "predicate": "process.argv[2] === \"--computer-use-mcp\"",
+      "buildConditionSatisfied": true,
+      "source": {
+        "file": "src/entrypoints/cli.tsx",
+        "line": 93,
+        "sha256": "85f2e4b7fb6e4f1c74805ac480096cdb52842a929a0235b68f0e50be54a66944"
+      },
+      "targets": [
+        {
+          "file": "src/utils/computerUse/mcpServer.ts",
+          "line": 1,
+          "sha256": "a187ea20eb77759d32644325896ed62650f3b25b6b2cdcf542e5091ff29b6ab3"
+        }
+      ],
+      "goStatus": "shipping-gates-native-worker-runtime-port-required",
+      "workPackages": [
+        "D19",
+        "D32",
+        "D33",
+        "D35"
+      ],
+      "closed": false,
+      "remainingWork": "接独立 Computer Use MCP 入口、OS/helper/权限、实际工具与资源清理，保持平台条件"
+    },
+    {
+      "id": "B007",
+      "tokens": [
+        "--daemon-worker"
+      ],
+      "predicate": "feature(\"DAEMON\") && args[0] === \"--daemon-worker\"",
+      "buildConditionSatisfied": false,
+      "source": {
+        "file": "src/entrypoints/cli.tsx",
+        "line": 102,
+        "sha256": "85f2e4b7fb6e4f1c74805ac480096cdb52842a929a0235b68f0e50be54a66944"
+      },
+      "targets": [
+        {
+          "file": "src/daemon/workerRegistry.ts",
+          "line": 1,
+          "sha256": "f39776e5d683466e83bf8477642045f44045122cc9108b21ccf956f76bb4fcb5"
+        }
+      ],
+      "goStatus": "shipping-gates-native-worker-runtime-port-required",
+      "workPackages": [
+        "D32",
+        "D33",
+        "D35"
+      ],
+      "closed": false,
+      "remainingWork": "原基线 DAEMON 关闭；保留 gate 与 Source placeholder 状态，其他发行实现按证据核定"
+    },
+    {
+      "id": "B008",
+      "tokens": [
+        "bridge",
+        "rc",
+        "remote",
+        "remote-control",
+        "sync"
+      ],
+      "predicate": "feature(\"BRIDGE_MODE\") && (args[0] === \"remote-control\" || args[0] === \"rc\" || args[0] === \"remote\" || args[0] === \"sync\" || args[0] === \"bridge\")",
+      "buildConditionSatisfied": false,
+      "source": {
+        "file": "src/entrypoints/cli.tsx",
+        "line": 119,
+        "sha256": "85f2e4b7fb6e4f1c74805ac480096cdb52842a929a0235b68f0e50be54a66944"
+      },
+      "targets": [
+        {
+          "file": "src/bridge/bridgeEnabled.ts",
+          "line": 1,
+          "sha256": "214d6b6d23da9f40b2b4e3b859e8ecad743557a9e4a3cf61489eb306fd1a5d61"
+        },
+        {
+          "file": "src/bridge/bridgeMain.ts",
+          "line": 1,
+          "sha256": "e6a597feb9105074168196a1b0bf64caec3bb4a0abb29d0506ef922047b7bed1"
+        },
+        {
+          "file": "src/bridge/types.ts",
+          "line": 1,
+          "sha256": "7c22b08956484f6bd5641ed4d89e443c04923827cbe21c000798aa9e2527a0fe"
+        },
+        {
+          "file": "src/services/policyLimits/index.ts",
+          "line": 1,
+          "sha256": "52b65fbe47f88374798cac1806ef694b1a0c975ea33883d2221e542a20fbdee6"
+        },
+        {
+          "file": "src/utils/auth.ts",
+          "line": 1,
+          "sha256": "e192781597dac7cace2cd7bfe2227cbc5024b867272ba2091b0af245897d1330"
+        },
+        {
+          "file": "src/utils/config.ts",
+          "line": 1,
+          "sha256": "94b8a31de7cd2694406462c64051216680b3fadb554c80d156f945bd7cac8513"
+        },
+        {
+          "file": "src/utils/process.ts",
+          "line": 1,
+          "sha256": "bee4e97634c7c54cbd1edb4d47532a31db9fb5c95cf38c679f61875c87e2c86c"
+        }
+      ],
+      "goStatus": "shipping-gates-native-worker-runtime-port-required",
+      "workPackages": [
+        "D32",
+        "D33",
+        "D35"
+      ],
+      "closed": false,
+      "remainingWork": "原基线 BRIDGE_MODE 关闭；保留入口/别名条件，其他发行的真实 bridge 认证和生命周期另行核定"
+    },
+    {
+      "id": "B009",
+      "tokens": [
+        "daemon"
+      ],
+      "predicate": "feature(\"DAEMON\") && args[0] === \"daemon\"",
+      "buildConditionSatisfied": false,
+      "source": {
+        "file": "src/entrypoints/cli.tsx",
+        "line": 102,
+        "sha256": "85f2e4b7fb6e4f1c74805ac480096cdb52842a929a0235b68f0e50be54a66944"
+      },
+      "targets": [
+        {
+          "file": "src/daemon/main.ts",
+          "line": 1,
+          "sha256": "f39776e5d683466e83bf8477642045f44045122cc9108b21ccf956f76bb4fcb5"
+        },
+        {
+          "file": "src/utils/config.ts",
+          "line": 1,
+          "sha256": "94b8a31de7cd2694406462c64051216680b3fadb554c80d156f945bd7cac8513"
+        },
+        {
+          "file": "src/utils/sinks.ts",
+          "line": 1,
+          "sha256": "597dfc0a8da20e42da435cbf0f16c1ea3ddc85e98caf6c911626e7b6cab21be5"
+        }
+      ],
+      "goStatus": "shipping-gates-native-worker-runtime-port-required",
+      "workPackages": [
+        "D32",
+        "D33",
+        "D35"
+      ],
+      "closed": false,
+      "remainingWork": "原基线 DAEMON 关闭；不凭 Source placeholder 创建新业务，原其他发行范围继续核定"
+    },
+    {
+      "id": "B010",
+      "tokens": [
+        "--background",
+        "--bg",
+        "attach",
+        "kill",
+        "logs",
+        "ps"
+      ],
+      "predicate": "feature(\"BG_SESSIONS\") && (args[0] === \"ps\" || args[0] === \"logs\" || args[0] === \"attach\" || args[0] === \"kill\" || args.includes(\"--bg\") || args.includes(\"--background\"))",
+      "buildConditionSatisfied": false,
+      "source": {
+        "file": "src/entrypoints/cli.tsx",
+        "line": 189,
+        "sha256": "85f2e4b7fb6e4f1c74805ac480096cdb52842a929a0235b68f0e50be54a66944"
+      },
+      "targets": [
+        {
+          "file": "src/cli/bg.ts",
+          "line": 1,
+          "sha256": "f39776e5d683466e83bf8477642045f44045122cc9108b21ccf956f76bb4fcb5"
+        },
+        {
+          "file": "src/utils/config.ts",
+          "line": 1,
+          "sha256": "94b8a31de7cd2694406462c64051216680b3fadb554c80d156f945bd7cac8513"
+        }
+      ],
+      "goStatus": "shipping-gates-native-worker-runtime-port-required",
+      "workPackages": [
+        "D32",
+        "D33",
+        "D35"
+      ],
+      "closed": false,
+      "remainingWork": "原基线 BG_SESSIONS 关闭；保留声明和条件，不能与原可用的后台 Bash/Agent 工具混为一项"
+    },
+    {
+      "id": "B011",
+      "tokens": [
+        "list",
+        "new",
+        "reply"
+      ],
+      "predicate": "feature(\"TEMPLATES\") && (args[0] === \"new\" || args[0] === \"list\" || args[0] === \"reply\")",
+      "buildConditionSatisfied": false,
+      "source": {
+        "file": "src/entrypoints/cli.tsx",
+        "line": 219,
+        "sha256": "85f2e4b7fb6e4f1c74805ac480096cdb52842a929a0235b68f0e50be54a66944"
+      },
+      "targets": [
+        {
+          "file": "src/cli/handlers/templateJobs.ts",
+          "line": 1,
+          "sha256": "f39776e5d683466e83bf8477642045f44045122cc9108b21ccf956f76bb4fcb5"
+        }
+      ],
+      "goStatus": "shipping-gates-native-worker-runtime-port-required",
+      "workPackages": [
+        "D32",
+        "D33",
+        "D35"
+      ],
+      "closed": false,
+      "remainingWork": "原基线 TEMPLATES 关闭；保留命令条件和 Source placeholder，其他发行内容继续核定"
+    },
+    {
+      "id": "B012",
+      "tokens": [
+        "environment-runner"
+      ],
+      "predicate": "feature(\"BYOC_ENVIRONMENT_RUNNER\") && args[0] === \"environment-runner\"",
+      "buildConditionSatisfied": false,
+      "source": {
+        "file": "src/entrypoints/cli.tsx",
+        "line": 231,
+        "sha256": "85f2e4b7fb6e4f1c74805ac480096cdb52842a929a0235b68f0e50be54a66944"
+      },
+      "targets": [
+        {
+          "file": "src/environment-runner/main.ts",
+          "line": 1,
+          "sha256": "f39776e5d683466e83bf8477642045f44045122cc9108b21ccf956f76bb4fcb5"
+        }
+      ],
+      "goStatus": "shipping-gates-native-worker-runtime-port-required",
+      "workPackages": [
+        "D32",
+        "D33",
+        "D35"
+      ],
+      "closed": false,
+      "remainingWork": "原基线 BYOC_ENVIRONMENT_RUNNER 关闭；保留入口及 Source placeholder，其他发行继续核定"
+    },
+    {
+      "id": "B013",
+      "tokens": [
+        "self-hosted-runner"
+      ],
+      "predicate": "feature(\"SELF_HOSTED_RUNNER\") && args[0] === \"self-hosted-runner\"",
+      "buildConditionSatisfied": false,
+      "source": {
+        "file": "src/entrypoints/cli.tsx",
+        "line": 242,
+        "sha256": "85f2e4b7fb6e4f1c74805ac480096cdb52842a929a0235b68f0e50be54a66944"
+      },
+      "targets": [
+        {
+          "file": "src/self-hosted-runner/main.ts",
+          "line": 1,
+          "sha256": "f39776e5d683466e83bf8477642045f44045122cc9108b21ccf956f76bb4fcb5"
+        }
+      ],
+      "goStatus": "shipping-gates-native-worker-runtime-port-required",
+      "workPackages": [
+        "D32",
+        "D33",
+        "D35"
+      ],
+      "closed": false,
+      "remainingWork": "原基线 SELF_HOSTED_RUNNER 关闭；保留入口及 Source placeholder，其他发行继续核定"
+    },
+    {
+      "id": "B014",
+      "tokens": [
+        "--tmux",
+        "--tmux=classic",
+        "--worktree",
+        "--worktree=",
+        "-w"
+      ],
+      "predicate": "(args.includes(\"--tmux\") || args.includes(\"--tmux=classic\")) && (args.includes(\"-w\") || args.includes(\"--worktree\") || args.some((a) => a.startsWith(\"--worktree=\")))",
+      "buildConditionSatisfied": true,
+      "source": {
+        "file": "src/entrypoints/cli.tsx",
+        "line": 254,
+        "sha256": "85f2e4b7fb6e4f1c74805ac480096cdb52842a929a0235b68f0e50be54a66944"
+      },
+      "targets": [
+        {
+          "file": "src/utils/config.ts",
+          "line": 1,
+          "sha256": "94b8a31de7cd2694406462c64051216680b3fadb554c80d156f945bd7cac8513"
+        },
+        {
+          "file": "src/utils/process.ts",
+          "line": 1,
+          "sha256": "bee4e97634c7c54cbd1edb4d47532a31db9fb5c95cf38c679f61875c87e2c86c"
+        },
+        {
+          "file": "src/utils/worktree.ts",
+          "line": 1,
+          "sha256": "03b6b624c00504067986c1e12f3e11f1511ccbdcdfe962bd59a77b7b61bb27f3"
+        },
+        {
+          "file": "src/utils/worktreeModeEnabled.ts",
+          "line": 1,
+          "sha256": "31782c2ae3b2e1bb52b6a839b44f3296bd772de5efe6d2f2e15b5a28dbdea210"
+        }
+      ],
+      "goStatus": "shipping-gates-native-worker-runtime-port-required",
+      "workPackages": [
+        "D32",
+        "D33",
+        "D35"
+      ],
+      "closed": false,
+      "remainingWork": "迁移 tmux/worktree 参数组合、仓库/工作树准备、实际进程启动、工作目录、信号/错误及清理"
+    },
+    {
+      "id": "B015",
+      "tokens": [
+        "--update",
+        "--upgrade"
+      ],
+      "predicate": "args.length === 1 && (args[0] === \"--update\" || args[0] === \"--upgrade\")",
+      "buildConditionSatisfied": true,
+      "source": {
+        "file": "src/entrypoints/cli.tsx",
+        "line": 284,
+        "sha256": "85f2e4b7fb6e4f1c74805ac480096cdb52842a929a0235b68f0e50be54a66944"
+      },
+      "targets": [],
+      "goStatus": "shipping-gates-native-worker-runtime-port-required",
+      "workPackages": [
+        "D32",
+        "D33",
+        "D35"
+      ],
+      "closed": false,
+      "remainingWork": "迁移 update/upgrade 快速入口至真实更新器；保留下载/校验/安装/失败/回退与退出语义"
+    },
+    {
+      "id": "B016",
+      "tokens": [
+        "--bare"
+      ],
+      "predicate": "args.includes(\"--bare\")",
+      "buildConditionSatisfied": true,
+      "source": {
+        "file": "src/entrypoints/cli.tsx",
+        "line": 288,
+        "sha256": "85f2e4b7fb6e4f1c74805ac480096cdb52842a929a0235b68f0e50be54a66944"
+      },
+      "targets": [],
+      "goStatus": "bare-root-option-rejected",
+      "workPackages": [
+        "D32",
+        "D33",
+        "D35"
+      ],
+      "closed": false,
+      "remainingWork": "迁移 bare 的初始化与实际消费者：来源、Prompt、默认 shell/Read/Edit、扩展/记忆和权限过滤"
+    }
+  ],
+  "additionalDesktopWorkers": [
+    {
+      "id": "DS-W01",
+      "tokens": [
+        "--voice-worker"
+      ],
+      "source": {
+        "file": "desktop/sidecars/claude-sidecar.ts",
+        "line": 36
+      },
+      "producer": {
+        "file": "src/server/services/voice/sensevoice/recognizer.ts",
+        "line": 66
+      },
+      "worker": {
+        "file": "src/server/services/voice/sensevoice/worker.ts",
+        "line": 1
+      },
+      "protocol": "Private environment config/token; authenticated loopback POST /transcribe; ready/exit lifecycle; serial native inference",
+      "goStatus": "No dedicated worker dispatch in backend/cmd/claude-haha/main.go; shared server voice API also unimplemented",
+      "workPackages": [
+        "D20",
+        "D33",
+        "D35"
+      ],
+      "remainingWork": [
+        "同一发行包中的 worker launcher 与平台 runtime 定位",
+        "模型/VAD/语言/WAV/大小限制与错误契约",
+        "认证、ready 超时、取消、空闲释放、EOF/退出、stderr/进程清理",
+        "原配置/资源管理和实际转写消费者；平台 SDK helper 不承担旧 Server/Harness 业务"
+      ],
+      "closed": false
+    }
+  ],
+  "sourceSnapshot": [
+    {
+      "file": "backend/cmd/claude-haha/main.go",
+      "sha256": "0466ca490600f0fcaf181380f0f2ff991ff79cc4be95fd12dbbc281dfe51b162"
+    },
+    {
+      "file": "backend/internal/builtintools/registry.go",
+      "sha256": "3b0044beee382e1588046767cd3c37ff3b56e930e3758eff8b6fcee5b07a6d77"
+    },
+    {
+      "file": "desktop/sidecars/claude-sidecar.ts",
+      "sha256": "fe970fd69cb7782a788848259d6bd9b0a7ecd484545b3c70cbf51478388be3bd"
+    },
+    {
+      "file": "src/entrypoints/cli.tsx",
+      "sha256": "85f2e4b7fb6e4f1c74805ac480096cdb52842a929a0235b68f0e50be54a66944"
+    },
+    {
+      "file": "src/keybindings/loadUserBindings.ts",
+      "sha256": "981c0d67d66fd4502e348f464d9886f759274425269adf95c432c502e9eb4c52"
+    },
+    {
+      "file": "src/server/services/voice/sensevoice/protocol.ts",
+      "sha256": "95d2615221df90df14deaec096153f526e99a31be8ec931d1876949a002b0037"
+    },
+    {
+      "file": "src/server/services/voice/sensevoice/recognizer.ts",
+      "sha256": "51070356dc11ddf31aab5ab1689d1456a1209df3c2b554b1df8f647fbd6c4247"
+    },
+    {
+      "file": "src/server/services/voice/sensevoice/worker.ts",
+      "sha256": "98e1fc41b6ac368460e8238e7f980869ce594a0554f86f9004d05bf5a1f6d977"
+    },
+    {
+      "file": "src/services/imageGeneration/config.ts",
+      "sha256": "d7d9689289fd3b9807e1c7072ae4b827fec3431a66e064b29e1a1367c222cc1c"
+    },
+    {
+      "file": "src/services/lsp/manager.ts",
+      "sha256": "cc27fcb02d299a0ef32a29354607e77742692bb2b399944b54055f7a4dadd87a"
+    },
+    {
+      "file": "src/skills/bundled/batch.ts",
+      "sha256": "d8124772cf84c9c01b8322092dca5ae362a3e20a9bc25a2862abe7c1175e7983"
+    },
+    {
+      "file": "src/skills/bundled/claudeApi.ts",
+      "sha256": "31ad5270631761564ee6b30542016585baadef6579e834cdb05ca8051a2b7feb"
+    },
+    {
+      "file": "src/skills/bundled/claudeInChrome.ts",
+      "sha256": "60634e7a161be23f93846d60953adcc7f6f6a405a2ec7cbdb6d4ae75b71b73a2"
+    },
+    {
+      "file": "src/skills/bundled/computerUse.ts",
+      "sha256": "b6fae41e6498237e625589bf0d3debc6ad2e0283bb59da02e3c940d8c1d63584"
+    },
+    {
+      "file": "src/skills/bundled/debug.ts",
+      "sha256": "7af2331e37a66fba2e87bcdd8e2bbb2bdc052b4afc9bb8b281ae979c850a37f4"
+    },
+    {
+      "file": "src/skills/bundled/dream.ts",
+      "sha256": "f39776e5d683466e83bf8477642045f44045122cc9108b21ccf956f76bb4fcb5"
+    },
+    {
+      "file": "src/skills/bundled/hunter.ts",
+      "sha256": "f39776e5d683466e83bf8477642045f44045122cc9108b21ccf956f76bb4fcb5"
+    },
+    {
+      "file": "src/skills/bundled/imagegen.ts",
+      "sha256": "14490685ff6568489e3b1e6830ee7f85b01b492e652d6c9a8829923e48d3457b"
+    },
+    {
+      "file": "src/skills/bundled/index.ts",
+      "sha256": "57be936f5f1420c6b403cb4de66309c335bd5f62e724c777031ef475b78a4c99"
+    },
+    {
+      "file": "src/skills/bundled/keybindings.ts",
+      "sha256": "c0ff99ea747de51c2a90c3486ce7aaef233e7970c2eded00fe49d87972e65bfa"
+    },
+    {
+      "file": "src/skills/bundled/loop.ts",
+      "sha256": "76774d64cacf1f9c5465aa9f0682d1966f79608ae707ab80149784633dace3e0"
+    },
+    {
+      "file": "src/skills/bundled/loremIpsum.ts",
+      "sha256": "41d75b099b28f85bbfbb7f4c88457ca6c1b920bed198f1ce70055fba8b5f78d6"
+    },
+    {
+      "file": "src/skills/bundled/remember.ts",
+      "sha256": "25e7d7aa7bdc0907d47f4cbb81d38aab277cb4a4a373f9fc75df67367f89698e"
+    },
+    {
+      "file": "src/skills/bundled/runSkillGenerator.ts",
+      "sha256": "f39776e5d683466e83bf8477642045f44045122cc9108b21ccf956f76bb4fcb5"
+    },
+    {
+      "file": "src/skills/bundled/scheduleRemoteAgents.ts",
+      "sha256": "130d3f1f34fbe1c6536b145930ab4383ff5dde17fb7918d8a4fcc3a9bdfb7e58"
+    },
+    {
+      "file": "src/skills/bundled/simplify.ts",
+      "sha256": "ff4a670c3814776594231f4e85b796a81e20aba9168d165dcf4ee87f3464463e"
+    },
+    {
+      "file": "src/skills/bundled/skillify.ts",
+      "sha256": "b94bfabd47e177da752793059e5a9c9e8dc035caaf3f61452c0e8b8e1d63329e"
+    },
+    {
+      "file": "src/skills/bundled/stuck.ts",
+      "sha256": "9083fb39d7e6b2ebbdffbdd7e5f88b17c72252ef165f5c9f04c85720255ccd65"
+    },
+    {
+      "file": "src/skills/bundled/updateConfig.ts",
+      "sha256": "a4d496d694b3fa4009f82b27dd2eb35a8dcd2c9d8329e1bc1298bfb5ab5f0008"
+    },
+    {
+      "file": "src/skills/bundled/verify.ts",
+      "sha256": "8f18167c99b4cc91539ccea953696276c5df49af70e0b62e542be0fe72b35a78"
+    },
+    {
+      "file": "src/tools.ts",
+      "sha256": "1ca1ee07f8b6450d52ce761cd1559cad59dfb06a8f332b6b33cb3d8783dd0a46"
+    },
+    {
+      "file": "src/tools/BriefTool/BriefTool.ts",
+      "sha256": "388ead06a3bb4c0f79562fc90c8c8c762ced60bfb5ee8cddfd542756fcefa3ed"
+    },
+    {
+      "file": "src/tools/SessionCollaborationTool/bridge.ts",
+      "sha256": "b8d2151a96203c4ca87c340367d18b85a22be27a97033af7563b794114c73e61"
+    },
+    {
+      "file": "src/tools/WebSearchTool/backend.ts",
+      "sha256": "8626c2f7e7aeb4a18755b4c66c01e22c868bd6de0d0eed00835c012345da6217"
+    },
+    {
+      "file": "src/utils/agentSwarmsEnabled.ts",
+      "sha256": "e393ebed88f9c3bc0c7d785b9f30d342d2ee9c43d3419bcd24e386458979a87f"
+    },
+    {
+      "file": "src/utils/claudeInChrome/setup.ts",
+      "sha256": "bcb0e5a2dd2f317dd82e42bbf585caaa24f2962fbc8a495c9acbd853db434639"
+    },
+    {
+      "file": "src/utils/computerUse/skillGate.ts",
+      "sha256": "028d572a3f21a7715604e329fb01730d59ce3e2dd6476ccda465cf84197f4717"
+    },
+    {
+      "file": "src/utils/embeddedTools.ts",
+      "sha256": "944ea83bc5bd3ed16f4daac2038ad19ada53bfd20ec968d77daf2a154aee6973"
+    },
+    {
+      "file": "src/utils/shell/shellToolUtils.ts",
+      "sha256": "583f9c96c7557f16a61dddcebc2773a55dbf8b907d9940c05766ef98ae28f2bd"
+    },
+    {
+      "file": "src/utils/tasks.ts",
+      "sha256": "45939c3cb13d9adf7b4cc838e1fadc50e78ac5b7eecda368d1ebf06062c3cebb"
+    },
+    {
+      "file": "src/utils/toolSearch.ts",
+      "sha256": "6eae6a667c5ae091173ac0295b9a3be9a0cf9f8fa3ac2f0bcd28e7f3a1018327"
+    },
+    {
+      "file": "src/utils/workflows/enabled.ts",
+      "sha256": "25760c3daa55090c1dfdea68c6cabdbc6f6c5330a6dc57997d94974ffe37bae9"
+    },
+    {
+      "file": "src/utils/worktreeModeEnabled.ts",
+      "sha256": "31782c2ae3b2e1bb52b6a839b44f3296bd772de5efe6d2f2e15b5a28dbdea210"
+    }
+  ],
+  "actualPipeline": [
+    "getAllBaseTools registration",
+    "Tool.isEnabled and getTools SIMPLE/mode/special/deny filtering",
+    "actual built-in and MCP producers",
+    "assembleToolPool sorts each partition and built-in name wins",
+    "shared Harness request and real tool execution"
+  ],
+  "remainingScope": [
+    "All 35 work packages and original 95 requirements remain pending implementation/acceptance",
+    "All 58 argv declarations, 116 slash definitions and other release profiles retain their original gates in CLI inventory",
+    "Platform/host/config gate branches must be carried to actual consumers and recovery",
+    "No current production capability or Benchmark acceptance is established by this static matrix"
+  ],
+  "runtimeTests": "not run",
+  "uiActions": "not run",
+  "modelCalls": "not run",
+  "fullMigrationComplete": false
+}
