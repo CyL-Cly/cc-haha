@@ -1,0 +1,102 @@
+[
+  {
+    "id": "normal-tail-control",
+    "transport": "http1-chunked-held-after-first-event",
+    "request": {
+      "model": "fixture-model",
+      "max_tokens": 32,
+      "stream": true,
+      "messages": [
+        {
+          "role": "user",
+          "content": "original private consumer input"
+        }
+      ]
+    },
+    "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-held-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":1,\"output_tokens\":0}}}\n\n",
+    "tail": "event: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"original tail text\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":2}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+    "returnValue": "original-consumer-return",
+    "callerAbortReason": "interrupt",
+    "endResponseOnTail": true
+  },
+  {
+    "id": "return-at-yield",
+    "transport": "http1-chunked-held-after-first-event",
+    "request": {
+      "model": "fixture-model",
+      "max_tokens": 32,
+      "stream": true,
+      "messages": [
+        {
+          "role": "user",
+          "content": "original private consumer input"
+        }
+      ]
+    },
+    "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-held-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":1,\"output_tokens\":0}}}\n\n",
+    "tail": "event: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"original tail text\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":2}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+    "returnValue": "original-consumer-return",
+    "callerAbortReason": "interrupt",
+    "endResponseOnTail": false
+  },
+  {
+    "id": "return-queued-after-next",
+    "transport": "http1-chunked-held-after-first-event",
+    "request": {
+      "model": "fixture-model",
+      "max_tokens": 32,
+      "stream": true,
+      "messages": [
+        {
+          "role": "user",
+          "content": "original private consumer input"
+        }
+      ]
+    },
+    "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-held-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":1,\"output_tokens\":0}}}\n\n",
+    "tail": "event: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"original tail text\"}}\n\n",
+    "returnValue": "original-consumer-return",
+    "callerAbortReason": "interrupt",
+    "endResponseOnTail": false
+  },
+  {
+    "id": "caller-abort-after-next",
+    "transport": "http1-chunked-held-after-first-event",
+    "request": {
+      "model": "fixture-model",
+      "max_tokens": 32,
+      "stream": true,
+      "messages": [
+        {
+          "role": "user",
+          "content": "original private consumer input"
+        }
+      ]
+    },
+    "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-held-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":1,\"output_tokens\":0}}}\n\n",
+    "tail": "event: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"original tail text\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":2}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+    "returnValue": "original-consumer-return",
+    "callerAbortReason": "interrupt",
+    "endResponseOnTail": false
+  },
+  {
+    "id": "cleanup-resource-after-next",
+    "transport": "http1-chunked-held-after-first-event",
+    "request": {
+      "model": "fixture-model",
+      "max_tokens": 32,
+      "stream": true,
+      "messages": [
+        {
+          "role": "user",
+          "content": "original private consumer input"
+        }
+      ]
+    },
+    "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-held-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":1,\"output_tokens\":0}}}\n\n",
+    "tail": "event: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"original tail text\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":2}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+    "returnValue": "original-consumer-return",
+    "callerAbortReason": "interrupt",
+    "endResponseOnTail": false
+  }
+]

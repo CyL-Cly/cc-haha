@@ -1,0 +1,432 @@
+{
+  "observations": [
+    {
+      "scenario": {
+        "name": "official-token-no-usertype",
+        "environment": {
+          "ANTHROPIC_AUTH_TOKEN": "fake-source-official-token"
+        },
+        "supported": true
+      },
+      "enabled": false,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "direct-key-no-usertype",
+        "environment": {
+          "ANTHROPIC_API_KEY": "fake-source-key"
+        },
+        "supported": true
+      },
+      "enabled": false,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "both-direct",
+        "environment": {
+          "ANTHROPIC_API_KEY": "fake-source-key",
+          "ANTHROPIC_AUTH_TOKEN": "fake-source-official-token"
+        },
+        "supported": true
+      },
+      "enabled": false,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "bearer-with-oauth-present",
+        "environment": {
+          "ANTHROPIC_AUTH_TOKEN": "fake-source-token",
+          "CLAUDE_CODE_OAUTH_TOKEN": "fake-source-oauth"
+        },
+        "supported": true
+      },
+      "enabled": false,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "key-with-oauth-present",
+        "environment": {
+          "ANTHROPIC_API_KEY": "fake-source-key",
+          "CLAUDE_CODE_OAUTH_TOKEN": "fake-source-oauth"
+        },
+        "supported": true
+      },
+      "enabled": false,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "sdk-token",
+        "environment": {
+          "ANTHROPIC_AUTH_TOKEN": "fake-source-token",
+          "CLAUDE_CODE_ENTRYPOINT": "sdk-cli"
+        },
+        "supported": true
+      },
+      "enabled": false,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "cli-token",
+        "environment": {
+          "ANTHROPIC_AUTH_TOKEN": "fake-source-token",
+          "CLAUDE_CODE_ENTRYPOINT": "cli"
+        },
+        "supported": true
+      },
+      "enabled": false,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "external-token",
+        "environment": {
+          "ANTHROPIC_AUTH_TOKEN": "fake-source-token",
+          "USER_TYPE": "external"
+        },
+        "supported": true
+      },
+      "enabled": false,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "ant-direct-token",
+        "environment": {
+          "ANTHROPIC_AUTH_TOKEN": "fake-source-token",
+          "USER_TYPE": "ant"
+        },
+        "supported": true
+      },
+      "enabled": false,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "homespace-token",
+        "environment": {
+          "ANTHROPIC_AUTH_TOKEN": "fake-source-token",
+          "USER_TYPE": "ant",
+          "COO_RUNNING_ON_HOMESPACE": "true"
+        },
+        "supported": true
+      },
+      "enabled": false,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "remote-'false'",
+        "environment": {
+          "ANTHROPIC_AUTH_TOKEN": "fake-source-token",
+          "CLAUDE_CODE_OAUTH_TOKEN": "fake-source-oauth",
+          "CLAUDE_CODE_REMOTE": "false"
+        },
+        "supported": true
+      },
+      "enabled": false,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "remote-'0'",
+        "environment": {
+          "ANTHROPIC_AUTH_TOKEN": "fake-source-token",
+          "CLAUDE_CODE_OAUTH_TOKEN": "fake-source-oauth",
+          "CLAUDE_CODE_REMOTE": "0"
+        },
+        "supported": true
+      },
+      "enabled": false,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "remote-'off'",
+        "environment": {
+          "ANTHROPIC_AUTH_TOKEN": "fake-source-token",
+          "CLAUDE_CODE_OAUTH_TOKEN": "fake-source-oauth",
+          "CLAUDE_CODE_REMOTE": "off"
+        },
+        "supported": true
+      },
+      "enabled": false,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "remote-'TRUE'",
+        "environment": {
+          "ANTHROPIC_AUTH_TOKEN": "fake-source-token",
+          "CLAUDE_CODE_OAUTH_TOKEN": "fake-source-oauth",
+          "CLAUDE_CODE_REMOTE": "TRUE"
+        },
+        "supported": false
+      },
+      "enabled": true,
+      "subscriber": true,
+      "resultType": "text",
+      "subscriptionMessage": true,
+      "formatsCost": false
+    },
+    {
+      "scenario": {
+        "name": "remote-'  yes\\ufeff'",
+        "environment": {
+          "ANTHROPIC_AUTH_TOKEN": "fake-source-token",
+          "CLAUDE_CODE_OAUTH_TOKEN": "fake-source-oauth",
+          "CLAUDE_CODE_REMOTE": "  yes\ufeff"
+        },
+        "supported": false
+      },
+      "enabled": true,
+      "subscriber": true,
+      "resultType": "text",
+      "subscriptionMessage": true,
+      "formatsCost": false
+    },
+    {
+      "scenario": {
+        "name": "remote-'ON'",
+        "environment": {
+          "ANTHROPIC_AUTH_TOKEN": "fake-source-token",
+          "CLAUDE_CODE_OAUTH_TOKEN": "fake-source-oauth",
+          "CLAUDE_CODE_REMOTE": "ON"
+        },
+        "supported": false
+      },
+      "enabled": true,
+      "subscriber": true,
+      "resultType": "text",
+      "subscriptionMessage": true,
+      "formatsCost": false
+    },
+    {
+      "scenario": {
+        "name": "remote-'garbage'",
+        "environment": {
+          "ANTHROPIC_AUTH_TOKEN": "fake-source-token",
+          "CLAUDE_CODE_OAUTH_TOKEN": "fake-source-oauth",
+          "CLAUDE_CODE_REMOTE": "garbage"
+        },
+        "supported": true
+      },
+      "enabled": false,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "third-party-CLAUDE_CODE_USE_BEDROCK",
+        "environment": {
+          "CLAUDE_CODE_USE_BEDROCK": "true"
+        },
+        "supported": true
+      },
+      "enabled": false,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "third-party-CLAUDE_CODE_USE_VERTEX",
+        "environment": {
+          "CLAUDE_CODE_USE_VERTEX": "true"
+        },
+        "supported": true
+      },
+      "enabled": false,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "third-party-CLAUDE_CODE_USE_FOUNDRY",
+        "environment": {
+          "CLAUDE_CODE_USE_FOUNDRY": "true"
+        },
+        "supported": true
+      },
+      "enabled": false,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "third-party-CLAUDE_CODE_USE_AZURE_OPENAI",
+        "environment": {
+          "CLAUDE_CODE_USE_AZURE_OPENAI": "true"
+        },
+        "supported": true
+      },
+      "enabled": false,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "managed-desktop",
+        "environment": {
+          "ANTHROPIC_AUTH_TOKEN": "fake-source-token",
+          "CLAUDE_CODE_OAUTH_TOKEN": "fake-source-oauth",
+          "CLAUDE_CODE_ENTRYPOINT": "claude-desktop"
+        },
+        "supported": false
+      },
+      "enabled": true,
+      "subscriber": true,
+      "resultType": "text",
+      "subscriptionMessage": true,
+      "formatsCost": false
+    },
+    {
+      "scenario": {
+        "name": "unix-proxy",
+        "environment": {
+          "ANTHROPIC_AUTH_TOKEN": "fake-source-token",
+          "CLAUDE_CODE_OAUTH_TOKEN": "fake-source-oauth",
+          "ANTHROPIC_UNIX_SOCKET": "/fake-source-proxy"
+        },
+        "supported": false
+      },
+      "enabled": true,
+      "subscriber": true,
+      "resultType": "text",
+      "subscriptionMessage": true,
+      "formatsCost": false
+    },
+    {
+      "scenario": {
+        "name": "missing-credentials",
+        "environment": {},
+        "supported": false
+      },
+      "enabled": true,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    },
+    {
+      "scenario": {
+        "name": "oauth-only",
+        "environment": {
+          "CLAUDE_CODE_OAUTH_TOKEN": "fake-source-oauth"
+        },
+        "supported": false
+      },
+      "enabled": true,
+      "subscriber": true,
+      "resultType": "text",
+      "subscriptionMessage": true,
+      "formatsCost": false
+    },
+    {
+      "scenario": {
+        "name": "homespace-key",
+        "environment": {
+          "ANTHROPIC_API_KEY": "fake-source-key",
+          "USER_TYPE": "ant",
+          "COO_RUNNING_ON_HOMESPACE": "true"
+        },
+        "supported": false
+      },
+      "enabled": true,
+      "subscriber": false,
+      "resultType": "text",
+      "subscriptionMessage": false,
+      "formatsCost": true
+    }
+  ],
+  "sourceOnly": {
+    "consumer": "actual src/utils/auth isAnthropicAuthEnabled/isClaudeAISubscriber + commands/cost call",
+    "runtime": "v24.3.0",
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [
+        "read",
+        "read"
+      ],
+      "absentReads": [
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "readFileSync",
+          "path": "/home/claude/.claude/remote/.api_key"
+        },
+        {
+          "operation": "readFileSync",
+          "path": "/home/claude/.claude/remote/.oauth_token"
+        }
+      ]
+    }
+  }
+}

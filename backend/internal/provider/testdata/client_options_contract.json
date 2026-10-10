@@ -1,0 +1,4723 @@
+{
+  "homeDir": "$DISPOSABLE",
+  "runtime": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "version": "v24.3.0"
+  },
+  "steps": [
+    {
+      "name": "default direct profile",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210"
+      }
+    },
+    {
+      "name": "explicit API key wins",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "ANTHROPIC_AUTH_TOKEN": "env-token"
+      },
+      "explicitApiKey": "explicit-key"
+    },
+    {
+      "name": "empty explicit key falls back",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210"
+      },
+      "explicitApiKey": ""
+    },
+    {
+      "name": "auth token without API key",
+      "env": {
+        "ANTHROPIC_API_KEY": "",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "ANTHROPIC_AUTH_TOKEN": "env-token"
+      }
+    },
+    {
+      "name": "both environment credentials",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "ANTHROPIC_AUTH_TOKEN": "env-token"
+      }
+    },
+    {
+      "name": "empty token constructor behavior",
+      "env": {
+        "ANTHROPIC_API_KEY": "",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "ANTHROPIC_AUTH_TOKEN": ""
+      }
+    },
+    {
+      "name": "missing credentials fail before fetch",
+      "env": {
+        "ANTHROPIC_API_KEY": "",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210"
+      }
+    },
+    {
+      "name": "API key spaces are retained until Headers",
+      "env": {
+        "ANTHROPIC_API_KEY": "  offline-key  ",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210"
+      }
+    },
+    {
+      "name": "token constructor trim differs from app header",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "ANTHROPIC_AUTH_TOKEN": "  token  "
+      }
+    },
+    {
+      "name": "session and remote SDK metadata",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "USER_TYPE": "internal",
+        "CLAUDE_CODE_ENTRYPOINT": "sdk",
+        "CLAUDE_AGENT_SDK_VERSION": "0.2.3",
+        "CLAUDE_AGENT_SDK_CLIENT_APP": "client/1.0",
+        "CLAUDE_CODE_CONTAINER_ID": "container-id",
+        "CLAUDE_CODE_REMOTE_SESSION_ID": "remote-id"
+      },
+      "workload": "cron"
+    },
+    {
+      "name": "empty entrypoint is retained",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "CLAUDE_CODE_ENTRYPOINT": ""
+      }
+    },
+    {
+      "name": "empty optional metadata is absent",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "USER_TYPE": "",
+        "CLAUDE_AGENT_SDK_VERSION": "",
+        "CLAUDE_AGENT_SDK_CLIENT_APP": "",
+        "CLAUDE_CODE_CONTAINER_ID": "",
+        "CLAUDE_CODE_REMOTE_SESSION_ID": ""
+      }
+    },
+    {
+      "name": "protection truthy trimmed BOM",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "CLAUDE_CODE_ADDITIONAL_PROTECTION": "﻿ On  "
+      }
+    },
+    {
+      "name": "protection false text",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "CLAUDE_CODE_ADDITIONAL_PROTECTION": "false"
+      }
+    },
+    {
+      "name": "custom header exact and case duplicates",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "ANTHROPIC_CUSTOM_HEADERS": "User-Agent: exact\nuser-agent: later\nX-Future: first\nX-Future: replacement\nx-future: final\n__proto__: ignored\nconstructor: present\n2: two\n1: one"
+      }
+    },
+    {
+      "name": "custom multiline whitespace and first colon",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "ANTHROPIC_CUSTOM_HEADERS": "\r\ninvalid\n : ignored\n﻿ X-Future :  value:with:colons ﻿\r\nX-Empty: \t\r\n"
+      }
+    },
+    {
+      "name": "environment token overrides custom authorization",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "ANTHROPIC_AUTH_TOKEN": "environment",
+        "ANTHROPIC_CUSTOM_HEADERS": "Authorization: Bearer custom\nX-Api-Key: custom-key\nContent-Type: custom/type"
+      }
+    },
+    {
+      "name": "SDK body content type overrides client default",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "ANTHROPIC_CUSTOM_HEADERS": "Content-Type: custom/type\nAccept: custom/accept\nAnthropic-Version: custom-version"
+      }
+    },
+    {
+      "name": "request headers override all defaults",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "ANTHROPIC_CUSTOM_HEADERS": "X-Future: client"
+      },
+      "headers": {
+        "kind": "object",
+        "entries": [
+          [
+            "X-Api-Key",
+            "request-key"
+          ],
+          [
+            "Authorization",
+            "Bearer request-token"
+          ],
+          [
+            "User-Agent",
+            "request-agent"
+          ],
+          [
+            "x-app",
+            "request-app"
+          ],
+          [
+            "X-Future",
+            [
+              "first",
+              "second"
+            ]
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            null
+          ],
+          [
+            "x-stainless-lang",
+            "request-lang"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "explicit null authentication permits omission",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210"
+      },
+      "headers": {
+        "kind": "object",
+        "entries": [
+          [
+            "X-Api-Key",
+            null
+          ],
+          [
+            "Authorization",
+            null
+          ],
+          [
+            "Content-Type",
+            null
+          ],
+          [
+            "Anthropic-Version",
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "name": "explicit empty authentication fails",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210"
+      },
+      "headers": {
+        "kind": "object",
+        "entries": [
+          [
+            "X-Api-Key",
+            ""
+          ],
+          [
+            "Authorization",
+            ""
+          ]
+        ]
+      }
+    },
+    {
+      "name": "undefined authentication retains defaults",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210"
+      },
+      "headers": {
+        "kind": "object",
+        "entries": [],
+        "undefinedNames": [
+          "X-Api-Key",
+          "Authorization"
+        ]
+      }
+    },
+    {
+      "name": "undefined overwrites earlier omission and value",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210"
+      },
+      "headers": {
+        "kind": "object",
+        "entries": [
+          [
+            "X-Api-Key",
+            null
+          ],
+          [
+            "Authorization",
+            "Bearer shadow"
+          ],
+          [
+            "X-Future",
+            "shadow"
+          ]
+        ],
+        "undefinedNames": [
+          "X-Api-Key",
+          "Authorization",
+          "X-Future"
+        ]
+      }
+    },
+    {
+      "name": "gateway v1 normalization",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/gateway/v1///"
+      }
+    },
+    {
+      "name": "gateway terminal slash retained",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/gateway///"
+      }
+    },
+    {
+      "name": "official DeepSeek Anthropic route",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic"
+      },
+      "model": "deepseek-flash"
+    },
+    {
+      "name": "first party generates request ID",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "https://api.anthropic.com"
+      },
+      "observeRequestIDs": true
+    },
+    {
+      "name": "first party preserves supplied empty request ID",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "https://api.anthropic.com"
+      },
+      "observeRequestIDs": true,
+      "headers": {
+        "kind": "object",
+        "entries": [
+          [
+            "X-Client-Request-Id",
+            ""
+          ]
+        ]
+      }
+    },
+    {
+      "name": "first party explicit null request ID generates new",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "https://api.anthropic.com"
+      },
+      "observeRequestIDs": true,
+      "headers": {
+        "kind": "object",
+        "entries": [
+          [
+            "x-client-request-id",
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "name": "external user staging base has no request ID",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "https://api-staging.anthropic.com"
+      },
+      "observeRequestIDs": true
+    },
+    {
+      "name": "ant user staging base generates request ID",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "https://api-staging.anthropic.com",
+        "USER_TYPE": "ant"
+      },
+      "observeRequestIDs": true
+    },
+    {
+      "name": "nondefault first party port has no request ID",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "https://api.anthropic.com:8443"
+      },
+      "observeRequestIDs": true
+    },
+    {
+      "name": "managed loopback provider overrides caller authorization",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": " yes ",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "﻿ local-token  "
+      },
+      "headers": {
+        "kind": "object",
+        "entries": [
+          [
+            "Authorization",
+            "Bearer caller"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "managed root proxy supplies explicitly omitted auth",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "headers": {
+        "kind": "object",
+        "entries": [
+          [
+            "authorization",
+            null
+          ],
+          [
+            "x-api-key",
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "name": "managed token rotation reads final environment",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "old-token"
+      },
+      "beforeFetchEnv": {
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "new-token"
+      }
+    },
+    {
+      "name": "changed final base prevents credential injection",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "beforeFetchEnv": {
+        "ANTHROPIC_BASE_URL": "https://provider.example/proxy"
+      }
+    },
+    {
+      "name": "managed token does not reach remote provider",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "https://provider.example/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      }
+    },
+    {
+      "name": "managed path extension is not an allowed base",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture/extra",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      }
+    },
+    {
+      "name": "managed whitespace token does not replace caller auth",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": " ﻿ "
+      },
+      "headers": {
+        "kind": "object",
+        "entries": [
+          [
+            "authorization",
+            "Bearer caller"
+          ]
+        ]
+      }
+    },
+    {
+      "name": "managed localhost alias is not the accepted host",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://localhost:43210/proxy",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      }
+    },
+    {
+      "name": "constructor timeout \"\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "API_TIMEOUT_MS": ""
+      },
+      "observeFetch": false
+    },
+    {
+      "name": "constructor timeout \"1250ms\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "API_TIMEOUT_MS": "1250ms"
+      },
+      "observeFetch": false
+    },
+    {
+      "name": "constructor timeout \"  +42.9 \"",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "API_TIMEOUT_MS": "  +42.9 "
+      },
+      "observeFetch": false
+    },
+    {
+      "name": "constructor timeout \"0x20\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "API_TIMEOUT_MS": "0x20"
+      },
+      "observeFetch": false
+    },
+    {
+      "name": "constructor timeout \"1e3\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "API_TIMEOUT_MS": "1e3"
+      },
+      "observeFetch": false
+    },
+    {
+      "name": "constructor timeout \"-1\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "API_TIMEOUT_MS": "-1"
+      },
+      "observeFetch": false
+    },
+    {
+      "name": "constructor timeout \"not-a-number\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "API_TIMEOUT_MS": "not-a-number"
+      },
+      "observeFetch": false
+    },
+    {
+      "name": "constructor timeout \"﻿00123\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "API_TIMEOUT_MS": "﻿00123"
+      },
+      "observeFetch": false
+    },
+    {
+      "name": "constructor timeout \"2147483648\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "API_TIMEOUT_MS": "2147483648"
+      },
+      "observeFetch": false
+    },
+    {
+      "name": "constructor timeout \"99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "offline-client-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210",
+        "API_TIMEOUT_MS": "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+      },
+      "observeFetch": false
+    }
+  ],
+  "resolvers": [
+    {
+      "name": "managed requested URL \"\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": ""
+    },
+    {
+      "name": "managed requested URL \"http://127.0.0.1:43210/proxy/providers/fixture\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.0.0.1:43210/proxy/providers/fixture"
+    },
+    {
+      "name": "managed requested URL \"http://127.0.0.1:43210/proxy/providers/fixture/v1/messages?beta=true\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.0.0.1:43210/proxy/providers/fixture/v1/messages?beta=true"
+    },
+    {
+      "name": "managed requested URL \"http://127.0.0.1:43210/proxy/providers/fixture-other/v1/messages\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.0.0.1:43210/proxy/providers/fixture-other/v1/messages"
+    },
+    {
+      "name": "managed requested URL \"http://127.0.0.1:43210/proxy/providers/fixture/../other/v1/messages\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.0.0.1:43210/proxy/providers/fixture/../other/v1/messages"
+    },
+    {
+      "name": "managed requested URL \"http://127.0.0.1:43210/proxy/providers/fixture/%2e%2e/other/v1/messages\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.0.0.1:43210/proxy/providers/fixture/%2e%2e/other/v1/messages"
+    },
+    {
+      "name": "managed requested URL \"http://127.0.0.1:43210/proxy/providers/fixture%2Fother/v1/messages\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.0.0.1:43210/proxy/providers/fixture%2Fother/v1/messages"
+    },
+    {
+      "name": "managed requested URL \"http://127.0.0.1:43210/proxy/providers/fixture/v1/messages#fragment\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.0.0.1:43210/proxy/providers/fixture/v1/messages#fragment"
+    },
+    {
+      "name": "managed requested URL \"http://127.0.0.1:43211/proxy/providers/fixture/v1/messages\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.0.0.1:43211/proxy/providers/fixture/v1/messages"
+    },
+    {
+      "name": "managed requested URL \"https://127.0.0.1:43210/proxy/providers/fixture/v1/messages\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "https://127.0.0.1:43210/proxy/providers/fixture/v1/messages"
+    },
+    {
+      "name": "managed requested URL \"http://user@127.0.0.1:43210/proxy/providers/fixture/v1/messages\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://user@127.0.0.1:43210/proxy/providers/fixture/v1/messages"
+    },
+    {
+      "name": "managed requested URL \"http://:password@127.0.0.1:43210/proxy/providers/fixture/v1/messages\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://:password@127.0.0.1:43210/proxy/providers/fixture/v1/messages"
+    },
+    {
+      "name": "managed requested URL \"http://127.1:43210/proxy/providers/fixture/v1/messages\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.1:43210/proxy/providers/fixture/v1/messages"
+    },
+    {
+      "name": "managed requested URL \"http://0x7f000001:43210/proxy/providers/fixture/v1/messages\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://0x7f000001:43210/proxy/providers/fixture/v1/messages"
+    },
+    {
+      "name": "managed requested URL \"invalid-url\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "invalid-url"
+    },
+    {
+      "name": "managed base \"\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": ""
+    },
+    {
+      "name": "managed base \"invalid-url\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "invalid-url",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "invalid-url"
+    },
+    {
+      "name": "managed base \"https://127.0.0.1:43210/proxy\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "https://127.0.0.1:43210/proxy",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "https://127.0.0.1:43210/proxy"
+    },
+    {
+      "name": "managed base \"http://localhost:43210/proxy\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://localhost:43210/proxy",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://localhost:43210/proxy"
+    },
+    {
+      "name": "managed base \"http://[::1]:43210/proxy\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://[::1]:43210/proxy",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://[::1]:43210/proxy"
+    },
+    {
+      "name": "managed base \"http://127.1:43210/proxy\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.1:43210/proxy",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.1:43210/proxy"
+    },
+    {
+      "name": "managed base \"http://0x7f000001:43210/proxy\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://0x7f000001:43210/proxy",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://0x7f000001:43210/proxy"
+    },
+    {
+      "name": "managed base \"http://127.0.0.1:43210/\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.0.0.1:43210/"
+    },
+    {
+      "name": "managed base \"http://127.0.0.1:43210/proxy///\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy///",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.0.0.1:43210/proxy///"
+    },
+    {
+      "name": "managed base \"http://127.0.0.1:43210/proxy/providers/fixture/extra\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture/extra",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.0.0.1:43210/proxy/providers/fixture/extra"
+    },
+    {
+      "name": "managed base \"http://user@127.0.0.1:43210/proxy\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://user@127.0.0.1:43210/proxy",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://user@127.0.0.1:43210/proxy"
+    },
+    {
+      "name": "managed base \"http://:password@127.0.0.1:43210/proxy\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://:password@127.0.0.1:43210/proxy",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://:password@127.0.0.1:43210/proxy"
+    },
+    {
+      "name": "managed base \"http://127.0.0.1:43210/proxy?\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy?",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.0.0.1:43210/proxy?"
+    },
+    {
+      "name": "managed base \"http://127.0.0.1:43210/proxy?query\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy?query",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.0.0.1:43210/proxy?query"
+    },
+    {
+      "name": "managed base \"http://127.0.0.1:43210/proxy#\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy#",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.0.0.1:43210/proxy#"
+    },
+    {
+      "name": "managed base \"http://127.0.0.1:43210/proxy#fragment\"",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy#fragment",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.0.0.1:43210/proxy#fragment"
+    },
+    {
+      "name": "managed guard {\"CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST\":\"false\"}",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "false",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.0.0.1:43210/proxy/providers/fixture"
+    },
+    {
+      "name": "managed guard {\"ANTHROPIC_API_KEY\":\"real-provider-key\"}",
+      "env": {
+        "ANTHROPIC_API_KEY": "real-provider-key",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "local-token"
+      },
+      "requestURL": "http://127.0.0.1:43210/proxy/providers/fixture"
+    },
+    {
+      "name": "managed guard {\"CC_HAHA_LOCAL_ACCESS_TOKEN\":\"\"}",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": ""
+      },
+      "requestURL": "http://127.0.0.1:43210/proxy/providers/fixture"
+    },
+    {
+      "name": "managed guard {\"CC_HAHA_LOCAL_ACCESS_TOKEN\":\"﻿  \"}",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "﻿  "
+      },
+      "requestURL": "http://127.0.0.1:43210/proxy/providers/fixture"
+    },
+    {
+      "name": "managed guard {\"CC_HAHA_LOCAL_ACCESS_TOKEN\":\"token\"}",
+      "env": {
+        "ANTHROPIC_API_KEY": "proxy-managed",
+        "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210/proxy/providers/fixture",
+        "CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": "true",
+        "CC_HAHA_LOCAL_ACCESS_TOKEN": "token"
+      },
+      "requestURL": "http://127.0.0.1:43210/proxy/providers/fixture"
+    },
+    {
+      "name": "first party decision {}",
+      "env": {},
+      "requestURL": ""
+    },
+    {
+      "name": "first party decision {\"ANTHROPIC_BASE_URL\":\"https://API.ANTHROPIC.COM:443\"}",
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://API.ANTHROPIC.COM:443"
+      },
+      "requestURL": ""
+    },
+    {
+      "name": "first party decision {\"ANTHROPIC_BASE_URL\":\"https://api.anthropic.com:8443\"}",
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://api.anthropic.com:8443"
+      },
+      "requestURL": ""
+    },
+    {
+      "name": "first party decision {\"ANTHROPIC_BASE_URL\":\"https://api-staging.anthropic.com\"}",
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://api-staging.anthropic.com"
+      },
+      "requestURL": ""
+    },
+    {
+      "name": "first party decision {\"ANTHROPIC_BASE_URL\":\"https://api-staging.anthropic.com\",\"USER_TYPE\":\"ant\"}",
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://api-staging.anthropic.com",
+        "USER_TYPE": "ant"
+      },
+      "requestURL": ""
+    },
+    {
+      "name": "first party decision {\"ANTHROPIC_BASE_URL\":\"invalid-url\"}",
+      "env": {
+        "ANTHROPIC_BASE_URL": "invalid-url"
+      },
+      "requestURL": ""
+    },
+    {
+      "name": "first party decision {\"CLAUDE_CODE_USE_BEDROCK\":\"true\"}",
+      "env": {
+        "CLAUDE_CODE_USE_BEDROCK": "true"
+      },
+      "requestURL": ""
+    },
+    {
+      "name": "first party decision {\"CLAUDE_CODE_USE_VERTEX\":\"true\"}",
+      "env": {
+        "CLAUDE_CODE_USE_VERTEX": "true"
+      },
+      "requestURL": ""
+    },
+    {
+      "name": "first party decision {\"CLAUDE_CODE_USE_FOUNDRY\":\"true\"}",
+      "env": {
+        "CLAUDE_CODE_USE_FOUNDRY": "true"
+      },
+      "requestURL": ""
+    },
+    {
+      "name": "first party decision {\"CLAUDE_CODE_USE_AZURE_OPENAI\":\"true\"}",
+      "env": {
+        "CLAUDE_CODE_USE_AZURE_OPENAI": "true"
+      },
+      "requestURL": ""
+    }
+  ],
+  "results": [
+    {
+      "name": "default direct profile",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "explicit API key wins",
+      "apiKey": "explicit-key",
+      "authToken": "env-token",
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
+        "Authorization": "Bearer env-token"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "authorization",
+            "Bearer env-token"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "explicit-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "empty explicit key falls back",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "auth token without API key",
+      "apiKey": null,
+      "authToken": "env-token",
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
+        "Authorization": "Bearer env-token"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "authorization",
+            "Bearer env-token"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "both environment credentials",
+      "apiKey": "offline-client-key",
+      "authToken": "env-token",
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
+        "Authorization": "Bearer env-token"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "authorization",
+            "Bearer env-token"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "empty token constructor behavior",
+      "apiKey": null,
+      "authToken": "",
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "authorization",
+            "Bearer"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "missing credentials fail before fetch",
+      "apiKey": null,
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": null,
+      "error": {
+        "name": "Error",
+        "message": "Could not resolve authentication method. Expected either apiKey or authToken to be set. Or for one of the \"X-Api-Key\" or \"Authorization\" headers to be explicitly omitted"
+      }
+    },
+    {
+      "name": "API key spaces are retained until Headers",
+      "apiKey": "  offline-key  ",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "token constructor trim differs from app header",
+      "apiKey": "offline-client-key",
+      "authToken": "token",
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
+        "Authorization": "Bearer   token  "
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "authorization",
+            "Bearer   token"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "session and remote SDK metadata",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (internal, sdk, agent-sdk/0.2.3, client-app/client/1.0, workload/cron)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
+        "x-claude-remote-container-id": "container-id",
+        "x-claude-remote-session-id": "remote-id",
+        "x-client-app": "client/1.0"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (internal, sdk, agent-sdk/0.2.3, client-app/client/1.0, workload/cron)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-claude-remote-container-id",
+            "container-id"
+          ],
+          [
+            "x-claude-remote-session-id",
+            "remote-id"
+          ],
+          [
+            "x-client-app",
+            "client/1.0"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "empty entrypoint is retained",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, )",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, )"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "empty optional metadata is absent",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "protection truthy trimmed BOM",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
+        "x-anthropic-additional-protection": "true"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-anthropic-additional-protection",
+            "true"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "protection false text",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "custom header exact and case duplicates",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "1": "one",
+        "2": "two",
+        "x-app": "cli",
+        "User-Agent": "exact",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
+        "user-agent": "later",
+        "X-Future": "replacement",
+        "x-future": "final",
+        "constructor": "present"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "1",
+            "one"
+          ],
+          [
+            "2",
+            "two"
+          ],
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "constructor",
+            "present"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "later"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-future",
+            "final"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "custom multiline whitespace and first colon",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
+        "X-Future": "value:with:colons",
+        "X-Empty": ""
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-empty",
+            ""
+          ],
+          [
+            "x-future",
+            "value:with:colons"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "environment token overrides custom authorization",
+      "apiKey": "offline-client-key",
+      "authToken": "environment",
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
+        "Authorization": "Bearer environment",
+        "X-Api-Key": "custom-key",
+        "Content-Type": "custom/type"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "authorization",
+            "Bearer environment"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "custom-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "SDK body content type overrides client default",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
+        "Content-Type": "custom/type",
+        "Accept": "custom/accept",
+        "Anthropic-Version": "custom-version"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "custom/accept"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "custom-version"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "request headers override all defaults",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
+        "X-Future": "client"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "authorization",
+            "Bearer request-token"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "request-agent"
+          ],
+          [
+            "x-api-key",
+            "request-key"
+          ],
+          [
+            "x-app",
+            "request-app"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-future",
+            "first, second"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "request-lang"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "explicit null authentication permits omission",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "explicit empty authentication fails",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": null,
+      "error": {
+        "name": "Error",
+        "message": "Could not resolve authentication method. Expected either apiKey or authToken to be set. Or for one of the \"X-Api-Key\" or \"Authorization\" headers to be explicitly omitted"
+      }
+    },
+    {
+      "name": "undefined authentication retains defaults",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "undefined overwrites earlier omission and value",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "gateway v1 normalization",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210/gateway",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/gateway/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "gateway terminal slash retained",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210/gateway///",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/gateway///v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "official DeepSeek Anthropic route",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "https://api.deepseek.com/anthropic",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "https://api.deepseek.com/anthropic/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"deepseek-flash\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "first party generates request ID",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "https://api.anthropic.com",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "https://api.anthropic.com/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-client-request-id",
+            "request-fixture-1"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null,
+      "uuidCalls": 1
+    },
+    {
+      "name": "first party preserves supplied empty request ID",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "https://api.anthropic.com",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "https://api.anthropic.com/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-client-request-id",
+            ""
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null,
+      "uuidCalls": 0
+    },
+    {
+      "name": "first party explicit null request ID generates new",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "https://api.anthropic.com",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "https://api.anthropic.com/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-client-request-id",
+            "request-fixture-1"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null,
+      "uuidCalls": 1
+    },
+    {
+      "name": "external user staging base has no request ID",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "https://api-staging.anthropic.com",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "https://api-staging.anthropic.com/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null,
+      "uuidCalls": 0
+    },
+    {
+      "name": "ant user staging base generates request ID",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "https://api-staging.anthropic.com",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (ant, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "https://api-staging.anthropic.com/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (ant, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-client-request-id",
+            "request-fixture-1"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null,
+      "uuidCalls": 1
+    },
+    {
+      "name": "nondefault first party port has no request ID",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "https://api.anthropic.com:8443",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "https://api.anthropic.com:8443/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "offline-client-key"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null,
+      "uuidCalls": 0
+    },
+    {
+      "name": "managed loopback provider overrides caller authorization",
+      "apiKey": "proxy-managed",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210/proxy/providers/fixture",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/proxy/providers/fixture/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "authorization",
+            "Bearer local-token"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "proxy-managed"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "managed root proxy supplies explicitly omitted auth",
+      "apiKey": "proxy-managed",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210/proxy",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/proxy/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "authorization",
+            "Bearer local-token"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "managed token rotation reads final environment",
+      "apiKey": "proxy-managed",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210/proxy/providers/fixture",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/proxy/providers/fixture/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "authorization",
+            "Bearer new-token"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "proxy-managed"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "changed final base prevents credential injection",
+      "apiKey": "proxy-managed",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210/proxy/providers/fixture",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/proxy/providers/fixture/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "proxy-managed"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "managed token does not reach remote provider",
+      "apiKey": "proxy-managed",
+      "authToken": null,
+      "baseURL": "https://provider.example/proxy/providers/fixture",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "https://provider.example/proxy/providers/fixture/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "proxy-managed"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "managed path extension is not an allowed base",
+      "apiKey": "proxy-managed",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210/proxy/providers/fixture/extra",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/proxy/providers/fixture/extra/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "proxy-managed"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "managed whitespace token does not replace caller auth",
+      "apiKey": "proxy-managed",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210/proxy",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://127.0.0.1:43210/proxy/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "authorization",
+            "Bearer caller"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "proxy-managed"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "managed localhost alias is not the accepted host",
+      "apiKey": "proxy-managed",
+      "authToken": null,
+      "baseURL": "http://localhost:43210/proxy",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": {
+        "url": "http://localhost:43210/proxy/v1/messages?beta=true",
+        "method": "POST",
+        "headers": [
+          [
+            "accept",
+            "application/json"
+          ],
+          [
+            "anthropic-dangerous-direct-browser-access",
+            "true"
+          ],
+          [
+            "anthropic-version",
+            "2023-06-01"
+          ],
+          [
+            "content-type",
+            "application/json"
+          ],
+          [
+            "user-agent",
+            "claude-cli/2.1.281 (external, cli)"
+          ],
+          [
+            "x-api-key",
+            "proxy-managed"
+          ],
+          [
+            "x-app",
+            "cli"
+          ],
+          [
+            "x-claude-code-session-id",
+            "00000000-0000-4000-8000-000000000000"
+          ],
+          [
+            "x-stainless-arch",
+            "arm64"
+          ],
+          [
+            "x-stainless-lang",
+            "js"
+          ],
+          [
+            "x-stainless-os",
+            "MacOS"
+          ],
+          [
+            "x-stainless-package-version",
+            "0.80.0"
+          ],
+          [
+            "x-stainless-retry-count",
+            "0"
+          ],
+          [
+            "x-stainless-runtime",
+            "node"
+          ],
+          [
+            "x-stainless-runtime-version",
+            "v24.3.0"
+          ],
+          [
+            "x-stainless-timeout",
+            "600"
+          ]
+        ],
+        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
+      },
+      "error": null
+    },
+    {
+      "name": "constructor timeout \"\"",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 600000,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": null,
+      "error": null
+    },
+    {
+      "name": "constructor timeout \"1250ms\"",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 1250,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": null,
+      "error": null
+    },
+    {
+      "name": "constructor timeout \"  +42.9 \"",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 42,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": null,
+      "error": null
+    },
+    {
+      "name": "constructor timeout \"0x20\"",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 0,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": null,
+      "error": null
+    },
+    {
+      "name": "constructor timeout \"1e3\"",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 1,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": null,
+      "error": null
+    },
+    {
+      "name": "constructor timeout \"-1\"",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": -1,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": null,
+      "error": null
+    },
+    {
+      "name": "constructor timeout \"not-a-number\"",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": null,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": null,
+      "error": null
+    },
+    {
+      "name": "constructor timeout \"﻿00123\"",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 123,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": null,
+      "error": null
+    },
+    {
+      "name": "constructor timeout \"2147483648\"",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": 2147483648,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": null,
+      "error": null
+    },
+    {
+      "name": "constructor timeout \"99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999\"",
+      "apiKey": "offline-client-key",
+      "authToken": null,
+      "baseURL": "http://127.0.0.1:43210",
+      "timeout": null,
+      "defaultHeaders": {
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
+      },
+      "fetch": null,
+      "error": null
+    }
+  ],
+  "resolverResults": [
+    {
+      "name": "managed requested URL \"\"",
+      "managedToken": "local-token",
+      "injectRequestID": false
+    },
+    {
+      "name": "managed requested URL \"http://127.0.0.1:43210/proxy/providers/fixture\"",
+      "managedToken": "local-token",
+      "injectRequestID": false
+    },
+    {
+      "name": "managed requested URL \"http://127.0.0.1:43210/proxy/providers/fixture/v1/messages?beta=true\"",
+      "managedToken": "local-token",
+      "injectRequestID": false
+    },
+    {
+      "name": "managed requested URL \"http://127.0.0.1:43210/proxy/providers/fixture-other/v1/messages\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed requested URL \"http://127.0.0.1:43210/proxy/providers/fixture/../other/v1/messages\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed requested URL \"http://127.0.0.1:43210/proxy/providers/fixture/%2e%2e/other/v1/messages\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed requested URL \"http://127.0.0.1:43210/proxy/providers/fixture%2Fother/v1/messages\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed requested URL \"http://127.0.0.1:43210/proxy/providers/fixture/v1/messages#fragment\"",
+      "managedToken": "local-token",
+      "injectRequestID": false
+    },
+    {
+      "name": "managed requested URL \"http://127.0.0.1:43211/proxy/providers/fixture/v1/messages\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed requested URL \"https://127.0.0.1:43210/proxy/providers/fixture/v1/messages\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed requested URL \"http://user@127.0.0.1:43210/proxy/providers/fixture/v1/messages\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed requested URL \"http://:password@127.0.0.1:43210/proxy/providers/fixture/v1/messages\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed requested URL \"http://127.1:43210/proxy/providers/fixture/v1/messages\"",
+      "managedToken": "local-token",
+      "injectRequestID": false
+    },
+    {
+      "name": "managed requested URL \"http://0x7f000001:43210/proxy/providers/fixture/v1/messages\"",
+      "managedToken": "local-token",
+      "injectRequestID": false
+    },
+    {
+      "name": "managed requested URL \"invalid-url\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed base \"\"",
+      "managedToken": null,
+      "injectRequestID": true
+    },
+    {
+      "name": "managed base \"invalid-url\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed base \"https://127.0.0.1:43210/proxy\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed base \"http://localhost:43210/proxy\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed base \"http://[::1]:43210/proxy\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed base \"http://127.1:43210/proxy\"",
+      "managedToken": "local-token",
+      "injectRequestID": false
+    },
+    {
+      "name": "managed base \"http://0x7f000001:43210/proxy\"",
+      "managedToken": "local-token",
+      "injectRequestID": false
+    },
+    {
+      "name": "managed base \"http://127.0.0.1:43210/\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed base \"http://127.0.0.1:43210/proxy///\"",
+      "managedToken": "local-token",
+      "injectRequestID": false
+    },
+    {
+      "name": "managed base \"http://127.0.0.1:43210/proxy/providers/fixture/extra\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed base \"http://user@127.0.0.1:43210/proxy\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed base \"http://:password@127.0.0.1:43210/proxy\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed base \"http://127.0.0.1:43210/proxy?\"",
+      "managedToken": "local-token",
+      "injectRequestID": false
+    },
+    {
+      "name": "managed base \"http://127.0.0.1:43210/proxy?query\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed base \"http://127.0.0.1:43210/proxy#\"",
+      "managedToken": "local-token",
+      "injectRequestID": false
+    },
+    {
+      "name": "managed base \"http://127.0.0.1:43210/proxy#fragment\"",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed guard {\"CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST\":\"false\"}",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed guard {\"ANTHROPIC_API_KEY\":\"real-provider-key\"}",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed guard {\"CC_HAHA_LOCAL_ACCESS_TOKEN\":\"\"}",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed guard {\"CC_HAHA_LOCAL_ACCESS_TOKEN\":\"﻿  \"}",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "managed guard {\"CC_HAHA_LOCAL_ACCESS_TOKEN\":\"token\"}",
+      "managedToken": "token",
+      "injectRequestID": false
+    },
+    {
+      "name": "first party decision {}",
+      "managedToken": null,
+      "injectRequestID": true
+    },
+    {
+      "name": "first party decision {\"ANTHROPIC_BASE_URL\":\"https://API.ANTHROPIC.COM:443\"}",
+      "managedToken": null,
+      "injectRequestID": true
+    },
+    {
+      "name": "first party decision {\"ANTHROPIC_BASE_URL\":\"https://api.anthropic.com:8443\"}",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "first party decision {\"ANTHROPIC_BASE_URL\":\"https://api-staging.anthropic.com\"}",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "first party decision {\"ANTHROPIC_BASE_URL\":\"https://api-staging.anthropic.com\",\"USER_TYPE\":\"ant\"}",
+      "managedToken": null,
+      "injectRequestID": true
+    },
+    {
+      "name": "first party decision {\"ANTHROPIC_BASE_URL\":\"invalid-url\"}",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "first party decision {\"CLAUDE_CODE_USE_BEDROCK\":\"true\"}",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "first party decision {\"CLAUDE_CODE_USE_VERTEX\":\"true\"}",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "first party decision {\"CLAUDE_CODE_USE_FOUNDRY\":\"true\"}",
+      "managedToken": null,
+      "injectRequestID": false
+    },
+    {
+      "name": "first party decision {\"CLAUDE_CODE_USE_AZURE_OPENAI\":\"true\"}",
+      "managedToken": null,
+      "injectRequestID": false
+    }
+  ]
+}

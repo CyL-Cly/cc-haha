@@ -1,0 +1,10 @@
+{
+  "name": "two-hot-branch-awaits-before-admitted-head-notification",
+  "initialHead": "ref: refs/heads/original\n",
+  "changedHead": "ref: refs/heads/changed\n",
+  "calls": 2,
+  "notification": "actual registered HEAD callback after native file write, queued while first hot caller owns stack",
+  "expectedValues": ["original", "original"],
+  "expectedCWDReadsBeforeCallerReturn": 0,
+  "scope": "independent Go-only original input; Source await reaction contract, not Bun StatWatcher phase equivalence"
+}

@@ -1,0 +1,3202 @@
+[
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "no-repository",
+      "cwd": "work/deep",
+      "files": {},
+      "ops": [
+        {
+          "kind": "branch"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "regular-safe",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/feature/a+@_1.2\n",
+        "work/.git/config": ""
+      },
+      "ops": [
+        {
+          "kind": "branch"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "feature/a+@_1.2"
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "feature/a+@_1.2"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "regular-parent",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/main\n"
+      },
+      "ops": [
+        {
+          "kind": "branch"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "main"
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "main"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "worktree-relative",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git": "gitdir: ../store/wt \r\n",
+        "store/wt/HEAD": "ref: refs/heads/feature/worktree\n",
+        "store/wt/commondir": "../common\n",
+        "store/common/config": ""
+      },
+      "ops": [
+        {
+          "kind": "branch"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "feature/worktree"
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "feature/worktree"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "store/wt/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "store/wt/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "store/wt/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "gitfile-invalid",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git": "this is not a gitdir\n"
+      },
+      "ops": [
+        {
+          "kind": "branch"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "gitfile-empty-value",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git": "gitdir: \n",
+        "work/HEAD": "ref: refs/heads/root-as-gitdir\n"
+      },
+      "ops": [
+        {
+          "kind": "branch"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "root-as-gitdir"
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "root-as-gitdir"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "head-missing",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/config": ""
+      },
+      "ops": [
+        {
+          "kind": "branch"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "head-empty",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": ""
+      },
+      "ops": [
+        {
+          "kind": "branch"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "head-sha40",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": {
+          "type": "detached",
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "head-sha64",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": {
+          "type": "detached",
+          "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "head-uppercase-rejected",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "ops": [
+        {
+          "kind": "branch"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "head-short-rejected",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "aaaaaaa"
+      },
+      "ops": [
+        {
+          "kind": "branch"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unsafe-0",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/-bad\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": null
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unsafe-1",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads//bad\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": null
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unsafe-2",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/a..b\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": null
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unsafe-3",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/.\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": null
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unsafe-4",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/foo/./bar\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": null
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unsafe-5",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/foo//bar\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": null
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unsafe-6",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/foo/\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": null
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unsafe-7",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/foo bar\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": null
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unsafe-8",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/foo\tbar\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": null
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unsafe-9",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/foo;bar\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": null
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unsafe-10",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/foo$bar\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": null
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unsafe-11",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/foo\\bar\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": null
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unsafe-12",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/foo{bar\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": null
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unsafe-13",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/\u4e2d\u6587\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": null
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "head-whitespace-bom",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "\ufeff \r\n ref: \t refs/heads/release-1.2+build \u00a0\n"
+      },
+      "ops": [
+        {
+          "kind": "branch"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "release-1.2+build"
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "release-1.2+build"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "head-utf8-replacement",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": {
+          "bytes": "cmVmOiByZWZzL2hlYWRzL2HtoIA="
+        }
+      },
+      "ops": [
+        {
+          "kind": "branch"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unusual-loose",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/remotes/origin/HEAD\n",
+        "work/.git/refs/remotes/origin/HEAD": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": {
+          "type": "detached",
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/refs/remotes/origin/HEAD"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/refs/remotes/origin/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/refs/remotes/origin/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unusual-symref",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/tags/v1\n",
+        "work/.git/refs/tags/v1": "ref: refs/tags/v2\n",
+        "work/.git/refs/tags/v2": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": {
+          "type": "detached",
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/refs/tags/v1"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/refs/tags/v2"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/refs/tags/v1"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/refs/tags/v2"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/refs/tags/v1"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/refs/tags/v2"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unusual-packed",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/tags/v1",
+        "work/.git/packed-refs": "# pack-refs\n^aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\ninvalidline\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa refs/tags/v1\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": {
+          "type": "detached",
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/refs/tags/v1"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/packed-refs"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/refs/tags/v1"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/packed-refs"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/refs/tags/v1"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/packed-refs"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unusual-missing",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/tags/absent"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": {
+          "type": "detached",
+          "sha": ""
+        }
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/refs/tags/absent"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/packed-refs"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/refs/tags/absent"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/packed-refs"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/refs/tags/absent"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/packed-refs"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unusual-invalid-loose-no-packed-fallback",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/tags/v1",
+        "work/.git/refs/tags/v1": "bad",
+        "work/.git/packed-refs": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa refs/tags/v1\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": {
+          "type": "detached",
+          "sha": ""
+        }
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/refs/tags/v1"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      }
+    ],
+    "clockCalls": [],
+    "cwdReads": []
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unusual-common-ref",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git": "gitdir: ../store/wt\n",
+        "store/wt/HEAD": "ref: refs/tags/v1",
+        "store/wt/commondir": "../common",
+        "store/common/refs/tags/v1": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "store/wt"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": {
+          "type": "detached",
+          "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "store/wt/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "store/wt/refs/tags/v1"
+      },
+      {
+        "operation": "read",
+        "path": "store/wt/packed-refs"
+      },
+      {
+        "operation": "read",
+        "path": "store/wt/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "store/common/refs/tags/v1"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "store/wt/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "store/wt/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "store/wt/refs/tags/v1"
+      },
+      {
+        "operation": "read",
+        "path": "store/wt/packed-refs"
+      },
+      {
+        "operation": "read",
+        "path": "store/wt/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "store/common/refs/tags/v1"
+      },
+      {
+        "operation": "read",
+        "path": "store/wt/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "store/wt/refs/tags/v1"
+      },
+      {
+        "operation": "read",
+        "path": "store/wt/packed-refs"
+      },
+      {
+        "operation": "read",
+        "path": "store/wt/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "store/common/refs/tags/v1"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "branch-cache-reset",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/first"
+      },
+      "ops": [
+        {
+          "kind": "branch"
+        },
+        {
+          "kind": "write",
+          "path": "work/.git/HEAD",
+          "value": "ref: refs/heads/second"
+        },
+        {
+          "kind": "branch"
+        },
+        {
+          "kind": "reset"
+        },
+        {
+          "kind": "branch"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "first"
+      },
+      {
+        "kind": "write"
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "first"
+      },
+      {
+        "kind": "reset"
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "second"
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "second"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep",
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "resolve-negative-cache",
+      "cwd": "work/deep",
+      "files": {},
+      "ops": [
+        {
+          "kind": "resolve",
+          "path": "work/deep"
+        },
+        {
+          "kind": "write",
+          "path": "work/.git/HEAD",
+          "value": "ref: refs/heads/later"
+        },
+        {
+          "kind": "resolve",
+          "path": "work/deep"
+        },
+        {
+          "kind": "clearDirs"
+        },
+        {
+          "kind": "resolve",
+          "path": "work/deep"
+        },
+        {
+          "kind": "clearRoots"
+        },
+        {
+          "kind": "clearDirs"
+        },
+        {
+          "kind": "resolve",
+          "path": "work/deep"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "resolve",
+        "settled": false
+      },
+      {
+        "kind": "resolve",
+        "value": null
+      },
+      {
+        "kind": "write"
+      },
+      {
+        "kind": "returned",
+        "operation": "resolve",
+        "settled": false
+      },
+      {
+        "kind": "resolve",
+        "value": null
+      },
+      {
+        "kind": "clearDirs"
+      },
+      {
+        "kind": "returned",
+        "operation": "resolve",
+        "settled": false
+      },
+      {
+        "kind": "resolve",
+        "value": null
+      },
+      {
+        "kind": "clearRoots"
+      },
+      {
+        "kind": "clearDirs"
+      },
+      {
+        "kind": "returned",
+        "operation": "resolve",
+        "settled": false
+      },
+      {
+        "kind": "resolve",
+        "value": "<HOME>/work/.git"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001,
+      1740000000002,
+      1740000000003
+    ],
+    "cwdReads": []
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "resolve-clear-only",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git": "gitdir: ../store/first",
+        "store/first/HEAD": "ref: refs/heads/one",
+        "store/second/HEAD": "ref: refs/heads/two"
+      },
+      "ops": [
+        {
+          "kind": "resolve",
+          "path": "work/deep"
+        },
+        {
+          "kind": "write",
+          "path": "work/.git",
+          "value": "gitdir: ../store/second"
+        },
+        {
+          "kind": "resolve",
+          "path": "work/deep"
+        },
+        {
+          "kind": "clearDirs"
+        },
+        {
+          "kind": "resolve",
+          "path": "work/deep"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "resolve",
+        "settled": false
+      },
+      {
+        "kind": "resolve",
+        "value": "<HOME>/store/first"
+      },
+      {
+        "kind": "write"
+      },
+      {
+        "kind": "returned",
+        "operation": "resolve",
+        "settled": false
+      },
+      {
+        "kind": "resolve",
+        "value": "<HOME>/store/first"
+      },
+      {
+        "kind": "clearDirs"
+      },
+      {
+        "kind": "returned",
+        "operation": "resolve",
+        "settled": false
+      },
+      {
+        "kind": "resolve",
+        "value": "<HOME>/store/second"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": []
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "same-root-raw-start-cache",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/main"
+      },
+      "ops": [
+        {
+          "kind": "find",
+          "path": "work/deep"
+        },
+        {
+          "kind": "find",
+          "path": "work/deep"
+        },
+        {
+          "kind": "find",
+          "path": "work/other"
+        },
+        {
+          "kind": "clearRoots"
+        },
+        {
+          "kind": "find",
+          "path": "work/deep"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "find",
+        "value": "<HOME>/work"
+      },
+      {
+        "kind": "find",
+        "value": "<HOME>/work"
+      },
+      {
+        "kind": "find",
+        "value": "<HOME>/work"
+      },
+      {
+        "kind": "clearRoots"
+      },
+      {
+        "kind": "find",
+        "value": "<HOME>/work"
+      }
+    ],
+    "asyncReads": [],
+    "clockCalls": [
+      1740000000000,
+      1740000000001,
+      1740000000002,
+      1740000000003,
+      1740000000004,
+      1740000000005
+    ],
+    "cwdReads": []
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "head-directory-read-failure",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": {
+          "directory": true
+        }
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": null
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "HEAD"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "watch-head-dirty",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/first",
+        "work/.git/config": ""
+      },
+      "ops": [
+        {
+          "kind": "branch"
+        },
+        {
+          "kind": "watchChange",
+          "path": "work/.git/HEAD",
+          "value": "ref: refs/heads/second"
+        },
+        {
+          "kind": "branch"
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "first"
+      },
+      {
+        "kind": "watchChange"
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "second"
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "second"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unusual-invalid-symref",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/tags/a",
+        "work/.git/refs/tags/a": "ref: refs//bad"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": {
+          "type": "detached",
+          "sha": ""
+        }
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/refs/tags/a"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      }
+    ],
+    "clockCalls": [],
+    "cwdReads": []
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "unusual-invalid-packed-sha",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/tags/a",
+        "work/.git/packed-refs": "gggggggggggggggggggggggggggggggggggggggg refs/tags/a\n"
+      },
+      "ops": [
+        {
+          "kind": "head",
+          "path": "work/.git"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "returned",
+        "operation": "head",
+        "settled": false
+      },
+      {
+        "kind": "head",
+        "value": {
+          "type": "detached",
+          "sha": ""
+        }
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/refs/tags/a"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/packed-refs"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      }
+    ],
+    "clockCalls": [],
+    "cwdReads": []
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "parallel-cold-no-repo",
+      "cwd": "work/deep",
+      "files": {},
+      "ops": [
+        {
+          "kind": "parallelBranches",
+          "count": 2
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "parallelReturned",
+        "settled": [
+          false,
+          false
+        ]
+      },
+      {
+        "kind": "parallelBranches",
+        "value": [
+          "HEAD",
+          "HEAD"
+        ]
+      }
+    ],
+    "asyncReads": [],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  },
+  {
+    "original": {
+      "clockStart": 1740000000000,
+      "name": "parallel-cold-repo",
+      "cwd": "work/deep",
+      "files": {
+        "work/.git/HEAD": "ref: refs/heads/main"
+      },
+      "ops": [
+        {
+          "kind": "parallelBranches",
+          "count": 2
+        },
+        {
+          "kind": "branch"
+        }
+      ]
+    },
+    "values": [
+      {
+        "kind": "parallelReturned",
+        "settled": [
+          false,
+          false
+        ]
+      },
+      {
+        "kind": "parallelBranches",
+        "value": [
+          "main",
+          "main"
+        ]
+      },
+      {
+        "kind": "returned",
+        "operation": "branch",
+        "settled": false
+      },
+      {
+        "kind": "branch",
+        "value": "main"
+      }
+    ],
+    "asyncReads": [
+      {
+        "operation": "stat",
+        "path": "work/.git"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/commondir"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      },
+      {
+        "operation": "read",
+        "path": "work/.git/HEAD"
+      }
+    ],
+    "clockCalls": [
+      1740000000000,
+      1740000000001
+    ],
+    "cwdReads": [
+      "<HOME>/work/deep",
+      "<HOME>/work/deep",
+      "<HOME>/work/deep"
+    ]
+  }
+]

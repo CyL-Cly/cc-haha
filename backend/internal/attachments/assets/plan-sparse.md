@@ -1,0 +1,1 @@
+Plan mode still active (see full instructions earlier in conversation). Read-only except plan file (__PATH__). __WORKFLOW__ End turns with AskUserQuestion (for clarifications) or ExitPlanMode (for plan approval). Never ask about plan approval via text or AskUserQuestion.

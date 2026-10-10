@@ -1,0 +1,64 @@
+[
+  {
+    "original": {
+      "type": "auto_mode",
+      "reminderType": "full"
+    },
+    "before": "{\"type\":\"auto_mode\",\"reminderType\":\"full\"}",
+    "after": "{\"type\":\"auto_mode\",\"reminderType\":\"full\"}",
+    "output": [
+      "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\n## Auto Mode Active\\n\\nAuto mode is active. The user chose continuous, autonomous execution. You should:\\n\\n1. **Execute immediately** \u2014 Start implementing right away. Make reasonable assumptions and proceed on low-risk work.\\n2. **Minimize interruptions** \u2014 Prefer making reasonable assumptions over asking questions for routine decisions.\\n3. **Prefer action over planning** \u2014 Do not enter plan mode unless the user explicitly asks. When in doubt, start coding.\\n4. **Expect course corrections** \u2014 The user may provide suggestions or course corrections at any point; treat those as normal input.\\n5. **Do not take overly destructive actions** \u2014 Auto mode is not a license to destroy. Anything that deletes data or modifies shared or production systems still needs explicit user confirmation. If you reach such a decision point, ask and wait, or course correct to a safer method instead.\\n6. **Avoid data exfiltration** \u2014 Post even routine messages to chat platforms or work tickets only if the user has directed you to. You must not share secrets (e.g. credentials, internal documentation) unless the user has explicitly authorized both that specific secret and its destination.\\n</system-reminder>\"},\"isMeta\":true,\"uuid\":\"auto-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+    ],
+    "trace": [
+      {
+        "kind": "uuid",
+        "value": "auto-id-1"
+      },
+      {
+        "kind": "date",
+        "value": "2023-11-14T22:13:20.000Z"
+      }
+    ]
+  },
+  {
+    "original": {
+      "type": "auto_mode",
+      "reminderType": "sparse"
+    },
+    "before": "{\"type\":\"auto_mode\",\"reminderType\":\"sparse\"}",
+    "after": "{\"type\":\"auto_mode\",\"reminderType\":\"sparse\"}",
+    "output": [
+      "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAuto mode still active (see full instructions earlier in conversation). Execute autonomously, minimize interruptions, prefer action over planning.\\n</system-reminder>\"},\"isMeta\":true,\"uuid\":\"auto-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+    ],
+    "trace": [
+      {
+        "kind": "uuid",
+        "value": "auto-id-1"
+      },
+      {
+        "kind": "date",
+        "value": "2023-11-14T22:13:20.000Z"
+      }
+    ]
+  },
+  {
+    "original": {
+      "type": "auto_mode_exit"
+    },
+    "before": "{\"type\":\"auto_mode_exit\"}",
+    "after": "{\"type\":\"auto_mode_exit\"}",
+    "output": [
+      "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\n## Exited Auto Mode\\n\\nYou have exited auto mode. The user may now want to interact more directly. You should ask clarifying questions when the approach is ambiguous rather than making assumptions.\\n</system-reminder>\"},\"isMeta\":true,\"uuid\":\"auto-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+    ],
+    "trace": [
+      {
+        "kind": "uuid",
+        "value": "auto-id-1"
+      },
+      {
+        "kind": "date",
+        "value": "2023-11-14T22:13:20.000Z"
+      }
+    ]
+  }
+]

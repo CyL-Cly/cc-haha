@@ -1,0 +1,575 @@
+[
+  {
+    "id": "sdk-explicit-inactive-constant",
+    "bare": true,
+    "git": {
+      "kind": "regular",
+      "firstHEAD": "ref: refs/heads/original-first\n",
+      "secondHEAD": "ref: refs/heads/original-compute\n",
+      "config": "[core]\n\trepositoryformatversion = 0\n\tbare = false\n",
+      "firstRef": "1111111111111111111111111111111111111111\n",
+      "secondRef": "2222222222222222222222222222222222222222\n",
+      "release": null
+    },
+    "sessionID": "1abc0000-0000-4000-8000-000000000011",
+    "initialSlug": "original-sdk-git-slug",
+    "global": "{\"autoCompactEnabled\":false,\"lastMigrationVersion\":11,\"userID\":\"original-fixture-device\",\"fixtureUnknown\":{\"keep\":\"yes\"}}",
+    "sdk": [
+      {
+        "type": "user",
+        "session_id": "1abc0000-0000-4000-8000-000000000011",
+        "uuid": "1abc0000-0000-4000-8000-000000000012",
+        "parent_tool_use_id": null,
+        "message": {
+          "role": "user",
+          "content": "Original private SDK Git prompt 2"
+        }
+      },
+      {
+        "type": "user",
+        "session_id": "1abc0000-0000-4000-8000-000000000011",
+        "uuid": "1abc0000-0000-4000-8000-000000000013",
+        "parent_tool_use_id": null,
+        "message": {
+          "role": "user",
+          "content": "Original private SDK Git prompt 3"
+        }
+      }
+    ],
+    "model": "fixture-model",
+    "systemPrompt": "Original SDK Git consumer private system",
+    "env": {
+      "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
+      "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+      "CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS": "1",
+      "CLAUDE_CODE_SKIP_REMOTE_PREFETCH": "1",
+      "CLAUDE_CODE_RESUME_INTERRUPTED_TURN": "false",
+      "CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK": "1",
+      "CLAUDE_STREAM_TRANSIENT_RETRY_MAX": "0",
+      "CLAUDE_ENABLE_STREAM_WATCHDOG": "0"
+    },
+    "settingsFiles": {},
+    "clock": {
+      "unixMillis": 1700000000000,
+      "program": "constant",
+      "controls": []
+    },
+    "hostPolicy": "native",
+    "runtime": {
+      "CLAUDE_CODE_SIMPLE": "1",
+      "CLAUDE_CODE_ENTRYPOINT": "sdk",
+      "CLAUDE_CODE_MAX_RETRIES": "0",
+      "CLAUDE_CODE_DISABLE_FAST_MODE": "1"
+    },
+    "responses": [
+      {
+        "status": 200,
+        "headers": {
+          "request-id": "original-producer-request-1"
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-producer-response-1\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0,\"cache_read_input_tokens\":0,\"cache_creation_input_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"Original producer SDK answer 1\"}}\n\n",
+        "tail": "event: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":7}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+      },
+      {
+        "status": 200,
+        "headers": {
+          "request-id": "original-producer-request-2"
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-producer-response-2\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0,\"cache_read_input_tokens\":0,\"cache_creation_input_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"Original producer SDK answer 2\"}}\n\n",
+        "tail": "event: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":7}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+      }
+    ]
+  },
+  {
+    "id": "sdk-explicit-inactive-public-clock",
+    "bare": true,
+    "git": {
+      "kind": "regular",
+      "firstHEAD": "ref: refs/heads/original-first\n",
+      "secondHEAD": "ref: refs/heads/original-compute\n",
+      "config": "[core]\n\trepositoryformatversion = 0\n\tbare = false\n",
+      "firstRef": "1111111111111111111111111111111111111111\n",
+      "secondRef": "2222222222222222222222222222222222222222\n",
+      "release": null
+    },
+    "sessionID": "1abc0000-0000-4000-8000-000000000011",
+    "initialSlug": "original-sdk-git-slug",
+    "global": "{\"autoCompactEnabled\":false,\"lastMigrationVersion\":11,\"userID\":\"original-fixture-device\",\"fixtureUnknown\":{\"keep\":\"yes\"}}",
+    "sdk": [
+      {
+        "type": "user",
+        "session_id": "1abc0000-0000-4000-8000-000000000011",
+        "uuid": "1abc0000-0000-4000-8000-000000000012",
+        "parent_tool_use_id": null,
+        "message": {
+          "role": "user",
+          "content": "Original private SDK Git prompt 2"
+        }
+      },
+      {
+        "type": "user",
+        "session_id": "1abc0000-0000-4000-8000-000000000011",
+        "uuid": "1abc0000-0000-4000-8000-000000000013",
+        "parent_tool_use_id": null,
+        "message": {
+          "role": "user",
+          "content": "Original private SDK Git prompt 3"
+        }
+      }
+    ],
+    "model": "fixture-model",
+    "systemPrompt": "Original SDK Git consumer private system",
+    "env": {
+      "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
+      "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+      "CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS": "1",
+      "CLAUDE_CODE_SKIP_REMOTE_PREFETCH": "1",
+      "CLAUDE_CODE_RESUME_INTERRUPTED_TURN": "false",
+      "CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK": "1",
+      "CLAUDE_STREAM_TRANSIENT_RETRY_MAX": "0",
+      "CLAUDE_ENABLE_STREAM_WATCHDOG": "0"
+    },
+    "settingsFiles": {},
+    "clock": {
+      "unixMillis": 1700000000000,
+      "program": "public-request-and-stream-delta",
+      "controls": [
+        {
+          "postOrdinal": 1,
+          "headerUnixMillis": 1700000001123,
+          "tailUnixMillis": 1700000001476
+        },
+        {
+          "postOrdinal": 2,
+          "headerUnixMillis": 1700000002123,
+          "tailUnixMillis": 1700000002476
+        }
+      ]
+    },
+    "hostPolicy": "native",
+    "runtime": {
+      "CLAUDE_CODE_SIMPLE": "1",
+      "CLAUDE_CODE_ENTRYPOINT": "sdk",
+      "CLAUDE_CODE_MAX_RETRIES": "0",
+      "CLAUDE_CODE_DISABLE_FAST_MODE": "1"
+    },
+    "responses": [
+      {
+        "status": 200,
+        "headers": {
+          "request-id": "original-producer-request-1"
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-producer-response-1\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0,\"cache_read_input_tokens\":0,\"cache_creation_input_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"Original producer SDK answer 1\"}}\n\n",
+        "tail": "event: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":7}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+      },
+      {
+        "status": 200,
+        "headers": {
+          "request-id": "original-producer-request-2"
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-producer-response-2\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0,\"cache_read_input_tokens\":0,\"cache_creation_input_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"Original producer SDK answer 2\"}}\n\n",
+        "tail": "event: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":7}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+      }
+    ]
+  },
+  {
+    "id": "sdk-policy-absent-constant",
+    "bare": true,
+    "git": {
+      "kind": "regular",
+      "firstHEAD": "ref: refs/heads/original-first\n",
+      "secondHEAD": "ref: refs/heads/original-compute\n",
+      "config": "[core]\n\trepositoryformatversion = 0\n\tbare = false\n",
+      "firstRef": "1111111111111111111111111111111111111111\n",
+      "secondRef": "2222222222222222222222222222222222222222\n",
+      "release": null
+    },
+    "sessionID": "1abc0000-0000-4000-8000-000000000011",
+    "initialSlug": "original-sdk-git-slug",
+    "global": "{\"autoCompactEnabled\":false,\"lastMigrationVersion\":11,\"userID\":\"original-fixture-device\",\"fixtureUnknown\":{\"keep\":\"yes\"}}",
+    "sdk": [
+      {
+        "type": "user",
+        "session_id": "1abc0000-0000-4000-8000-000000000011",
+        "uuid": "1abc0000-0000-4000-8000-000000000012",
+        "parent_tool_use_id": null,
+        "message": {
+          "role": "user",
+          "content": "Original private SDK Git prompt 2"
+        }
+      },
+      {
+        "type": "user",
+        "session_id": "1abc0000-0000-4000-8000-000000000011",
+        "uuid": "1abc0000-0000-4000-8000-000000000013",
+        "parent_tool_use_id": null,
+        "message": {
+          "role": "user",
+          "content": "Original private SDK Git prompt 3"
+        }
+      }
+    ],
+    "model": "fixture-model",
+    "systemPrompt": "Original SDK Git consumer private system",
+    "env": {
+      "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
+      "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+      "CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS": "1",
+      "CLAUDE_CODE_SKIP_REMOTE_PREFETCH": "1",
+      "CLAUDE_CODE_RESUME_INTERRUPTED_TURN": "false"
+    },
+    "settingsFiles": {},
+    "clock": {
+      "unixMillis": 1700000000000,
+      "program": "constant",
+      "controls": []
+    },
+    "hostPolicy": "native",
+    "runtime": {
+      "CLAUDE_CODE_SIMPLE": "1",
+      "CLAUDE_CODE_ENTRYPOINT": "sdk",
+      "CLAUDE_CODE_MAX_RETRIES": "0",
+      "CLAUDE_CODE_DISABLE_FAST_MODE": "1"
+    },
+    "responses": [
+      {
+        "status": 200,
+        "headers": {
+          "request-id": "original-producer-request-1"
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-producer-response-1\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0,\"cache_read_input_tokens\":0,\"cache_creation_input_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"Original producer SDK answer 1\"}}\n\n",
+        "tail": "event: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":7}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+      },
+      {
+        "status": 200,
+        "headers": {
+          "request-id": "original-producer-request-2"
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-producer-response-2\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0,\"cache_read_input_tokens\":0,\"cache_creation_input_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"Original producer SDK answer 2\"}}\n\n",
+        "tail": "event: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":7}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+      }
+    ]
+  },
+  {
+    "id": "sdk-policy-partial-fallback-only",
+    "bare": true,
+    "git": {
+      "kind": "regular",
+      "firstHEAD": "ref: refs/heads/original-first\n",
+      "secondHEAD": "ref: refs/heads/original-compute\n",
+      "config": "[core]\n\trepositoryformatversion = 0\n\tbare = false\n",
+      "firstRef": "1111111111111111111111111111111111111111\n",
+      "secondRef": "2222222222222222222222222222222222222222\n",
+      "release": null
+    },
+    "sessionID": "1abc0000-0000-4000-8000-000000000011",
+    "initialSlug": "original-sdk-git-slug",
+    "global": "{\"autoCompactEnabled\":false,\"lastMigrationVersion\":11,\"userID\":\"original-fixture-device\",\"fixtureUnknown\":{\"keep\":\"yes\"}}",
+    "sdk": [
+      {
+        "type": "user",
+        "session_id": "1abc0000-0000-4000-8000-000000000011",
+        "uuid": "1abc0000-0000-4000-8000-000000000012",
+        "parent_tool_use_id": null,
+        "message": {
+          "role": "user",
+          "content": "Original private SDK Git prompt 2"
+        }
+      },
+      {
+        "type": "user",
+        "session_id": "1abc0000-0000-4000-8000-000000000011",
+        "uuid": "1abc0000-0000-4000-8000-000000000013",
+        "parent_tool_use_id": null,
+        "message": {
+          "role": "user",
+          "content": "Original private SDK Git prompt 3"
+        }
+      }
+    ],
+    "model": "fixture-model",
+    "systemPrompt": "Original SDK Git consumer private system",
+    "env": {
+      "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
+      "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+      "CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS": "1",
+      "CLAUDE_CODE_SKIP_REMOTE_PREFETCH": "1",
+      "CLAUDE_CODE_RESUME_INTERRUPTED_TURN": "false",
+      "CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK": "1"
+    },
+    "settingsFiles": {},
+    "clock": {
+      "unixMillis": 1700000000000,
+      "program": "constant",
+      "controls": []
+    },
+    "hostPolicy": "native",
+    "runtime": {
+      "CLAUDE_CODE_SIMPLE": "1",
+      "CLAUDE_CODE_ENTRYPOINT": "sdk",
+      "CLAUDE_CODE_MAX_RETRIES": "0",
+      "CLAUDE_CODE_DISABLE_FAST_MODE": "1"
+    },
+    "responses": [
+      {
+        "status": 200,
+        "headers": {
+          "request-id": "original-producer-request-1"
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-producer-response-1\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0,\"cache_read_input_tokens\":0,\"cache_creation_input_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"Original producer SDK answer 1\"}}\n\n",
+        "tail": "event: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":7}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+      },
+      {
+        "status": 200,
+        "headers": {
+          "request-id": "original-producer-request-2"
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-producer-response-2\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0,\"cache_read_input_tokens\":0,\"cache_creation_input_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"Original producer SDK answer 2\"}}\n\n",
+        "tail": "event: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":7}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+      }
+    ]
+  },
+  {
+    "id": "sdk-policy-alias-values",
+    "bare": true,
+    "git": {
+      "kind": "regular",
+      "firstHEAD": "ref: refs/heads/original-first\n",
+      "secondHEAD": "ref: refs/heads/original-compute\n",
+      "config": "[core]\n\trepositoryformatversion = 0\n\tbare = false\n",
+      "firstRef": "1111111111111111111111111111111111111111\n",
+      "secondRef": "2222222222222222222222222222222222222222\n",
+      "release": null
+    },
+    "sessionID": "1abc0000-0000-4000-8000-000000000011",
+    "initialSlug": "original-sdk-git-slug",
+    "global": "{\"autoCompactEnabled\":false,\"lastMigrationVersion\":11,\"userID\":\"original-fixture-device\",\"fixtureUnknown\":{\"keep\":\"yes\"}}",
+    "sdk": [
+      {
+        "type": "user",
+        "session_id": "1abc0000-0000-4000-8000-000000000011",
+        "uuid": "1abc0000-0000-4000-8000-000000000012",
+        "parent_tool_use_id": null,
+        "message": {
+          "role": "user",
+          "content": "Original private SDK Git prompt 2"
+        }
+      },
+      {
+        "type": "user",
+        "session_id": "1abc0000-0000-4000-8000-000000000011",
+        "uuid": "1abc0000-0000-4000-8000-000000000013",
+        "parent_tool_use_id": null,
+        "message": {
+          "role": "user",
+          "content": "Original private SDK Git prompt 3"
+        }
+      }
+    ],
+    "model": "fixture-model",
+    "systemPrompt": "Original SDK Git consumer private system",
+    "env": {
+      "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
+      "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+      "CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS": "1",
+      "CLAUDE_CODE_SKIP_REMOTE_PREFETCH": "1",
+      "CLAUDE_CODE_RESUME_INTERRUPTED_TURN": "false",
+      "CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK": "YES",
+      "CLAUDE_STREAM_TRANSIENT_RETRY_MAX": "2",
+      "CLAUDE_ENABLE_STREAM_WATCHDOG": "true"
+    },
+    "settingsFiles": {},
+    "clock": {
+      "unixMillis": 1700000000000,
+      "program": "constant",
+      "controls": []
+    },
+    "hostPolicy": "native",
+    "runtime": {
+      "CLAUDE_CODE_SIMPLE": "1",
+      "CLAUDE_CODE_ENTRYPOINT": "sdk",
+      "CLAUDE_CODE_MAX_RETRIES": "0",
+      "CLAUDE_CODE_DISABLE_FAST_MODE": "1"
+    },
+    "responses": [
+      {
+        "status": 200,
+        "headers": {
+          "request-id": "original-producer-request-1"
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-producer-response-1\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0,\"cache_read_input_tokens\":0,\"cache_creation_input_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"Original producer SDK answer 1\"}}\n\n",
+        "tail": "event: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":7}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+      },
+      {
+        "status": 200,
+        "headers": {
+          "request-id": "original-producer-request-2"
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-producer-response-2\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0,\"cache_read_input_tokens\":0,\"cache_creation_input_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"Original producer SDK answer 2\"}}\n\n",
+        "tail": "event: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":7}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+      }
+    ]
+  },
+  {
+    "id": "sdk-policy-invalid-values",
+    "bare": true,
+    "git": {
+      "kind": "regular",
+      "firstHEAD": "ref: refs/heads/original-first\n",
+      "secondHEAD": "ref: refs/heads/original-compute\n",
+      "config": "[core]\n\trepositoryformatversion = 0\n\tbare = false\n",
+      "firstRef": "1111111111111111111111111111111111111111\n",
+      "secondRef": "2222222222222222222222222222222222222222\n",
+      "release": null
+    },
+    "sessionID": "1abc0000-0000-4000-8000-000000000011",
+    "initialSlug": "original-sdk-git-slug",
+    "global": "{\"autoCompactEnabled\":false,\"lastMigrationVersion\":11,\"userID\":\"original-fixture-device\",\"fixtureUnknown\":{\"keep\":\"yes\"}}",
+    "sdk": [
+      {
+        "type": "user",
+        "session_id": "1abc0000-0000-4000-8000-000000000011",
+        "uuid": "1abc0000-0000-4000-8000-000000000012",
+        "parent_tool_use_id": null,
+        "message": {
+          "role": "user",
+          "content": "Original private SDK Git prompt 2"
+        }
+      },
+      {
+        "type": "user",
+        "session_id": "1abc0000-0000-4000-8000-000000000011",
+        "uuid": "1abc0000-0000-4000-8000-000000000013",
+        "parent_tool_use_id": null,
+        "message": {
+          "role": "user",
+          "content": "Original private SDK Git prompt 3"
+        }
+      }
+    ],
+    "model": "fixture-model",
+    "systemPrompt": "Original SDK Git consumer private system",
+    "env": {
+      "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
+      "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+      "CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS": "1",
+      "CLAUDE_CODE_SKIP_REMOTE_PREFETCH": "1",
+      "CLAUDE_CODE_RESUME_INTERRUPTED_TURN": "false",
+      "CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK": "",
+      "CLAUDE_STREAM_TRANSIENT_RETRY_MAX": "invalid",
+      "CLAUDE_ENABLE_STREAM_WATCHDOG": "off"
+    },
+    "settingsFiles": {},
+    "clock": {
+      "unixMillis": 1700000000000,
+      "program": "constant",
+      "controls": []
+    },
+    "hostPolicy": "native",
+    "runtime": {
+      "CLAUDE_CODE_SIMPLE": "1",
+      "CLAUDE_CODE_ENTRYPOINT": "sdk",
+      "CLAUDE_CODE_MAX_RETRIES": "0",
+      "CLAUDE_CODE_DISABLE_FAST_MODE": "1"
+    },
+    "responses": [
+      {
+        "status": 200,
+        "headers": {
+          "request-id": "original-producer-request-1"
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-producer-response-1\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0,\"cache_read_input_tokens\":0,\"cache_creation_input_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"Original producer SDK answer 1\"}}\n\n",
+        "tail": "event: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":7}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+      },
+      {
+        "status": 200,
+        "headers": {
+          "request-id": "original-producer-request-2"
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-producer-response-2\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0,\"cache_read_input_tokens\":0,\"cache_creation_input_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"Original producer SDK answer 2\"}}\n\n",
+        "tail": "event: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":7}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+      }
+    ]
+  },
+  {
+    "id": "sdk-nonretryable-after-delta",
+    "bare": true,
+    "git": {
+      "kind": "regular",
+      "firstHEAD": "ref: refs/heads/original-first\n",
+      "secondHEAD": "ref: refs/heads/original-compute\n",
+      "config": "[core]\n\trepositoryformatversion = 0\n\tbare = false\n",
+      "firstRef": "1111111111111111111111111111111111111111\n",
+      "secondRef": "2222222222222222222222222222222222222222\n",
+      "release": null
+    },
+    "sessionID": "1abc0000-0000-4000-8000-000000000011",
+    "initialSlug": "original-sdk-git-slug",
+    "global": "{\"autoCompactEnabled\":false,\"lastMigrationVersion\":11,\"userID\":\"original-fixture-device\",\"fixtureUnknown\":{\"keep\":\"yes\"}}",
+    "sdk": [
+      {
+        "type": "user",
+        "session_id": "1abc0000-0000-4000-8000-000000000011",
+        "uuid": "1abc0000-0000-4000-8000-000000000012",
+        "parent_tool_use_id": null,
+        "message": {
+          "role": "user",
+          "content": "Original private SDK Git prompt 2"
+        }
+      },
+      {
+        "type": "user",
+        "session_id": "1abc0000-0000-4000-8000-000000000011",
+        "uuid": "1abc0000-0000-4000-8000-000000000013",
+        "parent_tool_use_id": null,
+        "message": {
+          "role": "user",
+          "content": "Original private SDK Git prompt 3"
+        }
+      }
+    ],
+    "model": "fixture-model",
+    "systemPrompt": "Original SDK Git consumer private system",
+    "env": {
+      "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
+      "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+      "CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS": "1",
+      "CLAUDE_CODE_SKIP_REMOTE_PREFETCH": "1",
+      "CLAUDE_CODE_RESUME_INTERRUPTED_TURN": "false",
+      "CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK": "1",
+      "CLAUDE_STREAM_TRANSIENT_RETRY_MAX": "0",
+      "CLAUDE_ENABLE_STREAM_WATCHDOG": "0"
+    },
+    "settingsFiles": {},
+    "clock": {
+      "unixMillis": 1700000000000,
+      "program": "constant",
+      "controls": []
+    },
+    "hostPolicy": "native",
+    "runtime": {
+      "CLAUDE_CODE_SIMPLE": "1",
+      "CLAUDE_CODE_ENTRYPOINT": "sdk",
+      "CLAUDE_CODE_MAX_RETRIES": "0",
+      "CLAUDE_CODE_DISABLE_FAST_MODE": "1"
+    },
+    "responses": [
+      {
+        "status": 200,
+        "headers": {
+          "request-id": "original-producer-request-1"
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-producer-response-1\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0,\"cache_read_input_tokens\":0,\"cache_creation_input_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"Original producer SDK answer 1\"}}\n\n",
+        "tail": "event: error\ndata: {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"Original nonretryable after-delta provider response\"}}\n\n"
+      },
+      {
+        "status": 200,
+        "headers": {
+          "request-id": "original-producer-request-2"
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-producer-response-2\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0,\"cache_read_input_tokens\":0,\"cache_creation_input_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"Original producer SDK answer 2\"}}\n\n",
+        "tail": "event: error\ndata: {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"Original nonretryable after-delta provider response\"}}\n\n"
+      }
+    ]
+  }
+]

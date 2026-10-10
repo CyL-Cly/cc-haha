@@ -1,0 +1,257 @@
+{
+  "observations": [
+    {
+      "scenario": {
+        "name": "no-proxy-loopback-guards",
+        "endpoint": "http://127.0.0.1:123",
+        "env": {
+          "no_proxy": "127.0.0.1",
+          "NO_PROXY": "wrong.invalid"
+        }
+      },
+      "observation": {
+        "proxy": "",
+        "bypass": false,
+        "fetchProxy": ""
+      }
+    },
+    {
+      "scenario": {
+        "name": "four-priority-lower-https",
+        "endpoint": "http://127.0.0.1",
+        "env": {
+          "https_proxy": "http://lower-https.invalid",
+          "HTTPS_PROXY": "http://upper-https.invalid",
+          "http_proxy": "http://lower-http.invalid",
+          "HTTP_PROXY": "http://upper-http.invalid"
+        }
+      },
+      "observation": {
+        "proxy": "http://lower-https.invalid",
+        "bypass": false,
+        "fetchProxy": "http://lower-https.invalid"
+      }
+    },
+    {
+      "scenario": {
+        "name": "upper-https-before-lower-http",
+        "endpoint": "http://127.0.0.1",
+        "env": {
+          "HTTPS_PROXY": "http://upper-https.invalid",
+          "http_proxy": "http://lower-http.invalid"
+        }
+      },
+      "observation": {
+        "proxy": "http://upper-https.invalid",
+        "bypass": false,
+        "fetchProxy": "http://upper-https.invalid"
+      }
+    },
+    {
+      "scenario": {
+        "name": "lower-no-proxy-precedence",
+        "endpoint": "http://127.0.0.1",
+        "env": {
+          "HTTPS_PROXY": "http://unused.invalid",
+          "no_proxy": "127.0.0.1",
+          "NO_PROXY": "wrong.invalid"
+        }
+      },
+      "observation": {
+        "proxy": "http://unused.invalid",
+        "bypass": true,
+        "fetchProxy": ""
+      }
+    },
+    {
+      "scenario": {
+        "name": "empty-lower-no-proxy-fallback",
+        "endpoint": "http://127.0.0.1",
+        "env": {
+          "HTTPS_PROXY": "http://unused.invalid",
+          "no_proxy": "",
+          "NO_PROXY": "127.0.0.1"
+        }
+      },
+      "observation": {
+        "proxy": "http://unused.invalid",
+        "bypass": true,
+        "fetchProxy": ""
+      }
+    },
+    {
+      "scenario": {
+        "name": "target-bypass-0",
+        "endpoint": "https://example.com/path",
+        "env": {
+          "HTTPS_PROXY": "http://unused.invalid",
+          "no_proxy": ".example.com"
+        }
+      },
+      "observation": {
+        "proxy": "http://unused.invalid",
+        "bypass": true,
+        "fetchProxy": ""
+      }
+    },
+    {
+      "scenario": {
+        "name": "target-bypass-1",
+        "endpoint": "https://sub.example.com",
+        "env": {
+          "HTTPS_PROXY": "http://unused.invalid",
+          "no_proxy": ".example.com"
+        }
+      },
+      "observation": {
+        "proxy": "http://unused.invalid",
+        "bypass": true,
+        "fetchProxy": ""
+      }
+    },
+    {
+      "scenario": {
+        "name": "target-bypass-2",
+        "endpoint": "https://notexample.com",
+        "env": {
+          "HTTPS_PROXY": "http://unused.invalid",
+          "no_proxy": ".example.com"
+        }
+      },
+      "observation": {
+        "proxy": "http://unused.invalid",
+        "bypass": false,
+        "fetchProxy": "http://unused.invalid"
+      }
+    },
+    {
+      "scenario": {
+        "name": "target-bypass-3",
+        "endpoint": "https://example.com",
+        "env": {
+          "HTTPS_PROXY": "http://unused.invalid",
+          "no_proxy": "example.com:443"
+        }
+      },
+      "observation": {
+        "proxy": "http://unused.invalid",
+        "bypass": true,
+        "fetchProxy": ""
+      }
+    },
+    {
+      "scenario": {
+        "name": "target-bypass-4",
+        "endpoint": "https://example.com:444",
+        "env": {
+          "HTTPS_PROXY": "http://unused.invalid",
+          "no_proxy": "example.com:443"
+        }
+      },
+      "observation": {
+        "proxy": "http://unused.invalid",
+        "bypass": false,
+        "fetchProxy": "http://unused.invalid"
+      }
+    },
+    {
+      "scenario": {
+        "name": "target-bypass-5",
+        "endpoint": "http://[::1]:8080",
+        "env": {
+          "HTTPS_PROXY": "http://unused.invalid",
+          "no_proxy": "::1"
+        }
+      },
+      "observation": {
+        "proxy": "http://unused.invalid",
+        "bypass": true,
+        "fetchProxy": ""
+      }
+    },
+    {
+      "scenario": {
+        "name": "target-bypass-6",
+        "endpoint": "http://[::1]:8080",
+        "env": {
+          "HTTPS_PROXY": "http://unused.invalid",
+          "no_proxy": "[::1]:8080"
+        }
+      },
+      "observation": {
+        "proxy": "http://unused.invalid",
+        "bypass": true,
+        "fetchProxy": ""
+      }
+    },
+    {
+      "scenario": {
+        "name": "target-bypass-7",
+        "endpoint": "http://[::1]:8080",
+        "env": {
+          "HTTPS_PROXY": "http://unused.invalid",
+          "no_proxy": "[::1]:80"
+        }
+      },
+      "observation": {
+        "proxy": "http://unused.invalid",
+        "bypass": false,
+        "fetchProxy": "http://unused.invalid"
+      }
+    },
+    {
+      "scenario": {
+        "name": "target-bypass-8",
+        "endpoint": "http://example.com",
+        "env": {
+          "HTTPS_PROXY": "http://unused.invalid",
+          "no_proxy": "*"
+        }
+      },
+      "observation": {
+        "proxy": "http://unused.invalid",
+        "bypass": true,
+        "fetchProxy": ""
+      }
+    },
+    {
+      "scenario": {
+        "name": "target-bypass-9",
+        "endpoint": "http://example.com",
+        "env": {
+          "HTTPS_PROXY": "http://unused.invalid",
+          "no_proxy": "localhost,*"
+        }
+      },
+      "observation": {
+        "proxy": "http://unused.invalid",
+        "bypass": false,
+        "fetchProxy": "http://unused.invalid"
+      }
+    },
+    {
+      "scenario": {
+        "name": "target-bypass-10",
+        "endpoint": "http://example.com",
+        "env": {
+          "HTTPS_PROXY": "http://unused.invalid",
+          "no_proxy": "elsewhere\ufeffexample.com"
+        }
+      },
+      "observation": {
+        "proxy": "http://unused.invalid",
+        "bypass": true,
+        "fetchProxy": ""
+      }
+    }
+  ],
+  "sourceOnly": {
+    "consumer": "src/utils/proxy.ts getProxyFetchOptions",
+    "runtime": "v24.3.0",
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [],
+      "absentReads": []
+    }
+  }
+}

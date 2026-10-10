@@ -1,0 +1,2058 @@
+[
+  {
+    "input": {
+      "name": "empty-cache-same-reference",
+      "operations": [
+        {
+          "kind": "getInitial"
+        },
+        {
+          "kind": "getInitial"
+        }
+      ],
+      "home": "<HOME>"
+    },
+    "expected": {
+      "name": "empty-cache-same-reference",
+      "results": [
+        {
+          "operation": "getInitial",
+          "returned": "{}",
+          "sameInitial": false,
+          "error": null,
+          "effects": [
+            {
+              "kind": "read",
+              "path": "<HOME>/.claude/settings.json"
+            },
+            {
+              "kind": "read",
+              "path": "<HOME>/project/.claude/settings.json"
+            },
+            {
+              "kind": "read",
+              "path": "<HOME>/project/.claude/settings.local.json"
+            }
+          ],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{}",
+          "sessionView": {
+            "kind": "object",
+            "fields": []
+          },
+          "sessionErrors": []
+        },
+        {
+          "operation": "getInitial",
+          "returned": "{}",
+          "sameInitial": true,
+          "error": null,
+          "effects": [],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{}",
+          "sessionView": {
+            "kind": "object",
+            "fields": []
+          },
+          "sessionErrors": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "merge-model-and-environment-without-applying",
+      "user": "{\"model\":\"user-model\",\"env\":{\"ORIGINAL_GETTER_ENV\":\"user-value\"},\"future\":{\"2\":\"two\",\"1\":\"one\",\"text\":\"original\"}}",
+      "project": "{\"model\":\"project-model\",\"future\":{\"tail\":\"project\"}}",
+      "local": "{\"model\":\"deepseek-flash\"}",
+      "operations": [
+        {
+          "kind": "getInitial"
+        },
+        {
+          "kind": "getInitial"
+        }
+      ],
+      "home": "<HOME>"
+    },
+    "expected": {
+      "name": "merge-model-and-environment-without-applying",
+      "results": [
+        {
+          "operation": "getInitial",
+          "returned": "{\"env\":{\"ORIGINAL_GETTER_ENV\":\"user-value\"},\"model\":\"deepseek-flash\",\"future\":{\"1\":\"one\",\"2\":\"two\",\"text\":\"original\",\"tail\":\"project\"}}",
+          "sameInitial": false,
+          "error": null,
+          "effects": [
+            {
+              "kind": "read",
+              "path": "<HOME>/.claude/settings.json"
+            },
+            {
+              "kind": "read",
+              "path": "<HOME>/project/.claude/settings.json"
+            },
+            {
+              "kind": "read",
+              "path": "<HOME>/project/.claude/settings.local.json"
+            }
+          ],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ORIGINAL_GETTER_ENV\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{\"env\":{\"ORIGINAL_GETTER_ENV\":\"user-value\"},\"model\":\"deepseek-flash\",\"future\":{\"1\":\"one\",\"2\":\"two\",\"text\":\"original\",\"tail\":\"project\"}}",
+          "sessionView": {
+            "kind": "object",
+            "fields": [
+              {
+                "key": "\"env\"",
+                "value": {
+                  "kind": "object",
+                  "fields": [
+                    {
+                      "key": "\"ORIGINAL_GETTER_ENV\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"user-value\""
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "key": "\"model\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"deepseek-flash\""
+                }
+              },
+              {
+                "key": "\"future\"",
+                "value": {
+                  "kind": "object",
+                  "fields": [
+                    {
+                      "key": "\"1\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"one\""
+                      }
+                    },
+                    {
+                      "key": "\"2\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"two\""
+                      }
+                    },
+                    {
+                      "key": "\"text\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"original\""
+                      }
+                    },
+                    {
+                      "key": "\"tail\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"project\""
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "sessionErrors": []
+        },
+        {
+          "operation": "getInitial",
+          "returned": "{\"env\":{\"ORIGINAL_GETTER_ENV\":\"user-value\"},\"model\":\"deepseek-flash\",\"future\":{\"1\":\"one\",\"2\":\"two\",\"text\":\"original\",\"tail\":\"project\"}}",
+          "sameInitial": true,
+          "error": null,
+          "effects": [],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ORIGINAL_GETTER_ENV\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{\"env\":{\"ORIGINAL_GETTER_ENV\":\"user-value\"},\"model\":\"deepseek-flash\",\"future\":{\"1\":\"one\",\"2\":\"two\",\"text\":\"original\",\"tail\":\"project\"}}",
+          "sessionView": {
+            "kind": "object",
+            "fields": [
+              {
+                "key": "\"env\"",
+                "value": {
+                  "kind": "object",
+                  "fields": [
+                    {
+                      "key": "\"ORIGINAL_GETTER_ENV\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"user-value\""
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "key": "\"model\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"deepseek-flash\""
+                }
+              },
+              {
+                "key": "\"future\"",
+                "value": {
+                  "kind": "object",
+                  "fields": [
+                    {
+                      "key": "\"1\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"one\""
+                      }
+                    },
+                    {
+                      "key": "\"2\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"two\""
+                      }
+                    },
+                    {
+                      "key": "\"text\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"original\""
+                      }
+                    },
+                    {
+                      "key": "\"tail\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"project\""
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "sessionErrors": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "disk-write-cache-stale-then-reset",
+      "user": "{\"model\":\"before\",\"future\":{\"value\":\"before\"}}",
+      "operations": [
+        {
+          "kind": "getInitial"
+        },
+        {
+          "kind": "write",
+          "file": "user",
+          "raw": "{\"model\":\"after\",\"future\":{\"value\":\"after\"}}"
+        },
+        {
+          "kind": "getInitial"
+        },
+        {
+          "kind": "resetSettings"
+        },
+        {
+          "kind": "getInitial"
+        },
+        {
+          "kind": "getInitial"
+        }
+      ],
+      "home": "<HOME>"
+    },
+    "expected": {
+      "name": "disk-write-cache-stale-then-reset",
+      "results": [
+        {
+          "operation": "getInitial",
+          "returned": "{\"model\":\"before\",\"future\":{\"value\":\"before\"}}",
+          "sameInitial": false,
+          "error": null,
+          "effects": [
+            {
+              "kind": "read",
+              "path": "<HOME>/.claude/settings.json"
+            },
+            {
+              "kind": "read",
+              "path": "<HOME>/project/.claude/settings.json"
+            },
+            {
+              "kind": "read",
+              "path": "<HOME>/project/.claude/settings.local.json"
+            }
+          ],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{\"model\":\"before\",\"future\":{\"value\":\"before\"}}",
+          "sessionView": {
+            "kind": "object",
+            "fields": [
+              {
+                "key": "\"model\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"before\""
+                }
+              },
+              {
+                "key": "\"future\"",
+                "value": {
+                  "kind": "object",
+                  "fields": [
+                    {
+                      "key": "\"value\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"before\""
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "sessionErrors": []
+        },
+        {
+          "operation": "write",
+          "returned": null,
+          "sameInitial": null,
+          "error": null,
+          "effects": [],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{\"model\":\"before\",\"future\":{\"value\":\"before\"}}",
+          "sessionView": {
+            "kind": "object",
+            "fields": [
+              {
+                "key": "\"model\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"before\""
+                }
+              },
+              {
+                "key": "\"future\"",
+                "value": {
+                  "kind": "object",
+                  "fields": [
+                    {
+                      "key": "\"value\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"before\""
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "sessionErrors": []
+        },
+        {
+          "operation": "getInitial",
+          "returned": "{\"model\":\"before\",\"future\":{\"value\":\"before\"}}",
+          "sameInitial": true,
+          "error": null,
+          "effects": [],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{\"model\":\"before\",\"future\":{\"value\":\"before\"}}",
+          "sessionView": {
+            "kind": "object",
+            "fields": [
+              {
+                "key": "\"model\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"before\""
+                }
+              },
+              {
+                "key": "\"future\"",
+                "value": {
+                  "kind": "object",
+                  "fields": [
+                    {
+                      "key": "\"value\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"before\""
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "sessionErrors": []
+        },
+        {
+          "operation": "resetSettings",
+          "returned": null,
+          "sameInitial": null,
+          "error": null,
+          "effects": [],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": null,
+          "sessionView": null,
+          "sessionErrors": null
+        },
+        {
+          "operation": "getInitial",
+          "returned": "{\"model\":\"after\",\"future\":{\"value\":\"after\"}}",
+          "sameInitial": false,
+          "error": null,
+          "effects": [
+            {
+              "kind": "read",
+              "path": "<HOME>/.claude/settings.json"
+            },
+            {
+              "kind": "read",
+              "path": "<HOME>/project/.claude/settings.json"
+            },
+            {
+              "kind": "read",
+              "path": "<HOME>/project/.claude/settings.local.json"
+            }
+          ],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{\"model\":\"after\",\"future\":{\"value\":\"after\"}}",
+          "sessionView": {
+            "kind": "object",
+            "fields": [
+              {
+                "key": "\"model\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"after\""
+                }
+              },
+              {
+                "key": "\"future\"",
+                "value": {
+                  "kind": "object",
+                  "fields": [
+                    {
+                      "key": "\"value\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"after\""
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "sessionErrors": []
+        },
+        {
+          "operation": "getInitial",
+          "returned": "{\"model\":\"after\",\"future\":{\"value\":\"after\"}}",
+          "sameInitial": true,
+          "error": null,
+          "effects": [],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{\"model\":\"after\",\"future\":{\"value\":\"after\"}}",
+          "sessionView": {
+            "kind": "object",
+            "fields": [
+              {
+                "key": "\"model\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"after\""
+                }
+              },
+              {
+                "key": "\"future\"",
+                "value": {
+                  "kind": "object",
+                  "fields": [
+                    {
+                      "key": "\"value\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"after\""
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "sessionErrors": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "exact-own-slots-and-utf16",
+      "user": "{\"10\":\"ten\",\"2\":\"two\",\"future\":{\"\\ud800\":\"high\",\"literal\":\"�\"},\"model\":\"deepseek-flash\"}",
+      "operations": [
+        {
+          "kind": "getInitial"
+        },
+        {
+          "kind": "getInitial"
+        }
+      ],
+      "home": "<HOME>"
+    },
+    "expected": {
+      "name": "exact-own-slots-and-utf16",
+      "results": [
+        {
+          "operation": "getInitial",
+          "returned": "{\"2\":\"two\",\"10\":\"ten\",\"model\":\"deepseek-flash\",\"future\":{\"\\ud800\":\"high\",\"literal\":\"�\"}}",
+          "sameInitial": false,
+          "error": null,
+          "effects": [
+            {
+              "kind": "read",
+              "path": "<HOME>/.claude/settings.json"
+            },
+            {
+              "kind": "read",
+              "path": "<HOME>/project/.claude/settings.json"
+            },
+            {
+              "kind": "read",
+              "path": "<HOME>/project/.claude/settings.local.json"
+            }
+          ],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{\"2\":\"two\",\"10\":\"ten\",\"model\":\"deepseek-flash\",\"future\":{\"\\ud800\":\"high\",\"literal\":\"�\"}}",
+          "sessionView": {
+            "kind": "object",
+            "fields": [
+              {
+                "key": "\"2\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"two\""
+                }
+              },
+              {
+                "key": "\"10\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"ten\""
+                }
+              },
+              {
+                "key": "\"model\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"deepseek-flash\""
+                }
+              },
+              {
+                "key": "\"future\"",
+                "value": {
+                  "kind": "object",
+                  "fields": [
+                    {
+                      "key": "\"\\ud800\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"high\""
+                      }
+                    },
+                    {
+                      "key": "\"literal\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"�\""
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "sessionErrors": []
+        },
+        {
+          "operation": "getInitial",
+          "returned": "{\"2\":\"two\",\"10\":\"ten\",\"model\":\"deepseek-flash\",\"future\":{\"\\ud800\":\"high\",\"literal\":\"�\"}}",
+          "sameInitial": true,
+          "error": null,
+          "effects": [],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{\"2\":\"two\",\"10\":\"ten\",\"model\":\"deepseek-flash\",\"future\":{\"\\ud800\":\"high\",\"literal\":\"�\"}}",
+          "sessionView": {
+            "kind": "object",
+            "fields": [
+              {
+                "key": "\"2\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"two\""
+                }
+              },
+              {
+                "key": "\"10\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"ten\""
+                }
+              },
+              {
+                "key": "\"model\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"deepseek-flash\""
+                }
+              },
+              {
+                "key": "\"future\"",
+                "value": {
+                  "kind": "object",
+                  "fields": [
+                    {
+                      "key": "\"\\ud800\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"high\""
+                      }
+                    },
+                    {
+                      "key": "\"literal\"",
+                      "value": {
+                        "kind": "string",
+                        "json": "\"�\""
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "sessionErrors": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "inline-and-empty-hook-schema",
+      "user": "{\"model\":\"user\",\"hooks\":{\"Stop\":[]}}",
+      "flagInline": "{\"model\":\"deepseek-flash\",\"hooks\":{\"PostToolUse\":[]},\"future\":\"inline\"}",
+      "operations": [
+        {
+          "kind": "getInitial"
+        },
+        {
+          "kind": "getInitial"
+        }
+      ],
+      "home": "<HOME>"
+    },
+    "expected": {
+      "name": "inline-and-empty-hook-schema",
+      "results": [
+        {
+          "operation": "getInitial",
+          "returned": "{\"model\":\"deepseek-flash\",\"hooks\":{\"Stop\":[],\"PostToolUse\":[]},\"future\":\"inline\"}",
+          "sameInitial": false,
+          "error": null,
+          "effects": [
+            {
+              "kind": "read",
+              "path": "<HOME>/.claude/settings.json"
+            },
+            {
+              "kind": "read",
+              "path": "<HOME>/project/.claude/settings.json"
+            },
+            {
+              "kind": "read",
+              "path": "<HOME>/project/.claude/settings.local.json"
+            }
+          ],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{\"model\":\"deepseek-flash\",\"hooks\":{\"Stop\":[],\"PostToolUse\":[]},\"future\":\"inline\"}",
+          "sessionView": {
+            "kind": "object",
+            "fields": [
+              {
+                "key": "\"model\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"deepseek-flash\""
+                }
+              },
+              {
+                "key": "\"hooks\"",
+                "value": {
+                  "kind": "object",
+                  "fields": [
+                    {
+                      "key": "\"Stop\"",
+                      "value": {
+                        "kind": "array",
+                        "items": []
+                      }
+                    },
+                    {
+                      "key": "\"PostToolUse\"",
+                      "value": {
+                        "kind": "array",
+                        "items": []
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "key": "\"future\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"inline\""
+                }
+              }
+            ]
+          },
+          "sessionErrors": []
+        },
+        {
+          "operation": "getInitial",
+          "returned": "{\"model\":\"deepseek-flash\",\"hooks\":{\"Stop\":[],\"PostToolUse\":[]},\"future\":\"inline\"}",
+          "sameInitial": true,
+          "error": null,
+          "effects": [],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{\"model\":\"deepseek-flash\",\"hooks\":{\"Stop\":[],\"PostToolUse\":[]},\"future\":\"inline\"}",
+          "sessionView": {
+            "kind": "object",
+            "fields": [
+              {
+                "key": "\"model\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"deepseek-flash\""
+                }
+              },
+              {
+                "key": "\"hooks\"",
+                "value": {
+                  "kind": "object",
+                  "fields": [
+                    {
+                      "key": "\"Stop\"",
+                      "value": {
+                        "kind": "array",
+                        "items": []
+                      }
+                    },
+                    {
+                      "key": "\"PostToolUse\"",
+                      "value": {
+                        "kind": "array",
+                        "items": []
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "key": "\"future\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"inline\""
+                }
+              }
+            ]
+          },
+          "sessionErrors": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "returned-object-mutates-cache-only",
+      "user": "{\"model\":\"disk-model\",\"future\":\"disk\"}",
+      "operations": [
+        {
+          "kind": "getInitial"
+        },
+        {
+          "kind": "mutateInitial",
+          "raw": "{\"model\":\"session-model\",\"newUnknown\":\"retained\"}"
+        },
+        {
+          "kind": "getInitial"
+        },
+        {
+          "kind": "resetSettings"
+        },
+        {
+          "kind": "getInitial"
+        }
+      ],
+      "home": "<HOME>"
+    },
+    "expected": {
+      "name": "returned-object-mutates-cache-only",
+      "results": [
+        {
+          "operation": "getInitial",
+          "returned": "{\"model\":\"disk-model\",\"future\":\"disk\"}",
+          "sameInitial": false,
+          "error": null,
+          "effects": [
+            {
+              "kind": "read",
+              "path": "<HOME>/.claude/settings.json"
+            },
+            {
+              "kind": "read",
+              "path": "<HOME>/project/.claude/settings.json"
+            },
+            {
+              "kind": "read",
+              "path": "<HOME>/project/.claude/settings.local.json"
+            }
+          ],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{\"model\":\"disk-model\",\"future\":\"disk\"}",
+          "sessionView": {
+            "kind": "object",
+            "fields": [
+              {
+                "key": "\"model\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"disk-model\""
+                }
+              },
+              {
+                "key": "\"future\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"disk\""
+                }
+              }
+            ]
+          },
+          "sessionErrors": []
+        },
+        {
+          "operation": "mutateInitial",
+          "returned": "{\"model\":\"session-model\",\"future\":\"disk\",\"newUnknown\":\"retained\"}",
+          "sameInitial": true,
+          "error": null,
+          "effects": [],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{\"model\":\"session-model\",\"future\":\"disk\",\"newUnknown\":\"retained\"}",
+          "sessionView": {
+            "kind": "object",
+            "fields": [
+              {
+                "key": "\"model\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"session-model\""
+                }
+              },
+              {
+                "key": "\"future\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"disk\""
+                }
+              },
+              {
+                "key": "\"newUnknown\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"retained\""
+                }
+              }
+            ]
+          },
+          "sessionErrors": []
+        },
+        {
+          "operation": "getInitial",
+          "returned": "{\"model\":\"session-model\",\"future\":\"disk\",\"newUnknown\":\"retained\"}",
+          "sameInitial": true,
+          "error": null,
+          "effects": [],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{\"model\":\"session-model\",\"future\":\"disk\",\"newUnknown\":\"retained\"}",
+          "sessionView": {
+            "kind": "object",
+            "fields": [
+              {
+                "key": "\"model\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"session-model\""
+                }
+              },
+              {
+                "key": "\"future\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"disk\""
+                }
+              },
+              {
+                "key": "\"newUnknown\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"retained\""
+                }
+              }
+            ]
+          },
+          "sessionErrors": []
+        },
+        {
+          "operation": "resetSettings",
+          "returned": null,
+          "sameInitial": null,
+          "error": null,
+          "effects": [],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": null,
+          "sessionView": null,
+          "sessionErrors": null
+        },
+        {
+          "operation": "getInitial",
+          "returned": "{\"model\":\"disk-model\",\"future\":\"disk\"}",
+          "sameInitial": false,
+          "error": null,
+          "effects": [
+            {
+              "kind": "read",
+              "path": "<HOME>/.claude/settings.json"
+            },
+            {
+              "kind": "read",
+              "path": "<HOME>/project/.claude/settings.json"
+            },
+            {
+              "kind": "read",
+              "path": "<HOME>/project/.claude/settings.local.json"
+            }
+          ],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{\"model\":\"disk-model\",\"future\":\"disk\"}",
+          "sessionView": {
+            "kind": "object",
+            "fields": [
+              {
+                "key": "\"model\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"disk-model\""
+                }
+              },
+              {
+                "key": "\"future\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"disk\""
+                }
+              }
+            ]
+          },
+          "sessionErrors": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "cached-absent-fallback-new-empty-each-call",
+      "operations": [
+        {
+          "kind": "cacheInitialNull"
+        },
+        {
+          "kind": "getInitial"
+        },
+        {
+          "kind": "getInitial"
+        }
+      ],
+      "home": "<HOME>"
+    },
+    "expected": {
+      "name": "cached-absent-fallback-new-empty-each-call",
+      "results": [
+        {
+          "operation": "cacheInitialNull",
+          "returned": null,
+          "sameInitial": null,
+          "error": null,
+          "effects": [],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "null",
+          "sessionView": {
+            "kind": "null",
+            "json": "null"
+          },
+          "sessionErrors": []
+        },
+        {
+          "operation": "getInitial",
+          "returned": "{}",
+          "sameInitial": false,
+          "error": null,
+          "effects": [],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "null",
+          "sessionView": {
+            "kind": "null",
+            "json": "null"
+          },
+          "sessionErrors": []
+        },
+        {
+          "operation": "getInitial",
+          "returned": "{}",
+          "sameInitial": false,
+          "error": null,
+          "effects": [],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "null",
+          "sessionView": {
+            "kind": "null",
+            "json": "null"
+          },
+          "sessionErrors": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "same-file-unknown-arrays-deduplicated",
+      "user": "{\"model\":\"deepseek-flash\",\"future\":{\"array\":[\"a\",\"b\"]}}",
+      "flagSameAsUser": true,
+      "flagInline": "{\"future\":{\"array\":[\"b\",\"c\"]}}",
+      "operations": [
+        {
+          "kind": "getInitial"
+        },
+        {
+          "kind": "getInitial"
+        }
+      ],
+      "home": "<HOME>"
+    },
+    "expected": {
+      "name": "same-file-unknown-arrays-deduplicated",
+      "results": [
+        {
+          "operation": "getInitial",
+          "returned": "{\"model\":\"deepseek-flash\",\"future\":{\"array\":[\"a\",\"b\",\"c\"]}}",
+          "sameInitial": false,
+          "error": null,
+          "effects": [
+            {
+              "kind": "read",
+              "path": "<HOME>/.claude/settings.json"
+            },
+            {
+              "kind": "read",
+              "path": "<HOME>/project/.claude/settings.json"
+            },
+            {
+              "kind": "read",
+              "path": "<HOME>/project/.claude/settings.local.json"
+            }
+          ],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{\"model\":\"deepseek-flash\",\"future\":{\"array\":[\"a\",\"b\",\"c\"]}}",
+          "sessionView": {
+            "kind": "object",
+            "fields": [
+              {
+                "key": "\"model\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"deepseek-flash\""
+                }
+              },
+              {
+                "key": "\"future\"",
+                "value": {
+                  "kind": "object",
+                  "fields": [
+                    {
+                      "key": "\"array\"",
+                      "value": {
+                        "kind": "array",
+                        "items": [
+                          {
+                            "kind": "string",
+                            "json": "\"a\""
+                          },
+                          {
+                            "kind": "string",
+                            "json": "\"b\""
+                          },
+                          {
+                            "kind": "string",
+                            "json": "\"c\""
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "sessionErrors": []
+        },
+        {
+          "operation": "getInitial",
+          "returned": "{\"model\":\"deepseek-flash\",\"future\":{\"array\":[\"a\",\"b\",\"c\"]}}",
+          "sameInitial": true,
+          "error": null,
+          "effects": [],
+          "environment": [
+            {
+              "key": "\"NODE_EXTRA_CA_CERTS\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            },
+            {
+              "key": "\"ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES\"",
+              "own": false,
+              "value": {
+                "kind": "undefined"
+              }
+            }
+          ],
+          "sessionSettings": "{\"model\":\"deepseek-flash\",\"future\":{\"array\":[\"a\",\"b\",\"c\"]}}",
+          "sessionView": {
+            "kind": "object",
+            "fields": [
+              {
+                "key": "\"model\"",
+                "value": {
+                  "kind": "string",
+                  "json": "\"deepseek-flash\""
+                }
+              },
+              {
+                "key": "\"future\"",
+                "value": {
+                  "kind": "object",
+                  "fields": [
+                    {
+                      "key": "\"array\"",
+                      "value": {
+                        "kind": "array",
+                        "items": [
+                          {
+                            "kind": "string",
+                            "json": "\"a\""
+                          },
+                          {
+                            "kind": "string",
+                            "json": "\"b\""
+                          },
+                          {
+                            "kind": "string",
+                            "json": "\"c\""
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "sessionErrors": []
+        }
+      ]
+    }
+  }
+]

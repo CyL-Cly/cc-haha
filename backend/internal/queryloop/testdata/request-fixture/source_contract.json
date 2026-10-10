@@ -1,0 +1,437 @@
+{
+  "provenance": "Actual query()/productionDeps()/queryModelWithStreaming()/pinned SDK via loopback HTTP, Bun1.3.14 production-profile source replay, independently constructed Go requests",
+  "cases": [
+    {
+      "input": {
+        "name": "headless ordinary single round",
+        "nonInteractive": true,
+        "historySources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"Run one tool-free request\"},\"uuid\":\"query-request-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "systemSources": [
+          "\"Configured system\""
+        ],
+        "maxOutputTokens": 32000,
+        "env": {},
+        "wire": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"query-request-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":9,\"output_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"complete\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":3}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+        "runtime": {
+          "platform": "darwin",
+          "arch": "arm64",
+          "version": "v24.3.0"
+        },
+        "deviceID": "fixture-query-device",
+        "sessionID": "00000000-0000-4000-8000-000000000000"
+      },
+      "observation": {
+        "modelHistory": [
+          [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"Run one tool-free request\"},\"uuid\":\"query-request-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+          ]
+        ],
+        "yielded": [
+          "{\"type\":\"stream_request_start\"}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_start\",\"message\":{\"id\":\"query-request-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":9,\"output_tokens\":0}}},\"ttftMs\":0}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"complete\"}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_stop\",\"index\":0}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":3}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_stop\"},\"decodeMs\":0}",
+          "{\"message\":{\"id\":\"query-request-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"complete\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":9,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":3,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"query-request-response\",\"type\":\"assistant\",\"uuid\":\"query-request-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "yieldedAfter": [
+          "{\"type\":\"stream_request_start\"}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_start\",\"message\":{\"id\":\"query-request-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":9,\"output_tokens\":0}}},\"ttftMs\":0}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"complete\"}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_stop\",\"index\":0}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":3}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_stop\"},\"decodeMs\":0}",
+          "{\"message\":{\"id\":\"query-request-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"complete\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":9,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":3,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"query-request-response\",\"type\":\"assistant\",\"uuid\":\"query-request-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "history": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"Run one tool-free request\"},\"uuid\":\"query-request-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+          "{\"message\":{\"id\":\"query-request-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"complete\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":9,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":3,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"query-request-response\",\"type\":\"assistant\",\"uuid\":\"query-request-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "allocations": [
+          {
+            "kind": "uuid",
+            "value": "query-request-id-1"
+          },
+          {
+            "kind": "uuid",
+            "value": "query-request-id-2"
+          },
+          {
+            "kind": "time",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "requests": [
+          {
+            "path": "/v1/messages?beta=true",
+            "method": "POST",
+            "headers": [
+              [
+                "accept",
+                "application/json"
+              ],
+              [
+                "anthropic-dangerous-direct-browser-access",
+                "true"
+              ],
+              [
+                "anthropic-version",
+                "2023-06-01"
+              ],
+              [
+                "content-type",
+                "application/json"
+              ],
+              [
+                "user-agent",
+                "claude-cli/2.1.281 (external, cli)"
+              ],
+              [
+                "x-api-key",
+                "offline-fixture-key"
+              ],
+              [
+                "x-app",
+                "cli"
+              ],
+              [
+                "x-claude-code-session-id",
+                "00000000-0000-4000-8000-000000000000"
+              ],
+              [
+                "x-stainless-arch",
+                "arm64"
+              ],
+              [
+                "x-stainless-lang",
+                "js"
+              ],
+              [
+                "x-stainless-os",
+                "MacOS"
+              ],
+              [
+                "x-stainless-package-version",
+                "0.80.0"
+              ],
+              [
+                "x-stainless-retry-count",
+                "0"
+              ],
+              [
+                "x-stainless-runtime",
+                "node"
+              ],
+              [
+                "x-stainless-runtime-version",
+                "v24.3.0"
+              ],
+              [
+                "x-stainless-timeout",
+                "600"
+              ]
+            ],
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Run one tool-free request\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.452; cc_entrypoint=unknown; cch=0547b;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}},{\"type\":\"text\",\"text\":\"Configured system\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-query-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+          }
+        ],
+        "terminal": {
+          "reason": "completed"
+        },
+        "error": null
+      }
+    },
+    {
+      "input": {
+        "name": "interactive ordinary single round",
+        "nonInteractive": false,
+        "historySources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"Run one tool-free request\"},\"uuid\":\"query-request-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "systemSources": [
+          "\"Configured system\""
+        ],
+        "maxOutputTokens": 32000,
+        "env": {},
+        "wire": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"query-request-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":9,\"output_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"complete\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":3}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+        "runtime": {
+          "platform": "darwin",
+          "arch": "arm64",
+          "version": "v24.3.0"
+        },
+        "deviceID": "fixture-query-device",
+        "sessionID": "00000000-0000-4000-8000-000000000000"
+      },
+      "observation": {
+        "modelHistory": [
+          [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"Run one tool-free request\"},\"uuid\":\"query-request-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+          ]
+        ],
+        "yielded": [
+          "{\"type\":\"stream_request_start\"}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_start\",\"message\":{\"id\":\"query-request-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":9,\"output_tokens\":0}}},\"ttftMs\":0}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"complete\"}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_stop\",\"index\":0}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":3}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_stop\"},\"decodeMs\":0}",
+          "{\"message\":{\"id\":\"query-request-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"complete\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":9,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":3,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"query-request-response\",\"type\":\"assistant\",\"uuid\":\"query-request-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "yieldedAfter": [
+          "{\"type\":\"stream_request_start\"}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_start\",\"message\":{\"id\":\"query-request-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":9,\"output_tokens\":0}}},\"ttftMs\":0}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"complete\"}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_stop\",\"index\":0}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":3}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_stop\"},\"decodeMs\":0}",
+          "{\"message\":{\"id\":\"query-request-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"complete\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":9,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":3,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"query-request-response\",\"type\":\"assistant\",\"uuid\":\"query-request-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "history": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"Run one tool-free request\"},\"uuid\":\"query-request-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+          "{\"message\":{\"id\":\"query-request-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"complete\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":9,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":3,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"query-request-response\",\"type\":\"assistant\",\"uuid\":\"query-request-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "allocations": [
+          {
+            "kind": "uuid",
+            "value": "query-request-id-1"
+          },
+          {
+            "kind": "uuid",
+            "value": "query-request-id-2"
+          },
+          {
+            "kind": "time",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "requests": [
+          {
+            "path": "/v1/messages?beta=true",
+            "method": "POST",
+            "headers": [
+              [
+                "accept",
+                "application/json"
+              ],
+              [
+                "anthropic-dangerous-direct-browser-access",
+                "true"
+              ],
+              [
+                "anthropic-version",
+                "2023-06-01"
+              ],
+              [
+                "content-type",
+                "application/json"
+              ],
+              [
+                "user-agent",
+                "claude-cli/2.1.281 (external, cli)"
+              ],
+              [
+                "x-api-key",
+                "offline-fixture-key"
+              ],
+              [
+                "x-app",
+                "cli"
+              ],
+              [
+                "x-claude-code-session-id",
+                "00000000-0000-4000-8000-000000000000"
+              ],
+              [
+                "x-stainless-arch",
+                "arm64"
+              ],
+              [
+                "x-stainless-lang",
+                "js"
+              ],
+              [
+                "x-stainless-os",
+                "MacOS"
+              ],
+              [
+                "x-stainless-package-version",
+                "0.80.0"
+              ],
+              [
+                "x-stainless-retry-count",
+                "0"
+              ],
+              [
+                "x-stainless-runtime",
+                "node"
+              ],
+              [
+                "x-stainless-runtime-version",
+                "v24.3.0"
+              ],
+              [
+                "x-stainless-timeout",
+                "600"
+              ]
+            ],
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Run one tool-free request\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.452; cc_entrypoint=unknown; cch=0853d;\"},{\"type\":\"text\",\"text\":\"You are Claude Code, Anthropic's official CLI for Claude.\",\"cache_control\":{\"type\":\"ephemeral\"}},{\"type\":\"text\",\"text\":\"Configured system\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-query-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+          }
+        ],
+        "terminal": {
+          "reason": "completed"
+        },
+        "error": null
+      }
+    },
+    {
+      "input": {
+        "name": "headless original UTF16 and numeric history",
+        "nonInteractive": true,
+        "historySources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123\\ud80067\\udc00abcdefghijkl\\ud800 tail\"},\"uuid\":\"query-request-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"future\":{\"z\":9007199254740993,\"a\":\"\\udfff\"}}"
+        ],
+        "systemSources": [
+          "\"Configured\\ud800system\""
+        ],
+        "maxOutputTokens": 32000,
+        "env": {},
+        "wire": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"query-request-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":9,\"output_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"complete\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":3}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+        "runtime": {
+          "platform": "darwin",
+          "arch": "arm64",
+          "version": "v24.3.0"
+        },
+        "deviceID": "fixture-query-device",
+        "sessionID": "00000000-0000-4000-8000-000000000000"
+      },
+      "observation": {
+        "modelHistory": [
+          [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123\\ud80067\\udc00abcdefghijkl\\ud800 tail\"},\"uuid\":\"query-request-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"future\":{\"z\":9007199254740992,\"a\":\"\\udfff\"}}"
+          ]
+        ],
+        "yielded": [
+          "{\"type\":\"stream_request_start\"}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_start\",\"message\":{\"id\":\"query-request-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":9,\"output_tokens\":0}}},\"ttftMs\":0}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"complete\"}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_stop\",\"index\":0}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":3}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_stop\"},\"decodeMs\":0}",
+          "{\"message\":{\"id\":\"query-request-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"complete\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":9,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":3,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"query-request-response\",\"type\":\"assistant\",\"uuid\":\"query-request-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "yieldedAfter": [
+          "{\"type\":\"stream_request_start\"}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_start\",\"message\":{\"id\":\"query-request-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":9,\"output_tokens\":0}}},\"ttftMs\":0}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"complete\"}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_stop\",\"index\":0}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":3}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_stop\"},\"decodeMs\":0}",
+          "{\"message\":{\"id\":\"query-request-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"complete\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":9,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":3,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"query-request-response\",\"type\":\"assistant\",\"uuid\":\"query-request-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "history": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123\\ud80067\\udc00abcdefghijkl\\ud800 tail\"},\"uuid\":\"query-request-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"future\":{\"z\":9007199254740992,\"a\":\"\\udfff\"}}",
+          "{\"message\":{\"id\":\"query-request-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"complete\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":9,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":3,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"query-request-response\",\"type\":\"assistant\",\"uuid\":\"query-request-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "allocations": [
+          {
+            "kind": "uuid",
+            "value": "query-request-id-1"
+          },
+          {
+            "kind": "uuid",
+            "value": "query-request-id-2"
+          },
+          {
+            "kind": "time",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "requests": [
+          {
+            "path": "/v1/messages?beta=true",
+            "method": "POST",
+            "headers": [
+              [
+                "accept",
+                "application/json"
+              ],
+              [
+                "anthropic-dangerous-direct-browser-access",
+                "true"
+              ],
+              [
+                "anthropic-version",
+                "2023-06-01"
+              ],
+              [
+                "content-type",
+                "application/json"
+              ],
+              [
+                "user-agent",
+                "claude-cli/2.1.281 (external, cli)"
+              ],
+              [
+                "x-api-key",
+                "offline-fixture-key"
+              ],
+              [
+                "x-app",
+                "cli"
+              ],
+              [
+                "x-claude-code-session-id",
+                "00000000-0000-4000-8000-000000000000"
+              ],
+              [
+                "x-stainless-arch",
+                "arm64"
+              ],
+              [
+                "x-stainless-lang",
+                "js"
+              ],
+              [
+                "x-stainless-os",
+                "MacOS"
+              ],
+              [
+                "x-stainless-package-version",
+                "0.80.0"
+              ],
+              [
+                "x-stainless-retry-count",
+                "0"
+              ],
+              [
+                "x-stainless-runtime",
+                "node"
+              ],
+              [
+                "x-stainless-runtime-version",
+                "v24.3.0"
+              ],
+              [
+                "x-stainless-timeout",
+                "600"
+              ]
+            ],
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"0123\\ud80067\\udc00abcdefghijkl\\ud800 tail\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.95a; cc_entrypoint=unknown; cch=d9a24;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}},{\"type\":\"text\",\"text\":\"Configured\\ud800system\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-query-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+          }
+        ],
+        "terminal": {
+          "reason": "completed"
+        },
+        "error": null
+      }
+    }
+  ]
+}

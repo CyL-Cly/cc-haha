@@ -1,0 +1,4155 @@
+{
+  "sid": "11111111-1111-4111-8111-111111111111",
+  "baseNow": 1700000000000,
+  "programs": [
+    {
+      "name": "progress-capacity-first-undefined-skips-delete",
+      "operations": [
+        {
+          "op": "env",
+          "field": "CLAUDE_CODE_REMOTE",
+          "value": "1"
+        },
+        {
+          "op": "clock",
+          "millis": 30000
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "first-undefined"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-0\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-0"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-1\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-1"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-2\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-2"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-3\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-3"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-4\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-4"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-5\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-5"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-6\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-6"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-7\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-7"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-8\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-8"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-9\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-9"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-10\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-10"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-11\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-11"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-12\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-12"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-13\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-13"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-14\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-14"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-15\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-15"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-16\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-16"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-17\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-17"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-18\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-18"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-19\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-19"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-20\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-20"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-21\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-21"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-22\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-22"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-23\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-23"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-24\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-24"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-25\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-25"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-26\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-26"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-27\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-27"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-28\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-28"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-29\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-29"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-30\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-30"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-31\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-31"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-32\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-32"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-33\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-33"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-34\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-34"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-35\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-35"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-36\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-36"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-37\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-37"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-38\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-38"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-39\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-39"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-40\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-40"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-41\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-41"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-42\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-42"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-43\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-43"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-44\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-44"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-45\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-45"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-46\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-46"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-47\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-47"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-48\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-48"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-49\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-49"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-50\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-50"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-51\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-51"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-52\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-52"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-53\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-53"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-54\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-54"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-55\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-55"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-56\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-56"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-57\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-57"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-58\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-58"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-59\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-59"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-60\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-60"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-61\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-61"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-62\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-62"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-63\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-63"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-64\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-64"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-65\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-65"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-66\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-66"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-67\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-67"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-68\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-68"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-69\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-69"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-70\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-70"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-71\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-71"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-72\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-72"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-73\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-73"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-74\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-74"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-75\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-75"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-76\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-76"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-77\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-77"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-78\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-78"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-79\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-79"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-80\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-80"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-81\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-81"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-82\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-82"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-83\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-83"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-84\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-84"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-85\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-85"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-86\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-86"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-87\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-87"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-88\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-88"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-89\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-89"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-90\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-90"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-91\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-91"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-92\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-92"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-93\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-93"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-94\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-94"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-95\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-95"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-96\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-96"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-97\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-97"
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-capacity-98\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "fill-98"
+        },
+        {
+          "op": "clock",
+          "millis": 35000
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1},\"parentToolUseID\":\"undefined-first-overflow\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "overflow"
+        },
+        {
+          "op": "clock",
+          "millis": 45000
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"original-progress\",\"toolUseID\":\"original-tool\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "undefined-still-tracked"
+        }
+      ]
+    },
+    {
+      "name": "assistant-text",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"hello\"}]},\"error\":\"rate_limit\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "assistant-empty-text",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"\"}]},\"error\":\"rate_limit\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "assistant-placeholder",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"(no content)\"}]},\"error\":\"rate_limit\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "assistant-interrupt-tool",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"[Request interrupted by user for tool use]\"}]},\"error\":\"rate_limit\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "assistant-interrupt-user",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"[Request interrupted by user]\"}]},\"error\":\"rate_limit\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "assistant-bom-text",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"\\ufeff \\n\"}]},\"error\":\"rate_limit\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "assistant-nel-text",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"\\u0085\"}]},\"error\":\"rate_limit\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "assistant-empty",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[]},\"error\":\"rate_limit\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "assistant-thinking",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"inner\",\"signature\":\"sig\"}]},\"error\":\"rate_limit\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "assistant-redacted",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"redacted_thinking\",\"data\":\"opaque\"}]},\"error\":\"rate_limit\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "assistant-tool",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"tool_use\",\"id\":\"t\",\"name\":\"Read\",\"input\":{\"file_path\":\"original\"}}]},\"error\":\"rate_limit\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "assistant-server-tool",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"server_tool_use\",\"id\":\"s\",\"name\":\"web_search\",\"input\":{}}]},\"error\":\"rate_limit\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "assistant-future",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"future\",\"x\":1}]},\"error\":\"rate_limit\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "assistant-split",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"first\"},{\"type\":\"text\",\"text\":\"second\"}]},\"error\":\"rate_limit\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-string",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":\"user\"},\"toolUseResult\":{\"raw\":1},\"mcpMeta\":{\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}},\"imagePasteIds\":[11,12],\"isMeta\":true,\"origin\":{\"kind\":\"human\"},\"permissionMode\":\"default\",\"futureEnvelope\":\"not carried on array blocks\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-empty-string",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":\"\"},\"toolUseResult\":{\"raw\":1},\"mcpMeta\":{\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}},\"imagePasteIds\":[11,12],\"isMeta\":true,\"origin\":{\"kind\":\"human\"},\"permissionMode\":\"default\",\"futureEnvelope\":\"not carried on array blocks\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-lone-string",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":\"\\ud800\\ud83d\\udc31\"},\"toolUseResult\":{\"raw\":1},\"mcpMeta\":{\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}},\"imagePasteIds\":[11,12],\"isMeta\":true,\"origin\":{\"kind\":\"human\"},\"permissionMode\":\"default\",\"futureEnvelope\":\"not carried on array blocks\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-empty",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[]},\"toolUseResult\":{\"raw\":1},\"mcpMeta\":{\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}},\"imagePasteIds\":[11,12],\"isMeta\":true,\"origin\":{\"kind\":\"human\"},\"permissionMode\":\"default\",\"futureEnvelope\":\"not carried on array blocks\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-text",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"one\"}]},\"toolUseResult\":{\"raw\":1},\"mcpMeta\":{\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}},\"imagePasteIds\":[11,12],\"isMeta\":true,\"origin\":{\"kind\":\"human\"},\"permissionMode\":\"default\",\"futureEnvelope\":\"not carried on array blocks\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-blocks",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"a\"},{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"ok\"},{\"type\":\"image\",\"source\":{\"type\":\"base64\",\"media_type\":\"image/png\",\"data\":\"offline\"}}]},\"toolUseResult\":{\"raw\":1},\"mcpMeta\":{\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}},\"imagePasteIds\":[11,12],\"isMeta\":true,\"origin\":{\"kind\":\"human\"},\"permissionMode\":\"default\",\"futureEnvelope\":\"not carried on array blocks\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-undefined",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-false-only",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"isMeta\":false}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-false-false",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"isMeta\":false,\"isVisibleInTranscriptOnly\":false}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-visible",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"isVisibleInTranscriptOnly\":true}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-null-visible",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"isMeta\":null,\"isVisibleInTranscriptOnly\":false}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-mcp-null",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"mcpMeta\":null,\"toolUseResult\":null}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-mcp-content-overwrite",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"mcpMeta\":{\"content\":\"own override\",\"_meta\":{\"x\":1}},\"toolUseResult\":\"original\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-mcp-string",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"mcpMeta\":\"a\\ud800\",\"toolUseResult\":true}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-mcp-array",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"mcpMeta\":[\"m\",\"n\"],\"toolUseResult\":{\"x\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-mcp-boolean",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"mcpMeta\":true,\"toolUseResult\":7}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-metadata-null",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":\"u\"},\"isMeta\":false}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-missing-time",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"isMeta\":false}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-null-time",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":null,\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"isMeta\":false}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "user-zero-time",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":0,\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"isMeta\":false}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "factory-user-plain",
+      "operations": [
+        {
+          "op": "factory-user",
+          "key": "m",
+          "value": "{\"content\":\"factory user\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "factory-user-empty",
+      "operations": [
+        {
+          "op": "factory-user",
+          "key": "m",
+          "value": "{\"content\":\"\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "factory-user-array",
+      "operations": [
+        {
+          "op": "factory-user",
+          "key": "m",
+          "value": "{\"content\":[{\"type\":\"text\",\"text\":\"a\"},{\"type\":\"image\",\"source\":{\"type\":\"url\",\"url\":\"data:offline\"}}],\"imagePasteIds\":[null]}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "factory-user-timestamp",
+      "operations": [
+        {
+          "op": "factory-user",
+          "key": "m",
+          "value": "{\"content\":\"u\",\"timestamp\":\"fixed\",\"uuid\":\"explicit\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "factory-user-all-fields",
+      "operations": [
+        {
+          "op": "factory-user",
+          "key": "m",
+          "value": "{\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"id\",\"content\":[]}],\"isMeta\":false,\"isVisibleInTranscriptOnly\":true,\"isVirtual\":true,\"isCompactSummary\":true,\"summarizeMetadata\":{\"messagesSummarized\":2},\"toolUseResult\":false,\"mcpMeta\":{\"content\":\"overwritten\",\"2\":\"index\"},\"sourceToolAssistantUUID\":\"s\",\"permissionMode\":\"plan\",\"origin\":{\"kind\":\"channel\",\"server\":\"offline\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "factory-assistant-plain",
+      "operations": [
+        {
+          "op": "factory-assistant",
+          "key": "m",
+          "value": "{\"content\":\"factory assistant\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "factory-assistant-empty",
+      "operations": [
+        {
+          "op": "factory-assistant",
+          "key": "m",
+          "value": "{\"content\":\"\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "factory-assistant-array",
+      "operations": [
+        {
+          "op": "factory-assistant",
+          "key": "m",
+          "value": "{\"content\":[{\"type\":\"thinking\",\"thinking\":\"a\",\"signature\":\"s\"},{\"type\":\"text\",\"text\":\"b\"}],\"isVirtual\":true}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "factory-assistant-usage",
+      "operations": [
+        {
+          "op": "factory-assistant",
+          "key": "m",
+          "value": "{\"content\":\"a\",\"usage\":{\"input_tokens\":4,\"output_tokens\":5,\"future\":null}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "factory-error",
+      "operations": [
+        {
+          "op": "factory-error",
+          "key": "m",
+          "value": "{\"content\":\"bad\",\"error\":\"authentication_failed\",\"apiError\":\"auth\",\"errorDetails\":\"original\",\"businessErrorCode\":\"OFFLINE\",\"sourceModel\":\"m\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        }
+      ]
+    },
+    {
+      "name": "agent_progress-assistant",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"progress\",\"parentToolUseID\":\"parent\",\"data\":{\"type\":\"agent_progress\",\"message\":{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"nested\"}]}}}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "agent_progress-user",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"progress\",\"parentToolUseID\":\"parent\",\"data\":{\"type\":\"agent_progress\",\"message\":{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"nested\"}]}}}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "agent_progress-system",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"progress\",\"parentToolUseID\":\"parent\",\"data\":{\"type\":\"agent_progress\",\"message\":{\"type\":\"system\",\"subtype\":\"info\",\"uuid\":\"sys\"}}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "skill_progress-assistant",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"progress\",\"parentToolUseID\":\"parent\",\"data\":{\"type\":\"skill_progress\",\"message\":{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"nested\"}]}}}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "skill_progress-user",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"progress\",\"parentToolUseID\":\"parent\",\"data\":{\"type\":\"skill_progress\",\"message\":{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"nested\"}]}}}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "skill_progress-system",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"progress\",\"parentToolUseID\":\"parent\",\"data\":{\"type\":\"skill_progress\",\"message\":{\"type\":\"system\",\"subtype\":\"info\",\"uuid\":\"sys\"}}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "silent-attachment",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"attachment\",\"uuid\":\"silent\",\"attachment\":{\"type\":\"future\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "silent-system",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"system\",\"uuid\":\"silent\",\"attachment\":{\"type\":\"future\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "silent-unknown",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"unknown\",\"uuid\":\"silent\",\"attachment\":{\"type\":\"future\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        }
+      ]
+    },
+    {
+      "name": "silent-tombstone",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"tombstone\",\"uuid\":\"silent\",\"attachment\":{\"type\":\"future\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        }
+      ]
+    },
+    {
+      "name": "chain-across-mixed",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "a",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"one\"},{\"type\":\"text\",\"text\":\"two\"}]}}"
+        },
+        {
+          "op": "raw",
+          "key": "u",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+        },
+        {
+          "op": "raw",
+          "key": "s",
+          "value": "{\"type\":\"system\",\"subtype\":\"info\"}"
+        },
+        {
+          "op": "raw",
+          "key": "v",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"image\",\"source\":{\"type\":\"base64\",\"data\":\"offline\"}},{\"type\":\"image\",\"source\":{\"type\":\"base64\",\"data\":\"more\"}},{\"type\":\"text\",\"text\":\"text\"}]},\"imagePasteIds\":[0,null],\"future\":\"drop\"}"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "a",
+            "s",
+            "u",
+            "v"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "derived-utf16-prefix",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678901234567890123\\ud83d\\udc31tail\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"a\"},{\"type\":\"text\",\"text\":\"b\"}]}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "unknown-api-order-number-utf16",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"utf\\ud800\"}],\"usage\":{\"input_tokens\":1,\"future\":null},\"stop_reason\":null,\"future\\ud800\":{\"big\":9999999999999999999},\"2\":\"ordered numeric key\",\"context_management\":false}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "assistant-context-missing",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"a\"}]}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "assistant-context-null",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"a\"}],\"context_management\":null}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "assistant-context-object",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"a\"}],\"context_management\":{\"future\":true}}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        },
+        {
+          "op": "many",
+          "keys": [
+            "m"
+          ],
+          "out": "n"
+        }
+      ]
+    },
+    {
+      "name": "assistant-shallow-time",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "a",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"early\"}]},\"error\":\"old\"}"
+        },
+        {
+          "op": "api-set",
+          "key": "a",
+          "field": "usage",
+          "value": "{\"input_tokens\":5,\"output_tokens\":0}"
+        },
+        {
+          "op": "api-set",
+          "key": "a",
+          "field": "stop_reason",
+          "value": "null"
+        },
+        {
+          "op": "sdk",
+          "key": "a",
+          "out": "old"
+        },
+        {
+          "op": "api-set",
+          "key": "a",
+          "field": "usage",
+          "value": "{\"input_tokens\":5,\"output_tokens\":9}"
+        },
+        {
+          "op": "api-set",
+          "key": "a",
+          "field": "stop_reason",
+          "value": "\"end_turn\""
+        },
+        {
+          "op": "record-set",
+          "key": "a",
+          "field": "error",
+          "value": "\"new\""
+        },
+        {
+          "op": "block-set",
+          "key": "a",
+          "index": 0,
+          "field": "text",
+          "value": "\"late block\""
+        },
+        {
+          "op": "observe",
+          "out": "old"
+        },
+        {
+          "op": "sdk",
+          "key": "a",
+          "out": "late"
+        }
+      ]
+    },
+    {
+      "name": "progress-throttle-disabled",
+      "operations": [
+        {
+          "op": "env",
+          "field": "CLAUDE_CODE_REMOTE",
+          "value": ""
+        },
+        {
+          "op": "env",
+          "field": "CLAUDE_CODE_CONTAINER_ID",
+          "value": ""
+        },
+        {
+          "op": "clock",
+          "millis": 0
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p0\",\"toolUseID\":\"tool0\",\"parentToolUseID\":\"throttle-disabled\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":0,\"taskId\":\"task\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "s0"
+        },
+        {
+          "op": "clock",
+          "millis": 29999
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p1\",\"toolUseID\":\"tool1\",\"parentToolUseID\":\"throttle-disabled\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1,\"taskId\":\"task\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "s1"
+        },
+        {
+          "op": "clock",
+          "millis": 30000
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p2\",\"toolUseID\":\"tool2\",\"parentToolUseID\":\"throttle-disabled\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":2,\"taskId\":\"task\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "s2"
+        },
+        {
+          "op": "clock",
+          "millis": 40000
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p3\",\"toolUseID\":\"tool3\",\"parentToolUseID\":\"throttle-disabled\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":3,\"taskId\":\"task\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "s3"
+        },
+        {
+          "op": "clock",
+          "millis": 60000
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p4\",\"toolUseID\":\"tool4\",\"parentToolUseID\":\"throttle-disabled\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":4,\"taskId\":null}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "s4"
+        },
+        {
+          "op": "clock",
+          "millis": 90000
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p5\",\"toolUseID\":\"tool5\",\"parentToolUseID\":\"throttle-disabled\",\"data\":{\"type\":\"powershell_progress\",\"elapsedTimeSeconds\":5,\"taskId\":\"task\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "s5"
+        }
+      ]
+    },
+    {
+      "name": "progress-throttle-remote",
+      "operations": [
+        {
+          "op": "env",
+          "field": "CLAUDE_CODE_REMOTE",
+          "value": " YES "
+        },
+        {
+          "op": "env",
+          "field": "CLAUDE_CODE_CONTAINER_ID",
+          "value": ""
+        },
+        {
+          "op": "clock",
+          "millis": 0
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p0\",\"toolUseID\":\"tool0\",\"parentToolUseID\":\"throttle-remote\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":0,\"taskId\":\"task\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "s0"
+        },
+        {
+          "op": "clock",
+          "millis": 29999
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p1\",\"toolUseID\":\"tool1\",\"parentToolUseID\":\"throttle-remote\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1,\"taskId\":\"task\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "s1"
+        },
+        {
+          "op": "clock",
+          "millis": 30000
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p2\",\"toolUseID\":\"tool2\",\"parentToolUseID\":\"throttle-remote\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":2,\"taskId\":\"task\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "s2"
+        },
+        {
+          "op": "clock",
+          "millis": 40000
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p3\",\"toolUseID\":\"tool3\",\"parentToolUseID\":\"throttle-remote\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":3,\"taskId\":\"task\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "s3"
+        },
+        {
+          "op": "clock",
+          "millis": 60000
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p4\",\"toolUseID\":\"tool4\",\"parentToolUseID\":\"throttle-remote\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":4,\"taskId\":null}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "s4"
+        },
+        {
+          "op": "clock",
+          "millis": 90000
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p5\",\"toolUseID\":\"tool5\",\"parentToolUseID\":\"throttle-remote\",\"data\":{\"type\":\"powershell_progress\",\"elapsedTimeSeconds\":5,\"taskId\":\"task\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "s5"
+        }
+      ]
+    },
+    {
+      "name": "progress-throttle-container",
+      "operations": [
+        {
+          "op": "env",
+          "field": "CLAUDE_CODE_REMOTE",
+          "value": ""
+        },
+        {
+          "op": "env",
+          "field": "CLAUDE_CODE_CONTAINER_ID",
+          "value": "0"
+        },
+        {
+          "op": "clock",
+          "millis": 0
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p0\",\"toolUseID\":\"tool0\",\"parentToolUseID\":\"throttle-container\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":0,\"taskId\":\"task\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "s0"
+        },
+        {
+          "op": "clock",
+          "millis": 29999
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p1\",\"toolUseID\":\"tool1\",\"parentToolUseID\":\"throttle-container\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1,\"taskId\":\"task\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "s1"
+        },
+        {
+          "op": "clock",
+          "millis": 30000
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p2\",\"toolUseID\":\"tool2\",\"parentToolUseID\":\"throttle-container\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":2,\"taskId\":\"task\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "s2"
+        },
+        {
+          "op": "clock",
+          "millis": 40000
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p3\",\"toolUseID\":\"tool3\",\"parentToolUseID\":\"throttle-container\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":3,\"taskId\":\"task\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "s3"
+        },
+        {
+          "op": "clock",
+          "millis": 60000
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p4\",\"toolUseID\":\"tool4\",\"parentToolUseID\":\"throttle-container\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":4,\"taskId\":null}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "s4"
+        },
+        {
+          "op": "clock",
+          "millis": 90000
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p5\",\"toolUseID\":\"tool5\",\"parentToolUseID\":\"throttle-container\",\"data\":{\"type\":\"powershell_progress\",\"elapsedTimeSeconds\":5,\"taskId\":\"task\"}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "s5"
+        }
+      ]
+    },
+    {
+      "name": "progress-map-101-eviction",
+      "operations": [
+        {
+          "op": "env",
+          "field": "CLAUDE_CODE_REMOTE",
+          "value": "1"
+        },
+        {
+          "op": "clock",
+          "millis": 100000
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-0\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e0"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-1\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e1"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-2\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e2"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-3\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e3"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-4\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e4"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-5\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e5"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-6\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e6"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-7\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e7"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-8\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e8"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-9\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e9"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-10\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e10"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-11\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e11"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-12\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e12"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-13\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e13"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-14\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e14"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-15\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e15"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-16\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e16"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-17\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e17"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-18\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e18"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-19\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e19"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-20\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e20"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-21\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e21"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-22\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e22"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-23\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e23"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-24\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e24"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-25\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e25"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-26\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e26"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-27\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e27"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-28\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e28"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-29\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e29"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-30\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e30"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-31\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e31"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-32\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e32"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-33\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e33"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-34\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e34"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-35\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e35"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-36\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e36"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-37\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e37"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-38\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e38"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-39\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e39"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-40\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e40"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-41\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e41"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-42\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e42"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-43\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e43"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-44\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e44"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-45\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e45"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-46\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e46"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-47\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e47"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-48\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e48"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-49\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e49"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-50\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e50"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-51\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e51"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-52\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e52"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-53\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e53"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-54\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e54"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-55\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e55"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-56\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e56"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-57\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e57"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-58\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e58"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-59\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e59"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-60\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e60"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-61\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e61"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-62\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e62"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-63\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e63"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-64\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e64"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-65\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e65"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-66\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e66"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-67\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e67"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-68\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e68"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-69\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e69"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-70\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e70"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-71\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e71"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-72\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e72"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-73\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e73"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-74\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e74"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-75\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e75"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-76\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e76"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-77\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e77"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-78\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e78"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-79\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e79"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-80\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e80"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-81\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e81"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-82\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e82"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-83\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e83"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-84\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e84"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-85\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e85"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-86\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e86"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-87\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e87"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-88\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e88"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-89\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e89"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-90\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e90"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-91\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e91"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-92\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e92"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-93\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e93"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-94\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e94"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-95\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e95"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-96\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e96"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-97\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e97"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-98\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e98"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-99\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e99"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-100\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":1}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "e100"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"tool\",\"parentToolUseID\":\"eviction-0\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":2}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "again0"
+        },
+        {
+          "op": "raw",
+          "key": "p",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"parentToolUseID\":\"eviction-100\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":3}}"
+        },
+        {
+          "op": "sdk",
+          "key": "p",
+          "out": "suppress100"
+        }
+      ]
+    },
+    {
+      "name": "assistant-escaped-sentinel",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"fixed\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"\\u0028no content)\"}]}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        }
+      ]
+    },
+    {
+      "name": "generator-assistant-resume",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"fixed\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"first\"},{\"type\":\"text\",\"text\":\"second\"},{\"type\":\"text\",\"text\":\"third\"}],\"usage\":{\"input_tokens\":1,\"output_tokens\":0}},\"error\":\"before\"}"
+        },
+        {
+          "op": "sdk-controlled",
+          "key": "m",
+          "out": "s",
+          "after": {
+            "0": [
+              {
+                "op": "session",
+                "value": "second-original-session"
+              },
+              {
+                "op": "api-set",
+                "key": "m",
+                "field": "usage",
+                "value": "{\"input_tokens\":1,\"output_tokens\":9}"
+              },
+              {
+                "op": "record-set",
+                "key": "m",
+                "field": "error",
+                "value": "\"after\""
+              },
+              {
+                "op": "block-set",
+                "key": "m",
+                "index": 1,
+                "field": "text",
+                "value": "\"changed at first yield\""
+              }
+            ]
+          }
+        },
+        {
+          "op": "observe",
+          "out": "s"
+        }
+      ]
+    },
+    {
+      "name": "generator-assistant-stop",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"fixed\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"first\"},{\"type\":\"text\",\"text\":\"second\"},{\"type\":\"text\",\"text\":\"third\"}],\"usage\":{\"input_tokens\":1,\"output_tokens\":0}},\"error\":\"before\"}"
+        },
+        {
+          "op": "sdk-controlled",
+          "key": "m",
+          "out": "s",
+          "after": {
+            "0": [
+              {
+                "op": "session",
+                "value": "second-original-session"
+              },
+              {
+                "op": "api-set",
+                "key": "m",
+                "field": "usage",
+                "value": "{\"input_tokens\":1,\"output_tokens\":9}"
+              },
+              {
+                "op": "record-set",
+                "key": "m",
+                "field": "error",
+                "value": "\"after\""
+              },
+              {
+                "op": "block-set",
+                "key": "m",
+                "index": 1,
+                "field": "text",
+                "value": "\"changed at first yield\""
+              },
+              {
+                "op": "stop"
+              }
+            ]
+          }
+        },
+        {
+          "op": "observe",
+          "out": "s"
+        }
+      ]
+    },
+    {
+      "name": "generator-user-stop-still-eager-factory",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"first\"},{\"type\":\"text\",\"text\":\"second\"}]}}"
+        },
+        {
+          "op": "sdk-controlled",
+          "key": "m",
+          "out": "s",
+          "after": {
+            "0": [
+              {
+                "op": "stop"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "generator-agent-parent-per-yield",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"progress\",\"parentToolUseID\":\"parent-before\",\"data\":{\"type\":\"agent_progress\",\"message\":{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"fixed\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"first\"},{\"type\":\"text\",\"text\":\"second\"},{\"type\":\"text\",\"text\":\"third\"}],\"usage\":{\"input_tokens\":1,\"output_tokens\":0}},\"error\":\"before\"}}}"
+        },
+        {
+          "op": "sdk-controlled",
+          "key": "m",
+          "out": "s",
+          "after": {
+            "0": [
+              {
+                "op": "record-set",
+                "key": "m",
+                "field": "parentToolUseID",
+                "value": "\"parent-after\""
+              },
+              {
+                "op": "session",
+                "value": "session-after"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "progress-map-missing",
+      "operations": [
+        {
+          "op": "env",
+          "field": "CLAUDE_CODE_REMOTE",
+          "value": "on"
+        },
+        {
+          "op": "clock",
+          "millis": 30000
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"t\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":2}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "first"
+        },
+        {
+          "op": "clock",
+          "millis": 30001
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "suppressed"
+        },
+        {
+          "op": "clock",
+          "millis": 60000
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "later"
+        }
+      ]
+    },
+    {
+      "name": "progress-map-null",
+      "operations": [
+        {
+          "op": "env",
+          "field": "CLAUDE_CODE_REMOTE",
+          "value": "on"
+        },
+        {
+          "op": "clock",
+          "millis": 30000
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"t\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":2},\"parentToolUseID\":null}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "first"
+        },
+        {
+          "op": "clock",
+          "millis": 30001
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "suppressed"
+        },
+        {
+          "op": "clock",
+          "millis": 60000
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "later"
+        }
+      ]
+    },
+    {
+      "name": "progress-map-empty",
+      "operations": [
+        {
+          "op": "env",
+          "field": "CLAUDE_CODE_REMOTE",
+          "value": "on"
+        },
+        {
+          "op": "clock",
+          "millis": 30000
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"t\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":2},\"parentToolUseID\":\"\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "first"
+        },
+        {
+          "op": "clock",
+          "millis": 30001
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "suppressed"
+        },
+        {
+          "op": "clock",
+          "millis": 60000
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "later"
+        }
+      ]
+    },
+    {
+      "name": "progress-map-lone",
+      "operations": [
+        {
+          "op": "env",
+          "field": "CLAUDE_CODE_REMOTE",
+          "value": "on"
+        },
+        {
+          "op": "clock",
+          "millis": 30000
+        },
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"progress\",\"uuid\":\"p\",\"toolUseID\":\"t\",\"data\":{\"type\":\"bash_progress\",\"elapsedTimeSeconds\":2},\"parentToolUseID\":\"\\ud800\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "first"
+        },
+        {
+          "op": "clock",
+          "millis": 30001
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "suppressed"
+        },
+        {
+          "op": "clock",
+          "millis": 60000
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "later"
+        }
+      ]
+    },
+    {
+      "name": "assistant-trailing-js-whitespace",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"original\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"visible\\u00a0\\ufeff\"}]}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        }
+      ]
+    },
+    {
+      "name": "assistant-same-length-different-sentinel",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"original\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"not content)\"}]}}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        }
+      ]
+    },
+    {
+      "name": "sdk-session-raw-utf16",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"assistant\",\"uuid\":\"original\",\"message\":{\"content\":[{\"type\":\"text\",\"text\":\"hello\"}]}}"
+        },
+        {
+          "op": "session",
+          "value": "\ud800sid\udc00"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        }
+      ]
+    },
+    {
+      "name": "user-mcp-spread-raw-utf16",
+      "operations": [
+        {
+          "op": "raw",
+          "key": "m",
+          "value": "{\"type\":\"user\",\"uuid\":\"original\",\"message\":{\"content\":\"u\"},\"mcpMeta\":\"\\ud800\\ud83d\\ude00\\udc00\"}"
+        },
+        {
+          "op": "sdk",
+          "key": "m",
+          "out": "s"
+        }
+      ]
+    }
+  ]
+}

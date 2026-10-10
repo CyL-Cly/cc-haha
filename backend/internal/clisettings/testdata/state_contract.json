@@ -1,0 +1,1274 @@
+{
+  "input": {
+    "cases": [
+      {
+        "name": "cache miss cached null and reset keeps plugin base",
+        "operations": [
+          {
+            "kind": "snapshot"
+          },
+          {
+            "kind": "setSource",
+            "key": "userSettings",
+            "ref": null
+          },
+          {
+            "kind": "setSource",
+            "key": "localSettings",
+            "ref": "a"
+          },
+          {
+            "kind": "setParsed",
+            "key": "/private/a",
+            "ref": "p"
+          },
+          {
+            "kind": "setSession",
+            "ref": "p"
+          },
+          {
+            "kind": "setPlugin",
+            "ref": "b"
+          },
+          {
+            "kind": "snapshot"
+          },
+          {
+            "kind": "reset"
+          },
+          {
+            "kind": "snapshot"
+          },
+          {
+            "kind": "clearPlugin"
+          },
+          {
+            "kind": "snapshot"
+          }
+        ]
+      },
+      {
+        "name": "cache reference identity and byte intact unknown fields",
+        "operations": [
+          {
+            "kind": "setSource",
+            "key": "userSettings",
+            "ref": "a"
+          },
+          {
+            "kind": "setSource",
+            "key": "projectSettings",
+            "ref": "a"
+          },
+          {
+            "kind": "setParsed",
+            "key": "/private/a",
+            "ref": "p"
+          },
+          {
+            "kind": "setParsed",
+            "key": "/private/b",
+            "ref": "p"
+          },
+          {
+            "kind": "setSession",
+            "ref": "p"
+          },
+          {
+            "kind": "setPlugin",
+            "ref": "a"
+          },
+          {
+            "kind": "snapshot"
+          },
+          {
+            "kind": "mutateValue",
+            "ref": "a",
+            "key": "model",
+            "value": "\"changed\\ud800\""
+          },
+          {
+            "kind": "mutateErrors",
+            "ref": "p",
+            "value": "{\"message\":\"later\\udfff\"}"
+          },
+          {
+            "kind": "snapshot"
+          },
+          {
+            "kind": "setSource",
+            "key": "userSettings",
+            "ref": "b"
+          },
+          {
+            "kind": "setParsed",
+            "key": "/private/b",
+            "ref": "q"
+          },
+          {
+            "kind": "setSession",
+            "ref": "q"
+          },
+          {
+            "kind": "snapshot"
+          }
+        ]
+      },
+      {
+        "name": "source map and path map remain distinct and exact",
+        "operations": [
+          {
+            "kind": "setSource",
+            "key": "unknown",
+            "ref": "b"
+          },
+          {
+            "kind": "setParsed",
+            "key": "/private/a",
+            "ref": "q"
+          },
+          {
+            "kind": "setParsed",
+            "key": "/private/A",
+            "ref": "p"
+          },
+          {
+            "kind": "setPlugin",
+            "ref": "a"
+          },
+          {
+            "kind": "snapshot"
+          },
+          {
+            "kind": "reset"
+          },
+          {
+            "kind": "snapshot"
+          },
+          {
+            "kind": "setPlugin"
+          },
+          {
+            "kind": "snapshot"
+          }
+        ]
+      },
+      {
+        "name": "internal write strict window single consumption and stale retention",
+        "operations": [
+          {
+            "kind": "consume",
+            "key": "/private/a",
+            "window": 50
+          },
+          {
+            "kind": "mark",
+            "key": "/private/a"
+          },
+          {
+            "kind": "time",
+            "now": 1050
+          },
+          {
+            "kind": "consume",
+            "key": "/private/a",
+            "window": 50
+          },
+          {
+            "kind": "time",
+            "now": 1049
+          },
+          {
+            "kind": "consume",
+            "key": "/private/a",
+            "window": 50
+          },
+          {
+            "kind": "consume",
+            "key": "/private/a",
+            "window": 50
+          },
+          {
+            "kind": "mark",
+            "key": "/private/a"
+          },
+          {
+            "kind": "time",
+            "now": 999
+          },
+          {
+            "kind": "consume",
+            "key": "/private/a",
+            "window": 0
+          },
+          {
+            "kind": "mark",
+            "key": "/private/a"
+          },
+          {
+            "kind": "mark",
+            "key": "/private/b"
+          },
+          {
+            "kind": "clearWrites"
+          },
+          {
+            "kind": "consume",
+            "key": "/private/a",
+            "window": 100
+          },
+          {
+            "kind": "consume",
+            "key": "/private/b",
+            "window": 100
+          }
+        ]
+      },
+      {
+        "name": "write marks independent of settings reset plugin clear and overwrite",
+        "operations": [
+          {
+            "kind": "mark",
+            "key": "/private/a"
+          },
+          {
+            "kind": "time",
+            "now": 1010
+          },
+          {
+            "kind": "mark",
+            "key": "/private/a"
+          },
+          {
+            "kind": "setSource",
+            "key": "userSettings",
+            "ref": "a"
+          },
+          {
+            "kind": "setPlugin",
+            "ref": "b"
+          },
+          {
+            "kind": "reset"
+          },
+          {
+            "kind": "clearPlugin"
+          },
+          {
+            "kind": "time",
+            "now": 1014.5
+          },
+          {
+            "kind": "consume",
+            "key": "/private/a",
+            "window": 5
+          },
+          {
+            "kind": "mark",
+            "key": "/private/b"
+          },
+          {
+            "kind": "time",
+            "now": 1015
+          },
+          {
+            "kind": "consume",
+            "key": "/private/B",
+            "window": 5
+          },
+          {
+            "kind": "consume",
+            "key": "/private/b",
+            "window": 0.5
+          },
+          {
+            "kind": "consume",
+            "key": "/private/b",
+            "window": 1
+          },
+          {
+            "kind": "snapshot"
+          }
+        ]
+      }
+    ],
+    "values": {
+      "a": "{\"model\":\"original\",\"\\ud800\":1,\"�\":2,\"2\":\"two\",\"1\":\"one\",\"future\":{\"n\":1e400,\"zero\":-0,\"text\":\"<>&\\udfff\"}}",
+      "b": "{\"empty\":[],\"flag\":false,\"future\":null}"
+    },
+    "records": {
+      "p": {
+        "settings": "a",
+        "errors": [
+          "{\"path\":\"permissions\",\"message\":\"warning\\ud800\",\"future\":1}"
+        ]
+      },
+      "q": {
+        "settings": null,
+        "errors": []
+      }
+    },
+    "sourceKeys": [
+      "userSettings",
+      "projectSettings",
+      "localSettings",
+      "policySettings",
+      "flagSettings",
+      "unknown"
+    ],
+    "pathKeys": [
+      "/private/a",
+      "/private/b",
+      "/private/A",
+      "/private/missing"
+    ]
+  },
+  "result": {
+    "observations": [
+      {
+        "name": "cache miss cached null and reset keeps plugin base",
+        "steps": [
+          {
+            "kind": "snapshot",
+            "session": {
+              "kind": "null"
+            },
+            "source": [
+              {
+                "key": "userSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "projectSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "localSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "policySettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "flagSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "unknown",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "parsed": [
+              {
+                "key": "/private/a",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/b",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/A",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/missing",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "plugin": {
+              "kind": "undefined"
+            }
+          },
+          {
+            "kind": "snapshot",
+            "session": {
+              "kind": "object",
+              "identity": "p",
+              "source": "{\"settings\":{\"1\":\"one\",\"2\":\"two\",\"model\":\"original\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}},\"errors\":[{\"path\":\"permissions\",\"message\":\"warning\\ud800\",\"future\":1}]}"
+            },
+            "source": [
+              {
+                "key": "userSettings",
+                "value": {
+                  "kind": "null"
+                }
+              },
+              {
+                "key": "projectSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "localSettings",
+                "value": {
+                  "kind": "object",
+                  "identity": "a",
+                  "source": "{\"1\":\"one\",\"2\":\"two\",\"model\":\"original\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}}"
+                }
+              },
+              {
+                "key": "policySettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "flagSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "unknown",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "parsed": [
+              {
+                "key": "/private/a",
+                "value": {
+                  "kind": "object",
+                  "identity": "p",
+                  "source": "{\"settings\":{\"1\":\"one\",\"2\":\"two\",\"model\":\"original\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}},\"errors\":[{\"path\":\"permissions\",\"message\":\"warning\\ud800\",\"future\":1}]}"
+                }
+              },
+              {
+                "key": "/private/b",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/A",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/missing",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "plugin": {
+              "kind": "object",
+              "identity": "b",
+              "source": "{\"empty\":[],\"flag\":false,\"future\":null}"
+            }
+          },
+          {
+            "kind": "snapshot",
+            "session": {
+              "kind": "null"
+            },
+            "source": [
+              {
+                "key": "userSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "projectSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "localSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "policySettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "flagSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "unknown",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "parsed": [
+              {
+                "key": "/private/a",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/b",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/A",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/missing",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "plugin": {
+              "kind": "object",
+              "identity": "b",
+              "source": "{\"empty\":[],\"flag\":false,\"future\":null}"
+            }
+          },
+          {
+            "kind": "snapshot",
+            "session": {
+              "kind": "null"
+            },
+            "source": [
+              {
+                "key": "userSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "projectSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "localSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "policySettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "flagSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "unknown",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "parsed": [
+              {
+                "key": "/private/a",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/b",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/A",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/missing",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "plugin": {
+              "kind": "undefined"
+            }
+          }
+        ],
+        "nowCalls": 0
+      },
+      {
+        "name": "cache reference identity and byte intact unknown fields",
+        "steps": [
+          {
+            "kind": "snapshot",
+            "session": {
+              "kind": "object",
+              "identity": "p",
+              "source": "{\"settings\":{\"1\":\"one\",\"2\":\"two\",\"model\":\"original\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}},\"errors\":[{\"path\":\"permissions\",\"message\":\"warning\\ud800\",\"future\":1}]}"
+            },
+            "source": [
+              {
+                "key": "userSettings",
+                "value": {
+                  "kind": "object",
+                  "identity": "a",
+                  "source": "{\"1\":\"one\",\"2\":\"two\",\"model\":\"original\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}}"
+                }
+              },
+              {
+                "key": "projectSettings",
+                "value": {
+                  "kind": "object",
+                  "identity": "a",
+                  "source": "{\"1\":\"one\",\"2\":\"two\",\"model\":\"original\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}}"
+                }
+              },
+              {
+                "key": "localSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "policySettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "flagSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "unknown",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "parsed": [
+              {
+                "key": "/private/a",
+                "value": {
+                  "kind": "object",
+                  "identity": "p",
+                  "source": "{\"settings\":{\"1\":\"one\",\"2\":\"two\",\"model\":\"original\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}},\"errors\":[{\"path\":\"permissions\",\"message\":\"warning\\ud800\",\"future\":1}]}"
+                }
+              },
+              {
+                "key": "/private/b",
+                "value": {
+                  "kind": "object",
+                  "identity": "p",
+                  "source": "{\"settings\":{\"1\":\"one\",\"2\":\"two\",\"model\":\"original\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}},\"errors\":[{\"path\":\"permissions\",\"message\":\"warning\\ud800\",\"future\":1}]}"
+                }
+              },
+              {
+                "key": "/private/A",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/missing",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "plugin": {
+              "kind": "object",
+              "identity": "a",
+              "source": "{\"1\":\"one\",\"2\":\"two\",\"model\":\"original\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}}"
+            }
+          },
+          {
+            "kind": "snapshot",
+            "session": {
+              "kind": "object",
+              "identity": "p",
+              "source": "{\"settings\":{\"1\":\"one\",\"2\":\"two\",\"model\":\"changed\\ud800\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}},\"errors\":[{\"path\":\"permissions\",\"message\":\"warning\\ud800\",\"future\":1},{\"message\":\"later\\udfff\"}]}"
+            },
+            "source": [
+              {
+                "key": "userSettings",
+                "value": {
+                  "kind": "object",
+                  "identity": "a",
+                  "source": "{\"1\":\"one\",\"2\":\"two\",\"model\":\"changed\\ud800\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}}"
+                }
+              },
+              {
+                "key": "projectSettings",
+                "value": {
+                  "kind": "object",
+                  "identity": "a",
+                  "source": "{\"1\":\"one\",\"2\":\"two\",\"model\":\"changed\\ud800\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}}"
+                }
+              },
+              {
+                "key": "localSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "policySettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "flagSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "unknown",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "parsed": [
+              {
+                "key": "/private/a",
+                "value": {
+                  "kind": "object",
+                  "identity": "p",
+                  "source": "{\"settings\":{\"1\":\"one\",\"2\":\"two\",\"model\":\"changed\\ud800\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}},\"errors\":[{\"path\":\"permissions\",\"message\":\"warning\\ud800\",\"future\":1},{\"message\":\"later\\udfff\"}]}"
+                }
+              },
+              {
+                "key": "/private/b",
+                "value": {
+                  "kind": "object",
+                  "identity": "p",
+                  "source": "{\"settings\":{\"1\":\"one\",\"2\":\"two\",\"model\":\"changed\\ud800\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}},\"errors\":[{\"path\":\"permissions\",\"message\":\"warning\\ud800\",\"future\":1},{\"message\":\"later\\udfff\"}]}"
+                }
+              },
+              {
+                "key": "/private/A",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/missing",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "plugin": {
+              "kind": "object",
+              "identity": "a",
+              "source": "{\"1\":\"one\",\"2\":\"two\",\"model\":\"changed\\ud800\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}}"
+            }
+          },
+          {
+            "kind": "snapshot",
+            "session": {
+              "kind": "object",
+              "identity": "q",
+              "source": "{\"settings\":null,\"errors\":[]}"
+            },
+            "source": [
+              {
+                "key": "userSettings",
+                "value": {
+                  "kind": "object",
+                  "identity": "b",
+                  "source": "{\"empty\":[],\"flag\":false,\"future\":null}"
+                }
+              },
+              {
+                "key": "projectSettings",
+                "value": {
+                  "kind": "object",
+                  "identity": "a",
+                  "source": "{\"1\":\"one\",\"2\":\"two\",\"model\":\"changed\\ud800\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}}"
+                }
+              },
+              {
+                "key": "localSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "policySettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "flagSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "unknown",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "parsed": [
+              {
+                "key": "/private/a",
+                "value": {
+                  "kind": "object",
+                  "identity": "p",
+                  "source": "{\"settings\":{\"1\":\"one\",\"2\":\"two\",\"model\":\"changed\\ud800\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}},\"errors\":[{\"path\":\"permissions\",\"message\":\"warning\\ud800\",\"future\":1},{\"message\":\"later\\udfff\"}]}"
+                }
+              },
+              {
+                "key": "/private/b",
+                "value": {
+                  "kind": "object",
+                  "identity": "q",
+                  "source": "{\"settings\":null,\"errors\":[]}"
+                }
+              },
+              {
+                "key": "/private/A",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/missing",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "plugin": {
+              "kind": "object",
+              "identity": "a",
+              "source": "{\"1\":\"one\",\"2\":\"two\",\"model\":\"changed\\ud800\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}}"
+            }
+          }
+        ],
+        "nowCalls": 0
+      },
+      {
+        "name": "source map and path map remain distinct and exact",
+        "steps": [
+          {
+            "kind": "snapshot",
+            "session": {
+              "kind": "null"
+            },
+            "source": [
+              {
+                "key": "userSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "projectSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "localSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "policySettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "flagSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "unknown",
+                "value": {
+                  "kind": "object",
+                  "identity": "b",
+                  "source": "{\"empty\":[],\"flag\":false,\"future\":null}"
+                }
+              }
+            ],
+            "parsed": [
+              {
+                "key": "/private/a",
+                "value": {
+                  "kind": "object",
+                  "identity": "q",
+                  "source": "{\"settings\":null,\"errors\":[]}"
+                }
+              },
+              {
+                "key": "/private/b",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/A",
+                "value": {
+                  "kind": "object",
+                  "identity": "p",
+                  "source": "{\"settings\":{\"1\":\"one\",\"2\":\"two\",\"model\":\"original\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}},\"errors\":[{\"path\":\"permissions\",\"message\":\"warning\\ud800\",\"future\":1}]}"
+                }
+              },
+              {
+                "key": "/private/missing",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "plugin": {
+              "kind": "object",
+              "identity": "a",
+              "source": "{\"1\":\"one\",\"2\":\"two\",\"model\":\"original\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}}"
+            }
+          },
+          {
+            "kind": "snapshot",
+            "session": {
+              "kind": "null"
+            },
+            "source": [
+              {
+                "key": "userSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "projectSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "localSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "policySettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "flagSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "unknown",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "parsed": [
+              {
+                "key": "/private/a",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/b",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/A",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/missing",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "plugin": {
+              "kind": "object",
+              "identity": "a",
+              "source": "{\"1\":\"one\",\"2\":\"two\",\"model\":\"original\",\"\\ud800\":1,\"�\":2,\"future\":{\"n\":null,\"zero\":0,\"text\":\"<>&\\udfff\"}}"
+            }
+          },
+          {
+            "kind": "snapshot",
+            "session": {
+              "kind": "null"
+            },
+            "source": [
+              {
+                "key": "userSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "projectSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "localSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "policySettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "flagSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "unknown",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "parsed": [
+              {
+                "key": "/private/a",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/b",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/A",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/missing",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "plugin": {
+              "kind": "undefined"
+            }
+          }
+        ],
+        "nowCalls": 0
+      },
+      {
+        "name": "internal write strict window single consumption and stale retention",
+        "steps": [
+          {
+            "kind": "consume",
+            "key": "/private/a",
+            "result": false
+          },
+          {
+            "kind": "consume",
+            "key": "/private/a",
+            "result": false
+          },
+          {
+            "kind": "consume",
+            "key": "/private/a",
+            "result": true
+          },
+          {
+            "kind": "consume",
+            "key": "/private/a",
+            "result": false
+          },
+          {
+            "kind": "consume",
+            "key": "/private/a",
+            "result": true
+          },
+          {
+            "kind": "consume",
+            "key": "/private/a",
+            "result": false
+          },
+          {
+            "kind": "consume",
+            "key": "/private/b",
+            "result": false
+          }
+        ],
+        "nowCalls": 7
+      },
+      {
+        "name": "write marks independent of settings reset plugin clear and overwrite",
+        "steps": [
+          {
+            "kind": "consume",
+            "key": "/private/a",
+            "result": true
+          },
+          {
+            "kind": "consume",
+            "key": "/private/B",
+            "result": false
+          },
+          {
+            "kind": "consume",
+            "key": "/private/b",
+            "result": false
+          },
+          {
+            "kind": "consume",
+            "key": "/private/b",
+            "result": true
+          },
+          {
+            "kind": "snapshot",
+            "session": {
+              "kind": "null"
+            },
+            "source": [
+              {
+                "key": "userSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "projectSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "localSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "policySettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "flagSettings",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "unknown",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "parsed": [
+              {
+                "key": "/private/a",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/b",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/A",
+                "value": {
+                  "kind": "undefined"
+                }
+              },
+              {
+                "key": "/private/missing",
+                "value": {
+                  "kind": "undefined"
+                }
+              }
+            ],
+            "plugin": {
+              "kind": "undefined"
+            }
+          }
+        ],
+        "nowCalls": 6
+      }
+    ]
+  }
+}

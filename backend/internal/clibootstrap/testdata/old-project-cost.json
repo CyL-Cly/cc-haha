@@ -1,0 +1,36 @@
+{
+  "userID": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "futureGlobal": {"preserve": [null, true, {"field": "unknown"}]},
+  "projects": {
+    "${PROJECT}": {
+      "allowedTools": [],
+      "lastSessionId": "777356f4-e5f6-4b45-85bb-23c48db5b4cf",
+      "lastCost": 0.03125,
+      "lastAPIDuration": 2500,
+      "lastAPIDurationWithoutRetries": 2200,
+      "lastDecodeDuration": 900,
+      "lastTtftDuration": 80,
+      "lastToolDuration": 70,
+      "lastLinesAdded": 7,
+      "lastLinesRemoved": 2,
+      "lastDuration": 5000,
+      "lastTotalInputTokens": 99999,
+      "lastTotalOutputTokens": 99999,
+      "lastModelUsage": {
+        "fixture-model": {
+          "inputTokens": 3750,
+          "outputTokens": 0,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 2,
+          "costUSD": 0.03125,
+          "contextWindow": 17,
+          "maxOutputTokens": 23,
+          "futureUsage": {"keep": [1, 2]}
+        }
+      },
+      "futureProject": {"untouched": "yes"}
+    },
+    "/unselected-project": {"lastCost": 123, "lastSessionId": "unselected"}
+  }
+}

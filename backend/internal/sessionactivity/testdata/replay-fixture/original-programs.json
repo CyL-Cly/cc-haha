@@ -1,0 +1,961 @@
+{
+  "version": 1,
+  "programs": [
+    {
+      "id": "unpaired-stop-before-start",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [],
+      "operations": [
+        {
+          "call": "stop",
+          "reason": "api_call"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "disabled-zero-clock",
+      "enabled": false,
+      "initialNow": 0,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [],
+      "operations": [
+        {
+          "call": "start",
+          "reason": "api_call"
+        },
+        {
+          "call": "stop",
+          "reason": "api_call"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "two-reasons-delete-reinsert",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [],
+      "operations": [
+        {
+          "call": "start",
+          "reason": "tool_exec"
+        },
+        {
+          "call": "start",
+          "reason": "api_call"
+        },
+        {
+          "call": "stop",
+          "reason": "tool_exec"
+        },
+        {
+          "call": "start",
+          "reason": "tool_exec"
+        },
+        {
+          "call": "setNow",
+          "value": 850
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "mismatched-stop-independent-reason-map",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [],
+      "operations": [
+        {
+          "call": "start",
+          "reason": "tool_exec"
+        },
+        {
+          "call": "stop",
+          "reason": "api_call"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        },
+        {
+          "call": "start",
+          "reason": "api_call"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "same-reason-multiple-start-stop",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [],
+      "operations": [
+        {
+          "call": "start",
+          "reason": "api_call"
+        },
+        {
+          "call": "start",
+          "reason": "api_call"
+        },
+        {
+          "call": "stop",
+          "reason": "api_call"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        },
+        {
+          "call": "stop",
+          "reason": "api_call"
+        },
+        {
+          "call": "stop",
+          "reason": "api_call"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "late-cleanup-backward-time",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [],
+      "operations": [
+        {
+          "call": "start",
+          "reason": "api_call"
+        },
+        {
+          "call": "setNow",
+          "value": -500
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "cleanup-late-current-state-two-runs",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [],
+      "operations": [
+        {
+          "call": "start",
+          "reason": "api_call"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        },
+        {
+          "call": "stop",
+          "reason": "api_call"
+        },
+        {
+          "call": "start",
+          "reason": "tool_exec"
+        },
+        {
+          "call": "setNow",
+          "value": 5000
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "Date-now-throw-before-cleanup-registration",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [
+        "now",
+        "native"
+      ],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [],
+      "operations": [
+        {
+          "call": "start",
+          "reason": "api_call"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        },
+        {
+          "call": "start",
+          "reason": "api_call"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "activity-invalid-date-async-map-continues",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [
+        "invalid",
+        "valid"
+      ],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [
+        {
+          "name": "later",
+          "kind": "fulfilled"
+        }
+      ],
+      "operations": [
+        {
+          "call": "start",
+          "reason": "api_call"
+        },
+        {
+          "call": "register",
+          "name": "later"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "activity-serialize-throw-async-map-continues",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [
+        "serialize"
+      ],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [
+        {
+          "name": "later",
+          "kind": "fulfilled"
+        }
+      ],
+      "operations": [
+        {
+          "call": "start",
+          "reason": "api_call"
+        },
+        {
+          "call": "register",
+          "name": "later"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "native-storage-prepare-fault-swallowed",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "file-parent",
+      "callbacks": [],
+      "operations": [
+        {
+          "call": "start",
+          "reason": "api_call"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "cleanup-observer-noawait-invalid-date",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [
+        "invalid"
+      ],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [],
+      "operations": [
+        {
+          "call": "start",
+          "reason": "api_call"
+        },
+        {
+          "call": "cleanup",
+          "caller": "observer"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "registered-timers-cleared-by-real-unregister",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": "true",
+      "storage": "private-directory",
+      "callbacks": [],
+      "operations": [
+        {
+          "call": "registerActivityCallback"
+        },
+        {
+          "call": "start",
+          "reason": "api_call"
+        },
+        {
+          "call": "sendSignal"
+        },
+        {
+          "call": "stop",
+          "reason": "api_call"
+        },
+        {
+          "call": "unregisterActivityCallback"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "register-without-start-no-activity-cleanup",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": "false",
+      "storage": "private-directory",
+      "callbacks": [],
+      "operations": [
+        {
+          "call": "registerActivityCallback"
+        },
+        {
+          "call": "sendSignal"
+        },
+        {
+          "call": "unregisterActivityCallback"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "native-signal-truthy-trim-without-timer",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": " ON ",
+      "storage": "private-directory",
+      "callbacks": [],
+      "operations": [
+        {
+          "call": "registerActivityCallback"
+        },
+        {
+          "call": "sendSignal"
+        },
+        {
+          "call": "unregisterActivityCallback"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "registry-Set-dedup-unregister-and-repeat",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [
+        {
+          "name": "first",
+          "kind": "fulfilled"
+        },
+        {
+          "name": "second",
+          "kind": "fulfilled"
+        }
+      ],
+      "operations": [
+        {
+          "call": "register",
+          "name": "first"
+        },
+        {
+          "call": "register",
+          "name": "first"
+        },
+        {
+          "call": "register",
+          "name": "second"
+        },
+        {
+          "call": "unregister",
+          "name": "second"
+        },
+        {
+          "call": "unregister",
+          "name": "second"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "registry-all-async-start-before-external-fulfill",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [
+        {
+          "name": "first",
+          "kind": "pendingFulfill"
+        },
+        {
+          "name": "second",
+          "kind": "fulfilled"
+        }
+      ],
+      "operations": [
+        {
+          "call": "register",
+          "name": "first"
+        },
+        {
+          "call": "register",
+          "name": "second"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "original-release\n",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "registry-all-async-start-before-external-reject",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [
+        {
+          "name": "first",
+          "kind": "pendingReject",
+          "error": "first"
+        },
+        {
+          "name": "second",
+          "kind": "fulfilled"
+        }
+      ],
+      "operations": [
+        {
+          "call": "register",
+          "name": "first"
+        },
+        {
+          "call": "register",
+          "name": "second"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "original-release\n",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "registry-async-throw-second-starts",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [
+        {
+          "name": "first",
+          "kind": "asyncThrow",
+          "error": "first"
+        },
+        {
+          "name": "second",
+          "kind": "fulfilled"
+        }
+      ],
+      "operations": [
+        {
+          "call": "register",
+          "name": "first"
+        },
+        {
+          "call": "register",
+          "name": "second"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "registry-sync-throw-map-stops",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [
+        {
+          "name": "first",
+          "kind": "syncThrow",
+          "error": "first"
+        },
+        {
+          "name": "second",
+          "kind": "fulfilled"
+        }
+      ],
+      "operations": [
+        {
+          "call": "register",
+          "name": "first"
+        },
+        {
+          "call": "register",
+          "name": "second"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "registry-two-immediate-rejections-error-identity",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [
+        {
+          "name": "first",
+          "kind": "asyncThrow",
+          "error": "first"
+        },
+        {
+          "name": "second",
+          "kind": "asyncThrow",
+          "error": "second"
+        }
+      ],
+      "operations": [
+        {
+          "call": "register",
+          "name": "first"
+        },
+        {
+          "call": "register",
+          "name": "second"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "registry-pending-not-drained-after-second-reject",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [
+        {
+          "name": "first",
+          "kind": "never"
+        },
+        {
+          "name": "second",
+          "kind": "asyncThrow",
+          "error": "second"
+        }
+      ],
+      "operations": [
+        {
+          "call": "register",
+          "name": "first"
+        },
+        {
+          "call": "register",
+          "name": "second"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    },
+    {
+      "id": "registry-execution-time-original-getter",
+      "enabled": true,
+      "initialNow": 1000,
+      "nowStep": 0,
+      "dateMillis": 1700000000123,
+      "dateEffects": [],
+      "nowEffects": [],
+      "serializeEffects": [],
+      "keepaliveEnv": null,
+      "storage": "private-directory",
+      "callbacks": [
+        {
+          "name": "getter",
+          "kind": "liveGetter"
+        }
+      ],
+      "operations": [
+        {
+          "call": "register",
+          "name": "getter"
+        },
+        {
+          "call": "setExternalValue",
+          "value": "later-original-value"
+        },
+        {
+          "call": "cleanup",
+          "caller": "await"
+        }
+      ],
+      "externalControlUTF8": "",
+      "errors": {
+        "now": "original Date.now error",
+        "serialize": "original diagnostic serialization error",
+        "first": "original cleanup first error",
+        "second": "original cleanup second error"
+      }
+    }
+  ],
+  "repeats": 2,
+  "guards": [
+    "outside-read",
+    "offorigin",
+    "native-spawn",
+    "external-symlink"
+  ],
+  "SourceOutputsRuntimeInputs": false,
+  "scope": "production sessionActivity and cleanupRegistry module exports, native diagnostic closure; no SDK/main/signal/gracefulShutdown entry or 2s race"
+}

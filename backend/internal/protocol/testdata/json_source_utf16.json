@@ -1,0 +1,174 @@
+[
+  {
+    "name": "nested-literal-high",
+    "units": [
+      123,
+      34,
+      55296,
+      34,
+      58,
+      34,
+      57343,
+      34,
+      125
+    ],
+    "valid": true,
+    "stringified": "{\"\\ud800\":\"\\udfff\"}"
+  },
+  {
+    "name": "string-literal-high",
+    "units": [
+      34,
+      55296,
+      34
+    ],
+    "valid": true,
+    "stringified": "\"\\ud800\""
+  },
+  {
+    "name": "outside-high-invalid",
+    "units": [
+      55296
+    ],
+    "valid": false,
+    "stringified": null
+  },
+  {
+    "name": "odd-backslash-high-invalid",
+    "units": [
+      34,
+      92,
+      55296,
+      34
+    ],
+    "valid": false,
+    "stringified": null
+  },
+  {
+    "name": "three-backslashes-low-invalid",
+    "units": [
+      34,
+      92,
+      92,
+      92,
+      57343,
+      34
+    ],
+    "valid": false,
+    "stringified": null
+  },
+  {
+    "name": "two-backslashes-high-valid",
+    "units": [
+      34,
+      92,
+      92,
+      55296,
+      34
+    ],
+    "valid": true,
+    "stringified": "\"\\\\\\ud800\""
+  },
+  {
+    "name": "four-backslashes-low-valid",
+    "units": [
+      34,
+      92,
+      92,
+      92,
+      92,
+      57343,
+      34
+    ],
+    "valid": true,
+    "stringified": "\"\\\\\\\\\\udfff\""
+  },
+  {
+    "name": "pair-valid",
+    "units": [
+      34,
+      55357,
+      56832,
+      34
+    ],
+    "valid": true,
+    "stringified": "\"😀\""
+  },
+  {
+    "name": "pair-escaped-invalid",
+    "units": [
+      34,
+      92,
+      55357,
+      56832,
+      34
+    ],
+    "valid": false,
+    "stringified": null
+  },
+  {
+    "name": "overflow-number",
+    "units": [
+      49,
+      101,
+      52,
+      48,
+      48
+    ],
+    "valid": true,
+    "stringified": "null"
+  },
+  {
+    "name": "negative-zero",
+    "units": [
+      45,
+      48
+    ],
+    "valid": true,
+    "stringified": "0"
+  },
+  {
+    "name": "null-value",
+    "units": [
+      110,
+      117,
+      108,
+      108
+    ],
+    "valid": true,
+    "stringified": "null"
+  },
+  {
+    "name": "large-integer",
+    "units": [
+      57,
+      48,
+      48,
+      55,
+      49,
+      57,
+      57,
+      50,
+      53,
+      52,
+      55,
+      52,
+      48,
+      57,
+      57,
+      51
+    ],
+    "valid": true,
+    "stringified": "9007199254740992"
+  },
+  {
+    "name": "invalid-control-in-string",
+    "units": [
+      34,
+      0,
+      34
+    ],
+    "valid": false,
+    "stringified": null
+  }
+]

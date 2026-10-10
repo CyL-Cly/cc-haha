@@ -1,0 +1,3182 @@
+[
+  {
+    "input": {
+      "name": "midnight-utc-same-mode",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "clock",
+          "value": "2026-10-02T00:00:01.000Z"
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "midnight-utc-same-mode",
+      "results": [
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "clock",
+            "value": "2026-10-02T00:00:01.000Z"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-02\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-02T00:00:01.000Z\"}]",
+            "samePromise": true,
+            "sameValue": true,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899201000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-02\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000003\",\"timestamp\":\"2026-10-02T00:00:01.000Z\"}]",
+            "samePromise": true,
+            "sameValue": true,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000003",
+              "millis": 1790899201000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "midnight-shanghai-same-mode",
+      "timezone": "Asia/Shanghai",
+      "steps": [
+        {
+          "kind": "clock",
+          "value": "2026-10-01T15:59:59.000Z"
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "clock",
+          "value": "2026-10-01T16:00:01.000Z"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "midnight-shanghai-same-mode",
+      "results": [
+        {
+          "step": {
+            "kind": "clock",
+            "value": "2026-10-01T15:59:59.000Z"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T15:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790870399000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "clock",
+            "value": "2026-10-01T16:00:01.000Z"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-02\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-01T16:00:01.000Z\"}]",
+            "samePromise": true,
+            "sameValue": true,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790870401000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "midnight-los-angeles-same-mode",
+      "timezone": "America/Los_Angeles",
+      "steps": [
+        {
+          "kind": "clock",
+          "value": "2026-10-02T06:59:59.000Z"
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "clock",
+          "value": "2026-10-02T07:00:01.000Z"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "midnight-los-angeles-same-mode",
+      "results": [
+        {
+          "step": {
+            "kind": "clock",
+            "value": "2026-10-02T06:59:59.000Z"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-02T06:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790924399000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "clock",
+            "value": "2026-10-02T07:00:01.000Z"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-02\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-02T07:00:01.000Z\"}]",
+            "samePromise": true,
+            "sameValue": true,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790924401000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "override-changes-cached-prefix",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "override",
+          "value": "2026-01-02"
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "override",
+          "value": "2030-03-04"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "override-changes-cached-prefix",
+      "results": [
+        {
+          "step": {
+            "kind": "override",
+            "value": "2026-01-02"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-01-02\"",
+            "localDateJSON": "\"2026-01-02\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-01-02.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-01-02.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "override",
+            "value": "2030-03-04"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-01-02\"",
+            "localDateJSON": "\"2030-03-04\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-01-02.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-01-02.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": true,
+            "sameValue": true,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899199000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "override-truthy-noniso-external",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "override",
+          "value": "not-an-ISO-date"
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "override",
+          "value": "another literal"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "override-truthy-noniso-external",
+      "results": [
+        {
+          "step": {
+            "kind": "override",
+            "value": "not-an-ISO-date"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"not-an-ISO-date\"",
+            "localDateJSON": "\"not-an-ISO-date\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is not-an-ISO-date.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is not-an-ISO-date.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "override",
+            "value": "another literal"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"not-an-ISO-date\"",
+            "localDateJSON": "\"another literal\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is not-an-ISO-date.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is not-an-ISO-date.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": true,
+            "sameValue": true,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899199000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "override-empty-then-string",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "override",
+          "value": ""
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "override",
+          "value": "2040-05-06"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "override-empty-then-string",
+      "results": [
+        {
+          "step": {
+            "kind": "override",
+            "value": ""
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "override",
+            "value": "2040-05-06"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2040-05-06\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": true,
+            "sameValue": true,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899199000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "override-deleted-after-cache",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "override",
+          "value": "2025-01-01"
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "override",
+          "delete": true
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "override-deleted-after-cache",
+      "results": [
+        {
+          "step": {
+            "kind": "override",
+            "value": "2025-01-01"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2025-01-01\"",
+            "localDateJSON": "\"2025-01-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2025-01-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2025-01-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "override",
+            "delete": true
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2025-01-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2025-01-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2025-01-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": true,
+            "sameValue": true,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899199000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "mode-changes-across-midnight",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "clock",
+          "value": "2026-10-02T00:00:01.000Z"
+        },
+        {
+          "kind": "writeMode",
+          "value": "claude-md",
+          "source": "user"
+        },
+        {
+          "kind": "resetSettings"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "mode-changes-across-midnight",
+      "results": [
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "clock",
+            "value": "2026-10-02T00:00:01.000Z"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "writeMode",
+            "value": "claude-md",
+            "source": "user"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "resetSettings"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-02\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-02.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-02.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-02T00:00:01.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899201000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "mode-cycle-refreshes-each-return",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "writeMode",
+          "value": "claude-md",
+          "source": "user"
+        },
+        {
+          "kind": "resetSettings"
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "clock",
+          "value": "2026-10-02T00:00:01.000Z"
+        },
+        {
+          "kind": "writeMode",
+          "value": "managed-only",
+          "source": "user"
+        },
+        {
+          "kind": "resetSettings"
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "clock",
+          "value": "2026-10-03T00:00:01.000Z"
+        },
+        {
+          "kind": "writeMode",
+          "value": "claude-md",
+          "source": "user"
+        },
+        {
+          "kind": "resetSettings"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "mode-cycle-refreshes-each-return",
+      "results": [
+        {
+          "step": {
+            "kind": "writeMode",
+            "value": "claude-md",
+            "source": "user"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "resetSettings"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "clock",
+            "value": "2026-10-02T00:00:01.000Z"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "writeMode",
+            "value": "managed-only",
+            "source": "user"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "resetSettings"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-02\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-02.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-02.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-02T00:00:01.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "managed-only",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899201000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "clock",
+            "value": "2026-10-03T00:00:01.000Z"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "writeMode",
+            "value": "claude-md",
+            "source": "user"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "resetSettings"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-03\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-03.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-03.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000003\",\"timestamp\":\"2026-10-03T00:00:01.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000003",
+              "millis": 1790985601000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "same-normalized-mode-keeps-cache",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "clock",
+          "value": "2026-10-02T00:00:01.000Z"
+        },
+        {
+          "kind": "writeMode",
+          "value": "unknown-mode",
+          "source": "user"
+        },
+        {
+          "kind": "resetSettings"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "same-normalized-mode-keeps-cache",
+      "results": [
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "clock",
+            "value": "2026-10-02T00:00:01.000Z"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "writeMode",
+            "value": "unknown-mode",
+            "source": "user"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "resetSettings"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-02\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-02T00:00:01.000Z\"}]",
+            "samePromise": true,
+            "sameValue": true,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899201000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "project-mode-does-not-switch",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "clock",
+          "value": "2026-10-02T00:00:01.000Z"
+        },
+        {
+          "kind": "writeMode",
+          "value": "managed-only",
+          "source": "project"
+        },
+        {
+          "kind": "resetSettings"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "project-mode-does-not-switch",
+      "results": [
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "clock",
+            "value": "2026-10-02T00:00:01.000Z"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "writeMode",
+            "value": "managed-only",
+            "source": "project"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "resetSettings"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-02\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-02T00:00:01.000Z\"}]",
+            "samePromise": true,
+            "sameValue": true,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899201000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "user-mode-write-without-settings-reset",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "clock",
+          "value": "2026-10-02T00:00:01.000Z"
+        },
+        {
+          "kind": "writeMode",
+          "value": "managed-only",
+          "source": "user"
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "resetSettings"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "user-mode-write-without-settings-reset",
+      "results": [
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "clock",
+            "value": "2026-10-02T00:00:01.000Z"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "writeMode",
+            "value": "managed-only",
+            "source": "user"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-02\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-02T00:00:01.000Z\"}]",
+            "samePromise": true,
+            "sameValue": true,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899201000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "resetSettings"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-02\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-02.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-02.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000003\",\"timestamp\":\"2026-10-02T00:00:01.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "managed-only",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000003",
+              "millis": 1790899201000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "explicit-user-cache-clear",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "clock",
+          "value": "2026-10-02T00:00:01.000Z"
+        },
+        {
+          "kind": "clearUser"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "explicit-user-cache-clear",
+      "results": [
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "clock",
+            "value": "2026-10-02T00:00:01.000Z"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "clearUser"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-02\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-02.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-02.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-02T00:00:01.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899201000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "system-injection-clears-user-context",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "clock",
+          "value": "2026-10-02T00:00:01.000Z"
+        },
+        {
+          "kind": "injection",
+          "value": "original-debug-injection"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "system-injection-clears-user-context",
+      "results": [
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "clock",
+            "value": "2026-10-02T00:00:01.000Z"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "injection",
+            "value": "original-debug-injection"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-02\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-02.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-02.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-02T00:00:01.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899201000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "session-date-clear-is-independent",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "clock",
+          "value": "2026-10-02T00:00:01.000Z"
+        },
+        {
+          "kind": "clearSessionDate"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "session-date-clear-is-independent",
+      "results": [
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "clock",
+            "value": "2026-10-02T00:00:01.000Z"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "clearSessionDate"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-02\"",
+            "localDateJSON": "\"2026-10-02\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-02T00:00:01.000Z\"}]",
+            "samePromise": true,
+            "sameValue": true,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899201000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "override-raw-number-bun-view",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "override",
+          "value": 123
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "override",
+          "value": 0
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "override-raw-number-bun-view",
+      "results": [
+        {
+          "step": {
+            "kind": "override",
+            "value": 123
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "123",
+            "localDateJSON": "123",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 123.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 123.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "override",
+            "value": 0
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "123",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 123.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 123.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": true,
+            "sameValue": true,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899199000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "custom-system-helper-retains-date",
+      "timezone": "UTC",
+      "customSystemPrompt": "fixture-system",
+      "steps": [
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "clock",
+          "value": "2026-10-02T00:00:01.000Z"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "custom-system-helper-retains-date",
+      "results": [
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "clock",
+            "value": "2026-10-02T00:00:01.000Z"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-02\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-02T00:00:01.000Z\"}]",
+            "samePromise": true,
+            "sameValue": true,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899201000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "real-user-memory-completes-after-midnight",
+      "timezone": "UTC",
+      "memory": "plain-delayed",
+      "steps": [
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "real-user-memory-completes-after-midnight",
+      "results": [
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-02\"",
+            "userContextJSON": "{\"claudeMd\":\"Codebase and user instructions are shown below. Be sure to adhere to these instructions. IMPORTANT: These instructions OVERRIDE any default behavior and you MUST follow them exactly as written.\\n\\nContents of <HOME>/.claude/CLAUDE.md (user's private global instructions for all projects):\\n\\nPrivate original probe instructions.\",\"currentDate\":\"Today's date is 2026-10-02.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# claudeMd\\nCodebase and user instructions are shown below. Be sure to adhere to these instructions. IMPORTANT: These instructions OVERRIDE any default behavior and you MUST follow them exactly as written.\\n\\nContents of <HOME>/.claude/CLAUDE.md (user's private global instructions for all projects):\\n\\nPrivate original probe instructions.\\n# currentDate\\nToday's date is 2026-10-02.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-02T00:00:01.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "\"Codebase and user instructions are shown below. Be sure to adhere to these instructions. IMPORTANT: These instructions OVERRIDE any default behavior and you MUST follow them exactly as written.\\n\\nContents of <HOME>/.claude/CLAUDE.md (user's private global instructions for all projects):\\n\\nPrivate original probe instructions.\"",
+            "mode": "claude-md",
+            "cacheSize": 1,
+            "pending": {
+              "samePromise": true,
+              "cachedMemoryJSON": "null"
+            },
+            "io": [
+              {
+                "kind": "read-start",
+                "millis": 1790899199000,
+                "path": "<HOME>/.claude/CLAUDE.md"
+              },
+              {
+                "kind": "native-read-settled",
+                "millis": 1790899199000,
+                "content": "Private original probe instructions.\n"
+              },
+              {
+                "kind": "read-release",
+                "millis": 1790899201000
+              }
+            ]
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899201000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-02\"",
+            "userContextJSON": "{\"claudeMd\":\"Codebase and user instructions are shown below. Be sure to adhere to these instructions. IMPORTANT: These instructions OVERRIDE any default behavior and you MUST follow them exactly as written.\\n\\nContents of <HOME>/.claude/CLAUDE.md (user's private global instructions for all projects):\\n\\nPrivate original probe instructions.\",\"currentDate\":\"Today's date is 2026-10-02.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# claudeMd\\nCodebase and user instructions are shown below. Be sure to adhere to these instructions. IMPORTANT: These instructions OVERRIDE any default behavior and you MUST follow them exactly as written.\\n\\nContents of <HOME>/.claude/CLAUDE.md (user's private global instructions for all projects):\\n\\nPrivate original probe instructions.\\n# currentDate\\nToday's date is 2026-10-02.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-02T00:00:01.000Z\"}]",
+            "samePromise": true,
+            "sameValue": true,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "\"Codebase and user instructions are shown below. Be sure to adhere to these instructions. IMPORTANT: These instructions OVERRIDE any default behavior and you MUST follow them exactly as written.\\n\\nContents of <HOME>/.claude/CLAUDE.md (user's private global instructions for all projects):\\n\\nPrivate original probe instructions.\"",
+            "mode": "claude-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": [
+              {
+                "kind": "read-start",
+                "millis": 1790899199000,
+                "path": "<HOME>/.claude/CLAUDE.md"
+              },
+              {
+                "kind": "native-read-settled",
+                "millis": 1790899199000,
+                "content": "Private original probe instructions.\n"
+              },
+              {
+                "kind": "read-release",
+                "millis": 1790899201000
+              }
+            ]
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899201000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "override-lone-utf16-prefix",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "override",
+          "value": "\ud800"
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "clearUser"
+        },
+        {
+          "kind": "override",
+          "value": "\udfff"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "override-lone-utf16-prefix",
+      "results": [
+        {
+          "step": {
+            "kind": "override",
+            "value": "\ud800"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"\\ud800\"",
+            "localDateJSON": "\"\\ud800\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is \\ud800.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is \\ud800.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "clearUser"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "override",
+            "value": "\udfff"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"\\ud800\"",
+            "localDateJSON": "\"\\udfff\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is \\udfff.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is \\udfff.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899199000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "override-raw-false-null",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "override",
+          "value": false
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "clearUser"
+        },
+        {
+          "kind": "override",
+          "value": null
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "override-raw-false-null",
+      "results": [
+        {
+          "step": {
+            "kind": "override",
+            "value": false
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "clearUser"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "override",
+            "value": null
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899199000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "plugin-schema-ordered-strip-options-mcp",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "schema",
+          "raw": "{\"future\":{\"x\":1},\"pluginConfigs\":{\"agents-md@builtin\":{\"future\":\"strip\",\"options\":{\"instructionFiles\":\"claude-md\",\"x\":-0,\"a\":[\"a\",\"\\ud800\"]},\"mcpServers\":{\"one\":{\"env\":\"x\",\"port\":1}}},\"other\":{\"options\":{\"on\":true}}},\"model\":\"fixture-model\"}"
+        }
+      ]
+    },
+    "expected": {
+      "name": "plugin-schema-ordered-strip-options-mcp",
+      "results": [
+        {
+          "step": {
+            "kind": "schema",
+            "raw": "{\"future\":{\"x\":1},\"pluginConfigs\":{\"agents-md@builtin\":{\"future\":\"strip\",\"options\":{\"instructionFiles\":\"claude-md\",\"x\":-0,\"a\":[\"a\",\"\\ud800\"]},\"mcpServers\":{\"one\":{\"env\":\"x\",\"port\":1}}},\"other\":{\"options\":{\"on\":true}}},\"model\":\"fixture-model\"}"
+          },
+          "result": {
+            "settingsJSON": "{\"model\":\"fixture-model\",\"pluginConfigs\":{\"agents-md@builtin\":{\"mcpServers\":{\"one\":{\"env\":\"x\",\"port\":1}},\"options\":{\"instructionFiles\":\"claude-md\",\"x\":0,\"a\":[\"a\",\"\\ud800\"]}},\"other\":{\"options\":{\"on\":true}}},\"future\":{\"x\":1}}",
+            "errorsJSON": "[]"
+          },
+          "allocations": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "plugin-schema-unknown-options-raw-keys",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "schema",
+          "raw": "{\"pluginConfigs\":{\"\\ud800\":{\"options\":{\"\\udfff\":\"\\ud800\",\"2\":true,\"1\":[\"x\"]},\"future\":1},\"�\":{\"mcpServers\":{}}}}"
+        }
+      ]
+    },
+    "expected": {
+      "name": "plugin-schema-unknown-options-raw-keys",
+      "results": [
+        {
+          "step": {
+            "kind": "schema",
+            "raw": "{\"pluginConfigs\":{\"\\ud800\":{\"options\":{\"\\udfff\":\"\\ud800\",\"2\":true,\"1\":[\"x\"]},\"future\":1},\"�\":{\"mcpServers\":{}}}}"
+          },
+          "result": {
+            "settingsJSON": "{\"pluginConfigs\":{\"\\ud800\":{\"options\":{\"1\":[\"x\"],\"2\":true,\"\\udfff\":\"\\ud800\"}},\"�\":{\"mcpServers\":{}}}}",
+            "errorsJSON": "[]"
+          },
+          "allocations": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "plugin-schema-null",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "schema",
+          "raw": "{\"pluginConfigs\":null}"
+        }
+      ]
+    },
+    "expected": {
+      "name": "plugin-schema-null",
+      "results": [
+        {
+          "step": {
+            "kind": "schema",
+            "raw": "{\"pluginConfigs\":null}"
+          },
+          "result": {
+            "settingsJSON": "null",
+            "errorsJSON": "[{\"file\":\"<HOME>/.claude/settings.json\",\"path\":\"pluginConfigs\",\"message\":\"Expected record, but received null\",\"invalidValue\":\"null\"}]"
+          },
+          "allocations": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "plugin-schema-array",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "schema",
+          "raw": "{\"pluginConfigs\":[]}"
+        }
+      ]
+    },
+    "expected": {
+      "name": "plugin-schema-array",
+      "results": [
+        {
+          "step": {
+            "kind": "schema",
+            "raw": "{\"pluginConfigs\":[]}"
+          },
+          "result": {
+            "settingsJSON": "null",
+            "errorsJSON": "[{\"file\":\"<HOME>/.claude/settings.json\",\"path\":\"pluginConfigs\",\"message\":\"Expected record, but received array\",\"invalidValue\":\"array\"}]"
+          },
+          "allocations": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "plugin-schema-plugin-null",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "schema",
+          "raw": "{\"pluginConfigs\":{\"agents-md@builtin\":null}}"
+        }
+      ]
+    },
+    "expected": {
+      "name": "plugin-schema-plugin-null",
+      "results": [
+        {
+          "step": {
+            "kind": "schema",
+            "raw": "{\"pluginConfigs\":{\"agents-md@builtin\":null}}"
+          },
+          "result": {
+            "settingsJSON": "null",
+            "errorsJSON": "[{\"file\":\"<HOME>/.claude/settings.json\",\"path\":\"pluginConfigs.agents-md@builtin\",\"message\":\"Expected object, but received null\",\"invalidValue\":\"null\"}]"
+          },
+          "allocations": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "plugin-schema-options-null",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "schema",
+          "raw": "{\"pluginConfigs\":{\"agents-md@builtin\":{\"options\":null}}}"
+        }
+      ]
+    },
+    "expected": {
+      "name": "plugin-schema-options-null",
+      "results": [
+        {
+          "step": {
+            "kind": "schema",
+            "raw": "{\"pluginConfigs\":{\"agents-md@builtin\":{\"options\":null}}}"
+          },
+          "result": {
+            "settingsJSON": "null",
+            "errorsJSON": "[{\"file\":\"<HOME>/.claude/settings.json\",\"path\":\"pluginConfigs.agents-md@builtin.options\",\"message\":\"Expected record, but received null\",\"invalidValue\":\"null\"}]"
+          },
+          "allocations": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "plugin-schema-server-number",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "schema",
+          "raw": "{\"pluginConfigs\":{\"x\":{\"mcpServers\":{\"s\":123}}}}"
+        }
+      ]
+    },
+    "expected": {
+      "name": "plugin-schema-server-number",
+      "results": [
+        {
+          "step": {
+            "kind": "schema",
+            "raw": "{\"pluginConfigs\":{\"x\":{\"mcpServers\":{\"s\":123}}}}"
+          },
+          "result": {
+            "settingsJSON": "null",
+            "errorsJSON": "[{\"file\":\"<HOME>/.claude/settings.json\",\"path\":\"pluginConfigs.x.mcpServers.s\",\"message\":\"Expected record, but received number\",\"invalidValue\":\"number\"}]"
+          },
+          "allocations": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "plugin-schema-union-null",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "schema",
+          "raw": "{\"pluginConfigs\":{\"x\":{\"options\":{\"a\":null,\"b\":{},\"c\":[1]}}}}"
+        }
+      ]
+    },
+    "expected": {
+      "name": "plugin-schema-union-null",
+      "results": [
+        {
+          "step": {
+            "kind": "schema",
+            "raw": "{\"pluginConfigs\":{\"x\":{\"options\":{\"a\":null,\"b\":{},\"c\":[1]}}}}"
+          },
+          "result": {
+            "settingsJSON": "null",
+            "errorsJSON": "[{\"file\":\"<HOME>/.claude/settings.json\",\"path\":\"pluginConfigs.x.options.a\",\"message\":\"Invalid input\"},{\"file\":\"<HOME>/.claude/settings.json\",\"path\":\"pluginConfigs.x.options.b\",\"message\":\"Invalid input\"},{\"file\":\"<HOME>/.claude/settings.json\",\"path\":\"pluginConfigs.x.options.c\",\"message\":\"Invalid input\"}]"
+          },
+          "allocations": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "plugin-schema-overflow",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "schema",
+          "raw": "{\"pluginConfigs\":{\"x\":{\"options\":{\"n\":1e400}}}}"
+        }
+      ]
+    },
+    "expected": {
+      "name": "plugin-schema-overflow",
+      "results": [
+        {
+          "step": {
+            "kind": "schema",
+            "raw": "{\"pluginConfigs\":{\"x\":{\"options\":{\"n\":1e400}}}}"
+          },
+          "result": {
+            "settingsJSON": "null",
+            "errorsJSON": "[{\"file\":\"<HOME>/.claude/settings.json\",\"path\":\"pluginConfigs.x.options.n\",\"message\":\"Invalid input\"}]"
+          },
+          "allocations": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "mode-sources-precedence",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "modeSources",
+          "sources": [
+            {
+              "pluginConfigs": {
+                "agents-md@builtin": {
+                  "options": {
+                    "instructionFiles": "managed-only"
+                  }
+                }
+              }
+            },
+            {
+              "pluginConfigs": {
+                "agents-md@builtin": {
+                  "options": {
+                    "instructionFiles": "claude-md"
+                  }
+                }
+              }
+            },
+            {
+              "pluginConfigs": {
+                "agents-md@builtin": {
+                  "options": {
+                    "instructionFiles": "claude-md-and-agents-md"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "name": "mode-sources-precedence",
+      "results": [
+        {
+          "step": {
+            "kind": "modeSources",
+            "sources": [
+              {
+                "pluginConfigs": {
+                  "agents-md@builtin": {
+                    "options": {
+                      "instructionFiles": "managed-only"
+                    }
+                  }
+                }
+              },
+              {
+                "pluginConfigs": {
+                  "agents-md@builtin": {
+                    "options": {
+                      "instructionFiles": "claude-md"
+                    }
+                  }
+                }
+              },
+              {
+                "pluginConfigs": {
+                  "agents-md@builtin": {
+                    "options": {
+                      "instructionFiles": "claude-md-and-agents-md"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "result": {
+            "mode": "managed-only"
+          },
+          "allocations": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "mode-sources-legacy-none",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "modeSources",
+          "sources": [
+            null,
+            {
+              "pluginConfigs": {
+                "agents-md@builtin": {
+                  "options": {
+                    "projectInstructions": "none"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "name": "mode-sources-legacy-none",
+      "results": [
+        {
+          "step": {
+            "kind": "modeSources",
+            "sources": [
+              null,
+              {
+                "pluginConfigs": {
+                  "agents-md@builtin": {
+                    "options": {
+                      "projectInstructions": "none"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "result": {
+            "mode": "managed-only"
+          },
+          "allocations": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "mode-sources-legacy-both",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "modeSources",
+          "sources": [
+            {
+              "pluginConfigs": {
+                "agents-md@builtin": {
+                  "options": {
+                    "projectInstructions": "both"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "name": "mode-sources-legacy-both",
+      "results": [
+        {
+          "step": {
+            "kind": "modeSources",
+            "sources": [
+              {
+                "pluginConfigs": {
+                  "agents-md@builtin": {
+                    "options": {
+                      "projectInstructions": "both"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "result": {
+            "mode": "claude-md-and-agents-md"
+          },
+          "allocations": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "mode-sources-legacy-default",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "modeSources",
+          "sources": [
+            {
+              "pluginConfigs": {
+                "agents-md@builtin": {
+                  "options": {
+                    "instructionFiles": "garbage",
+                    "projectInstructions": "legacy"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "name": "mode-sources-legacy-default",
+      "results": [
+        {
+          "step": {
+            "kind": "modeSources",
+            "sources": [
+              {
+                "pluginConfigs": {
+                  "agents-md@builtin": {
+                    "options": {
+                      "instructionFiles": "garbage",
+                      "projectInstructions": "legacy"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "result": {
+            "mode": "claude-md"
+          },
+          "allocations": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "mode-sources-fallback",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "modeSources",
+          "sources": [
+            {
+              "pluginConfigs": {
+                "agents-md@builtin": {
+                  "options": {
+                    "projectInstructions": "agents-fallback"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "name": "mode-sources-fallback",
+      "results": [
+        {
+          "step": {
+            "kind": "modeSources",
+            "sources": [
+              {
+                "pluginConfigs": {
+                  "agents-md@builtin": {
+                    "options": {
+                      "projectInstructions": "agents-fallback"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "result": {
+            "mode": "claude-md-or-agents-md"
+          },
+          "allocations": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "plugin-schema-empty-hooks-order",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "schema",
+          "raw": "{\"allowManagedHooksOnly\":true,\"disableAllHooks\":false,\"hooks\":{\"StopFailure\":[],\"Stop\":[]},\"effortLevel\":\"high\",\"pluginConfigs\":{\"agents-md@builtin\":{\"options\":{\"instructionFiles\":\"claude-md\"}}}}"
+        }
+      ]
+    },
+    "expected": {
+      "name": "plugin-schema-empty-hooks-order",
+      "results": [
+        {
+          "step": {
+            "kind": "schema",
+            "raw": "{\"allowManagedHooksOnly\":true,\"disableAllHooks\":false,\"hooks\":{\"StopFailure\":[],\"Stop\":[]},\"effortLevel\":\"high\",\"pluginConfigs\":{\"agents-md@builtin\":{\"options\":{\"instructionFiles\":\"claude-md\"}}}}"
+          },
+          "result": {
+            "settingsJSON": "{\"hooks\":{\"StopFailure\":[],\"Stop\":[]},\"disableAllHooks\":false,\"allowManagedHooksOnly\":true,\"effortLevel\":\"high\",\"pluginConfigs\":{\"agents-md@builtin\":{\"options\":{\"instructionFiles\":\"claude-md\"}}}}",
+            "errorsJSON": "[]"
+          },
+          "allocations": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "plugin-schema-empty-all-hook-events",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "schema",
+          "raw": "{\"hooks\":{\"PreToolUse\":[],\"PostToolUse\":[],\"PostToolUseFailure\":[],\"PermissionRequest\":[],\"Notification\":[],\"UserPromptSubmit\":[],\"SessionStart\":[],\"SessionEnd\":[],\"Stop\":[],\"StopFailure\":[],\"SubagentStart\":[],\"SubagentStop\":[],\"PreCompact\":[],\"PostCompact\":[],\"Setup\":[],\"TeammateIdle\":[],\"TaskCompleted\":[],\"Elicitation\":[],\"ElicitationResult\":[],\"ConfigChange\":[],\"WorktreeCreate\":[],\"WorktreeRemove\":[],\"InstructionsLoaded\":[]}}"
+        }
+      ]
+    },
+    "expected": {
+      "name": "plugin-schema-empty-all-hook-events",
+      "results": [
+        {
+          "step": {
+            "kind": "schema",
+            "raw": "{\"hooks\":{\"PreToolUse\":[],\"PostToolUse\":[],\"PostToolUseFailure\":[],\"PermissionRequest\":[],\"Notification\":[],\"UserPromptSubmit\":[],\"SessionStart\":[],\"SessionEnd\":[],\"Stop\":[],\"StopFailure\":[],\"SubagentStart\":[],\"SubagentStop\":[],\"PreCompact\":[],\"PostCompact\":[],\"Setup\":[],\"TeammateIdle\":[],\"TaskCompleted\":[],\"Elicitation\":[],\"ElicitationResult\":[],\"ConfigChange\":[],\"WorktreeCreate\":[],\"WorktreeRemove\":[],\"InstructionsLoaded\":[]}}"
+          },
+          "result": {
+            "settingsJSON": "{\"hooks\":{\"PreToolUse\":[],\"PostToolUse\":[],\"PostToolUseFailure\":[],\"PermissionRequest\":[],\"Notification\":[],\"UserPromptSubmit\":[],\"SessionStart\":[],\"SessionEnd\":[],\"Stop\":[],\"StopFailure\":[],\"SubagentStart\":[],\"SubagentStop\":[],\"PreCompact\":[],\"PostCompact\":[],\"Setup\":[],\"TeammateIdle\":[],\"TaskCompleted\":[],\"Elicitation\":[],\"ElicitationResult\":[],\"ConfigChange\":[],\"WorktreeCreate\":[],\"WorktreeRemove\":[],\"InstructionsLoaded\":[]}}",
+            "errorsJSON": "[]"
+          },
+          "allocations": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "plugin-schema-hook-booleans-errors",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "schema",
+          "raw": "{\"disableAllHooks\":\"false\",\"allowManagedHooksOnly\":null}"
+        }
+      ]
+    },
+    "expected": {
+      "name": "plugin-schema-hook-booleans-errors",
+      "results": [
+        {
+          "step": {
+            "kind": "schema",
+            "raw": "{\"disableAllHooks\":\"false\",\"allowManagedHooksOnly\":null}"
+          },
+          "result": {
+            "settingsJSON": "null",
+            "errorsJSON": "[{\"file\":\"<HOME>/.claude/settings.json\",\"path\":\"disableAllHooks\",\"message\":\"Expected boolean, but received string\",\"invalidValue\":\"string\",\"suggestion\":\"Use true or false without quotes. Example: \\\"includeGitInstructions\\\": true\"},{\"file\":\"<HOME>/.claude/settings.json\",\"path\":\"allowManagedHooksOnly\",\"message\":\"Expected boolean, but received null\",\"invalidValue\":\"null\",\"suggestion\":\"Use true or false without quotes. Example: \\\"includeGitInstructions\\\": true\"}]"
+          },
+          "allocations": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "plugin-schema-cleanup-zero-before-env-model",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "schema",
+          "raw": "{\"future\":\"unknown\",\"model\":\"fixture-model\",\"env\":{\"A\":1},\"cleanupPeriodDays\":0}"
+        }
+      ]
+    },
+    "expected": {
+      "name": "plugin-schema-cleanup-zero-before-env-model",
+      "results": [
+        {
+          "step": {
+            "kind": "schema",
+            "raw": "{\"future\":\"unknown\",\"model\":\"fixture-model\",\"env\":{\"A\":1},\"cleanupPeriodDays\":0}"
+          },
+          "result": {
+            "settingsJSON": "{\"cleanupPeriodDays\":0,\"env\":{\"A\":\"1\"},\"model\":\"fixture-model\",\"future\":\"unknown\"}",
+            "errorsJSON": "[]"
+          },
+          "allocations": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "override-json-number-extremes",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "override",
+          "raw": "1e400"
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "clearUser"
+        },
+        {
+          "kind": "override",
+          "raw": "-0"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "override-json-number-extremes",
+      "results": [
+        {
+          "step": {
+            "kind": "override",
+            "raw": "1e400"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "null",
+            "localDateJSON": "null",
+            "userContextJSON": "{\"currentDate\":\"Today's date is Infinity.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is Infinity.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "clearUser"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "override",
+            "raw": "-0"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "null",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899199000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "local-year-unpadded",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "clock",
+          "value": "0001-01-02T00:00:00.000Z"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "local-year-unpadded",
+      "results": [
+        {
+          "step": {
+            "kind": "clock",
+            "value": "0001-01-02T00:00:00.000Z"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"1-01-02\"",
+            "localDateJSON": "\"1-01-02\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 1-01-02.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 1-01-02.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"0001-01-02T00:00:00.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": -62135510400000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "flag-settings-real-cache-and-mode",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "flagSettings",
+          "value": {
+            "pluginConfigs": {
+              "agents-md@builtin": {
+                "options": {
+                  "instructionFiles": "managed-only"
+                }
+              }
+            }
+          }
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "resetSettings"
+        },
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "flagSettings",
+          "value": null
+        },
+        {
+          "kind": "resetSettings"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "flag-settings-real-cache-and-mode",
+      "results": [
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "flagSettings",
+            "value": {
+              "pluginConfigs": {
+                "agents-md@builtin": {
+                  "options": {
+                    "instructionFiles": "managed-only"
+                  }
+                }
+              }
+            }
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": true,
+            "sameValue": true,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "resetSettings"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000003\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "managed-only",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000003",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "flagSettings",
+            "value": null
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "resetSettings"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000004\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000004",
+              "millis": 1790899199000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "cached-user-object-original-mutation",
+      "timezone": "UTC",
+      "steps": [
+        {
+          "kind": "read"
+        },
+        {
+          "kind": "mutateUser",
+          "value": "changed original memo object"
+        },
+        {
+          "kind": "read"
+        }
+      ]
+    },
+    "expected": {
+      "name": "cached-user-object-original-mutation",
+      "results": [
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"Today's date is 2026-10-01.\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nToday's date is 2026-10-01.\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": false,
+            "sameValue": false,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001",
+              "millis": 1790899199000
+            }
+          ]
+        },
+        {
+          "step": {
+            "kind": "mutateUser",
+            "value": "changed original memo object"
+          },
+          "result": null,
+          "allocations": []
+        },
+        {
+          "step": {
+            "kind": "read"
+          },
+          "result": {
+            "sessionDateJSON": "\"2026-10-01\"",
+            "localDateJSON": "\"2026-10-01\"",
+            "userContextJSON": "{\"currentDate\":\"changed original memo object\"}",
+            "prefixJSON": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nAs you answer the user's questions, you can use the following context:\\n# currentDate\\nchanged original memo object\\n\\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\\n</system-reminder>\\n\"},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2026-10-01T23:59:59.000Z\"}]",
+            "samePromise": true,
+            "sameValue": true,
+            "partsUsesSameValue": true,
+            "cachedMemoryJSON": "null",
+            "mode": "claude-md-or-agents-md",
+            "cacheSize": 1,
+            "pending": null,
+            "io": []
+          },
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002",
+              "millis": 1790899199000
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

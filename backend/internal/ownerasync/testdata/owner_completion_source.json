@@ -1,0 +1,56 @@
+[
+  {
+    "input": {
+      "profile": "fallthrough-vs-explicit-return"
+    },
+    "events": [
+      "normal:body-done",
+      "normal:consumer",
+      "normal:peer",
+      "return:body-done",
+      "return:peer",
+      "return:consumer"
+    ],
+    "results": [
+      {
+        "done": true,
+        "defined": false
+      },
+      {
+        "done": true,
+        "defined": true,
+        "value": "final"
+      }
+    ]
+  },
+  {
+    "input": {
+      "profile": "return-resumption-await"
+    },
+    "events": [
+      "caller:return-returned",
+      "body:finally",
+      "independent:peer",
+      "consumer:return"
+    ],
+    "results": [
+      {
+        "done": true,
+        "defined": true,
+        "value": "final"
+      }
+    ]
+  },
+  {
+    "input": {
+      "profile": "promise-resolution-adoption"
+    },
+    "events": [
+      "source:one",
+      "independent:peer",
+      "target:one",
+      "target:await"
+    ],
+    "results": []
+  }
+]

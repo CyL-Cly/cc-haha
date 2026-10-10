@@ -1,0 +1,448 @@
+{
+  "provenance": "Manually specified public .proto field numbers and neutral offline scenarios, encoded by independent Python wire primitives; no Go descriptor/output used.",
+  "cases": [
+    {
+      "name": "backup-subprotocol-version",
+      "package": "waArmadilloBackupCommon",
+      "message": "WAArmadilloBackupCommon.Subprotocol",
+      "wireHex": "0a02cafe1007",
+      "expectedJSON": {
+        "payload": "yv4=",
+        "version": 7
+      },
+      "criticalFieldNumbers": {
+        "payload": 1,
+        "version": 2
+      },
+      "oneofs": {},
+      "baileysType": null
+    },
+    {
+      "name": "backup-event-replaces-encrypted-message",
+      "package": "waArmadilloBackupMessage",
+      "message": "WAArmadilloBackupMessage.BackupMessage",
+      "wireHex": "0a1c0a0673656e6465721209617263686976652d3118898080808080801012036f6c642a060a02cafe1007",
+      "expectedJSON": {
+        "metadata": {
+          "senderID": "sender",
+          "messageID": "archive-1",
+          "timestampMS": "9007199254741001"
+        },
+        "encryptedTransportEvent": {
+          "payload": "yv4=",
+          "version": 7
+        }
+      },
+      "criticalFieldNumbers": {
+        "metadata": 1,
+        "encryptedTransportEvent": 5
+      },
+      "oneofs": {
+        "payload": "encryptedTransportEvent"
+      },
+      "baileysType": null
+    },
+    {
+      "name": "identity-list-device-order",
+      "package": "waArmadilloICDC",
+      "message": "WAArmadilloICDC.ICDCIdentityList",
+      "wireHex": "08031089808080808080101a0d66616b652d6465766963652d611a0d66616b652d6465766963652d622001",
+      "expectedJSON": {
+        "seq": 3,
+        "timestamp": "9007199254741001",
+        "devices": [
+          "ZmFrZS1kZXZpY2UtYQ==",
+          "ZmFrZS1kZXZpY2UtYg=="
+        ],
+        "signingDeviceIndex": 1
+      },
+      "criticalFieldNumbers": {
+        "devices": 3,
+        "signingDeviceIndex": 4
+      },
+      "oneofs": {},
+      "baileysType": null
+    },
+    {
+      "name": "admin-name-replaced-by-reaction",
+      "package": "waArmadilloMiTransportAdminMessage",
+      "message": "WAArmadilloMiTransportAdminMessage.MiTransportAdminMessage",
+      "wireHex": "2a0f0a0d507269766174652067726f75704a050a03e29895",
+      "expectedJSON": {
+        "quickReactionChanged": {
+          "emojiName": "☕"
+        }
+      },
+      "criticalFieldNumbers": {
+        "quickReactionChanged": 9
+      },
+      "oneofs": {
+        "content": "quickReactionChanged"
+      },
+      "baileysType": null
+    },
+    {
+      "name": "transport-alert-last-oneof-at-both-levels",
+      "package": "waArmadilloTransportEvent",
+      "message": "WAArmadilloTransportEvent.TransportEvent",
+      "wireHex": "0a02080112180a120801120e6f66666c696e652d64657669636512020802",
+      "expectedJSON": {
+        "event": {
+          "icdcAlert": {
+            "type": "CLEARED"
+          }
+        }
+      },
+      "criticalFieldNumbers": {
+        "event": 2
+      },
+      "oneofs": {
+        "content": "event"
+      },
+      "baileysType": null
+    },
+    {
+      "name": "bot-reminder-metadata-not-a-model-call",
+      "package": "waBotMetadata",
+      "message": "WABotMetadata.BotMetadata",
+      "wireHex": "120b666978747572652d626f7442035554434a1f10021a106f66666c696e652072656d696e64657220898080808080801028015a154f66666c696e65206d65746164617461206f6e6c79",
+      "expectedJSON": {
+        "personaID": "fixture-bot",
+        "timezone": "UTC",
+        "reminderMetadata": {
+          "action": "CREATE",
+          "name": "offline reminder",
+          "nextTriggerTimestamp": "9007199254741001",
+          "frequency": "ONCE"
+        },
+        "messageDisclaimerText": "Offline metadata only"
+      },
+      "criticalFieldNumbers": {
+        "personaID": 2,
+        "reminderMetadata": 9
+      },
+      "oneofs": {},
+      "baileysType": "BotMetadata"
+    },
+    {
+      "name": "parameterised-text-mention-and-zero-presence",
+      "package": "waCommonParameterised",
+      "message": "WACommonParameterised.MessageText",
+      "wireHex": "0a0d68656c6c6f2040343220e298951211343240732e77686174736170702e6e65741a17080210001801220f66616b652d76616c69646174696f6e221908001211343240732e77686174736170702e6e657418062003",
+      "expectedJSON": {
+        "text": "hello @42 ☕",
+        "mentionedJID": [
+          "42@s.whatsapp.net"
+        ],
+        "commands": [
+          {
+            "commandType": "SILENT",
+            "offset": 0,
+            "length": 1,
+            "validationToken": "fake-validation"
+          }
+        ],
+        "mentions": [
+          {
+            "mentionType": "PROFILE",
+            "mentionedJID": "42@s.whatsapp.net",
+            "offset": 6,
+            "length": 3
+          }
+        ]
+      },
+      "criticalFieldNumbers": {
+        "text": 1,
+        "mentions": 4
+      },
+      "oneofs": {},
+      "baileysType": null
+    },
+    {
+      "name": "consumer-text-payload-routing",
+      "package": "waConsumerApplicationParameterised",
+      "message": "WAConsumerApplicationParameterised.ConsumerApplication",
+      "wireHex": "0a5a0a580a560a0d68656c6c6f2040343220e298951211343240732e77686174736170702e6e65741a17080210001801220f66616b652d76616c69646174696f6e221908001211343240732e77686174736170702e6e657418062003",
+      "expectedJSON": {
+        "payload": {
+          "content": {
+            "messageText": {
+              "text": "hello @42 ☕",
+              "mentionedJID": [
+                "42@s.whatsapp.net"
+              ],
+              "commands": [
+                {
+                  "commandType": "SILENT",
+                  "offset": 0,
+                  "length": 1,
+                  "validationToken": "fake-validation"
+                }
+              ],
+              "mentions": [
+                {
+                  "mentionType": "PROFILE",
+                  "mentionedJID": "42@s.whatsapp.net",
+                  "offset": 6,
+                  "length": 3
+                }
+              ]
+            }
+          }
+        }
+      },
+      "criticalFieldNumbers": {
+        "payload": 1
+      },
+      "oneofs": {},
+      "baileysType": null
+    },
+    {
+      "name": "guest-quoted-message-and-secret",
+      "package": "waE2EGuest",
+      "message": "WAWebProtobufsE2EGuest.Message",
+      "wireHex": "0a0b67756573742068656c6c6f32430a0b67756573742071756f74658a01330a0f71756f7465642d6f726967696e616c1211343240732e77686174736170702e6e65741a0d0a0b71756f74656420746578749a02051a03010203",
+      "expectedJSON": {
+        "conversation": "guest hello",
+        "extendedTextMessage": {
+          "text": "guest quote",
+          "contextInfo": {
+            "stanzaID": "quoted-original",
+            "participant": "42@s.whatsapp.net",
+            "quotedMessage": {
+              "conversation": "quoted text"
+            }
+          }
+        },
+        "messageContextInfo": {
+          "messageSecret": "AQID"
+        }
+      },
+      "criticalFieldNumbers": {
+        "extendedTextMessage": 6,
+        "messageContextInfo": 35
+      },
+      "oneofs": {},
+      "baileysType": null
+    },
+    {
+      "name": "ephemeral-signed-fixed-width-settings",
+      "package": "waEphemeral",
+      "message": "WAWebProtobufsEphemeral.EphemeralSetting",
+      "wireHex": "0d803a0900110068e5cf8b010000",
+      "expectedJSON": {
+        "duration": 604800,
+        "timestamp": "1700000000000"
+      },
+      "criticalFieldNumbers": {
+        "duration": 1,
+        "timestamp": 2
+      },
+      "oneofs": {},
+      "baileysType": "EphemeralSetting"
+    },
+    {
+      "name": "safety-number-both-peer-identity-states",
+      "package": "waFingerprint",
+      "message": "WAFingerprint.CombinedFingerprint",
+      "wireHex": "080212160a0866616b652d6b657912033131311a0332323228011a0d0a096f746865722d6b65792800",
+      "expectedJSON": {
+        "version": 2,
+        "localFingerprint": {
+          "publicKey": "ZmFrZS1rZXk=",
+          "pnIdentifier": "MTEx",
+          "lidIdentifier": "MjIy",
+          "hostedState": "HOSTED"
+        },
+        "remoteFingerprint": {
+          "publicKey": "b3RoZXIta2V5",
+          "hostedState": "E2EE"
+        }
+      },
+      "criticalFieldNumbers": {
+        "localFingerprint": 2,
+        "remoteFingerprint": 3
+      },
+      "oneofs": {},
+      "baileysType": null
+    },
+    {
+      "name": "group-history-opaque-message-and-parent-key",
+      "package": "waGroupHistory",
+      "message": "WAWebProtobufsGroupHistory.GroupHistoryWithMessageBytes",
+      "wireHex": "0a430a280a1231313140732e77686174736170702e6e657410001a106f726967696e616c2d6d65737361676512170a156f66666c696e652067726f75702061726368697665126f0a430a280a1231313140732e77686174736170702e6e657410001a106f726967696e616c2d6d65737361676512170a156f66666c696e652067726f7570206172636869766512280a1231313140732e77686174736170702e6e657410001a106f726967696e616c2d6d657373616765",
+      "expectedJSON": {
+        "messages": [
+          {
+            "key": {
+              "remoteJID": "111@s.whatsapp.net",
+              "fromMe": false,
+              "ID": "original-message"
+            },
+            "messageBytes": "ChVvZmZsaW5lIGdyb3VwIGFyY2hpdmU="
+          }
+        ],
+        "uncountedAssociatedMessageLists": [
+          {
+            "messages": [
+              {
+                "key": {
+                  "remoteJID": "111@s.whatsapp.net",
+                  "fromMe": false,
+                  "ID": "original-message"
+                },
+                "messageBytes": "ChVvZmZsaW5lIGdyb3VwIGFyY2hpdmU="
+              }
+            ],
+            "parentMessage": {
+              "remoteJID": "111@s.whatsapp.net",
+              "fromMe": false,
+              "ID": "original-message"
+            }
+          }
+        ]
+      },
+      "criticalFieldNumbers": {
+        "messages": 1,
+        "uncountedAssociatedMessageLists": 2
+      },
+      "oneofs": {},
+      "baileysType": null
+    },
+    {
+      "name": "media-cache-progressive-jpeg-metadata",
+      "package": "waMediaEntryData",
+      "message": "WAMediaEntryData.MediaEntry",
+      "wireHex": "0a20000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f12204b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b220e2f707269766174652f6d656469612889808080808080103205696d616765720b666978747572652e6a70677a130864088020120c6a7065672d736964656361728001818004",
+      "expectedJSON": {
+        "fileSHA256": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+        "mediaKey": "S0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0s=",
+        "directPath": "/private/media",
+        "mediaKeyTimestamp": "9007199254741001",
+        "serverMediaType": "image",
+        "filename": "fixture.jpg",
+        "progressiveJPEGDetails": {
+          "scanLengths": [
+            100,
+            4096
+          ],
+          "sidecar": "anBlZy1zaWRlY2Fy"
+        },
+        "size": "65537"
+      },
+      "criticalFieldNumbers": {
+        "filename": 14,
+        "progressiveJPEGDetails": 15
+      },
+      "oneofs": {},
+      "baileysType": null
+    },
+    {
+      "name": "promotion-required-filter-and-client-fallback",
+      "package": "waQuickPromotionSurfaces",
+      "message": "WAWebProtobufsQuickPromotionSurfaces.QP.FilterClause",
+      "wireHex": "08011a1b0a086c616e6775616765120b0a0576616c756512027a6818032002",
+      "expectedJSON": {
+        "clauseType": "AND",
+        "filters": [
+          {
+            "filterName": "language",
+            "parameters": [
+              {
+                "key": "value",
+                "value": "zh"
+              }
+            ],
+            "filterResult": "UNKNOWN",
+            "clientNotSupportedConfig": "FAIL_BY_DEFAULT"
+          }
+        ]
+      },
+      "criticalFieldNumbers": {
+        "clauseType": 1,
+        "filters": 3
+      },
+      "oneofs": {},
+      "baileysType": null
+    },
+    {
+      "name": "reporting-policy-field-map",
+      "package": "waReporting",
+      "message": "WAWebProtobufsReporting.Config",
+      "wireHex": "0a0a081112060802100420011003",
+      "expectedJSON": {
+        "field": {
+          "17": {
+            "minVersion": 2,
+            "maxVersion": 4,
+            "isMessage": true
+          }
+        },
+        "version": 3
+      },
+      "criticalFieldNumbers": {
+        "field": 1,
+        "version": 2
+      },
+      "oneofs": {},
+      "baileysType": null
+    },
+    {
+      "name": "routing-regions-debug-and-false-presence",
+      "package": "waRoutingInfo",
+      "message": "WAWebProtobufsRoutingInfo.RoutingInfo",
+      "wireHex": "0801080710021811200128003001",
+      "expectedJSON": {
+        "regionID": [
+          1,
+          7
+        ],
+        "clusterID": [
+          2
+        ],
+        "taskID": 17,
+        "debug": true,
+        "tcpBbr": false,
+        "tcpKeepalive": true
+      },
+      "criticalFieldNumbers": {
+        "regionID": 1,
+        "tcpKeepalive": 6
+      },
+      "oneofs": {},
+      "baileysType": null
+    },
+    {
+      "name": "windows-reaction-api-envelope",
+      "package": "waWinUIApi",
+      "message": "WAWinUIApi.PositronData",
+      "wireHex": "08063a4a0a0a7265616374696f6e2d311208706172656e742d311a04f09f918d2080d095ffbc312a1231313140732e77686174736170702e6e65749a06107b226f66666c696e65223a747275657d",
+      "expectedJSON": {
+        "dataSource": "REACTIONS",
+        "reactions": [
+          {
+            "ID": "reaction-1",
+            "parentMsgKey": "parent-1",
+            "reactionText": "👍",
+            "timestamp": "1700000000000",
+            "senderUserJID": "111@s.whatsapp.net",
+            "JSON": "{\"offline\":true}"
+          }
+        ]
+      },
+      "criticalFieldNumbers": {
+        "dataSource": 1,
+        "reactions": 7
+      },
+      "oneofs": {},
+      "baileysType": null
+    }
+  ],
+  "negativeWireHex": {
+    "zeroFieldTag": "00",
+    "truncatedLength": "0a0541",
+    "unclosedVarint": "088080808080808080808080",
+    "unknownField100": "a00607"
+  },
+  "note": "Expected JSON is independently declared test assertion data, never application/runtime input."
+}

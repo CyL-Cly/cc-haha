@@ -1,0 +1,98 @@
+[
+  {
+    "original": "{\"useAutoModeDuringPlan\":false,\"future\":{\"keep\":true}}",
+    "source": {
+      "success": true,
+      "data": {
+        "useAutoModeDuringPlan": false,
+        "future": {
+          "keep": true
+        }
+      }
+    }
+  },
+  {
+    "original": "{\"skipAutoPermissionPrompt\":true,\"useAutoModeDuringPlan\":true,\"autoMode\":{\"allow\":[],\"soft_deny\":[\"$defaults\"],\"hard_deny\":[\"never\"],\"environment\":[],\"classifyAllShell\":true,\"unknown\":\"strip\"},\"disableAutoMode\":\"disable\",\"future\":1}",
+    "source": {
+      "success": true,
+      "data": {
+        "skipAutoPermissionPrompt": true,
+        "useAutoModeDuringPlan": true,
+        "autoMode": {
+          "allow": [],
+          "soft_deny": [
+            "$defaults"
+          ],
+          "hard_deny": [
+            "never"
+          ],
+          "environment": [],
+          "classifyAllShell": true
+        },
+        "disableAutoMode": "disable",
+        "future": 1
+      }
+    }
+  },
+  {
+    "original": "{\"autoMode\":{}}",
+    "source": {
+      "success": true,
+      "data": {
+        "autoMode": {}
+      }
+    }
+  },
+  {
+    "original": "{\"useAutoModeDuringPlan\":\"false\"}",
+    "source": {
+      "success": false,
+      "issues": [
+        {
+          "expected": "boolean",
+          "code": "invalid_type",
+          "path": [
+            "useAutoModeDuringPlan"
+          ],
+          "message": "Invalid input: expected boolean, received string"
+        }
+      ]
+    }
+  },
+  {
+    "original": "{\"autoMode\":{\"allow\":[1]}}",
+    "source": {
+      "success": false,
+      "issues": [
+        {
+          "expected": "string",
+          "code": "invalid_type",
+          "path": [
+            "autoMode",
+            "allow",
+            0
+          ],
+          "message": "Invalid input: expected string, received number"
+        }
+      ]
+    }
+  },
+  {
+    "original": "{\"disableAutoMode\":false}",
+    "source": {
+      "success": false,
+      "issues": [
+        {
+          "code": "invalid_value",
+          "values": [
+            "disable"
+          ],
+          "path": [
+            "disableAutoMode"
+          ],
+          "message": "Invalid input: expected \"disable\""
+        }
+      ]
+    }
+  }
+]

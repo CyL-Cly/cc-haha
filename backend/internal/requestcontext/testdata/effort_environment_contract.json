@@ -1,0 +1,347 @@
+[
+  {
+    "scenario": {
+      "name": "native effort auto default",
+      "historySources": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"01234567abcdefghijklmnopqrstuv\"},\"uuid\":\"user-original\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "env": {
+        "CLAUDE_CODE_ALWAYS_ENABLE_EFFORT": "true",
+        "CLAUDE_CODE_EFFORT_LEVEL": "auto"
+      }
+    },
+    "observation": {
+      "fetches": [
+        {
+          "path": "/v1/messages?beta=true",
+          "method": "POST",
+          "headers": [
+            [
+              "accept",
+              "application/json"
+            ],
+            [
+              "anthropic-beta",
+              "effort-2025-11-24"
+            ],
+            [
+              "anthropic-dangerous-direct-browser-access",
+              "true"
+            ],
+            [
+              "anthropic-version",
+              "2023-06-01"
+            ],
+            [
+              "content-type",
+              "application/json"
+            ],
+            [
+              "user-agent",
+              "claude-cli/2.1.281 (external, cli)"
+            ],
+            [
+              "x-api-key",
+              "offline-fixture-key"
+            ],
+            [
+              "x-app",
+              "cli"
+            ],
+            [
+              "x-claude-code-session-id",
+              "00000000-0000-4000-8000-000000000000"
+            ],
+            [
+              "x-stainless-arch",
+              "arm64"
+            ],
+            [
+              "x-stainless-lang",
+              "js"
+            ],
+            [
+              "x-stainless-os",
+              "MacOS"
+            ],
+            [
+              "x-stainless-package-version",
+              "0.80.0"
+            ],
+            [
+              "x-stainless-retry-count",
+              "0"
+            ],
+            [
+              "x-stainless-runtime",
+              "node"
+            ],
+            [
+              "x-stainless-runtime-version",
+              "v24.3.0"
+            ],
+            [
+              "x-stainless-timeout",
+              "600"
+            ]
+          ],
+          "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"01234567abcdefghijklmnopqrstuv\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.b51; cc_entrypoint=unknown; cch=6f8ba;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"output_config\":{\"effort\":\"high\"},\"stream\":true}"
+        }
+      ],
+      "normalizedHistory": [
+        {
+          "type": "user",
+          "uuid": "user-original",
+          "messageSource": "{\"role\":\"user\",\"content\":\"01234567abcdefghijklmnopqrstuv\"}"
+        }
+      ],
+      "historyBefore": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"01234567abcdefghijklmnopqrstuv\"},\"uuid\":\"user-original\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "historyAfter": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"01234567abcdefghijklmnopqrstuv\"},\"uuid\":\"user-original\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "uuidCalls": 0,
+      "previousRequestID": null
+    },
+    "sourceOnly": {
+      "runtime": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "version": "v24.3.0"
+      },
+      "sdk": "0.80.0",
+      "profile": "direct-relay-no-experiments"
+    }
+  },
+  {
+    "scenario": {
+      "name": "native effort normalized low",
+      "historySources": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"01234567abcdefghijklmnopqrstuv\"},\"uuid\":\"user-original\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "env": {
+        "CLAUDE_CODE_ALWAYS_ENABLE_EFFORT": "true",
+        "CLAUDE_CODE_EFFORT_LEVEL": " LOW "
+      }
+    },
+    "observation": {
+      "fetches": [
+        {
+          "path": "/v1/messages?beta=true",
+          "method": "POST",
+          "headers": [
+            [
+              "accept",
+              "application/json"
+            ],
+            [
+              "anthropic-beta",
+              "effort-2025-11-24"
+            ],
+            [
+              "anthropic-dangerous-direct-browser-access",
+              "true"
+            ],
+            [
+              "anthropic-version",
+              "2023-06-01"
+            ],
+            [
+              "content-type",
+              "application/json"
+            ],
+            [
+              "user-agent",
+              "claude-cli/2.1.281 (external, cli)"
+            ],
+            [
+              "x-api-key",
+              "offline-fixture-key"
+            ],
+            [
+              "x-app",
+              "cli"
+            ],
+            [
+              "x-claude-code-session-id",
+              "00000000-0000-4000-8000-000000000000"
+            ],
+            [
+              "x-stainless-arch",
+              "arm64"
+            ],
+            [
+              "x-stainless-lang",
+              "js"
+            ],
+            [
+              "x-stainless-os",
+              "MacOS"
+            ],
+            [
+              "x-stainless-package-version",
+              "0.80.0"
+            ],
+            [
+              "x-stainless-retry-count",
+              "0"
+            ],
+            [
+              "x-stainless-runtime",
+              "node"
+            ],
+            [
+              "x-stainless-runtime-version",
+              "v24.3.0"
+            ],
+            [
+              "x-stainless-timeout",
+              "600"
+            ]
+          ],
+          "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"01234567abcdefghijklmnopqrstuv\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.b51; cc_entrypoint=unknown; cch=5469e;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"output_config\":{\"effort\":\"low\"},\"stream\":true}"
+        }
+      ],
+      "normalizedHistory": [
+        {
+          "type": "user",
+          "uuid": "user-original",
+          "messageSource": "{\"role\":\"user\",\"content\":\"01234567abcdefghijklmnopqrstuv\"}"
+        }
+      ],
+      "historyBefore": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"01234567abcdefghijklmnopqrstuv\"},\"uuid\":\"user-original\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "historyAfter": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"01234567abcdefghijklmnopqrstuv\"},\"uuid\":\"user-original\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "uuidCalls": 0,
+      "previousRequestID": null
+    },
+    "sourceOnly": {
+      "runtime": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "version": "v24.3.0"
+      },
+      "sdk": "0.80.0",
+      "profile": "direct-relay-no-experiments"
+    }
+  },
+  {
+    "scenario": {
+      "name": "native effort max capped",
+      "historySources": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"01234567abcdefghijklmnopqrstuv\"},\"uuid\":\"user-original\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "env": {
+        "CLAUDE_CODE_ALWAYS_ENABLE_EFFORT": "true",
+        "CLAUDE_CODE_EFFORT_LEVEL": "max"
+      }
+    },
+    "observation": {
+      "fetches": [
+        {
+          "path": "/v1/messages?beta=true",
+          "method": "POST",
+          "headers": [
+            [
+              "accept",
+              "application/json"
+            ],
+            [
+              "anthropic-beta",
+              "effort-2025-11-24"
+            ],
+            [
+              "anthropic-dangerous-direct-browser-access",
+              "true"
+            ],
+            [
+              "anthropic-version",
+              "2023-06-01"
+            ],
+            [
+              "content-type",
+              "application/json"
+            ],
+            [
+              "user-agent",
+              "claude-cli/2.1.281 (external, cli)"
+            ],
+            [
+              "x-api-key",
+              "offline-fixture-key"
+            ],
+            [
+              "x-app",
+              "cli"
+            ],
+            [
+              "x-claude-code-session-id",
+              "00000000-0000-4000-8000-000000000000"
+            ],
+            [
+              "x-stainless-arch",
+              "arm64"
+            ],
+            [
+              "x-stainless-lang",
+              "js"
+            ],
+            [
+              "x-stainless-os",
+              "MacOS"
+            ],
+            [
+              "x-stainless-package-version",
+              "0.80.0"
+            ],
+            [
+              "x-stainless-retry-count",
+              "0"
+            ],
+            [
+              "x-stainless-runtime",
+              "node"
+            ],
+            [
+              "x-stainless-runtime-version",
+              "v24.3.0"
+            ],
+            [
+              "x-stainless-timeout",
+              "600"
+            ]
+          ],
+          "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"01234567abcdefghijklmnopqrstuv\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.b51; cc_entrypoint=unknown; cch=6f8ba;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"output_config\":{\"effort\":\"high\"},\"stream\":true}"
+        }
+      ],
+      "normalizedHistory": [
+        {
+          "type": "user",
+          "uuid": "user-original",
+          "messageSource": "{\"role\":\"user\",\"content\":\"01234567abcdefghijklmnopqrstuv\"}"
+        }
+      ],
+      "historyBefore": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"01234567abcdefghijklmnopqrstuv\"},\"uuid\":\"user-original\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "historyAfter": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"01234567abcdefghijklmnopqrstuv\"},\"uuid\":\"user-original\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "uuidCalls": 0,
+      "previousRequestID": null
+    },
+    "sourceOnly": {
+      "runtime": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "version": "v24.3.0"
+      },
+      "sdk": "0.80.0",
+      "profile": "direct-relay-no-experiments"
+    }
+  }
+]

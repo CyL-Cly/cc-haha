@@ -1,0 +1,1464 @@
+[
+  {
+    "scenario": {
+      "name": "DeepSeek adaptive preserves max",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,effort,adaptive_thinking,xhigh_effort,max_effort"
+      },
+      "options": {
+        "model": "deepseek-v4-flash",
+        "effortValue": "max"
+      },
+      "thinking": {
+        "type": "adaptive"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "deepseek-v4-flash",
+        "max_tokens": 32000,
+        "thinking": {
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "max"
+        }
+      },
+      "effortBeta": true,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "DeepSeek disabled thinking preserves low",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,effort,adaptive_thinking,xhigh_effort,max_effort"
+      },
+      "options": {
+        "model": "deepseek-v4-flash",
+        "effortValue": "low"
+      },
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "deepseek-v4-flash",
+        "max_tokens": 32000,
+        "thinking": {
+          "type": "disabled"
+        },
+        "temperature": 1,
+        "output_config": {
+          "effort": "low"
+        }
+      },
+      "effortBeta": true,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "manual thinking uses model output ceiling",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,effort,max_effort"
+      },
+      "options": {
+        "model": "deepseek-v4-flash",
+        "effortValue": "max"
+      },
+      "thinking": {
+        "type": "adaptive"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "deepseek-v4-flash",
+        "max_tokens": 32000,
+        "thinking": {
+          "budget_tokens": 31999,
+          "type": "enabled"
+        },
+        "output_config": {
+          "effort": "max"
+        }
+      },
+      "effortBeta": true,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "required manual thinking keeps tiny output cap",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,required_thinking,effort,max_effort",
+        "CLAUDE_CODE_PROVIDER_MAX_OUTPUT_TOKENS": "100"
+      },
+      "options": {
+        "model": "deepseek-v4-flash",
+        "effortValue": "max"
+      },
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "deepseek-v4-flash",
+        "max_tokens": 100,
+        "thinking": {
+          "budget_tokens": 99,
+          "type": "enabled"
+        },
+        "output_config": {
+          "effort": "max"
+        }
+      },
+      "effortBeta": true,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "explicit incompatible capabilities override Fable defaults",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-fable-5-1",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "effort"
+      },
+      "options": {
+        "model": "claude-fable-5-1",
+        "effortValue": "low"
+      },
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "claude-fable-5-1",
+        "max_tokens": 64000,
+        "temperature": 1,
+        "output_config": {
+          "effort": "low"
+        }
+      },
+      "effortBeta": true,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "context annotation keeps capability identity",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,effort,adaptive_thinking,xhigh_effort,max_effort"
+      },
+      "options": {
+        "model": "deepseek-v4-flash[1M]",
+        "effortValue": "max"
+      },
+      "thinking": {
+        "type": "adaptive"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "deepseek-v4-flash",
+        "max_tokens": 32000,
+        "thinking": {
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "max"
+        }
+      },
+      "effortBeta": true,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "namespace mismatch does not transfer capabilities",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,effort,adaptive_thinking,xhigh_effort,max_effort"
+      },
+      "options": {
+        "model": "provider-b/deepseek-v4-flash",
+        "effortValue": "max"
+      },
+      "thinking": {
+        "type": "adaptive"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "provider-b/deepseek-v4-flash",
+        "max_tokens": 32000
+      },
+      "effortBeta": false,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "unset effort env preserves undefined default",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,effort,adaptive_thinking,xhigh_effort,max_effort",
+        "CLAUDE_CODE_EFFORT_LEVEL": "unset"
+      },
+      "options": {
+        "model": "deepseek-v4-flash",
+        "effortValue": "low"
+      },
+      "thinking": {
+        "type": "adaptive"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "deepseek-v4-flash",
+        "max_tokens": 32000,
+        "thinking": {
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "high"
+        }
+      },
+      "effortBeta": true,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "request effort overrides unset env",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,effort,adaptive_thinking,xhigh_effort,max_effort",
+        "CLAUDE_CODE_EFFORT_LEVEL": "unset"
+      },
+      "options": {
+        "model": "deepseek-v4-flash",
+        "effortValue": "max",
+        "effortValueOverridesEnv": true
+      },
+      "thinking": {
+        "type": "adaptive"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "deepseek-v4-flash",
+        "max_tokens": 32000,
+        "thinking": {
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "max"
+        }
+      },
+      "effortBeta": true,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "unsupported xhigh resolves high",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,effort,adaptive_thinking"
+      },
+      "options": {
+        "model": "deepseek-v4-flash",
+        "effortValue": "xhigh"
+      },
+      "thinking": {
+        "type": "adaptive"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "deepseek-v4-flash",
+        "max_tokens": 32000,
+        "thinking": {
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "high"
+        }
+      },
+      "effortBeta": true,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "external numeric effort is omitted",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,effort,adaptive_thinking,xhigh_effort,max_effort",
+        "CLAUDE_CODE_EFFORT_LEVEL": "17"
+      },
+      "options": {
+        "model": "deepseek-v4-flash",
+        "effortValue": "max"
+      },
+      "thinking": {
+        "type": "adaptive"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "deepseek-v4-flash",
+        "max_tokens": 32000,
+        "thinking": {
+          "type": "adaptive"
+        }
+      },
+      "effortBeta": false,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "disabled experimental effort direct relay",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,effort,adaptive_thinking,xhigh_effort,max_effort",
+        "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "1"
+      },
+      "options": {
+        "model": "deepseek-v4-flash",
+        "effortValue": "low"
+      },
+      "thinking": {
+        "type": "adaptive"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "deepseek-v4-flash",
+        "max_tokens": 32000,
+        "thinking": {
+          "type": "adaptive"
+        }
+      },
+      "effortBeta": false,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "local proxy retains selected effort",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,effort,adaptive_thinking,xhigh_effort,max_effort",
+        "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "1"
+      },
+      "options": {
+        "model": "deepseek-v4-flash",
+        "effortValue": "low"
+      },
+      "thinking": {
+        "type": "adaptive"
+      },
+      "proxy": true
+    },
+    "observation": {
+      "policy": {
+        "model": "deepseek-v4-flash",
+        "max_tokens": 32000,
+        "thinking": {
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "low"
+        }
+      },
+      "effortBeta": true,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "OpenAI explicit effort survives beta suppression",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "gpt-6-sol",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "effort,xhigh_effort,max_effort",
+        "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "1"
+      },
+      "options": {
+        "model": "gpt-6-sol",
+        "effortValue": "xhigh"
+      },
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "gpt-6-sol",
+        "max_tokens": 32000,
+        "temperature": 1,
+        "output_config": {
+          "effort": "xhigh"
+        }
+      },
+      "effortBeta": false,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "OpenAI unset effort stays omitted",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "gpt-6-sol",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "effort,xhigh_effort,max_effort"
+      },
+      "options": {
+        "model": "gpt-6-sol"
+      },
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "gpt-6-sol",
+        "max_tokens": 32000,
+        "temperature": 1
+      },
+      "effortBeta": false,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "unknown model uses Source output fallback",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "provider-new-model",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": ""
+      },
+      "options": {
+        "model": "provider-new-model"
+      },
+      "thinking": {
+        "type": "adaptive"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "provider-new-model",
+        "max_tokens": 32000
+      },
+      "effortBeta": false,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "default required Sonnet 5.5 is adaptive",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {},
+      "options": {
+        "model": "claude-sonnet-5-5"
+      },
+      "thinking": {
+        "type": "adaptive"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "claude-sonnet-5-5",
+        "max_tokens": 128000,
+        "thinking": {
+          "type": "adaptive"
+        }
+      },
+      "effortBeta": false,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "Fable binding controls survive beta suppression",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-fable-5-1",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,required_thinking,adaptive_thinking,effort,max_effort",
+        "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "1"
+      },
+      "options": {
+        "model": "claude-fable-5-1",
+        "effortValue": "max"
+      },
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "claude-fable-5-1",
+        "max_tokens": 64000,
+        "thinking": {
+          "type": "adaptive",
+          "block_binding": {
+            "prefix_mismatch_behavior": "drop_block"
+          }
+        }
+      },
+      "effortBeta": false,
+      "bindingBeta": true
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "Opus5 disabled thinking clamps max effort",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-opus-5",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,effort,adaptive_thinking,xhigh_effort,max_effort"
+      },
+      "options": {
+        "model": "claude-opus-5",
+        "effortValue": "max"
+      },
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "claude-opus-5",
+        "max_tokens": 64000,
+        "thinking": {
+          "type": "disabled"
+        },
+        "temperature": 1,
+        "output_config": {
+          "effort": "high"
+        }
+      },
+      "effortBeta": true,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "Opus4.6 Source canonicalization keeps 32k limit",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-opus-4-6",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": ""
+      },
+      "options": {
+        "model": "claude-opus-4-6"
+      },
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "claude-opus-4-6",
+        "max_tokens": 32000,
+        "temperature": 1
+      },
+      "effortBeta": false,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "required adaptive survives disable controls",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,required_thinking,adaptive_thinking,effort,max_effort",
+        "CLAUDE_CODE_DISABLE_THINKING": "1",
+        "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING": "1",
+        "CLAUDE_CODE_PROVIDER_MAX_OUTPUT_TOKENS": "100"
+      },
+      "options": {
+        "model": "deepseek-v4-flash",
+        "effortValue": "max"
+      },
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "deepseek-v4-flash",
+        "max_tokens": 100,
+        "thinking": {
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "max"
+        }
+      },
+      "effortBeta": true,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "optional thinking with small budget is disabled",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,effort,max_effort",
+        "CLAUDE_CODE_PROVIDER_MAX_OUTPUT_TOKENS": "100"
+      },
+      "options": {
+        "model": "deepseek-v4-flash",
+        "effortValue": "max"
+      },
+      "thinking": {
+        "type": "adaptive"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "deepseek-v4-flash",
+        "max_tokens": 100,
+        "thinking": {
+          "type": "disabled"
+        },
+        "temperature": 1,
+        "output_config": {
+          "effort": "max"
+        }
+      },
+      "effortBeta": true,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "empty matching capabilities disables thinking",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": ""
+      },
+      "options": {
+        "model": "deepseek-v4-flash"
+      },
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "deepseek-v4-flash",
+        "max_tokens": 32000,
+        "temperature": 1
+      },
+      "effortBeta": false,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "capability tier precedence is fable before sonnet",
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"u\",\"message\":{\"role\":\"user\",\"content\":\"policy question\"}}"
+      ],
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,effort,adaptive_thinking,xhigh_effort,max_effort",
+        "ANTHROPIC_DEFAULT_FABLE_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_FABLE_MODEL_SUPPORTED_CAPABILITIES": "thinking,effort"
+      },
+      "options": {
+        "model": "deepseek-v4-flash",
+        "effortValue": "max"
+      },
+      "thinking": {
+        "type": "adaptive"
+      }
+    },
+    "observation": {
+      "policy": {
+        "model": "deepseek-v4-flash",
+        "max_tokens": 32000,
+        "thinking": {
+          "budget_tokens": 31999,
+          "type": "enabled"
+        },
+        "output_config": {
+          "effort": "high"
+        }
+      },
+      "effortBeta": true,
+      "bindingBeta": false
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "consumer": "src/services/api/claude.ts queryModelWithStreaming",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  }
+]

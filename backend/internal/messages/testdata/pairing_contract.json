@@ -1,0 +1,6214 @@
+{
+  "sourceCommit": "6b9d2aec1d9321a4dfff90d16b51f10c1ab984c8",
+  "provenance": "Actual unmodified ensureToolResultPairing via messages.fixture.ts, production strict flag setter, explicit cached gate, observers forward actual diagnostics; no Go results used",
+  "cases": [
+    {
+      "name": "empty valid history",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [],
+          "strict": false,
+          "universal": false
+        },
+        {
+          "operation": "pairing",
+          "history": [],
+          "strict": true,
+          "universal": false
+        }
+      ],
+      "expected": [
+        {
+          "messages": [],
+          "historyAfter": []
+        },
+        {
+          "messages": [],
+          "historyAfter": []
+        }
+      ],
+      "uuidCalls": 0
+    },
+    {
+      "name": "complete tool pairs remain byte-semantic identical",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": false,
+          "universal": false
+        },
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": true,
+          "universal": false
+        }
+      ],
+      "expected": [
+        {
+          "messages": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "historyAfter": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "messages": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "historyAfter": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "uuidCalls": 0
+    },
+    {
+      "name": "missing final results create one synthetic meta envelope",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": false,
+          "universal": false
+        },
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": true,
+          "universal": false
+        }
+      ],
+      "expected": [
+        {
+          "messages": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "[Tool result missing due to internal error]",
+                    "is_error": true
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "two",
+                    "content": "[Tool result missing due to internal error]",
+                    "is_error": true
+                  }
+                ]
+              },
+              "isMeta": true,
+              "uuid": "fixture-id-1",
+              "timestamp": "2023-11-14T22:13:20.000Z"
+            }
+          ],
+          "repairEvent": {
+            "messageCount": 2,
+            "repairedMessageCount": 3,
+            "messageTypes": "[0] user; [1] assistant(id=api-first, tool_uses=[one,two])"
+          },
+          "diagnostic": "ensureToolResultPairing: repaired missing tool_result blocks (2 -> 3 messages). Message structure: [0] user; [1] assistant(id=api-first, tool_uses=[one,two])",
+          "historyAfter": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "error": "ensureToolResultPairing: tool_use/tool_result pairing mismatch detected (strict mode). Refusing to repair — would inject synthetic placeholders into model context. Message structure: [0] user; [1] assistant(id=api-first, tool_uses=[one,two]). See inc-4977.",
+          "historyAfter": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "missing results patch a following plain user without regenerating identity",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "followup",
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": false,
+          "universal": false
+        },
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "followup",
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": true,
+          "universal": false
+        }
+      ],
+      "expected": [
+        {
+          "messages": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "[Tool result missing due to internal error]",
+                    "is_error": true
+                  },
+                  {
+                    "type": "text",
+                    "text": "followup"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "repairEvent": {
+            "messageCount": 2,
+            "repairedMessageCount": 2,
+            "messageTypes": "[0] assistant(id=api-first, tool_uses=[one]); [1] user"
+          },
+          "diagnostic": "ensureToolResultPairing: repaired missing tool_result blocks (2 -> 2 messages). Message structure: [0] assistant(id=api-first, tool_uses=[one]); [1] user",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "followup",
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "error": "ensureToolResultPairing: tool_use/tool_result pairing mismatch detected (strict mode). Refusing to repair — would inject synthetic placeholders into model context. Message structure: [0] assistant(id=api-first, tool_uses=[one]); [1] user. See inc-4977.",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "followup",
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "uuidCalls": 0
+    },
+    {
+      "name": "leading orphan preserves user-first placeholder",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "missing",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "answer"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": false,
+          "universal": false
+        },
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "missing",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "answer"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": true,
+          "universal": false
+        }
+      ],
+      "expected": [
+        {
+          "messages": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "[Orphaned tool result removed due to conversation resume]"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "answer"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "repairEvent": {
+            "messageCount": 2,
+            "repairedMessageCount": 2,
+            "messageTypes": "[0] user(tool_results=[missing]); [1] assistant(id=api-first, tool_uses=[])"
+          },
+          "diagnostic": "ensureToolResultPairing: repaired missing tool_result blocks (2 -> 2 messages). Message structure: [0] user(tool_results=[missing]); [1] assistant(id=api-first, tool_uses=[])",
+          "historyAfter": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "missing",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "answer"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "error": "ensureToolResultPairing: tool_use/tool_result pairing mismatch detected (strict mode). Refusing to repair — would inject synthetic placeholders into model context. Message structure: [0] user(tool_results=[missing]); [1] assistant(id=api-first, tool_uses=[]). See inc-4977.",
+          "historyAfter": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "missing",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "answer"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "uuidCalls": 0
+    },
+    {
+      "name": "leading orphan with text preserves its metadata",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "missing",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "keep real input"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": false,
+          "universal": false
+        },
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "missing",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "keep real input"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": true,
+          "universal": false
+        }
+      ],
+      "expected": [
+        {
+          "messages": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "keep real input"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "repairEvent": {
+            "messageCount": 1,
+            "repairedMessageCount": 1,
+            "messageTypes": "[0] user(tool_results=[missing])"
+          },
+          "diagnostic": "ensureToolResultPairing: repaired missing tool_result blocks (1 -> 1 messages). Message structure: [0] user(tool_results=[missing])",
+          "historyAfter": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "missing",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "keep real input"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "error": "ensureToolResultPairing: tool_use/tool_result pairing mismatch detected (strict mode). Refusing to repair — would inject synthetic placeholders into model context. Message structure: [0] user(tool_results=[missing]). See inc-4977.",
+          "historyAfter": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "missing",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "keep real input"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "uuidCalls": 0
+    },
+    {
+      "name": "non-leading orphan-only user is removed",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "missing",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "answer"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": false,
+          "universal": false
+        },
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "missing",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "answer"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": true,
+          "universal": false
+        }
+      ],
+      "expected": [
+        {
+          "messages": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "answer"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "repairEvent": {
+            "messageCount": 3,
+            "repairedMessageCount": 2,
+            "messageTypes": "[0] user; [1] user(tool_results=[missing]); [2] assistant(id=api-first, tool_uses=[])"
+          },
+          "diagnostic": "ensureToolResultPairing: repaired missing tool_result blocks (3 -> 2 messages). Message structure: [0] user; [1] user(tool_results=[missing]); [2] assistant(id=api-first, tool_uses=[])",
+          "historyAfter": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "missing",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "answer"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "error": "ensureToolResultPairing: tool_use/tool_result pairing mismatch detected (strict mode). Refusing to repair — would inject synthetic placeholders into model context. Message structure: [0] user; [1] user(tool_results=[missing]); [2] assistant(id=api-first, tool_uses=[]). See inc-4977.",
+          "historyAfter": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "missing",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "answer"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "uuidCalls": 0
+    },
+    {
+      "name": "duplicate tools within and across assistant IDs are stripped once",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "second",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-second",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "tail"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": false,
+          "universal": false
+        },
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "second",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-second",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "tail"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": true,
+          "universal": false
+        }
+      ],
+      "expected": [
+        {
+          "messages": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "second",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-second",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "[Tool use interrupted]",
+                    "citations": []
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "message": {
+                "role": "user",
+                "content": "(no content)"
+              },
+              "isMeta": true,
+              "uuid": "fixture-id-1",
+              "timestamp": "2023-11-14T22:13:20.000Z"
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "tail"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "repairEvent": {
+            "messageCount": 5,
+            "repairedMessageCount": 5,
+            "messageTypes": "[0] assistant(id=api-first, tool_uses=[one,one]); [1] user(tool_results=[one,one]); [2] assistant(id=api-second, tool_uses=[one]); [3] user(tool_results=[one]); [4] assistant(id=api-first, tool_uses=[])"
+          },
+          "diagnostic": "ensureToolResultPairing: repaired missing tool_result blocks (5 -> 5 messages). Message structure: [0] assistant(id=api-first, tool_uses=[one,one]); [1] user(tool_results=[one,one]); [2] assistant(id=api-second, tool_uses=[one]); [3] user(tool_results=[one]); [4] assistant(id=api-first, tool_uses=[])",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "second",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-second",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "tail"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "error": "ensureToolResultPairing: tool_use/tool_result pairing mismatch detected (strict mode). Refusing to repair — would inject synthetic placeholders into model context. Message structure: [0] assistant(id=api-first, tool_uses=[one,one]); [1] user(tool_results=[one,one]); [2] assistant(id=api-second, tool_uses=[one]); [3] user(tool_results=[one]); [4] assistant(id=api-first, tool_uses=[]). See inc-4977.",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "second",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-second",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "tail"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "orphan results are stripped and missing results prepend in assistant order",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "two",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "orphan",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "two",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "real user"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": false,
+          "universal": false
+        },
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "two",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "orphan",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "two",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "real user"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": true,
+          "universal": false
+        }
+      ],
+      "expected": [
+        {
+          "messages": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "[Tool result missing due to internal error]",
+                    "is_error": true
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "two",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "real user"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "repairEvent": {
+            "messageCount": 2,
+            "repairedMessageCount": 2,
+            "messageTypes": "[0] assistant(id=api-first, tool_uses=[one,two]); [1] user(tool_results=[two,orphan,two])"
+          },
+          "diagnostic": "ensureToolResultPairing: repaired missing tool_result blocks (2 -> 2 messages). Message structure: [0] assistant(id=api-first, tool_uses=[one,two]); [1] user(tool_results=[two,orphan,two])",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "two",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "orphan",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "two",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "real user"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "error": "ensureToolResultPairing: tool_use/tool_result pairing mismatch detected (strict mode). Refusing to repair — would inject synthetic placeholders into model context. Message structure: [0] assistant(id=api-first, tool_uses=[one,two]); [1] user(tool_results=[two,orphan,two]). See inc-4977.",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "two",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "orphan",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "two",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "real user"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "uuidCalls": 0
+    },
+    {
+      "name": "orphan-only next user becomes no-content meta to retain alternation",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "before"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "orphan",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "after"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": false,
+          "universal": false
+        },
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "before"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "orphan",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "after"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": true,
+          "universal": false
+        }
+      ],
+      "expected": [
+        {
+          "messages": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "before"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "message": {
+                "role": "user",
+                "content": "(no content)"
+              },
+              "isMeta": true,
+              "uuid": "fixture-id-1",
+              "timestamp": "2023-11-14T22:13:20.000Z"
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "after"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "repairEvent": {
+            "messageCount": 3,
+            "repairedMessageCount": 3,
+            "messageTypes": "[0] assistant(id=api-first, tool_uses=[]); [1] user(tool_results=[orphan]); [2] assistant(id=api-first, tool_uses=[])"
+          },
+          "diagnostic": "ensureToolResultPairing: repaired missing tool_result blocks (3 -> 3 messages). Message structure: [0] assistant(id=api-first, tool_uses=[]); [1] user(tool_results=[orphan]); [2] assistant(id=api-first, tool_uses=[])",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "before"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "orphan",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "after"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "error": "ensureToolResultPairing: tool_use/tool_result pairing mismatch detected (strict mode). Refusing to repair — would inject synthetic placeholders into model context. Message structure: [0] assistant(id=api-first, tool_uses=[]); [1] user(tool_results=[orphan]); [2] assistant(id=api-first, tool_uses=[]). See inc-4977.",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "before"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "orphan",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "after"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "server uses require result in same assistant",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "server_tool_use",
+                    "id": "server-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "mcp_tool_use",
+                    "id": "mcp-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "text",
+                    "text": "keep"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": false,
+          "universal": false
+        },
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "server_tool_use",
+                    "id": "server-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "mcp_tool_use",
+                    "id": "mcp-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "text",
+                    "text": "keep"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": true,
+          "universal": false
+        }
+      ],
+      "expected": [
+        {
+          "messages": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "keep"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "repairEvent": {
+            "messageCount": 1,
+            "repairedMessageCount": 1,
+            "messageTypes": "[0] assistant(id=api-first, tool_uses=[], server_tool_uses=[server-one,mcp-one])"
+          },
+          "diagnostic": "ensureToolResultPairing: repaired missing tool_result blocks (1 -> 1 messages). Message structure: [0] assistant(id=api-first, tool_uses=[], server_tool_uses=[server-one,mcp-one])",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "server_tool_use",
+                    "id": "server-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "mcp_tool_use",
+                    "id": "mcp-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "text",
+                    "text": "keep"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "error": "ensureToolResultPairing: tool_use/tool_result pairing mismatch detected (strict mode). Refusing to repair — would inject synthetic placeholders into model context. Message structure: [0] assistant(id=api-first, tool_uses=[], server_tool_uses=[server-one,mcp-one]). See inc-4977.",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "server_tool_use",
+                    "id": "server-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "mcp_tool_use",
+                    "id": "mcp-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "text",
+                    "text": "keep"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "uuidCalls": 0
+    },
+    {
+      "name": "server results permit corresponding uses and retain unknown blocks",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "server_tool_use",
+                    "id": "server-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "web_search_tool_result",
+                    "tool_use_id": "server-one",
+                    "content": []
+                  },
+                  {
+                    "type": "mcp_tool_use",
+                    "id": "mcp-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "mcp_tool_result",
+                    "tool_use_id": "mcp-one",
+                    "content": "server-output"
+                  },
+                  {
+                    "type": "future_block",
+                    "payload": "future\ud800"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": false,
+          "universal": false
+        },
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "server_tool_use",
+                    "id": "server-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "web_search_tool_result",
+                    "tool_use_id": "server-one",
+                    "content": []
+                  },
+                  {
+                    "type": "mcp_tool_use",
+                    "id": "mcp-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "mcp_tool_result",
+                    "tool_use_id": "mcp-one",
+                    "content": "server-output"
+                  },
+                  {
+                    "type": "future_block",
+                    "payload": "future\ud800"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": true,
+          "universal": false
+        }
+      ],
+      "expected": [
+        {
+          "messages": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "server_tool_use",
+                    "id": "server-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "web_search_tool_result",
+                    "tool_use_id": "server-one",
+                    "content": []
+                  },
+                  {
+                    "type": "mcp_tool_use",
+                    "id": "mcp-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "mcp_tool_result",
+                    "tool_use_id": "mcp-one",
+                    "content": "server-output"
+                  },
+                  {
+                    "type": "future_block",
+                    "payload": "future\ud800"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "server_tool_use",
+                    "id": "server-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "web_search_tool_result",
+                    "tool_use_id": "server-one",
+                    "content": []
+                  },
+                  {
+                    "type": "mcp_tool_use",
+                    "id": "mcp-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "mcp_tool_result",
+                    "tool_use_id": "mcp-one",
+                    "content": "server-output"
+                  },
+                  {
+                    "type": "future_block",
+                    "payload": "future\ud800"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "messages": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "server_tool_use",
+                    "id": "server-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "web_search_tool_result",
+                    "tool_use_id": "server-one",
+                    "content": []
+                  },
+                  {
+                    "type": "mcp_tool_use",
+                    "id": "mcp-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "mcp_tool_result",
+                    "tool_use_id": "mcp-one",
+                    "content": "server-output"
+                  },
+                  {
+                    "type": "future_block",
+                    "payload": "future\ud800"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "server_tool_use",
+                    "id": "server-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "web_search_tool_result",
+                    "tool_use_id": "server-one",
+                    "content": []
+                  },
+                  {
+                    "type": "mcp_tool_use",
+                    "id": "mcp-one",
+                    "name": "server-fixture",
+                    "input": {}
+                  },
+                  {
+                    "type": "mcp_tool_result",
+                    "tool_use_id": "mcp-one",
+                    "content": "server-output"
+                  },
+                  {
+                    "type": "future_block",
+                    "payload": "future\ud800"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "uuidCalls": 0
+    },
+    {
+      "name": "originally empty assistant preserves actual no-op branch",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": false,
+          "universal": false
+        },
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": true,
+          "universal": false
+        }
+      ],
+      "expected": [
+        {
+          "messages": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "messages": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "uuidCalls": 0
+    },
+    {
+      "name": "missing tools before a following assistant insert a synthetic user",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "second",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "next"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": false,
+          "universal": false
+        },
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "second",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "next"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": true,
+          "universal": false
+        }
+      ],
+      "expected": [
+        {
+          "messages": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "[Tool result missing due to internal error]",
+                    "is_error": true
+                  }
+                ]
+              },
+              "isMeta": true,
+              "uuid": "fixture-id-1",
+              "timestamp": "2023-11-14T22:13:20.000Z"
+            },
+            {
+              "type": "assistant",
+              "uuid": "second",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "next"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "repairEvent": {
+            "messageCount": 2,
+            "repairedMessageCount": 3,
+            "messageTypes": "[0] assistant(id=api-first, tool_uses=[one]); [1] assistant(id=api-first, tool_uses=[])"
+          },
+          "diagnostic": "ensureToolResultPairing: repaired missing tool_result blocks (2 -> 3 messages). Message structure: [0] assistant(id=api-first, tool_uses=[one]); [1] assistant(id=api-first, tool_uses=[])",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "second",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "next"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "error": "ensureToolResultPairing: tool_use/tool_result pairing mismatch detected (strict mode). Refusing to repair — would inject synthetic placeholders into model context. Message structure: [0] assistant(id=api-first, tool_uses=[one]); [1] assistant(id=api-first, tool_uses=[]). See inc-4977.",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "second",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "next"
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "UTF16 tool identities stay distinct from replacement characters",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "id\ud800",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "id\udfff",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "id�",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "id\udfff",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": false,
+          "universal": false
+        },
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "id\ud800",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "id\udfff",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "id�",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "id\udfff",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": true,
+          "universal": false
+        }
+      ],
+      "expected": [
+        {
+          "messages": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "id\ud800",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "id\udfff",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "id�",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "id\ud800",
+                    "content": "[Tool result missing due to internal error]",
+                    "is_error": true
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "id�",
+                    "content": "[Tool result missing due to internal error]",
+                    "is_error": true
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "id\udfff",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "repairEvent": {
+            "messageCount": 2,
+            "repairedMessageCount": 2,
+            "messageTypes": "[0] assistant(id=api-first, tool_uses=[id\ud800,id\udfff,id�]); [1] user(tool_results=[id\udfff])"
+          },
+          "diagnostic": "ensureToolResultPairing: repaired missing tool_result blocks (2 -> 2 messages). Message structure: [0] assistant(id=api-first, tool_uses=[id\ud800,id\udfff,id�]); [1] user(tool_results=[id\udfff])",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "id\ud800",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "id\udfff",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "id�",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "id\udfff",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "error": "ensureToolResultPairing: tool_use/tool_result pairing mismatch detected (strict mode). Refusing to repair — would inject synthetic placeholders into model context. Message structure: [0] assistant(id=api-first, tool_uses=[id\ud800,id\udfff,id�]); [1] user(tool_results=[id\udfff]). See inc-4977.",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "id\ud800",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "id\udfff",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "id�",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "id\udfff",
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "uuidCalls": 0
+    },
+    {
+      "name": "repaired reminder siblings fold only into last tool result",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "<system-reminder> context\ud800 </system-reminder>"
+                  },
+                  {
+                    "type": "text",
+                    "text": "real user"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": false,
+          "universal": true
+        },
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "<system-reminder> context\ud800 </system-reminder>"
+                  },
+                  {
+                    "type": "text",
+                    "text": "real user"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": true,
+          "universal": true
+        }
+      ],
+      "expected": [
+        {
+          "messages": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "[Tool result missing due to internal error]\n\n<system-reminder> context\ud800 </system-reminder>",
+                    "is_error": true
+                  },
+                  {
+                    "type": "text",
+                    "text": "real user"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "repairEvent": {
+            "messageCount": 2,
+            "repairedMessageCount": 2,
+            "messageTypes": "[0] assistant(id=api-first, tool_uses=[one]); [1] user"
+          },
+          "diagnostic": "ensureToolResultPairing: repaired missing tool_result blocks (2 -> 2 messages). Message structure: [0] assistant(id=api-first, tool_uses=[one]); [1] user",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "<system-reminder> context\ud800 </system-reminder>"
+                  },
+                  {
+                    "type": "text",
+                    "text": "real user"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "error": "ensureToolResultPairing: tool_use/tool_result pairing mismatch detected (strict mode). Refusing to repair — would inject synthetic placeholders into model context. Message structure: [0] assistant(id=api-first, tool_uses=[one]); [1] user. See inc-4977.",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "<system-reminder> context\ud800 </system-reminder>"
+                  },
+                  {
+                    "type": "text",
+                    "text": "real user"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "uuidCalls": 0
+    },
+    {
+      "name": "tool reference constraints preserve reminder siblings",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": [
+                      {
+                        "type": "tool_reference",
+                        "tool_name": "fixture"
+                      }
+                    ],
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "<system-reminder>keep sibling</system-reminder>"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": false,
+          "universal": true
+        },
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": [
+                      {
+                        "type": "tool_reference",
+                        "tool_name": "fixture"
+                      }
+                    ],
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "<system-reminder>keep sibling</system-reminder>"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": true,
+          "universal": true
+        }
+      ],
+      "expected": [
+        {
+          "messages": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "two",
+                    "content": "[Tool result missing due to internal error]",
+                    "is_error": true
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": [
+                      {
+                        "type": "tool_reference",
+                        "tool_name": "fixture"
+                      }
+                    ],
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "<system-reminder>keep sibling</system-reminder>"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "repairEvent": {
+            "messageCount": 2,
+            "repairedMessageCount": 2,
+            "messageTypes": "[0] assistant(id=api-first, tool_uses=[one,two]); [1] user(tool_results=[one])"
+          },
+          "diagnostic": "ensureToolResultPairing: repaired missing tool_result blocks (2 -> 2 messages). Message structure: [0] assistant(id=api-first, tool_uses=[one,two]); [1] user(tool_results=[one])",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": [
+                      {
+                        "type": "tool_reference",
+                        "tool_name": "fixture"
+                      }
+                    ],
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "<system-reminder>keep sibling</system-reminder>"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "error": "ensureToolResultPairing: tool_use/tool_result pairing mismatch detected (strict mode). Refusing to repair — would inject synthetic placeholders into model context. Message structure: [0] assistant(id=api-first, tool_uses=[one,two]); [1] user(tool_results=[one]). See inc-4977.",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": [
+                      {
+                        "type": "tool_reference",
+                        "tool_name": "fixture"
+                      }
+                    ],
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "<system-reminder>keep sibling</system-reminder>"
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "uuidCalls": 0
+    },
+    {
+      "name": "legacy scalar IDs retain JS number equality and null distinction",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": 0,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": 0,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": null,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": false,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": true,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": 42,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "42",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": 9007199254740992,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": 0,
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": null,
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": 42,
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": false,
+          "universal": false
+        },
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": 0,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": 0,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": null,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": false,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": true,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": 42,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "42",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": 9007199254740992,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": 0,
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": null,
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": 42,
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "strict": true,
+          "universal": false
+        }
+      ],
+      "expected": [
+        {
+          "messages": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": 0,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": null,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": false,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": true,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": 42,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "42",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": 9007199254740992,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": false,
+                    "content": "[Tool result missing due to internal error]",
+                    "is_error": true
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": true,
+                    "content": "[Tool result missing due to internal error]",
+                    "is_error": true
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "42",
+                    "content": "[Tool result missing due to internal error]",
+                    "is_error": true
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": 9007199254740992,
+                    "content": "[Tool result missing due to internal error]",
+                    "is_error": true
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": 0,
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": null,
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": 42,
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ],
+          "repairEvent": {
+            "messageCount": 2,
+            "repairedMessageCount": 2,
+            "messageTypes": "[0] assistant(id=api-first, tool_uses=[0,0,,false,true,42,42,9007199254740992]); [1] user(tool_results=[0,,42])"
+          },
+          "diagnostic": "ensureToolResultPairing: repaired missing tool_result blocks (2 -> 2 messages). Message structure: [0] assistant(id=api-first, tool_uses=[0,0,,false,true,42,42,9007199254740992]); [1] user(tool_results=[0,,42])",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": 0,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": 0,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": null,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": false,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": true,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": 42,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "42",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": 9007199254740992,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": 0,
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": null,
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": 42,
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        },
+        {
+          "error": "ensureToolResultPairing: tool_use/tool_result pairing mismatch detected (strict mode). Refusing to repair — would inject synthetic placeholders into model context. Message structure: [0] assistant(id=api-first, tool_uses=[0,0,,false,true,42,42,9007199254740992]); [1] user(tool_results=[0,,42]). See inc-4977.",
+          "historyAfter": [
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": "api-first",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": 0,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": 0,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": null,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": false,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": true,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": 42,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": "42",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  },
+                  {
+                    "type": "tool_use",
+                    "id": 9007199254740992,
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ],
+                "usage": {
+                  "output_tokens": 12
+                },
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": 0,
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": null,
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  },
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": 42,
+                    "content": "output",
+                    "future": {
+                      "keep": "\ud800"
+                    }
+                  }
+                ],
+                "future": {
+                  "keep": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "uuidCalls": 0
+    },
+    {
+      "name": "legacy missing assistant IDs retain undefined versus null diagnostics",
+      "steps": [
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": null,
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "strict": false,
+          "universal": false
+        },
+        {
+          "operation": "pairing",
+          "history": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": null,
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "strict": true,
+          "universal": false
+        }
+      ],
+      "expected": [
+        {
+          "messages": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "user",
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "one",
+                    "content": "[Tool result missing due to internal error]",
+                    "is_error": true
+                  }
+                ]
+              },
+              "isMeta": true,
+              "uuid": "fixture-id-1",
+              "timestamp": "2023-11-14T22:13:20.000Z"
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": null,
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "user",
+              "message": {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "tool_result",
+                    "tool_use_id": "two",
+                    "content": "[Tool result missing due to internal error]",
+                    "is_error": true
+                  }
+                ]
+              },
+              "isMeta": true,
+              "uuid": "fixture-id-2",
+              "timestamp": "2023-11-14T22:13:20.000Z"
+            }
+          ],
+          "repairEvent": {
+            "messageCount": 3,
+            "repairedMessageCount": 5,
+            "messageTypes": "[0] user; [1] assistant(id=undefined, tool_uses=[one]); [2] assistant(id=null, tool_uses=[two])"
+          },
+          "diagnostic": "ensureToolResultPairing: repaired missing tool_result blocks (3 -> 5 messages). Message structure: [0] user; [1] assistant(id=undefined, tool_uses=[one]); [2] assistant(id=null, tool_uses=[two])",
+          "historyAfter": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": null,
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "error": "ensureToolResultPairing: tool_use/tool_result pairing mismatch detected (strict mode). Refusing to repair — would inject synthetic placeholders into model context. Message structure: [0] user; [1] assistant(id=undefined, tool_uses=[one]); [2] assistant(id=null, tool_uses=[two]). See inc-4977.",
+          "historyAfter": [
+            {
+              "type": "user",
+              "uuid": "user-first",
+              "timestamp": "",
+              "isMeta": false,
+              "toolUseResult": {
+                "source": "first"
+              },
+              "message": {
+                "role": "user",
+                "content": "start",
+                "future": {
+                  "keep": true
+                }
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "one",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "assistant",
+              "uuid": "assistant-first",
+              "requestId": "request-first",
+              "message": {
+                "role": "assistant",
+                "id": null,
+                "content": [
+                  {
+                    "type": "tool_use",
+                    "id": "two",
+                    "name": "fixture",
+                    "input": {
+                      "unknown": "\udfff"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "uuidCalls": 4
+    }
+  ]
+}

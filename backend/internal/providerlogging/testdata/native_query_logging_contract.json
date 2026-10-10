@@ -1,0 +1,1704 @@
+[
+  {
+    "scenario": {
+      "name": "DeepSeek 1m adaptive effort",
+      "historySources": [
+        "{\"type\": \"user\", \"uuid\": \"u\", \"message\": {\"role\": \"user\", \"content\": \"logging\"}}"
+      ],
+      "options": {
+        "model": "deepseek-v4-flash[1m]",
+        "effortValue": "max"
+      },
+      "thinking": {
+        "type": "adaptive"
+      },
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,adaptive_thinking,effort,max_effort"
+      }
+    },
+    "observation": {
+      "log": {
+        "eventName": "tengu_api_query",
+        "metadata": {
+          "model": "deepseek-v4-flash[1m]",
+          "messagesLength": 1,
+          "temperature": 1,
+          "provider": "firstParty",
+          "betas": "context-1m-2025-08-07,effort-2025-11-24",
+          "permissionMode": "default",
+          "querySource": "sdk",
+          "thinkingType": "adaptive",
+          "effortValue": "max",
+          "fastMode": false,
+          "baseUrl": "<loopback>"
+        },
+        "keys": [
+          "model",
+          "messagesLength",
+          "temperature",
+          "provider",
+          "buildAgeMins",
+          "betas",
+          "permissionMode",
+          "querySource",
+          "thinkingType",
+          "effortValue",
+          "fastMode",
+          "baseUrl"
+        ],
+        "async": false
+      },
+      "physical": {
+        "policy": {
+          "model": "deepseek-v4-flash",
+          "thinking": {
+            "type": "adaptive"
+          },
+          "output_config": {
+            "effort": "max"
+          }
+        },
+        "messagesLength": 1,
+        "betas": "context-1m-2025-08-07,effort-2025-11-24"
+      }
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "beforeFirstClient": {
+        "uuidCalls": 0,
+        "newDateCalls": 0,
+        "dateNowCalls": 5
+      },
+      "trace": [
+        "permission",
+        "client",
+        "fetch",
+        "permission"
+      ],
+      "consumer": "src/services/api/claude.ts1945-1967 and logging.ts171-242",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "unsupported adaptive logs actual disabled",
+      "historySources": [
+        "{\"type\": \"user\", \"uuid\": \"u\", \"message\": {\"role\": \"user\", \"content\": \"logging\"}}"
+      ],
+      "options": {
+        "model": "fixture-model[1m]"
+      },
+      "thinking": {
+        "type": "adaptive"
+      }
+    },
+    "observation": {
+      "log": {
+        "eventName": "tengu_api_query",
+        "metadata": {
+          "model": "fixture-model[1m]",
+          "messagesLength": 1,
+          "temperature": 1,
+          "provider": "firstParty",
+          "betas": "context-1m-2025-08-07",
+          "permissionMode": "default",
+          "querySource": "sdk",
+          "thinkingType": "disabled",
+          "fastMode": false,
+          "baseUrl": "<loopback>"
+        },
+        "keys": [
+          "model",
+          "messagesLength",
+          "temperature",
+          "provider",
+          "buildAgeMins",
+          "betas",
+          "permissionMode",
+          "querySource",
+          "thinkingType",
+          "effortValue",
+          "fastMode",
+          "baseUrl"
+        ],
+        "async": false
+      },
+      "physical": {
+        "policy": {
+          "model": "fixture-model"
+        },
+        "messagesLength": 1,
+        "betas": "context-1m-2025-08-07"
+      }
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "beforeFirstClient": {
+        "uuidCalls": 0,
+        "newDateCalls": 0,
+        "dateNowCalls": 5
+      },
+      "trace": [
+        "permission",
+        "client",
+        "fetch",
+        "permission"
+      ],
+      "consumer": "src/services/api/claude.ts1945-1967 and logging.ts171-242",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "required adaptive overrides requested disabled",
+      "historySources": [
+        "{\"type\": \"user\", \"uuid\": \"u\", \"message\": {\"role\": \"user\", \"content\": \"logging\"}}"
+      ],
+      "options": {
+        "model": "claude-sonnet-5-5[1m]"
+      },
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "observation": {
+      "log": {
+        "eventName": "tengu_api_query",
+        "metadata": {
+          "model": "claude-sonnet-5-5[1m]",
+          "messagesLength": 1,
+          "temperature": 1,
+          "provider": "firstParty",
+          "betas": "context-1m-2025-08-07",
+          "permissionMode": "default",
+          "querySource": "sdk",
+          "thinkingType": "adaptive",
+          "fastMode": false,
+          "baseUrl": "<loopback>"
+        },
+        "keys": [
+          "model",
+          "messagesLength",
+          "temperature",
+          "provider",
+          "buildAgeMins",
+          "betas",
+          "permissionMode",
+          "querySource",
+          "thinkingType",
+          "effortValue",
+          "fastMode",
+          "baseUrl"
+        ],
+        "async": false
+      },
+      "physical": {
+        "policy": {
+          "model": "claude-sonnet-5-5",
+          "thinking": {
+            "type": "adaptive"
+          }
+        },
+        "messagesLength": 1,
+        "betas": "context-1m-2025-08-07"
+      }
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "beforeFirstClient": {
+        "uuidCalls": 0,
+        "newDateCalls": 0,
+        "dateNowCalls": 5
+      },
+      "trace": [
+        "permission",
+        "client",
+        "fetch",
+        "permission"
+      ],
+      "consumer": "src/services/api/claude.ts1945-1967 and logging.ts171-242",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "disabled beta retains explicit and SDK",
+      "historySources": [
+        "{\"type\": \"user\", \"uuid\": \"u\", \"message\": {\"role\": \"user\", \"content\": \"logging\"}}"
+      ],
+      "options": {
+        "model": "fixture-model[1M]"
+      },
+      "env": {
+        "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "true",
+        "ANTHROPIC_BETAS": "one, two,one"
+      },
+      "sdkBetas": [
+        "two",
+        "sdk"
+      ]
+    },
+    "observation": {
+      "log": {
+        "eventName": "tengu_api_query",
+        "metadata": {
+          "model": "fixture-model[1M]",
+          "messagesLength": 1,
+          "temperature": 1,
+          "provider": "firstParty",
+          "betas": "one,two,sdk",
+          "permissionMode": "default",
+          "querySource": "sdk",
+          "thinkingType": "disabled",
+          "fastMode": false,
+          "baseUrl": "<loopback>"
+        },
+        "keys": [
+          "model",
+          "messagesLength",
+          "temperature",
+          "provider",
+          "buildAgeMins",
+          "betas",
+          "permissionMode",
+          "querySource",
+          "thinkingType",
+          "effortValue",
+          "fastMode",
+          "baseUrl"
+        ],
+        "async": false
+      },
+      "physical": {
+        "policy": {
+          "model": "fixture-model",
+          "temperature": 1
+        },
+        "messagesLength": 1,
+        "betas": "one,two,sdk"
+      }
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "beforeFirstClient": {
+        "uuidCalls": 0,
+        "newDateCalls": 0,
+        "dateNowCalls": 5
+      },
+      "trace": [
+        "permission",
+        "client",
+        "fetch",
+        "permission"
+      ],
+      "consumer": "src/services/api/claude.ts1945-1967 and logging.ts171-242",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "null extra betas",
+      "historySources": [
+        "{\"type\": \"user\", \"uuid\": \"u\", \"message\": {\"role\": \"user\", \"content\": \"logging\"}}"
+      ],
+      "options": {
+        "model": "fixture-model[1m]"
+      },
+      "env": {
+        "CLAUDE_CODE_EXTRA_BODY": "{\"betas\":null}"
+      }
+    },
+    "observation": {
+      "log": {
+        "eventName": "tengu_api_query",
+        "metadata": {
+          "model": "fixture-model[1m]",
+          "messagesLength": 1,
+          "temperature": 1,
+          "provider": "firstParty",
+          "permissionMode": "default",
+          "querySource": "sdk",
+          "thinkingType": "disabled",
+          "fastMode": false,
+          "baseUrl": "<loopback>"
+        },
+        "keys": [
+          "model",
+          "messagesLength",
+          "temperature",
+          "provider",
+          "buildAgeMins",
+          "permissionMode",
+          "querySource",
+          "thinkingType",
+          "effortValue",
+          "fastMode",
+          "baseUrl"
+        ],
+        "async": false
+      },
+      "physical": {
+        "policy": {
+          "model": "fixture-model",
+          "temperature": 1
+        },
+        "messagesLength": 1,
+        "betas": null
+      }
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "beforeFirstClient": {
+        "uuidCalls": 0,
+        "newDateCalls": 0,
+        "dateNowCalls": 5
+      },
+      "trace": [
+        "permission",
+        "client",
+        "fetch",
+        "permission"
+      ],
+      "consumer": "src/services/api/claude.ts1945-1967 and logging.ts171-242",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "empty extra betas",
+      "historySources": [
+        "{\"type\": \"user\", \"uuid\": \"u\", \"message\": {\"role\": \"user\", \"content\": \"logging\"}}"
+      ],
+      "options": {
+        "model": "fixture-model[1m]"
+      },
+      "env": {
+        "CLAUDE_CODE_EXTRA_BODY": "{\"betas\":[]}"
+      }
+    },
+    "observation": {
+      "log": {
+        "eventName": "tengu_api_query",
+        "metadata": {
+          "model": "fixture-model[1m]",
+          "messagesLength": 1,
+          "temperature": 1,
+          "provider": "firstParty",
+          "permissionMode": "default",
+          "querySource": "sdk",
+          "thinkingType": "disabled",
+          "fastMode": false,
+          "baseUrl": "<loopback>"
+        },
+        "keys": [
+          "model",
+          "messagesLength",
+          "temperature",
+          "provider",
+          "buildAgeMins",
+          "permissionMode",
+          "querySource",
+          "thinkingType",
+          "effortValue",
+          "fastMode",
+          "baseUrl"
+        ],
+        "async": false
+      },
+      "physical": {
+        "policy": {
+          "model": "fixture-model",
+          "temperature": 1
+        },
+        "messagesLength": 1,
+        "betas": ""
+      }
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "beforeFirstClient": {
+        "uuidCalls": 0,
+        "newDateCalls": 0,
+        "dateNowCalls": 5
+      },
+      "trace": [
+        "permission",
+        "client",
+        "fetch",
+        "permission"
+      ],
+      "consumer": "src/services/api/claude.ts1945-1967 and logging.ts171-242",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "extra message count wins",
+      "historySources": [
+        "{\"type\": \"user\", \"uuid\": \"u\", \"message\": {\"role\": \"user\", \"content\": \"logging\"}}"
+      ],
+      "env": {
+        "CLAUDE_CODE_EXTRA_BODY": "{\"messages\": [{\"role\": \"user\", \"content\": \"override\"}, {\"role\": \"assistant\", \"content\": \"answer\"}]}"
+      }
+    },
+    "observation": {
+      "log": {
+        "eventName": "tengu_api_query",
+        "metadata": {
+          "model": "fixture-model",
+          "messagesLength": 2,
+          "temperature": 1,
+          "provider": "firstParty",
+          "permissionMode": "default",
+          "querySource": "sdk",
+          "thinkingType": "disabled",
+          "fastMode": false,
+          "baseUrl": "<loopback>"
+        },
+        "keys": [
+          "model",
+          "messagesLength",
+          "temperature",
+          "provider",
+          "buildAgeMins",
+          "permissionMode",
+          "querySource",
+          "thinkingType",
+          "effortValue",
+          "fastMode",
+          "baseUrl"
+        ],
+        "async": false
+      },
+      "physical": {
+        "policy": {
+          "model": "fixture-model",
+          "temperature": 1
+        },
+        "messagesLength": 2,
+        "betas": null
+      }
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "beforeFirstClient": {
+        "uuidCalls": 0,
+        "newDateCalls": 0,
+        "dateNowCalls": 5
+      },
+      "trace": [
+        "permission",
+        "client",
+        "fetch",
+        "permission"
+      ],
+      "consumer": "src/services/api/claude.ts1945-1967 and logging.ts171-242",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "extra thinking type preserves UTF16",
+      "historySources": [
+        "{\"type\": \"user\", \"uuid\": \"u\", \"message\": {\"role\": \"user\", \"content\": \"logging\"}}"
+      ],
+      "env": {
+        "CLAUDE_CODE_EXTRA_BODY": "{\"thinking\":{\"type\":\"\\ud800\"}}"
+      }
+    },
+    "observation": {
+      "log": {
+        "eventName": "tengu_api_query",
+        "metadata": {
+          "model": "fixture-model",
+          "messagesLength": 1,
+          "temperature": 1,
+          "provider": "firstParty",
+          "permissionMode": "default",
+          "querySource": "sdk",
+          "thinkingType": "\ud800",
+          "fastMode": false,
+          "baseUrl": "<loopback>"
+        },
+        "keys": [
+          "model",
+          "messagesLength",
+          "temperature",
+          "provider",
+          "buildAgeMins",
+          "permissionMode",
+          "querySource",
+          "thinkingType",
+          "effortValue",
+          "fastMode",
+          "baseUrl"
+        ],
+        "async": false
+      },
+      "physical": {
+        "policy": {
+          "model": "fixture-model",
+          "thinking": {
+            "type": "\ud800"
+          },
+          "temperature": 1
+        },
+        "messagesLength": 1,
+        "betas": null
+      }
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "beforeFirstClient": {
+        "uuidCalls": 0,
+        "newDateCalls": 0,
+        "dateNowCalls": 5
+      },
+      "trace": [
+        "permission",
+        "client",
+        "fetch",
+        "permission"
+      ],
+      "consumer": "src/services/api/claude.ts1945-1967 and logging.ts171-242",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "extra null thinking and null effort",
+      "historySources": [
+        "{\"type\": \"user\", \"uuid\": \"u\", \"message\": {\"role\": \"user\", \"content\": \"logging\"}}"
+      ],
+      "thinking": {
+        "type": "adaptive"
+      },
+      "env": {
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "thinking,adaptive_thinking,effort,max_effort",
+        "CLAUDE_CODE_EXTRA_BODY": "{\"thinking\":null,\"output_config\":{\"effort\":null}}"
+      },
+      "options": {
+        "model": "deepseek-v4-flash[1m]",
+        "effortValue": "high"
+      }
+    },
+    "observation": {
+      "log": {
+        "eventName": "tengu_api_query",
+        "metadata": {
+          "model": "deepseek-v4-flash[1m]",
+          "messagesLength": 1,
+          "temperature": 1,
+          "provider": "firstParty",
+          "betas": "context-1m-2025-08-07",
+          "permissionMode": "default",
+          "querySource": "sdk",
+          "thinkingType": "disabled",
+          "effortValue": null,
+          "fastMode": false,
+          "baseUrl": "<loopback>"
+        },
+        "keys": [
+          "model",
+          "messagesLength",
+          "temperature",
+          "provider",
+          "buildAgeMins",
+          "betas",
+          "permissionMode",
+          "querySource",
+          "thinkingType",
+          "effortValue",
+          "fastMode",
+          "baseUrl"
+        ],
+        "async": false
+      },
+      "physical": {
+        "policy": {
+          "model": "deepseek-v4-flash",
+          "thinking": null,
+          "output_config": {
+            "effort": null
+          }
+        },
+        "messagesLength": 1,
+        "betas": "context-1m-2025-08-07"
+      }
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "beforeFirstClient": {
+        "uuidCalls": 0,
+        "newDateCalls": 0,
+        "dateNowCalls": 5
+      },
+      "trace": [
+        "permission",
+        "client",
+        "fetch",
+        "permission"
+      ],
+      "consumer": "src/services/api/claude.ts1945-1967 and logging.ts171-242",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "absent thinking and effort own undefined",
+      "historySources": [
+        "{\"type\": \"user\", \"uuid\": \"u\", \"message\": {\"role\": \"user\", \"content\": \"logging\"}}"
+      ]
+    },
+    "observation": {
+      "log": {
+        "eventName": "tengu_api_query",
+        "metadata": {
+          "model": "fixture-model",
+          "messagesLength": 1,
+          "temperature": 1,
+          "provider": "firstParty",
+          "permissionMode": "default",
+          "querySource": "sdk",
+          "thinkingType": "disabled",
+          "fastMode": false,
+          "baseUrl": "<loopback>"
+        },
+        "keys": [
+          "model",
+          "messagesLength",
+          "temperature",
+          "provider",
+          "buildAgeMins",
+          "permissionMode",
+          "querySource",
+          "thinkingType",
+          "effortValue",
+          "fastMode",
+          "baseUrl"
+        ],
+        "async": false
+      },
+      "physical": {
+        "policy": {
+          "model": "fixture-model",
+          "temperature": 1
+        },
+        "messagesLength": 1,
+        "betas": null
+      }
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "beforeFirstClient": {
+        "uuidCalls": 0,
+        "newDateCalls": 0,
+        "dateNowCalls": 5
+      },
+      "trace": [
+        "permission",
+        "client",
+        "fetch",
+        "permission"
+      ],
+      "consumer": "src/services/api/claude.ts1945-1967 and logging.ts171-242",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "original zero temperature and effort override",
+      "historySources": [
+        "{\"type\": \"user\", \"uuid\": \"u\", \"message\": {\"role\": \"user\", \"content\": \"logging\"}}"
+      ],
+      "env": {
+        "CLAUDE_CODE_ALWAYS_ENABLE_EFFORT": "true",
+        "CLAUDE_CODE_EFFORT_LEVEL": "high",
+        "CLAUDE_CODE_EXTRA_BODY": "{\"temperature\":2}"
+      },
+      "options": {
+        "effortValue": "low",
+        "effortValueOverridesEnv": true,
+        "temperatureOverride": 0
+      }
+    },
+    "observation": {
+      "log": {
+        "eventName": "tengu_api_query",
+        "metadata": {
+          "model": "fixture-model",
+          "messagesLength": 1,
+          "temperature": 0,
+          "provider": "firstParty",
+          "betas": "effort-2025-11-24",
+          "permissionMode": "default",
+          "querySource": "sdk",
+          "thinkingType": "disabled",
+          "effortValue": "low",
+          "fastMode": false,
+          "baseUrl": "<loopback>"
+        },
+        "keys": [
+          "model",
+          "messagesLength",
+          "temperature",
+          "provider",
+          "buildAgeMins",
+          "betas",
+          "permissionMode",
+          "querySource",
+          "thinkingType",
+          "effortValue",
+          "fastMode",
+          "baseUrl"
+        ],
+        "async": false
+      },
+      "physical": {
+        "policy": {
+          "model": "fixture-model",
+          "temperature": 2,
+          "output_config": {
+            "effort": "low"
+          }
+        },
+        "messagesLength": 1,
+        "betas": "effort-2025-11-24"
+      }
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "beforeFirstClient": {
+        "uuidCalls": 0,
+        "newDateCalls": 0,
+        "dateNowCalls": 5
+      },
+      "trace": [
+        "permission",
+        "client",
+        "fetch",
+        "permission"
+      ],
+      "consumer": "src/services/api/claude.ts1945-1967 and logging.ts171-242",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "consecutive users are merged",
+      "historySources": [
+        "{\"type\": \"user\", \"uuid\": \"u\", \"message\": {\"role\": \"user\", \"content\": \"first\"}}",
+        "{\"type\": \"user\", \"uuid\": \"u2\", \"message\": {\"role\": \"user\", \"content\": \"second\"}}"
+      ]
+    },
+    "observation": {
+      "log": {
+        "eventName": "tengu_api_query",
+        "metadata": {
+          "model": "fixture-model",
+          "messagesLength": 1,
+          "temperature": 1,
+          "provider": "firstParty",
+          "permissionMode": "default",
+          "querySource": "sdk",
+          "thinkingType": "disabled",
+          "fastMode": false,
+          "baseUrl": "<loopback>"
+        },
+        "keys": [
+          "model",
+          "messagesLength",
+          "temperature",
+          "provider",
+          "buildAgeMins",
+          "permissionMode",
+          "querySource",
+          "thinkingType",
+          "effortValue",
+          "fastMode",
+          "baseUrl"
+        ],
+        "async": false
+      },
+      "physical": {
+        "policy": {
+          "model": "fixture-model",
+          "temperature": 1
+        },
+        "messagesLength": 1,
+        "betas": null
+      }
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "beforeFirstClient": {
+        "uuidCalls": 0,
+        "newDateCalls": 0,
+        "dateNowCalls": 5
+      },
+      "trace": [
+        "permission",
+        "client",
+        "fetch",
+        "permission"
+      ],
+      "consumer": "src/services/api/claude.ts1945-1967 and logging.ts171-242",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "truthy previous request skips missing newer ID",
+      "historySources": [
+        "{\"type\": \"user\", \"uuid\": \"u\", \"message\": {\"role\": \"user\", \"content\": \"first\"}}",
+        "{\"type\": \"assistant\", \"uuid\": \"a\", \"message\": {\"id\": \"a\", \"model\": \"fixture-model\", \"role\": \"assistant\", \"content\": [{\"type\": \"text\", \"text\": \"answer\"}], \"stop_reason\": \"end_turn\", \"usage\": {\"input_tokens\": 0, \"output_tokens\": 0}}, \"requestId\": \"previous\"}",
+        "{\"type\": \"user\", \"uuid\": \"u2\", \"message\": {\"role\": \"user\", \"content\": \"next\"}}",
+        "{\"type\": \"assistant\", \"uuid\": \"a2\", \"message\": {\"id\": \"a2\", \"model\": \"fixture-model\", \"role\": \"assistant\", \"content\": [{\"type\": \"text\", \"text\": \"again\"}], \"stop_reason\": \"end_turn\", \"usage\": {\"input_tokens\": 0, \"output_tokens\": 0}}}",
+        "{\"type\": \"user\", \"uuid\": \"u3\", \"message\": {\"role\": \"user\", \"content\": \"last\"}}"
+      ]
+    },
+    "observation": {
+      "log": {
+        "eventName": "tengu_api_query",
+        "metadata": {
+          "model": "fixture-model",
+          "messagesLength": 5,
+          "temperature": 1,
+          "provider": "firstParty",
+          "permissionMode": "default",
+          "querySource": "sdk",
+          "thinkingType": "disabled",
+          "fastMode": false,
+          "previousRequestId": "previous",
+          "baseUrl": "<loopback>"
+        },
+        "keys": [
+          "model",
+          "messagesLength",
+          "temperature",
+          "provider",
+          "buildAgeMins",
+          "permissionMode",
+          "querySource",
+          "thinkingType",
+          "effortValue",
+          "fastMode",
+          "previousRequestId",
+          "baseUrl"
+        ],
+        "async": false
+      },
+      "physical": {
+        "policy": {
+          "model": "fixture-model",
+          "temperature": 1
+        },
+        "messagesLength": 5,
+        "betas": null
+      }
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "beforeFirstClient": {
+        "uuidCalls": 0,
+        "newDateCalls": 0,
+        "dateNowCalls": 5
+      },
+      "trace": [
+        "permission",
+        "client",
+        "fetch",
+        "permission"
+      ],
+      "consumer": "src/services/api/claude.ts1945-1967 and logging.ts171-242",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "pair repair allocates only once before client",
+      "historySources": [
+        "{\"type\": \"user\", \"uuid\": \"u\", \"message\": {\"role\": \"user\", \"content\": \"first\"}}",
+        "{\"type\": \"assistant\", \"uuid\": \"a\", \"message\": {\"id\": \"a\", \"model\": \"fixture-model\", \"role\": \"assistant\", \"content\": [{\"type\": \"tool_use\", \"id\": \"missing\", \"name\": \"UnknownTool\", \"input\": {}}], \"stop_reason\": \"end_turn\", \"usage\": {\"input_tokens\": 0, \"output_tokens\": 0}}}"
+      ],
+      "options": {
+        "model": "fixture-model[1m]"
+      }
+    },
+    "observation": {
+      "log": {
+        "eventName": "tengu_api_query",
+        "metadata": {
+          "model": "fixture-model[1m]",
+          "messagesLength": 3,
+          "temperature": 1,
+          "provider": "firstParty",
+          "betas": "context-1m-2025-08-07",
+          "permissionMode": "default",
+          "querySource": "sdk",
+          "thinkingType": "disabled",
+          "fastMode": false,
+          "baseUrl": "<loopback>"
+        },
+        "keys": [
+          "model",
+          "messagesLength",
+          "temperature",
+          "provider",
+          "buildAgeMins",
+          "betas",
+          "permissionMode",
+          "querySource",
+          "thinkingType",
+          "effortValue",
+          "fastMode",
+          "baseUrl"
+        ],
+        "async": false
+      },
+      "physical": {
+        "policy": {
+          "model": "fixture-model",
+          "temperature": 1
+        },
+        "messagesLength": 3,
+        "betas": "context-1m-2025-08-07"
+      }
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "beforeFirstClient": {
+        "uuidCalls": 1,
+        "newDateCalls": 1,
+        "dateNowCalls": 5
+      },
+      "trace": [
+        "uuid",
+        "permission",
+        "client",
+        "fetch",
+        "permission"
+      ],
+      "consumer": "src/services/api/claude.ts1945-1967 and logging.ts171-242",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "extra UTF16 effort is actual logged value",
+      "historySources": [
+        "{\"type\": \"user\", \"uuid\": \"u\", \"message\": {\"role\": \"user\", \"content\": \"logging\"}}"
+      ],
+      "env": {
+        "CLAUDE_CODE_EXTRA_BODY": "{\"output_config\":{\"effort\":\"\\ud800\"}}"
+      }
+    },
+    "observation": {
+      "log": {
+        "eventName": "tengu_api_query",
+        "metadata": {
+          "model": "fixture-model",
+          "messagesLength": 1,
+          "temperature": 1,
+          "provider": "firstParty",
+          "permissionMode": "default",
+          "querySource": "sdk",
+          "thinkingType": "disabled",
+          "effortValue": "\ud800",
+          "fastMode": false,
+          "baseUrl": "<loopback>"
+        },
+        "keys": [
+          "model",
+          "messagesLength",
+          "temperature",
+          "provider",
+          "buildAgeMins",
+          "permissionMode",
+          "querySource",
+          "thinkingType",
+          "effortValue",
+          "fastMode",
+          "baseUrl"
+        ],
+        "async": false
+      },
+      "physical": {
+        "policy": {
+          "model": "fixture-model",
+          "temperature": 1,
+          "output_config": {
+            "effort": "\ud800"
+          }
+        },
+        "messagesLength": 1,
+        "betas": null
+      }
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "beforeFirstClient": {
+        "uuidCalls": 0,
+        "newDateCalls": 0,
+        "dateNowCalls": 5
+      },
+      "trace": [
+        "permission",
+        "client",
+        "fetch",
+        "permission"
+      ],
+      "consumer": "src/services/api/claude.ts1945-1967 and logging.ts171-242",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "heterogeneous beta join",
+      "historySources": [
+        "{\"type\": \"user\", \"uuid\": \"u\", \"message\": {\"role\": \"user\", \"content\": \"logging\"}}"
+      ],
+      "env": {
+        "CLAUDE_CODE_EXTRA_BODY": "{\"betas\":[\"manual\",null,true,17,[\"nested\",\"beta\"],{\"future\":1}]}"
+      }
+    },
+    "observation": {
+      "log": {
+        "eventName": "tengu_api_query",
+        "metadata": {
+          "model": "fixture-model",
+          "messagesLength": 1,
+          "temperature": 1,
+          "provider": "firstParty",
+          "betas": "manual,,true,17,nested,beta,[object Object]",
+          "permissionMode": "default",
+          "querySource": "sdk",
+          "thinkingType": "disabled",
+          "fastMode": false,
+          "baseUrl": "<loopback>"
+        },
+        "keys": [
+          "model",
+          "messagesLength",
+          "temperature",
+          "provider",
+          "buildAgeMins",
+          "betas",
+          "permissionMode",
+          "querySource",
+          "thinkingType",
+          "effortValue",
+          "fastMode",
+          "baseUrl"
+        ],
+        "async": false
+      },
+      "physical": {
+        "policy": {
+          "model": "fixture-model",
+          "temperature": 1
+        },
+        "messagesLength": 1,
+        "betas": "manual,,true,17,nested,beta,[object Object]"
+      }
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "beforeFirstClient": {
+        "uuidCalls": 0,
+        "newDateCalls": 0,
+        "dateNowCalls": 5
+      },
+      "trace": [
+        "permission",
+        "client",
+        "fetch",
+        "permission"
+      ],
+      "consumer": "src/services/api/claude.ts1945-1967 and logging.ts171-242",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "actual query chain and depth",
+      "historySources": [
+        "{\"type\": \"user\", \"uuid\": \"u\", \"message\": {\"role\": \"user\", \"content\": \"logging\"}}"
+      ],
+      "options": {
+        "model": "fixture-model[1m]",
+        "queryTracking": {
+          "chainId": "original-chain",
+          "depth": 3
+        }
+      }
+    },
+    "observation": {
+      "log": {
+        "eventName": "tengu_api_query",
+        "metadata": {
+          "model": "fixture-model[1m]",
+          "messagesLength": 1,
+          "temperature": 1,
+          "provider": "firstParty",
+          "betas": "context-1m-2025-08-07",
+          "permissionMode": "default",
+          "querySource": "sdk",
+          "queryChainId": "original-chain",
+          "queryDepth": 3,
+          "thinkingType": "disabled",
+          "fastMode": false,
+          "baseUrl": "<loopback>"
+        },
+        "keys": [
+          "model",
+          "messagesLength",
+          "temperature",
+          "provider",
+          "buildAgeMins",
+          "betas",
+          "permissionMode",
+          "querySource",
+          "queryChainId",
+          "queryDepth",
+          "thinkingType",
+          "effortValue",
+          "fastMode",
+          "baseUrl"
+        ],
+        "async": false
+      },
+      "physical": {
+        "policy": {
+          "model": "fixture-model",
+          "temperature": 1
+        },
+        "messagesLength": 1,
+        "betas": "context-1m-2025-08-07"
+      }
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "beforeFirstClient": {
+        "uuidCalls": 0,
+        "newDateCalls": 0,
+        "dateNowCalls": 5
+      },
+      "trace": [
+        "permission",
+        "client",
+        "fetch",
+        "permission"
+      ],
+      "consumer": "src/services/api/claude.ts1945-1967 and logging.ts171-242",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  },
+  {
+    "scenario": {
+      "name": "query chain retains UTF16 and missing depth",
+      "historySources": [
+        "{\"type\": \"user\", \"uuid\": \"u\", \"message\": {\"role\": \"user\", \"content\": \"logging\"}}"
+      ],
+      "options": {
+        "model": "fixture-model[1m]",
+        "queryTracking": {
+          "chainId": "\ud800"
+        }
+      }
+    },
+    "observation": {
+      "log": {
+        "eventName": "tengu_api_query",
+        "metadata": {
+          "model": "fixture-model[1m]",
+          "messagesLength": 1,
+          "temperature": 1,
+          "provider": "firstParty",
+          "betas": "context-1m-2025-08-07",
+          "permissionMode": "default",
+          "querySource": "sdk",
+          "queryChainId": "\ud800",
+          "thinkingType": "disabled",
+          "fastMode": false,
+          "baseUrl": "<loopback>"
+        },
+        "keys": [
+          "model",
+          "messagesLength",
+          "temperature",
+          "provider",
+          "buildAgeMins",
+          "betas",
+          "permissionMode",
+          "querySource",
+          "queryChainId",
+          "queryDepth",
+          "thinkingType",
+          "effortValue",
+          "fastMode",
+          "baseUrl"
+        ],
+        "async": false
+      },
+      "physical": {
+        "policy": {
+          "model": "fixture-model",
+          "temperature": 1
+        },
+        "messagesLength": 1,
+        "betas": "context-1m-2025-08-07"
+      }
+    },
+    "sourceOnly": {
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "beforeFirstClient": {
+        "uuidCalls": 0,
+        "newDateCalls": 0,
+        "dateNowCalls": 5
+      },
+      "trace": [
+        "permission",
+        "client",
+        "fetch",
+        "permission"
+      ],
+      "consumer": "src/services/api/claude.ts1945-1967 and logging.ts171-242",
+      "transport": "guarded loopback",
+      "runtime": "v24.3.0"
+    }
+  }
+]

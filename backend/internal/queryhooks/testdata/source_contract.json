@@ -1,0 +1,4641 @@
+[
+  {
+    "input": {
+      "name": "absent-original-files",
+      "operations": [
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "absent-original-files",
+      "results": [
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "empty-original-files",
+      "files": {
+        "userSettings": "{}",
+        "projectSettings": "{}",
+        "localSettings": "{}"
+      },
+      "operations": [
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "empty-original-files",
+      "results": [
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "empty-hooks-original-schema",
+      "files": {
+        "userSettings": "{\"hooks\":{}}"
+      },
+      "operations": [
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "empty-hooks-original-schema",
+      "results": [
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "empty-events-original-order",
+      "files": {
+        "userSettings": "{\"hooks\":{\"StopFailure\":[],\"Stop\":[]}}",
+        "projectSettings": "{\"hooks\":{\"SubagentStop\":[],\"Stop\":[]}}"
+      },
+      "operations": [
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "empty-events-original-order",
+      "results": [
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{\"StopFailure\":[],\"Stop\":[],\"SubagentStop\":[]}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "snapshot-and-settings-independent-cache",
+      "files": {
+        "userSettings": "{\"hooks\":{\"Stop\":[]}}"
+      },
+      "operations": [
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "write",
+          "source": "userSettings",
+          "raw": "{\"hooks\":{\"StopFailure\":[]}}"
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "reset"
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "update"
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "snapshot-and-settings-independent-cache",
+      "results": [
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{\"Stop\":[]}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "write",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{\"Stop\":[]}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "reset",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{\"Stop\":[]}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "update",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{\"StopFailure\":[]}",
+            "identity": 2
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "merged-disable-empty-policy",
+      "files": {
+        "userSettings": "{\"disableAllHooks\":true,\"hooks\":{\"Stop\":[]}}"
+      },
+      "operations": [
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "merged-disable-empty-policy",
+      "results": [
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "higher-source-disable-false",
+      "files": {
+        "userSettings": "{\"disableAllHooks\":true,\"hooks\":{\"Stop\":[]}}",
+        "localSettings": "{\"disableAllHooks\":false,\"hooks\":{\"StopFailure\":[]}}"
+      },
+      "operations": [
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "higher-source-disable-false",
+      "results": [
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{\"Stop\":[],\"StopFailure\":[]}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "registered-empty-array-existence",
+      "operations": [
+        {
+          "kind": "register",
+          "event": "StopFailure",
+          "mode": "array"
+        },
+        {
+          "kind": "register",
+          "event": "Stop",
+          "mode": "array"
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        },
+        {
+          "kind": "clearRegistry"
+        },
+        {
+          "kind": "normal"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "registered-empty-array-existence",
+      "results": [
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": []
+          },
+          "session": []
+        },
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [],
+            "Stop": []
+          },
+          "session": []
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [],
+            "Stop": []
+          },
+          "session": []
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [],
+            "Stop": []
+          },
+          "session": []
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [],
+            "Stop": []
+          },
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [],
+            "Stop": []
+          },
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [],
+            "Stop": []
+          },
+          "session": []
+        },
+        {
+          "operation": "clearRegistry",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "registered-empty-matcher-simple",
+      "simple": "1",
+      "operations": [
+        {
+          "kind": "register",
+          "event": "StopFailure",
+          "mode": "matcher"
+        },
+        {
+          "kind": "register",
+          "event": "Stop",
+          "mode": "matcher"
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "registered-empty-matcher-simple",
+      "results": [
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [
+            "uuid"
+          ],
+          "uuidCalls": 1,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 1,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "registered-empty-matcher-full-resolver",
+      "simple": "0",
+      "operations": [
+        {
+          "kind": "register",
+          "event": "StopFailure",
+          "mode": "matcher"
+        },
+        {
+          "kind": "register",
+          "event": "Stop",
+          "mode": "matcher"
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "registered-empty-matcher-full-resolver",
+      "results": [
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [
+            "uuid"
+          ],
+          "uuidCalls": 1,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 1,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "session-empty-array-is-truthy",
+      "simple": "1",
+      "operations": [
+        {
+          "kind": "session",
+          "event": "Stop",
+          "sid": "hook-main",
+          "mode": "array"
+        },
+        {
+          "kind": "session",
+          "event": "StopFailure",
+          "sid": "hook-main",
+          "mode": "array"
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        },
+        {
+          "kind": "clearSession",
+          "sid": "hook-main"
+        },
+        {
+          "kind": "normal"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "session-empty-array-is-truthy",
+      "results": [
+        {
+          "operation": "session",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "session",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [],
+                "StopFailure": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [],
+                "StopFailure": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [],
+                "StopFailure": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [],
+                "StopFailure": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [
+            "uuid"
+          ],
+          "uuidCalls": 1,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [],
+                "StopFailure": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 1,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [],
+                "StopFailure": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "clearSession",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 1,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 1,
+          "registry": null,
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "session-empty-matcher-full-resolver",
+      "simple": "0",
+      "operations": [
+        {
+          "kind": "session",
+          "event": "Stop",
+          "sid": "hook-main",
+          "mode": "matcher"
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "session-empty-matcher-full-resolver",
+      "results": [
+        {
+          "operation": "session",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [
+                  {
+                    "matcher": "",
+                    "hooks": []
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [
+                  {
+                    "matcher": "",
+                    "hooks": []
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [
+                  {
+                    "matcher": "",
+                    "hooks": []
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [
+                  {
+                    "matcher": "",
+                    "hooks": []
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [
+            "uuid"
+          ],
+          "uuidCalls": 1,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [
+                  {
+                    "matcher": "",
+                    "hooks": []
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 1,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [
+                  {
+                    "matcher": "",
+                    "hooks": []
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "subagent-stop-and-main-failure-sid",
+      "simple": "1",
+      "agentID": "hook-agent",
+      "operations": [
+        {
+          "kind": "session",
+          "event": "SubagentStop",
+          "sid": "hook-agent",
+          "mode": "array"
+        },
+        {
+          "kind": "session",
+          "event": "StopFailure",
+          "sid": "hook-agent",
+          "mode": "array"
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "subagent-stop-and-main-failure-sid",
+      "results": [
+        {
+          "operation": "session",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-agent",
+              {
+                "SubagentStop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "session",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-agent",
+              {
+                "SubagentStop": [],
+                "StopFailure": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-agent",
+              {
+                "SubagentStop": [],
+                "StopFailure": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-agent",
+              {
+                "SubagentStop": [],
+                "StopFailure": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-agent",
+              {
+                "SubagentStop": [],
+                "StopFailure": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [
+            "uuid"
+          ],
+          "uuidCalls": 1,
+          "registry": null,
+          "session": [
+            [
+              "hook-agent",
+              {
+                "SubagentStop": [],
+                "StopFailure": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 1,
+          "registry": null,
+          "session": [
+            [
+              "hook-agent",
+              {
+                "SubagentStop": [],
+                "StopFailure": []
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "interactive-untrusted-empty-matcher",
+      "simple": "0",
+      "interactive": true,
+      "trust": false,
+      "operations": [
+        {
+          "kind": "register",
+          "event": "Stop",
+          "mode": "matcher"
+        },
+        {
+          "kind": "register",
+          "event": "StopFailure",
+          "mode": "matcher"
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "interactive-untrusted-empty-matcher",
+      "results": [
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ],
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ],
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ],
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ],
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [
+            "uuid"
+          ],
+          "uuidCalls": 1,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ],
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 1,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ],
+            "StopFailure": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "interactive-trusted-empty-matcher",
+      "simple": "0",
+      "interactive": true,
+      "trust": true,
+      "operations": [
+        {
+          "kind": "register",
+          "event": "Stop",
+          "mode": "matcher"
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "interactive-trusted-empty-matcher",
+      "results": [
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [
+            "uuid"
+          ],
+          "uuidCalls": 1,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 1,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "non-main-query-does-not-replace-cache",
+      "querySource": "agent",
+      "operations": [
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "non-main-query-does-not-replace-cache",
+      "results": [
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "original-empty-utf16-unknown-metadata",
+      "files": {
+        "userSettings": "{\"hooks\":{},\"future\":\"\\ud800\", \"model\":\"deepseek-flash\"}"
+      },
+      "operations": [
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "original-empty-utf16-unknown-metadata",
+      "results": [
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "registered-active-suppressed-by-simple",
+      "simple": "1",
+      "operations": [
+        {
+          "kind": "register",
+          "event": "StopFailure",
+          "mode": "active"
+        },
+        {
+          "kind": "register",
+          "event": "Stop",
+          "mode": "active"
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "registered-active-suppressed-by-simple",
+      "results": [
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [
+            "uuid"
+          ],
+          "uuidCalls": 1,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 1,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "simple-trims-ascii-and-unicode-whitespace",
+      "simple": " \t YeS ",
+      "operations": [
+        {
+          "kind": "register",
+          "event": "StopFailure",
+          "mode": "active"
+        },
+        {
+          "kind": "register",
+          "event": "Stop",
+          "mode": "active"
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "simple-trims-ascii-and-unicode-whitespace",
+      "results": [
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [
+            "uuid"
+          ],
+          "uuidCalls": 1,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 1,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "non-managed-disable-suppresses-active-session",
+      "simple": "0",
+      "files": {
+        "userSettings": "{\"disableAllHooks\":true}"
+      },
+      "operations": [
+        {
+          "kind": "session",
+          "event": "Stop",
+          "sid": "hook-main",
+          "mode": "active"
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "non-managed-disable-suppresses-active-session",
+      "results": [
+        {
+          "operation": "session",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [
+                  {
+                    "matcher": "",
+                    "hooks": [
+                      "function"
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [
+                  {
+                    "matcher": "",
+                    "hooks": [
+                      "function"
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [
+                  {
+                    "matcher": "",
+                    "hooks": [
+                      "function"
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [
+                  {
+                    "matcher": "",
+                    "hooks": [
+                      "function"
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [
+            "uuid"
+          ],
+          "uuidCalls": 1,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [
+                  {
+                    "matcher": "",
+                    "hooks": [
+                      "function"
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 1,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [
+                  {
+                    "matcher": "",
+                    "hooks": [
+                      "function"
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "untrusted-skips-active-runtime-callbacks",
+      "simple": "0",
+      "interactive": true,
+      "trust": false,
+      "operations": [
+        {
+          "kind": "register",
+          "event": "StopFailure",
+          "mode": "active"
+        },
+        {
+          "kind": "register",
+          "event": "Stop",
+          "mode": "active"
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "untrusted-skips-active-runtime-callbacks",
+      "results": [
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [
+            "uuid"
+          ],
+          "uuidCalls": 1,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 1,
+          "registry": {
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "registration-append-session-overwrite-and-reinsert",
+      "simple": "0",
+      "operations": [
+        {
+          "kind": "register",
+          "event": "Stop",
+          "mode": "array"
+        },
+        {
+          "kind": "register",
+          "event": "Stop",
+          "mode": "matcher"
+        },
+        {
+          "kind": "session",
+          "event": "Stop",
+          "sid": "hook-main",
+          "mode": "matcher"
+        },
+        {
+          "kind": "session",
+          "event": "SubagentStop",
+          "sid": "hook-agent",
+          "mode": "array"
+        },
+        {
+          "kind": "session",
+          "event": "Stop",
+          "sid": "hook-main",
+          "mode": "array"
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        },
+        {
+          "kind": "clearSession",
+          "sid": "hook-main"
+        },
+        {
+          "kind": "session",
+          "event": "Stop",
+          "sid": "hook-main",
+          "mode": "array"
+        },
+        {
+          "kind": "clearRegistry"
+        },
+        {
+          "kind": "normal"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "registration-append-session-overwrite-and-reinsert",
+      "results": [
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": []
+          },
+          "session": []
+        },
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "session",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [
+                  {
+                    "matcher": "",
+                    "hooks": []
+                  }
+                ]
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "session",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": [
+                  {
+                    "matcher": "",
+                    "hooks": []
+                  }
+                ]
+              }
+            ],
+            [
+              "hook-agent",
+              {
+                "SubagentStop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "session",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": []
+              }
+            ],
+            [
+              "hook-agent",
+              {
+                "SubagentStop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": []
+              }
+            ],
+            [
+              "hook-agent",
+              {
+                "SubagentStop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": []
+              }
+            ],
+            [
+              "hook-agent",
+              {
+                "SubagentStop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": []
+              }
+            ],
+            [
+              "hook-agent",
+              {
+                "SubagentStop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [
+            "uuid"
+          ],
+          "uuidCalls": 1,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": []
+              }
+            ],
+            [
+              "hook-agent",
+              {
+                "SubagentStop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 1,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": []
+              }
+            ],
+            [
+              "hook-agent",
+              {
+                "SubagentStop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "clearSession",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 1,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": [
+            [
+              "hook-agent",
+              {
+                "SubagentStop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "session",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 1,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": [
+            [
+              "hook-agent",
+              {
+                "SubagentStop": []
+              }
+            ],
+            [
+              "hook-main",
+              {
+                "Stop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "clearRegistry",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 1,
+          "registry": null,
+          "session": [
+            [
+              "hook-agent",
+              {
+                "SubagentStop": []
+              }
+            ],
+            [
+              "hook-main",
+              {
+                "Stop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [
+            "uuid"
+          ],
+          "uuidCalls": 2,
+          "registry": null,
+          "session": [
+            [
+              "hook-agent",
+              {
+                "SubagentStop": []
+              }
+            ],
+            [
+              "hook-main",
+              {
+                "Stop": []
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "dormant-caller-abort-cleanup",
+      "operations": [
+        {
+          "kind": "cleanup"
+        },
+        {
+          "kind": "cleanup",
+          "value": true
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "dormant-caller-abort-cleanup",
+      "results": [
+        {
+          "operation": "cleanup",
+          "value": {
+            "inactive": true,
+            "canceled": false
+          },
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "cleanup",
+          "value": {
+            "inactive": true,
+            "canceled": true
+          },
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "subagent-skips-process-cleanup",
+      "agentID": "hook-agent",
+      "operations": [
+        {
+          "kind": "cleanup",
+          "value": true
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "subagent-skips-process-cleanup",
+      "results": [
+        {
+          "operation": "cleanup",
+          "value": {
+            "inactive": true,
+            "canceled": true
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": []
+        }
+      ]
+    }
+  },
+  {
+    "input": {
+      "name": "snapshot-reset-clears-sdk-registry-preserves-session",
+      "simple": "1",
+      "operations": [
+        {
+          "kind": "register",
+          "event": "Stop",
+          "mode": "active"
+        },
+        {
+          "kind": "register",
+          "event": "StopFailure",
+          "mode": "active"
+        },
+        {
+          "kind": "session",
+          "event": "Stop",
+          "sid": "hook-main",
+          "mode": "array"
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "reset"
+        },
+        {
+          "kind": "snapshot"
+        },
+        {
+          "kind": "post"
+        },
+        {
+          "kind": "failure"
+        },
+        {
+          "kind": "normal"
+        },
+        {
+          "kind": "cache"
+        }
+      ],
+      "historySources": [
+        "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}"
+      ],
+      "assistantSource": "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+    },
+    "expected": {
+      "name": "snapshot-reset-clears-sdk-registry-preserves-session",
+      "results": [
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "register",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": []
+        },
+        {
+          "operation": "session",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 1
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": {
+            "Stop": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ],
+            "StopFailure": [
+              {
+                "hooks": [
+                  "callback"
+                ],
+                "matcher": ""
+              }
+            ]
+          },
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "reset",
+          "value": null,
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "snapshot",
+          "value": {
+            "raw": "{}",
+            "identity": 2
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "post",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "failure",
+          "value": null,
+          "phases": [
+            "start",
+            "returned-promise",
+            "completed"
+          ],
+          "allocations": [],
+          "uuidCalls": 0,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "normal",
+          "value": {
+            "yielded": [],
+            "result": {
+              "blockingErrors": [],
+              "preventContinuation": false
+            }
+          },
+          "phases": [
+            "start",
+            "completed"
+          ],
+          "allocations": [
+            "uuid"
+          ],
+          "uuidCalls": 1,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": []
+              }
+            ]
+          ]
+        },
+        {
+          "operation": "cache",
+          "value": {
+            "messages": [
+              "{\"type\":\"user\",\"uuid\":\"original-user\",\"message\":{\"role\":\"user\",\"content\":\"original \\ud800 input\"}}",
+              "{\"type\":\"assistant\",\"uuid\":\"original-assistant\",\"message\":{\"id\":\"original-message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original terminal text\"}]},\"error\":\"unknown\",\"isApiErrorMessage\":true}"
+            ],
+            "systemIdentity": true,
+            "userIdentity": true,
+            "contextIdentity": true,
+            "assistantIdentity": true
+          },
+          "phases": [],
+          "allocations": [],
+          "uuidCalls": 1,
+          "registry": null,
+          "session": [
+            [
+              "hook-main",
+              {
+                "Stop": []
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  }
+]

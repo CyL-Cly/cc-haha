@@ -1,0 +1,228 @@
+[
+  {
+    "input": {
+      "profile": "yield-suspended-until-next"
+    },
+    "events": [
+      "caller:next1",
+      "body:start",
+      "caller:next1-returned",
+      "consumer:first",
+      "caller:next2",
+      "body:resumed",
+      "body:finally",
+      "caller:next2-returned",
+      "consumer:done"
+    ],
+    "results": [
+      {
+        "done": false,
+        "defined": true,
+        "value": "one"
+      },
+      {
+        "done": true,
+        "defined": false
+      }
+    ]
+  },
+  {
+    "input": {
+      "profile": "queued-next-fifo"
+    },
+    "events": [
+      "body:start",
+      "caller:all-requested",
+      "body:next",
+      "consumer:first",
+      "body:done",
+      "consumer:second",
+      "consumer:done"
+    ],
+    "results": [
+      {
+        "done": false,
+        "defined": true,
+        "value": "one"
+      },
+      {
+        "done": false,
+        "defined": true,
+        "value": "two"
+      },
+      {
+        "done": true,
+        "defined": false
+      }
+    ]
+  },
+  {
+    "input": {
+      "profile": "yield-promise-value"
+    },
+    "events": [
+      "body:start",
+      "value:then",
+      "independent:microtask",
+      "consumer:first",
+      "body:done",
+      "consumer:done"
+    ],
+    "results": [
+      {
+        "done": false,
+        "defined": true,
+        "value": "one"
+      },
+      {
+        "done": true,
+        "defined": false
+      }
+    ]
+  },
+  {
+    "input": {
+      "profile": "await-then-yield"
+    },
+    "events": [
+      "body:start",
+      "body:after-await",
+      "independent:microtask",
+      "consumer:first",
+      "body:done",
+      "consumer:done"
+    ],
+    "results": [
+      {
+        "done": false,
+        "defined": true,
+        "value": "one"
+      },
+      {
+        "done": true,
+        "defined": false
+      }
+    ]
+  },
+  {
+    "input": {
+      "profile": "delegate-two-layers"
+    },
+    "events": [
+      "outer:start",
+      "middle:start",
+      "inner:start",
+      "consumer:first",
+      "inner:done",
+      "inner:finally",
+      "middle:done",
+      "middle:finally",
+      "outer:done",
+      "outer:finally",
+      "consumer:done"
+    ],
+    "results": [
+      {
+        "done": false,
+        "defined": true,
+        "value": "one"
+      },
+      {
+        "done": true,
+        "defined": true,
+        "value": "final"
+      }
+    ]
+  },
+  {
+    "input": {
+      "profile": "delegate-error-finally"
+    },
+    "events": [
+      "outer:start",
+      "inner:start",
+      "inner:finally",
+      "outer:finally",
+      "consumer:error:original-failure",
+      "consumer:done"
+    ],
+    "results": [
+      {
+        "done": true,
+        "defined": false
+      }
+    ]
+  },
+  {
+    "input": {
+      "profile": "return-before-start"
+    },
+    "events": [
+      "caller:return-returned",
+      "consumer:return",
+      "consumer:done"
+    ],
+    "results": [
+      {
+        "done": true,
+        "defined": true,
+        "value": "return-value"
+      },
+      {
+        "done": true,
+        "defined": false
+      }
+    ]
+  },
+  {
+    "input": {
+      "profile": "return-after-yield"
+    },
+    "events": [
+      "body:start",
+      "consumer:first",
+      "caller:return-returned",
+      "body:finally",
+      "consumer:return",
+      "consumer:done"
+    ],
+    "results": [
+      {
+        "done": false,
+        "defined": true,
+        "value": "one"
+      },
+      {
+        "done": true,
+        "defined": true,
+        "value": "return-value"
+      },
+      {
+        "done": true,
+        "defined": false
+      }
+    ]
+  },
+  {
+    "input": {
+      "profile": "producer-layered-result-reaction"
+    },
+    "events": [
+      "input:first",
+      "input:parsed:first",
+      "input:admit:first",
+      "query:submit",
+      "query:FIFO:result",
+      "query:submit-done",
+      "input:second",
+      "query:cache-finally",
+      "query:wrapper-finally",
+      "query:completed",
+      "input:parsed:second",
+      "input:admit:second",
+      "input:EOF",
+      "input:closed"
+    ],
+    "results": []
+  }
+]

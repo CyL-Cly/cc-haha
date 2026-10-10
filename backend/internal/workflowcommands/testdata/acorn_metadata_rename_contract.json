@@ -1,0 +1,332 @@
+[
+  {
+    "Input": {
+      "id": "empty",
+      "origin": "original Source rename invalid-name input",
+      "script": "export const meta={name:'a',description:'d'};return 1",
+      "renameName": ""
+    },
+    "Expected": {
+      "id": "empty",
+      "origin": "original Source rename invalid-name input",
+      "bytes": 53,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": "return 1"
+      },
+      "rename": {
+        "error": "meta.name must be a non-empty string"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 45
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 2,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "Input": {
+      "id": "blank",
+      "origin": "original Source rename invalid-name input",
+      "script": "export const meta={name:'a',description:'d'};return 1",
+      "renameName": " "
+    },
+    "Expected": {
+      "id": "blank",
+      "origin": "original Source rename invalid-name input",
+      "bytes": 53,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": "return 1"
+      },
+      "rename": {
+        "error": "meta.name must be a non-empty string"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 45
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 2,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "Input": {
+      "id": "bom",
+      "origin": "original Source rename invalid-name input",
+      "script": "export const meta={name:'a',description:'d'};return 1",
+      "renameName": "\ufeff"
+    },
+    "Expected": {
+      "id": "bom",
+      "origin": "original Source rename invalid-name input",
+      "bytes": 53,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": "return 1"
+      },
+      "rename": {
+        "error": "meta.name must be a non-empty string"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 45
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 2,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "Input": {
+      "id": "nel",
+      "origin": "original Source rename invalid-name input",
+      "script": "export const meta={name:'a',description:'d'};return 1",
+      "renameName": "\u0085"
+    },
+    "Expected": {
+      "id": "nel",
+      "origin": "original Source rename invalid-name input",
+      "bytes": 53,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": "return 1"
+      },
+      "rename": {
+        "error": "meta.name '\u0085' must start with a letter or digit and contain only letters, digits, '-' and '_'"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 45
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 2,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "Input": {
+      "id": "digit-prefix",
+      "origin": "original Source rename invalid-name input",
+      "script": "export const meta={name:'a',description:'d'};return 1",
+      "renameName": "1new"
+    },
+    "Expected": {
+      "id": "digit-prefix",
+      "origin": "original Source rename invalid-name input",
+      "bytes": 53,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": "return 1"
+      },
+      "rename": {
+        "script": "export const meta={name:'1new',description:'d'};return 1"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 45
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 2,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "Input": {
+      "id": "colon",
+      "origin": "original Source rename invalid-name input",
+      "script": "export const meta={name:'a',description:'d'};return 1",
+      "renameName": "bad:name"
+    },
+    "Expected": {
+      "id": "colon",
+      "origin": "original Source rename invalid-name input",
+      "bytes": 53,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": "return 1"
+      },
+      "rename": {
+        "error": "meta.name 'bad:name' must start with a letter or digit and contain only letters, digits, '-' and '_'"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 45
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 2,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "Input": {
+      "id": "lone-high",
+      "origin": "original Source rename invalid-name input",
+      "script": "export const meta={name:'a',description:'d'};return 1",
+      "renameName": "\ud800"
+    },
+    "Expected": {
+      "id": "lone-high",
+      "origin": "original Source rename invalid-name input",
+      "bytes": 53,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": "return 1"
+      },
+      "rename": {
+        "error": "meta.name '\ud800' must start with a letter or digit and contain only letters, digits, '-' and '_'"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 45
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 2,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "Input": {
+      "id": "lone-low",
+      "origin": "original Source rename invalid-name input",
+      "script": "export const meta={name:'a',description:'d'};return 1",
+      "renameName": "\udc00"
+    },
+    "Expected": {
+      "id": "lone-low",
+      "origin": "original Source rename invalid-name input",
+      "bytes": 53,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": "return 1"
+      },
+      "rename": {
+        "error": "meta.name '\udc00' must start with a letter or digit and contain only letters, digits, '-' and '_'"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 45
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 2,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "Input": {
+      "id": "nonascii",
+      "origin": "original Source rename invalid-name input",
+      "script": "export const meta={name:'a',description:'d'};return 1",
+      "renameName": "\u4e2d\u6587"
+    },
+    "Expected": {
+      "id": "nonascii",
+      "origin": "original Source rename invalid-name input",
+      "bytes": 53,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": "return 1"
+      },
+      "rename": {
+        "error": "meta.name '\u4e2d\u6587' must start with a letter or digit and contain only letters, digits, '-' and '_'"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 45
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 2,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "Input": {
+      "id": "dash-first",
+      "origin": "original Source rename invalid-name input",
+      "script": "export const meta={name:'a',description:'d'};return 1",
+      "renameName": "-bad"
+    },
+    "Expected": {
+      "id": "dash-first",
+      "origin": "original Source rename invalid-name input",
+      "bytes": 53,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": "return 1"
+      },
+      "rename": {
+        "error": "meta.name '-bad' must start with a letter or digit and contain only letters, digits, '-' and '_'"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 45
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 2,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  }
+]

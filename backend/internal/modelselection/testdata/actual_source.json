@@ -1,0 +1,2101 @@
+{
+  "rows": [
+    {
+      "scenario": {
+        "name": "relay-default-and-aliases",
+        "env": {},
+        "settings": {},
+        "parse": [
+          " sonnet ",
+          "Sonnet[1M]",
+          "haiku[1m]",
+          "best[1m]",
+          "sonnet:1m",
+          "sonnet[1m]extra",
+          "fable",
+          "opus",
+          "opusplan",
+          " CustomModel[1M] ",
+          "\ufeffDeepSeekCustom\ufeff",
+          "\u0085MODEL\u0085",
+          "\ud800Model\udfff",
+          "claude-opus-4-1",
+          "CLAUDE-OPUS-4-20250514[1M]"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"claude-sonnet-4-5-20250929\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": null,
+        "parsed": [
+          {
+            "input": " sonnet ",
+            "valueJSON": "\"claude-sonnet-4-5-20250929\""
+          },
+          {
+            "input": "Sonnet[1M]",
+            "valueJSON": "\"claude-sonnet-4-5-20250929[1m]\""
+          },
+          {
+            "input": "haiku[1m]",
+            "valueJSON": "\"claude-haiku-4-5-20251001[1m]\""
+          },
+          {
+            "input": "best[1m]",
+            "valueJSON": "\"claude-opus-4-7\""
+          },
+          {
+            "input": "sonnet:1m",
+            "valueJSON": "\"sonnet:1m[1m]\""
+          },
+          {
+            "input": "sonnet[1m]extra",
+            "valueJSON": "\"sonnet[1m]extra[1m]\""
+          },
+          {
+            "input": "fable",
+            "valueJSON": "\"claude-opus-4-7\""
+          },
+          {
+            "input": "opus",
+            "valueJSON": "\"claude-opus-4-7\""
+          },
+          {
+            "input": "opusplan",
+            "valueJSON": "\"claude-sonnet-4-5-20250929\""
+          },
+          {
+            "input": " CustomModel[1M] ",
+            "valueJSON": "\"CustomModel[1m]\""
+          },
+          {
+            "input": "\ufeffDeepSeekCustom\ufeff",
+            "valueJSON": "\"DeepSeekCustom\""
+          },
+          {
+            "input": "\u0085MODEL\u0085",
+            "valueJSON": "\"\u0085MODEL\u0085\""
+          },
+          {
+            "input": "\ud800Model\udfff",
+            "valueJSON": "\"\\ud800Model\\udfff\""
+          },
+          {
+            "input": "claude-opus-4-1",
+            "valueJSON": "\"claude-opus-4-7\""
+          },
+          {
+            "input": "CLAUDE-OPUS-4-20250514[1M]",
+            "valueJSON": "\"claude-opus-4-7[1m]\""
+          }
+        ],
+        "allowed": []
+      }
+    },
+    {
+      "scenario": {
+        "name": "firstparty-default-and-aliases",
+        "env": {
+          "ANTHROPIC_BASE_URL": "https://API.ANTHROPIC.COM:443"
+        },
+        "settings": {},
+        "parse": [
+          " sonnet ",
+          "Sonnet[1M]",
+          "haiku[1m]",
+          "best[1m]",
+          "sonnet:1m",
+          "sonnet[1m]extra",
+          "fable",
+          "opus",
+          "opusplan",
+          " CustomModel[1M] ",
+          "\ufeffDeepSeekCustom\ufeff",
+          "\u0085MODEL\u0085",
+          "\ud800Model\udfff",
+          "claude-opus-4-1",
+          "CLAUDE-OPUS-4-20250514[1M]"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"claude-opus-5-5\"",
+        "defaultJSON": "\"claude-opus-5-5\"",
+        "specifiedJSON": null,
+        "parsed": [
+          {
+            "input": " sonnet ",
+            "valueJSON": "\"claude-sonnet-5-5\""
+          },
+          {
+            "input": "Sonnet[1M]",
+            "valueJSON": "\"claude-sonnet-5-5[1m]\""
+          },
+          {
+            "input": "haiku[1m]",
+            "valueJSON": "\"claude-haiku-4-5-20251001[1m]\""
+          },
+          {
+            "input": "best[1m]",
+            "valueJSON": "\"claude-fable-5\""
+          },
+          {
+            "input": "sonnet:1m",
+            "valueJSON": "\"sonnet:1m[1m]\""
+          },
+          {
+            "input": "sonnet[1m]extra",
+            "valueJSON": "\"sonnet[1m]extra[1m]\""
+          },
+          {
+            "input": "fable",
+            "valueJSON": "\"claude-fable-5\""
+          },
+          {
+            "input": "opus",
+            "valueJSON": "\"claude-opus-5-5\""
+          },
+          {
+            "input": "opusplan",
+            "valueJSON": "\"claude-sonnet-5-5\""
+          },
+          {
+            "input": " CustomModel[1M] ",
+            "valueJSON": "\"CustomModel[1m]\""
+          },
+          {
+            "input": "\ufeffDeepSeekCustom\ufeff",
+            "valueJSON": "\"DeepSeekCustom\""
+          },
+          {
+            "input": "\u0085MODEL\u0085",
+            "valueJSON": "\"\u0085MODEL\u0085\""
+          },
+          {
+            "input": "\ud800Model\udfff",
+            "valueJSON": "\"\\ud800Model\\udfff\""
+          },
+          {
+            "input": "claude-opus-4-1",
+            "valueJSON": "\"claude-opus-5-5\""
+          },
+          {
+            "input": "CLAUDE-OPUS-4-20250514[1M]",
+            "valueJSON": "\"claude-opus-5-5[1m]\""
+          }
+        ],
+        "allowed": []
+      }
+    },
+    {
+      "scenario": {
+        "name": "BEDROCK",
+        "env": {
+          "CLAUDE_CODE_USE_BEDROCK": "true"
+        },
+        "settings": {},
+        "parse": [
+          "fable",
+          "opus",
+          "sonnet",
+          "haiku"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"us.anthropic.claude-sonnet-4-5-20250929-v1:0\"",
+        "defaultJSON": "\"us.anthropic.claude-sonnet-4-5-20250929-v1:0\"",
+        "specifiedJSON": null,
+        "parsed": [
+          {
+            "input": "fable",
+            "valueJSON": "\"us.anthropic.claude-opus-4-7-v1\""
+          },
+          {
+            "input": "opus",
+            "valueJSON": "\"us.anthropic.claude-opus-4-7-v1\""
+          },
+          {
+            "input": "sonnet",
+            "valueJSON": "\"us.anthropic.claude-sonnet-4-5-20250929-v1:0\""
+          },
+          {
+            "input": "haiku",
+            "valueJSON": "\"us.anthropic.claude-haiku-4-5-20251001-v1:0\""
+          }
+        ],
+        "allowed": []
+      }
+    },
+    {
+      "scenario": {
+        "name": "VERTEX",
+        "env": {
+          "CLAUDE_CODE_USE_VERTEX": "true"
+        },
+        "settings": {},
+        "parse": [
+          "fable",
+          "opus",
+          "sonnet",
+          "haiku"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"claude-sonnet-4-5@20250929\"",
+        "defaultJSON": "\"claude-sonnet-4-5@20250929\"",
+        "specifiedJSON": null,
+        "parsed": [
+          {
+            "input": "fable",
+            "valueJSON": "\"claude-opus-4-7\""
+          },
+          {
+            "input": "opus",
+            "valueJSON": "\"claude-opus-4-7\""
+          },
+          {
+            "input": "sonnet",
+            "valueJSON": "\"claude-sonnet-4-5@20250929\""
+          },
+          {
+            "input": "haiku",
+            "valueJSON": "\"claude-haiku-4-5@20251001\""
+          }
+        ],
+        "allowed": []
+      }
+    },
+    {
+      "scenario": {
+        "name": "FOUNDRY",
+        "env": {
+          "CLAUDE_CODE_USE_FOUNDRY": "true"
+        },
+        "settings": {},
+        "parse": [
+          "fable",
+          "opus",
+          "sonnet",
+          "haiku"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"claude-sonnet-4-5\"",
+        "defaultJSON": "\"claude-sonnet-4-5\"",
+        "specifiedJSON": null,
+        "parsed": [
+          {
+            "input": "fable",
+            "valueJSON": "\"claude-opus-4-7\""
+          },
+          {
+            "input": "opus",
+            "valueJSON": "\"claude-opus-4-7\""
+          },
+          {
+            "input": "sonnet",
+            "valueJSON": "\"claude-sonnet-4-5\""
+          },
+          {
+            "input": "haiku",
+            "valueJSON": "\"claude-haiku-4-5\""
+          }
+        ],
+        "allowed": []
+      }
+    },
+    {
+      "scenario": {
+        "name": "AZURE_OPENAI",
+        "env": {
+          "CLAUDE_CODE_USE_AZURE_OPENAI": "true"
+        },
+        "settings": {},
+        "parse": [
+          "fable",
+          "opus",
+          "sonnet",
+          "haiku"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"gpt-5.2-codex\"",
+        "defaultJSON": "\"gpt-5.2-codex\"",
+        "specifiedJSON": null,
+        "parsed": [
+          {
+            "input": "fable",
+            "valueJSON": "\"claude-opus-4-7\""
+          },
+          {
+            "input": "opus",
+            "valueJSON": "\"claude-opus-4-7\""
+          },
+          {
+            "input": "sonnet",
+            "valueJSON": "\"claude-sonnet-4-5-20250929\""
+          },
+          {
+            "input": "haiku",
+            "valueJSON": "\"claude-haiku-4-5-20251001\""
+          }
+        ],
+        "allowed": []
+      }
+    },
+    {
+      "scenario": {
+        "name": "cloud-precedence",
+        "env": {
+          "CLAUDE_CODE_USE_BEDROCK": "true",
+          "CLAUDE_CODE_USE_VERTEX": "true"
+        },
+        "settings": {},
+        "parse": [
+          "sonnet"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"us.anthropic.claude-sonnet-4-5-20250929-v1:0\"",
+        "defaultJSON": "\"us.anthropic.claude-sonnet-4-5-20250929-v1:0\"",
+        "specifiedJSON": null,
+        "parsed": [
+          {
+            "input": "sonnet",
+            "valueJSON": "\"us.anthropic.claude-sonnet-4-5-20250929-v1:0\""
+          }
+        ],
+        "allowed": []
+      }
+    },
+    {
+      "scenario": {
+        "name": "case-model-env",
+        "env": {
+          "ANTHROPIC_MODEL": "  DeepSeekCustom  "
+        },
+        "settings": {
+          "model": "setting-model"
+        }
+      },
+      "observation": {
+        "selectedJSON": "\"DeepSeekCustom\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": "\"  DeepSeekCustom  \"",
+        "parsed": [],
+        "allowed": []
+      }
+    },
+    {
+      "scenario": {
+        "name": "setting-model",
+        "env": {},
+        "settings": {
+          "model": " saved-custom-model "
+        }
+      },
+      "observation": {
+        "selectedJSON": "\"saved-custom-model\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": "\" saved-custom-model \"",
+        "parsed": [],
+        "allowed": []
+      }
+    },
+    {
+      "scenario": {
+        "name": "flag-model",
+        "env": {
+          "ANTHROPIC_MODEL": "env-model"
+        },
+        "settings": {
+          "model": "setting-model"
+        },
+        "override": " flag-model "
+      },
+      "observation": {
+        "selectedJSON": "\"flag-model\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": "\" flag-model \"",
+        "parsed": [],
+        "allowed": []
+      }
+    },
+    {
+      "scenario": {
+        "name": "flag-null",
+        "env": {
+          "ANTHROPIC_MODEL": "env-model"
+        },
+        "settings": {},
+        "override": null
+      },
+      "observation": {
+        "selectedJSON": "\"claude-sonnet-4-5-20250929\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": "null",
+        "parsed": [],
+        "allowed": []
+      }
+    },
+    {
+      "scenario": {
+        "name": "flag-empty",
+        "env": {},
+        "settings": {
+          "availableModels": []
+        },
+        "override": ""
+      },
+      "observation": {
+        "selectedJSON": "\"\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": "\"\"",
+        "parsed": [],
+        "allowed": []
+      }
+    },
+    {
+      "scenario": {
+        "name": "setting-empty",
+        "env": {},
+        "settings": {
+          "model": ""
+        }
+      },
+      "observation": {
+        "selectedJSON": "\"claude-sonnet-4-5-20250929\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": null,
+        "parsed": [],
+        "allowed": []
+      }
+    },
+    {
+      "scenario": {
+        "name": "env-empty",
+        "env": {
+          "ANTHROPIC_MODEL": ""
+        },
+        "settings": {
+          "model": "fallback-setting"
+        }
+      },
+      "observation": {
+        "selectedJSON": "\"fallback-setting\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": "\"fallback-setting\"",
+        "parsed": [],
+        "allowed": []
+      }
+    },
+    {
+      "scenario": {
+        "name": "tier-env",
+        "env": {
+          "ANTHROPIC_DEFAULT_OPUS_MODEL": "OpusRelay",
+          "ANTHROPIC_DEFAULT_SONNET_MODEL": "SonnetRelay",
+          "ANTHROPIC_DEFAULT_HAIKU_MODEL": "HaikuRelay",
+          "ANTHROPIC_DEFAULT_FABLE_MODEL": "FableRelay"
+        },
+        "settings": {},
+        "parse": [
+          " sonnet ",
+          "Sonnet[1M]",
+          "haiku[1m]",
+          "best[1m]",
+          "sonnet:1m",
+          "sonnet[1m]extra",
+          "fable",
+          "opus",
+          "opusplan",
+          " CustomModel[1M] ",
+          "\ufeffDeepSeekCustom\ufeff",
+          "\u0085MODEL\u0085",
+          "\ud800Model\udfff",
+          "claude-opus-4-1",
+          "CLAUDE-OPUS-4-20250514[1M]"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"SonnetRelay\"",
+        "defaultJSON": "\"SonnetRelay\"",
+        "specifiedJSON": null,
+        "parsed": [
+          {
+            "input": " sonnet ",
+            "valueJSON": "\"SonnetRelay\""
+          },
+          {
+            "input": "Sonnet[1M]",
+            "valueJSON": "\"SonnetRelay[1m]\""
+          },
+          {
+            "input": "haiku[1m]",
+            "valueJSON": "\"HaikuRelay[1m]\""
+          },
+          {
+            "input": "best[1m]",
+            "valueJSON": "\"FableRelay\""
+          },
+          {
+            "input": "sonnet:1m",
+            "valueJSON": "\"sonnet:1m[1m]\""
+          },
+          {
+            "input": "sonnet[1m]extra",
+            "valueJSON": "\"sonnet[1m]extra[1m]\""
+          },
+          {
+            "input": "fable",
+            "valueJSON": "\"FableRelay\""
+          },
+          {
+            "input": "opus",
+            "valueJSON": "\"OpusRelay\""
+          },
+          {
+            "input": "opusplan",
+            "valueJSON": "\"SonnetRelay\""
+          },
+          {
+            "input": " CustomModel[1M] ",
+            "valueJSON": "\"CustomModel[1m]\""
+          },
+          {
+            "input": "\ufeffDeepSeekCustom\ufeff",
+            "valueJSON": "\"DeepSeekCustom\""
+          },
+          {
+            "input": "\u0085MODEL\u0085",
+            "valueJSON": "\"\u0085MODEL\u0085\""
+          },
+          {
+            "input": "\ud800Model\udfff",
+            "valueJSON": "\"\\ud800Model\\udfff\""
+          },
+          {
+            "input": "claude-opus-4-1",
+            "valueJSON": "\"OpusRelay\""
+          },
+          {
+            "input": "CLAUDE-OPUS-4-20250514[1M]",
+            "valueJSON": "\"OpusRelay[1m]\""
+          }
+        ],
+        "allowed": []
+      }
+    },
+    {
+      "scenario": {
+        "name": "no-context",
+        "env": {
+          "CLAUDE_CODE_DISABLE_1M_CONTEXT": "true"
+        },
+        "settings": {},
+        "parse": [
+          " sonnet ",
+          "Sonnet[1M]",
+          "haiku[1m]",
+          "best[1m]",
+          "sonnet:1m",
+          "sonnet[1m]extra",
+          "fable",
+          "opus",
+          "opusplan",
+          " CustomModel[1M] ",
+          "\ufeffDeepSeekCustom\ufeff",
+          "\u0085MODEL\u0085",
+          "\ud800Model\udfff",
+          "claude-opus-4-1",
+          "CLAUDE-OPUS-4-20250514[1M]"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"claude-sonnet-4-5-20250929\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": null,
+        "parsed": [
+          {
+            "input": " sonnet ",
+            "valueJSON": "\"claude-sonnet-4-5-20250929\""
+          },
+          {
+            "input": "Sonnet[1M]",
+            "valueJSON": "\"Sonnet[1M]\""
+          },
+          {
+            "input": "haiku[1m]",
+            "valueJSON": "\"haiku[1m]\""
+          },
+          {
+            "input": "best[1m]",
+            "valueJSON": "\"best[1m]\""
+          },
+          {
+            "input": "sonnet:1m",
+            "valueJSON": "\"sonnet:1m\""
+          },
+          {
+            "input": "sonnet[1m]extra",
+            "valueJSON": "\"sonnet[1m]extra\""
+          },
+          {
+            "input": "fable",
+            "valueJSON": "\"claude-opus-4-7\""
+          },
+          {
+            "input": "opus",
+            "valueJSON": "\"claude-opus-4-7\""
+          },
+          {
+            "input": "opusplan",
+            "valueJSON": "\"claude-sonnet-4-5-20250929\""
+          },
+          {
+            "input": " CustomModel[1M] ",
+            "valueJSON": "\"CustomModel[1M]\""
+          },
+          {
+            "input": "\ufeffDeepSeekCustom\ufeff",
+            "valueJSON": "\"DeepSeekCustom\""
+          },
+          {
+            "input": "\u0085MODEL\u0085",
+            "valueJSON": "\"\u0085MODEL\u0085\""
+          },
+          {
+            "input": "\ud800Model\udfff",
+            "valueJSON": "\"\\ud800Model\\udfff\""
+          },
+          {
+            "input": "claude-opus-4-1",
+            "valueJSON": "\"claude-opus-4-7\""
+          },
+          {
+            "input": "CLAUDE-OPUS-4-20250514[1M]",
+            "valueJSON": "\"CLAUDE-OPUS-4-20250514[1M]\""
+          }
+        ],
+        "allowed": []
+      }
+    },
+    {
+      "scenario": {
+        "name": "no-remap",
+        "env": {
+          "CLAUDE_CODE_DISABLE_LEGACY_MODEL_REMAP": "true"
+        },
+        "settings": {},
+        "parse": [
+          " sonnet ",
+          "Sonnet[1M]",
+          "haiku[1m]",
+          "best[1m]",
+          "sonnet:1m",
+          "sonnet[1m]extra",
+          "fable",
+          "opus",
+          "opusplan",
+          " CustomModel[1M] ",
+          "\ufeffDeepSeekCustom\ufeff",
+          "\u0085MODEL\u0085",
+          "\ud800Model\udfff",
+          "claude-opus-4-1",
+          "CLAUDE-OPUS-4-20250514[1M]"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"claude-sonnet-4-5-20250929\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": null,
+        "parsed": [
+          {
+            "input": " sonnet ",
+            "valueJSON": "\"claude-sonnet-4-5-20250929\""
+          },
+          {
+            "input": "Sonnet[1M]",
+            "valueJSON": "\"claude-sonnet-4-5-20250929[1m]\""
+          },
+          {
+            "input": "haiku[1m]",
+            "valueJSON": "\"claude-haiku-4-5-20251001[1m]\""
+          },
+          {
+            "input": "best[1m]",
+            "valueJSON": "\"claude-opus-4-7\""
+          },
+          {
+            "input": "sonnet:1m",
+            "valueJSON": "\"sonnet:1m[1m]\""
+          },
+          {
+            "input": "sonnet[1m]extra",
+            "valueJSON": "\"sonnet[1m]extra[1m]\""
+          },
+          {
+            "input": "fable",
+            "valueJSON": "\"claude-opus-4-7\""
+          },
+          {
+            "input": "opus",
+            "valueJSON": "\"claude-opus-4-7\""
+          },
+          {
+            "input": "opusplan",
+            "valueJSON": "\"claude-sonnet-4-5-20250929\""
+          },
+          {
+            "input": " CustomModel[1M] ",
+            "valueJSON": "\"CustomModel[1m]\""
+          },
+          {
+            "input": "\ufeffDeepSeekCustom\ufeff",
+            "valueJSON": "\"DeepSeekCustom\""
+          },
+          {
+            "input": "\u0085MODEL\u0085",
+            "valueJSON": "\"\u0085MODEL\u0085\""
+          },
+          {
+            "input": "\ud800Model\udfff",
+            "valueJSON": "\"\\ud800Model\\udfff\""
+          },
+          {
+            "input": "claude-opus-4-1",
+            "valueJSON": "\"claude-opus-4-1\""
+          },
+          {
+            "input": "CLAUDE-OPUS-4-20250514[1M]",
+            "valueJSON": "\"CLAUDE-OPUS-4-20250514[1m]\""
+          }
+        ],
+        "allowed": []
+      }
+    },
+    {
+      "scenario": {
+        "name": "overrides",
+        "env": {},
+        "settings": {
+          "modelOverrides": {
+            "claude-sonnet-4-5-20250929": "SonnetOverride",
+            "claude-opus-4-7": "OpusOverride",
+            "claude-haiku-4-5-20251001": "HaikuOverride",
+            "not-a-known-model": "Arbitrary"
+          }
+        },
+        "parse": [
+          " sonnet ",
+          "Sonnet[1M]",
+          "haiku[1m]",
+          "best[1m]",
+          "sonnet:1m",
+          "sonnet[1m]extra",
+          "fable",
+          "opus",
+          "opusplan",
+          " CustomModel[1M] ",
+          "\ufeffDeepSeekCustom\ufeff",
+          "\u0085MODEL\u0085",
+          "\ud800Model\udfff",
+          "claude-opus-4-1",
+          "CLAUDE-OPUS-4-20250514[1M]"
+        ],
+        "allowed": [
+          "SonnetOverride",
+          "Arbitrary"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"SonnetOverride\"",
+        "defaultJSON": "\"SonnetOverride\"",
+        "specifiedJSON": null,
+        "parsed": [
+          {
+            "input": " sonnet ",
+            "valueJSON": "\"SonnetOverride\""
+          },
+          {
+            "input": "Sonnet[1M]",
+            "valueJSON": "\"SonnetOverride[1m]\""
+          },
+          {
+            "input": "haiku[1m]",
+            "valueJSON": "\"HaikuOverride[1m]\""
+          },
+          {
+            "input": "best[1m]",
+            "valueJSON": "\"OpusOverride\""
+          },
+          {
+            "input": "sonnet:1m",
+            "valueJSON": "\"sonnet:1m[1m]\""
+          },
+          {
+            "input": "sonnet[1m]extra",
+            "valueJSON": "\"sonnet[1m]extra[1m]\""
+          },
+          {
+            "input": "fable",
+            "valueJSON": "\"OpusOverride\""
+          },
+          {
+            "input": "opus",
+            "valueJSON": "\"OpusOverride\""
+          },
+          {
+            "input": "opusplan",
+            "valueJSON": "\"SonnetOverride\""
+          },
+          {
+            "input": " CustomModel[1M] ",
+            "valueJSON": "\"CustomModel[1m]\""
+          },
+          {
+            "input": "\ufeffDeepSeekCustom\ufeff",
+            "valueJSON": "\"DeepSeekCustom\""
+          },
+          {
+            "input": "\u0085MODEL\u0085",
+            "valueJSON": "\"\u0085MODEL\u0085\""
+          },
+          {
+            "input": "\ud800Model\udfff",
+            "valueJSON": "\"\\ud800Model\\udfff\""
+          },
+          {
+            "input": "claude-opus-4-1",
+            "valueJSON": "\"OpusOverride\""
+          },
+          {
+            "input": "CLAUDE-OPUS-4-20250514[1M]",
+            "valueJSON": "\"OpusOverride[1m]\""
+          }
+        ],
+        "allowed": [
+          {
+            "input": "SonnetOverride",
+            "value": true
+          },
+          {
+            "input": "Arbitrary",
+            "value": true
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "allow-empty",
+        "env": {},
+        "settings": {
+          "availableModels": [],
+          "model": "opus"
+        },
+        "allowed": [
+          "opus",
+          "best",
+          "opusplan",
+          "sonnet",
+          "claude-opus-4-5-20251101",
+          "claude-opus-4-50",
+          "claude-opus-4-7",
+          "CLAUDE-OPUS-4-5-20251101",
+          "DeepSeek-Custom",
+          "\ud800",
+          "\udfff",
+          "\u0130MODEL",
+          "i\u0307model"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"claude-sonnet-4-5-20250929\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": null,
+        "parsed": [],
+        "allowed": [
+          {
+            "input": "opus",
+            "value": false
+          },
+          {
+            "input": "best",
+            "value": false
+          },
+          {
+            "input": "opusplan",
+            "value": false
+          },
+          {
+            "input": "sonnet",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-5-20251101",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-50",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-7",
+            "value": false
+          },
+          {
+            "input": "CLAUDE-OPUS-4-5-20251101",
+            "value": false
+          },
+          {
+            "input": "DeepSeek-Custom",
+            "value": false
+          },
+          {
+            "input": "\ud800",
+            "value": false
+          },
+          {
+            "input": "\udfff",
+            "value": false
+          },
+          {
+            "input": "\u0130MODEL",
+            "value": false
+          },
+          {
+            "input": "i\u0307model",
+            "value": false
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "allow-family",
+        "env": {},
+        "settings": {
+          "availableModels": [
+            "opus"
+          ],
+          "model": "opus"
+        },
+        "allowed": [
+          "opus",
+          "best",
+          "opusplan",
+          "sonnet",
+          "claude-opus-4-5-20251101",
+          "claude-opus-4-50",
+          "claude-opus-4-7",
+          "CLAUDE-OPUS-4-5-20251101",
+          "DeepSeek-Custom",
+          "\ud800",
+          "\udfff",
+          "\u0130MODEL",
+          "i\u0307model"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"claude-opus-4-7\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": "\"opus\"",
+        "parsed": [],
+        "allowed": [
+          {
+            "input": "opus",
+            "value": true
+          },
+          {
+            "input": "best",
+            "value": true
+          },
+          {
+            "input": "opusplan",
+            "value": true
+          },
+          {
+            "input": "sonnet",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-5-20251101",
+            "value": true
+          },
+          {
+            "input": "claude-opus-4-50",
+            "value": true
+          },
+          {
+            "input": "claude-opus-4-7",
+            "value": true
+          },
+          {
+            "input": "CLAUDE-OPUS-4-5-20251101",
+            "value": true
+          },
+          {
+            "input": "DeepSeek-Custom",
+            "value": false
+          },
+          {
+            "input": "\ud800",
+            "value": false
+          },
+          {
+            "input": "\udfff",
+            "value": false
+          },
+          {
+            "input": "\u0130MODEL",
+            "value": false
+          },
+          {
+            "input": "i\u0307model",
+            "value": false
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "allow-narrow",
+        "env": {},
+        "settings": {
+          "availableModels": [
+            "opus",
+            "opus-4-5"
+          ],
+          "model": "opus"
+        },
+        "allowed": [
+          "opus",
+          "best",
+          "opusplan",
+          "sonnet",
+          "claude-opus-4-5-20251101",
+          "claude-opus-4-50",
+          "claude-opus-4-7",
+          "CLAUDE-OPUS-4-5-20251101",
+          "DeepSeek-Custom",
+          "\ud800",
+          "\udfff",
+          "\u0130MODEL",
+          "i\u0307model"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"claude-sonnet-4-5-20250929\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": null,
+        "parsed": [],
+        "allowed": [
+          {
+            "input": "opus",
+            "value": false
+          },
+          {
+            "input": "best",
+            "value": false
+          },
+          {
+            "input": "opusplan",
+            "value": false
+          },
+          {
+            "input": "sonnet",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-5-20251101",
+            "value": true
+          },
+          {
+            "input": "claude-opus-4-50",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-7",
+            "value": false
+          },
+          {
+            "input": "CLAUDE-OPUS-4-5-20251101",
+            "value": true
+          },
+          {
+            "input": "DeepSeek-Custom",
+            "value": false
+          },
+          {
+            "input": "\ud800",
+            "value": false
+          },
+          {
+            "input": "\udfff",
+            "value": false
+          },
+          {
+            "input": "\u0130MODEL",
+            "value": false
+          },
+          {
+            "input": "i\u0307model",
+            "value": false
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "allow-prefix",
+        "env": {},
+        "settings": {
+          "availableModels": [
+            "opus-4-5"
+          ],
+          "model": "opus"
+        },
+        "allowed": [
+          "opus",
+          "best",
+          "opusplan",
+          "sonnet",
+          "claude-opus-4-5-20251101",
+          "claude-opus-4-50",
+          "claude-opus-4-7",
+          "CLAUDE-OPUS-4-5-20251101",
+          "DeepSeek-Custom",
+          "\ud800",
+          "\udfff",
+          "\u0130MODEL",
+          "i\u0307model"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"claude-sonnet-4-5-20250929\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": null,
+        "parsed": [],
+        "allowed": [
+          {
+            "input": "opus",
+            "value": false
+          },
+          {
+            "input": "best",
+            "value": false
+          },
+          {
+            "input": "opusplan",
+            "value": false
+          },
+          {
+            "input": "sonnet",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-5-20251101",
+            "value": true
+          },
+          {
+            "input": "claude-opus-4-50",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-7",
+            "value": false
+          },
+          {
+            "input": "CLAUDE-OPUS-4-5-20251101",
+            "value": true
+          },
+          {
+            "input": "DeepSeek-Custom",
+            "value": false
+          },
+          {
+            "input": "\ud800",
+            "value": false
+          },
+          {
+            "input": "\udfff",
+            "value": false
+          },
+          {
+            "input": "\u0130MODEL",
+            "value": false
+          },
+          {
+            "input": "i\u0307model",
+            "value": false
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "allow-exact",
+        "env": {},
+        "settings": {
+          "availableModels": [
+            "DeepSeek-Custom"
+          ],
+          "model": "opus"
+        },
+        "allowed": [
+          "opus",
+          "best",
+          "opusplan",
+          "sonnet",
+          "claude-opus-4-5-20251101",
+          "claude-opus-4-50",
+          "claude-opus-4-7",
+          "CLAUDE-OPUS-4-5-20251101",
+          "DeepSeek-Custom",
+          "\ud800",
+          "\udfff",
+          "\u0130MODEL",
+          "i\u0307model"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"claude-sonnet-4-5-20250929\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": null,
+        "parsed": [],
+        "allowed": [
+          {
+            "input": "opus",
+            "value": false
+          },
+          {
+            "input": "best",
+            "value": false
+          },
+          {
+            "input": "opusplan",
+            "value": false
+          },
+          {
+            "input": "sonnet",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-5-20251101",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-50",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-7",
+            "value": false
+          },
+          {
+            "input": "CLAUDE-OPUS-4-5-20251101",
+            "value": false
+          },
+          {
+            "input": "DeepSeek-Custom",
+            "value": true
+          },
+          {
+            "input": "\ud800",
+            "value": false
+          },
+          {
+            "input": "\udfff",
+            "value": false
+          },
+          {
+            "input": "\u0130MODEL",
+            "value": false
+          },
+          {
+            "input": "i\u0307model",
+            "value": false
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "allow-nonfamilyalias",
+        "env": {},
+        "settings": {
+          "availableModels": [
+            "best"
+          ],
+          "model": "opus"
+        },
+        "allowed": [
+          "opus",
+          "best",
+          "opusplan",
+          "sonnet",
+          "claude-opus-4-5-20251101",
+          "claude-opus-4-50",
+          "claude-opus-4-7",
+          "CLAUDE-OPUS-4-5-20251101",
+          "DeepSeek-Custom",
+          "\ud800",
+          "\udfff",
+          "\u0130MODEL",
+          "i\u0307model"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"claude-sonnet-4-5-20250929\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": null,
+        "parsed": [],
+        "allowed": [
+          {
+            "input": "opus",
+            "value": false
+          },
+          {
+            "input": "best",
+            "value": true
+          },
+          {
+            "input": "opusplan",
+            "value": false
+          },
+          {
+            "input": "sonnet",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-5-20251101",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-50",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-7",
+            "value": true
+          },
+          {
+            "input": "CLAUDE-OPUS-4-5-20251101",
+            "value": false
+          },
+          {
+            "input": "DeepSeek-Custom",
+            "value": false
+          },
+          {
+            "input": "\ud800",
+            "value": false
+          },
+          {
+            "input": "\udfff",
+            "value": false
+          },
+          {
+            "input": "\u0130MODEL",
+            "value": false
+          },
+          {
+            "input": "i\u0307model",
+            "value": false
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "allow-fullmodel",
+        "env": {},
+        "settings": {
+          "availableModels": [
+            "claude-opus-4-7"
+          ],
+          "model": "opus"
+        },
+        "allowed": [
+          "opus",
+          "best",
+          "opusplan",
+          "sonnet",
+          "claude-opus-4-5-20251101",
+          "claude-opus-4-50",
+          "claude-opus-4-7",
+          "CLAUDE-OPUS-4-5-20251101",
+          "DeepSeek-Custom",
+          "\ud800",
+          "\udfff",
+          "\u0130MODEL",
+          "i\u0307model"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"claude-opus-4-7\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": "\"opus\"",
+        "parsed": [],
+        "allowed": [
+          {
+            "input": "opus",
+            "value": true
+          },
+          {
+            "input": "best",
+            "value": true
+          },
+          {
+            "input": "opusplan",
+            "value": false
+          },
+          {
+            "input": "sonnet",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-5-20251101",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-50",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-7",
+            "value": true
+          },
+          {
+            "input": "CLAUDE-OPUS-4-5-20251101",
+            "value": false
+          },
+          {
+            "input": "DeepSeek-Custom",
+            "value": false
+          },
+          {
+            "input": "\ud800",
+            "value": false
+          },
+          {
+            "input": "\udfff",
+            "value": false
+          },
+          {
+            "input": "\u0130MODEL",
+            "value": false
+          },
+          {
+            "input": "i\u0307model",
+            "value": false
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "allow-unicode",
+        "env": {},
+        "settings": {
+          "availableModels": [
+            "\ud800",
+            "\u0130MODEL"
+          ],
+          "model": "opus"
+        },
+        "allowed": [
+          "opus",
+          "best",
+          "opusplan",
+          "sonnet",
+          "claude-opus-4-5-20251101",
+          "claude-opus-4-50",
+          "claude-opus-4-7",
+          "CLAUDE-OPUS-4-5-20251101",
+          "DeepSeek-Custom",
+          "\ud800",
+          "\udfff",
+          "\u0130MODEL",
+          "i\u0307model"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"claude-sonnet-4-5-20250929\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": null,
+        "parsed": [],
+        "allowed": [
+          {
+            "input": "opus",
+            "value": false
+          },
+          {
+            "input": "best",
+            "value": false
+          },
+          {
+            "input": "opusplan",
+            "value": false
+          },
+          {
+            "input": "sonnet",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-5-20251101",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-50",
+            "value": false
+          },
+          {
+            "input": "claude-opus-4-7",
+            "value": false
+          },
+          {
+            "input": "CLAUDE-OPUS-4-5-20251101",
+            "value": false
+          },
+          {
+            "input": "DeepSeek-Custom",
+            "value": false
+          },
+          {
+            "input": "\ud800",
+            "value": true
+          },
+          {
+            "input": "\udfff",
+            "value": false
+          },
+          {
+            "input": "\u0130MODEL",
+            "value": true
+          },
+          {
+            "input": "i\u0307model",
+            "value": true
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "overridden-allow",
+        "env": {},
+        "settings": {
+          "availableModels": [
+            "opus-4-5"
+          ],
+          "modelOverrides": {
+            "claude-opus-4-5-20251101": "CustomRelayOpus"
+          },
+          "model": "CustomRelayOpus"
+        },
+        "allowed": [
+          "CustomRelayOpus",
+          "opus",
+          "DeepSeek"
+        ]
+      },
+      "observation": {
+        "selectedJSON": "\"CustomRelayOpus\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": "\"CustomRelayOpus\"",
+        "parsed": [],
+        "allowed": [
+          {
+            "input": "CustomRelayOpus",
+            "value": true
+          },
+          {
+            "input": "opus",
+            "value": false
+          },
+          {
+            "input": "DeepSeek",
+            "value": false
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "raw-setting",
+        "env": {},
+        "settings": {
+          "model": " \ud800Model\udfff "
+        }
+      },
+      "observation": {
+        "selectedJSON": "\"\\ud800Model\\udfff\"",
+        "defaultJSON": "\"claude-sonnet-4-5-20250929\"",
+        "specifiedJSON": "\" \\ud800Model\\udfff \"",
+        "parsed": [],
+        "allowed": []
+      }
+    }
+  ],
+  "sourceOnly": {
+    "consumer": "src/utils/model/model.ts + modelAllowlist.ts",
+    "runtime": "v24.3.0",
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [
+        "read"
+      ],
+      "absentReads": [
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        }
+      ]
+    }
+  }
+}

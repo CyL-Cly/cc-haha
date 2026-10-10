@@ -1,0 +1,1065 @@
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://127.0.0.1:1",
+    "ANTHROPIC_API_KEY": "offline-original-env-key",
+    "CLAUDE_CODE_DISABLE_FAST_MODE": "1"
+  },
+  "cases": [
+    {
+      "name": "original creation handshake-timeout",
+      "error": {
+        "kind": "timeout"
+      },
+      "priorUUIDs": 2,
+      "wrapRetry": true
+    },
+    {
+      "name": "original creation malformed-timeout-zero",
+      "error": {
+        "kind": "timeout"
+      },
+      "priorUUIDs": 2,
+      "wrapRetry": true
+    },
+    {
+      "name": "original creation malformed-timeout-one",
+      "error": {
+        "kind": "timeout"
+      },
+      "priorUUIDs": 2,
+      "wrapRetry": true
+    },
+    {
+      "name": "original creation large-malformed-timeout-one",
+      "error": {
+        "kind": "timeout"
+      },
+      "priorUUIDs": 2,
+      "wrapRetry": true
+    },
+    {
+      "name": "original creation malformed",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "FailedToOpenSocket",
+          "message": "original private socket diagnostic"
+        }
+      },
+      "priorUUIDs": 2,
+      "wrapRetry": true
+    },
+    {
+      "name": "original creation wrong",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "DEPTH_ZERO_SELF_SIGNED_CERT",
+          "message": "original private socket diagnostic"
+        }
+      },
+      "priorUUIDs": 2,
+      "wrapRetry": true
+    },
+    {
+      "name": "original creation missing",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "DEPTH_ZERO_SELF_SIGNED_CERT",
+          "message": "original private socket diagnostic"
+        }
+      },
+      "priorUUIDs": 2,
+      "wrapRetry": true
+    },
+    {
+      "name": "original creation default",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "DEPTH_ZERO_SELF_SIGNED_CERT",
+          "message": "original private socket diagnostic"
+        }
+      },
+      "priorUUIDs": 2,
+      "wrapRetry": true
+    },
+    {
+      "name": "original SSL code UNABLE_TO_VERIFY_LEAF_SIGNATURE",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "UNABLE_TO_VERIFY_LEAF_SIGNATURE",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original SSL code UNABLE_TO_GET_ISSUER_CERT",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "UNABLE_TO_GET_ISSUER_CERT",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original SSL code UNABLE_TO_GET_ISSUER_CERT_LOCALLY",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "UNABLE_TO_GET_ISSUER_CERT_LOCALLY",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original SSL code CERT_SIGNATURE_FAILURE",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "CERT_SIGNATURE_FAILURE",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original SSL code CERT_NOT_YET_VALID",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "CERT_NOT_YET_VALID",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original SSL code CERT_HAS_EXPIRED",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "CERT_HAS_EXPIRED",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original SSL code CERT_REVOKED",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "CERT_REVOKED",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original SSL code CERT_REJECTED",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "CERT_REJECTED",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original SSL code CERT_UNTRUSTED",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "CERT_UNTRUSTED",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original SSL code DEPTH_ZERO_SELF_SIGNED_CERT",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "DEPTH_ZERO_SELF_SIGNED_CERT",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original SSL code SELF_SIGNED_CERT_IN_CHAIN",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "SELF_SIGNED_CERT_IN_CHAIN",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original SSL code CERT_CHAIN_TOO_LONG",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "CERT_CHAIN_TOO_LONG",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original SSL code PATH_LENGTH_EXCEEDED",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "PATH_LENGTH_EXCEEDED",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original SSL code ERR_TLS_CERT_ALTNAME_INVALID",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "ERR_TLS_CERT_ALTNAME_INVALID",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original SSL code HOSTNAME_MISMATCH",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "HOSTNAME_MISMATCH",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original SSL code ERR_TLS_HANDSHAKE_TIMEOUT",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "ERR_TLS_HANDSHAKE_TIMEOUT",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original SSL code ERR_SSL_WRONG_VERSION_NUMBER",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "ERR_SSL_WRONG_VERSION_NUMBER",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original SSL code ERR_SSL_DECRYPTION_FAILED_OR_BAD_RECORD_MAC",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "ERR_SSL_DECRYPTION_FAILED_OR_BAD_RECORD_MAC",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original nonSSL code \"ETIMEDOUT\"",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "ETIMEDOUT",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original nonSSL code \"\"",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original nonSSL code \"UnknownOriginalCode\"",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "UnknownOriginalCode",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original nonSSL code \"\\ud800\"",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "\ud800",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original nonSSL code \"\\udc00\"",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "\udc00",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "original nonSSL code \"�\"",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "�",
+          "message": "original private socket diagnostic"
+        }
+      }
+    },
+    {
+      "name": "no original cause",
+      "error": {
+        "kind": "connection"
+      }
+    },
+    {
+      "name": "first code wins",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "FailedToOpenSocket",
+          "cause": {
+            "kind": "error",
+            "code": "CERT_HAS_EXPIRED"
+          }
+        }
+      }
+    },
+    {
+      "name": "fifth Error link accepted",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "message": "original outer cause",
+          "cause": {
+            "kind": "error",
+            "message": "original outer cause",
+            "cause": {
+              "kind": "error",
+              "message": "original outer cause",
+              "cause": {
+                "kind": "error",
+                "code": "CERT_HAS_EXPIRED"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "sixth Error link ignored",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "message": "original outer cause",
+          "cause": {
+            "kind": "error",
+            "message": "original outer cause",
+            "cause": {
+              "kind": "error",
+              "message": "original outer cause",
+              "cause": {
+                "kind": "error",
+                "message": "original outer cause",
+                "cause": {
+                  "kind": "error",
+                  "code": "CERT_HAS_EXPIRED"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "non-string code continues",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": 123,
+          "cause": {
+            "kind": "error",
+            "code": "CERT_REVOKED"
+          }
+        }
+      }
+    },
+    {
+      "name": "plain object code ignored",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "plain",
+          "code": "CERT_HAS_EXPIRED",
+          "cause": {
+            "kind": "error",
+            "code": "CERT_REVOKED"
+          }
+        }
+      }
+    },
+    {
+      "name": "self cause without code",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "selfCause": true
+        }
+      }
+    },
+    {
+      "name": "self cause with code",
+      "error": {
+        "kind": "connection",
+        "cause": {
+          "kind": "error",
+          "code": "CERT_HAS_EXPIRED",
+          "selfCause": true
+        }
+      }
+    },
+    {
+      "name": "ASCII custom timeout precedence",
+      "error": {
+        "kind": "connection",
+        "message": "Original TIMEOUT diagnostic",
+        "cause": {
+          "kind": "error",
+          "code": "CERT_HAS_EXPIRED"
+        }
+      }
+    },
+    {
+      "name": "timeout subclass custom UTF16 ignores cause",
+      "error": {
+        "kind": "timeout",
+        "message": "original \ud800 timeout \udc00"
+      }
+    },
+    {
+      "name": "factory original UTF16 and explicit null",
+      "factoryOptions": {
+        "content": "original \ud800 text \udc00",
+        "error": "unknown",
+        "errorDetails": null,
+        "usage": {
+          "ignored": 1
+        }
+      }
+    },
+    {
+      "name": "factory empty content and all metadata",
+      "factoryOptions": {
+        "content": "",
+        "apiError": "fixture",
+        "error": "unknown",
+        "errorDetails": "original details",
+        "businessErrorCode": "code",
+        "sourceModel": "deepseek-flash",
+        "isVirtual": true
+      }
+    },
+    {
+      "name": "pending custom dotted-I lowercase",
+      "error": {
+        "kind": "connection",
+        "message": "Original TİMEOUT diagnostic"
+      },
+      "supported": false
+    },
+    {
+      "name": "pending custom Unicode message",
+      "error": {
+        "kind": "connection",
+        "message": "original \ud800 diagnostic"
+      },
+      "supported": false
+    },
+    {
+      "name": "pending non-timeout custom message precedence",
+      "error": {
+        "kind": "connection",
+        "message": "Original custom diagnostic"
+      },
+      "supported": false
+    },
+    {
+      "name": "caller owns abort suppression",
+      "error": {
+        "kind": "abort"
+      },
+      "supported": false
+    },
+    {
+      "name": "pending HTTP API presentation",
+      "error": {
+        "kind": "api",
+        "status": 503,
+        "message": "Original HTTP error"
+      },
+      "supported": false
+    },
+    {
+      "name": "pending ordinary Error presentation",
+      "error": {
+        "kind": "error",
+        "message": "original generic diagnostic"
+      },
+      "supported": false
+    }
+  ],
+  "expected": [
+    {
+      "name": "original creation handshake-timeout",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-3\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-4\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"Request timed out\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:3",
+        "date",
+        "uuid:4"
+      ],
+      "uuidCalls": 4
+    },
+    {
+      "name": "original creation malformed-timeout-zero",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-3\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-4\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"Request timed out\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:3",
+        "date",
+        "uuid:4"
+      ],
+      "uuidCalls": 4
+    },
+    {
+      "name": "original creation malformed-timeout-one",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-3\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-4\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"Request timed out\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:3",
+        "date",
+        "uuid:4"
+      ],
+      "uuidCalls": 4
+    },
+    {
+      "name": "original creation large-malformed-timeout-one",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-3\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-4\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"Request timed out\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:3",
+        "date",
+        "uuid:4"
+      ],
+      "uuidCalls": 4
+    },
+    {
+      "name": "original creation malformed",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-3\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-4\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API (FailedToOpenSocket)\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:3",
+        "date",
+        "uuid:4"
+      ],
+      "uuidCalls": 4
+    },
+    {
+      "name": "original creation wrong",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-3\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-4\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: Self-signed certificate detected. Check your proxy or corporate SSL certificates\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:3",
+        "date",
+        "uuid:4"
+      ],
+      "uuidCalls": 4
+    },
+    {
+      "name": "original creation missing",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-3\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-4\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: Self-signed certificate detected. Check your proxy or corporate SSL certificates\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:3",
+        "date",
+        "uuid:4"
+      ],
+      "uuidCalls": 4
+    },
+    {
+      "name": "original creation default",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-3\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-4\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: Self-signed certificate detected. Check your proxy or corporate SSL certificates\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:3",
+        "date",
+        "uuid:4"
+      ],
+      "uuidCalls": 4
+    },
+    {
+      "name": "original SSL code UNABLE_TO_VERIFY_LEAF_SIGNATURE",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL certificate verification failed. Check your proxy or corporate SSL certificates\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original SSL code UNABLE_TO_GET_ISSUER_CERT",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL certificate verification failed. Check your proxy or corporate SSL certificates\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original SSL code UNABLE_TO_GET_ISSUER_CERT_LOCALLY",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL certificate verification failed. Check your proxy or corporate SSL certificates\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original SSL code CERT_SIGNATURE_FAILURE",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL error (CERT_SIGNATURE_FAILURE)\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original SSL code CERT_NOT_YET_VALID",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL certificate is not yet valid\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original SSL code CERT_HAS_EXPIRED",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL certificate has expired\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original SSL code CERT_REVOKED",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL certificate has been revoked\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original SSL code CERT_REJECTED",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL error (CERT_REJECTED)\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original SSL code CERT_UNTRUSTED",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL error (CERT_UNTRUSTED)\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original SSL code DEPTH_ZERO_SELF_SIGNED_CERT",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: Self-signed certificate detected. Check your proxy or corporate SSL certificates\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original SSL code SELF_SIGNED_CERT_IN_CHAIN",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: Self-signed certificate detected. Check your proxy or corporate SSL certificates\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original SSL code CERT_CHAIN_TOO_LONG",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL error (CERT_CHAIN_TOO_LONG)\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original SSL code PATH_LENGTH_EXCEEDED",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL error (PATH_LENGTH_EXCEEDED)\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original SSL code ERR_TLS_CERT_ALTNAME_INVALID",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL certificate hostname mismatch\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original SSL code HOSTNAME_MISMATCH",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL certificate hostname mismatch\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original SSL code ERR_TLS_HANDSHAKE_TIMEOUT",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL error (ERR_TLS_HANDSHAKE_TIMEOUT)\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original SSL code ERR_SSL_WRONG_VERSION_NUMBER",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL error (ERR_SSL_WRONG_VERSION_NUMBER)\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original SSL code ERR_SSL_DECRYPTION_FAILED_OR_BAD_RECORD_MAC",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL error (ERR_SSL_DECRYPTION_FAILED_OR_BAD_RECORD_MAC)\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original nonSSL code \"ETIMEDOUT\"",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Request timed out. Check your internet connection and proxy settings\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original nonSSL code \"\"",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API. Check your internet connection\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original nonSSL code \"UnknownOriginalCode\"",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API (UnknownOriginalCode)\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original nonSSL code \"\\ud800\"",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API (\\ud800)\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original nonSSL code \"\\udc00\"",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API (\\udc00)\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "original nonSSL code \"�\"",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API (�)\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "no original cause",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API. Check your internet connection\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "first code wins",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API (FailedToOpenSocket)\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "fifth Error link accepted",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL certificate has expired\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "sixth Error link ignored",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API. Check your internet connection\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "non-string code continues",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL certificate has been revoked\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "plain object code ignored",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API. Check your internet connection\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "self cause without code",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API. Check your internet connection\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "self cause with code",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: SSL certificate has expired\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "ASCII custom timeout precedence",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"Request timed out\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "timeout subclass custom UTF16 ignores cause",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"Request timed out\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "factory original UTF16 and explicit null",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"original \\ud800 text \\udc00\"}],\"context_management\":null},\"error\":\"unknown\",\"errorDetails\":null,\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "factory empty content and all metadata",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"(no content)\"}],\"context_management\":null},\"apiError\":\"fixture\",\"error\":\"unknown\",\"errorDetails\":\"original details\",\"businessErrorCode\":\"code\",\"sourceModel\":\"deepseek-flash\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "pending custom dotted-I lowercase",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Original TİMEOUT diagnostic\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "pending custom Unicode message",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: original \\ud800 diagnostic\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "pending non-timeout custom message precedence",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Original custom diagnostic\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "caller owns abort suppression",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Request was aborted.\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "pending HTTP API presentation",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: 503 Original HTTP error\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    },
+    {
+      "name": "pending ordinary Error presentation",
+      "result": "{\"type\":\"assistant\",\"uuid\":\"terminal-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"terminal-id-2\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: original generic diagnostic\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
+      "allocations": [
+        "uuid:1",
+        "date",
+        "uuid:2"
+      ],
+      "uuidCalls": 2
+    }
+  ]
+}

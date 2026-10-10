@@ -1,0 +1,24 @@
+{
+  "role": "read-only reviewed differential oracle; never imported by production Go",
+  "repository_tag": "sdk-v0.80.0",
+  "package": "@anthropic-ai/vertex-sdk",
+  "version": "0.14.4",
+  "old_project_lock": "absent; reviewed added freeze boundary",
+  "files": [
+    {
+      "path": "client.ts",
+      "source": "https://raw.githubusercontent.com/anthropics/anthropic-sdk-typescript/sdk-v0.80.0/packages/vertex-sdk/src/client.ts",
+      "sha256": "07d379c86df9b6e63f5384b4fb8d0981caeff87cc7d8fb0f19619884d41247fb"
+    },
+    {
+      "path": "package.json",
+      "source": "https://raw.githubusercontent.com/anthropics/anthropic-sdk-typescript/sdk-v0.80.0/packages/vertex-sdk/package.json",
+      "sha256": "8a281c99f4e3c2ce72849c39187e3db9a95f5366ff6a29c1ac0c08ca6c1919bc"
+    },
+    {
+      "path": "LICENSE",
+      "source": "https://raw.githubusercontent.com/anthropics/anthropic-sdk-typescript/sdk-v0.80.0/LICENSE",
+      "sha256": "8bf96984ff8bcfae7e48cae76a529e8a25317ba9e02abf7fd3cc64fdf95657a6"
+    }
+  ]
+}

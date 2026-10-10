@@ -1,0 +1,28 @@
+{
+  "sourcePackage": "@anthropic-ai/sandbox-runtime",
+  "version": "0.0.44",
+  "license": "Apache-2.0",
+  "scope": "unmodified generic native seccomp helper and BPF bytes, no CLI/Agent business",
+  "files": [
+    {
+      "source": "node_modules/@anthropic-ai/sandbox-runtime/vendor/seccomp/arm64/apply-seccomp",
+      "asset": "backend/internal/sandboxruntime/assets/seccomp/arm64/apply-seccomp",
+      "sha256": "74ae36efaa06865de565f023b7c474668018d65715638e008f8b51bf95e1107d"
+    },
+    {
+      "source": "node_modules/@anthropic-ai/sandbox-runtime/vendor/seccomp/arm64/unix-block.bpf",
+      "asset": "backend/internal/sandboxruntime/assets/seccomp/arm64/unix-block.bpf",
+      "sha256": "bd013698abdde9c452b9dc07762c2471f08eeb8056a573e831648b09e9297ea6"
+    },
+    {
+      "source": "node_modules/@anthropic-ai/sandbox-runtime/vendor/seccomp/x64/apply-seccomp",
+      "asset": "backend/internal/sandboxruntime/assets/seccomp/amd64/apply-seccomp",
+      "sha256": "e70346b63797e7dbc9835da321e4f0f8aaee721fd1a58754f3d8a61bd80b98fd"
+    },
+    {
+      "source": "node_modules/@anthropic-ai/sandbox-runtime/vendor/seccomp/x64/unix-block.bpf",
+      "asset": "backend/internal/sandboxruntime/assets/seccomp/amd64/unix-block.bpf",
+      "sha256": "e2cc3b41165052947f7c258b96812447ed43b176eeff1489f30b9cfcb8229507"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "continue": "boolean (optional)",
+  "suppressOutput": "boolean (optional)",
+  "stopReason": "string (optional)",
+  "decision": "\"approve\" | \"block\" (optional)",
+  "reason": "string (optional)",
+  "systemMessage": "string (optional)",
+  "permissionDecision": "\"allow\" | \"deny\" | \"ask\" (optional)",
+  "hookSpecificOutput": {
+    "for PreToolUse": {
+      "hookEventName": "\"PreToolUse\"",
+      "permissionDecision": "\"allow\" | \"deny\" | \"ask\" (optional)",
+      "permissionDecisionReason": "string (optional)",
+      "updatedInput": "object (optional) - Modified tool input to use"
+    },
+    "for UserPromptSubmit": {
+      "hookEventName": "\"UserPromptSubmit\"",
+      "additionalContext": "string (required)"
+    },
+    "for PostToolUse": {
+      "hookEventName": "\"PostToolUse\"",
+      "additionalContext": "string (optional)"
+    }
+  }
+}

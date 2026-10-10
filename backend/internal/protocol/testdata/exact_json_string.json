@@ -1,0 +1,423 @@
+{
+  "scope": "pinned native language JSON.parse/String; consumer error projections separate",
+  "runtime": {
+    "bun": "1.3.14",
+    "revision": "0d9b296af33f2b851fcbf4df3e9ec89751734ba4"
+  },
+  "sourceEvidence": "artifacts/go-parity/json-string-next/2026-10-02T08-12-07-228970Z/report.json",
+  "cases": [
+    {
+      "name": "undefined",
+      "expected": {
+        "valueJSON": "\"undefined\"",
+        "units": [
+          117,
+          110,
+          100,
+          101,
+          102,
+          105,
+          110,
+          101,
+          100
+        ]
+      }
+    },
+    {
+      "name": "null",
+      "expected": {
+        "valueJSON": "\"null\"",
+        "units": [
+          110,
+          117,
+          108,
+          108
+        ]
+      },
+      "rawJSON": "null"
+    },
+    {
+      "name": "false",
+      "expected": {
+        "valueJSON": "\"false\"",
+        "units": [
+          102,
+          97,
+          108,
+          115,
+          101
+        ]
+      },
+      "rawJSON": "false"
+    },
+    {
+      "name": "zero",
+      "expected": {
+        "valueJSON": "\"0\"",
+        "units": [
+          48
+        ]
+      },
+      "rawJSON": "-0"
+    },
+    {
+      "name": "overflow",
+      "expected": {
+        "valueJSON": "\"Infinity\"",
+        "units": [
+          73,
+          110,
+          102,
+          105,
+          110,
+          105,
+          116,
+          121
+        ]
+      },
+      "rawJSON": "1e400"
+    },
+    {
+      "name": "negative-overflow",
+      "expected": {
+        "valueJSON": "\"-Infinity\"",
+        "units": [
+          45,
+          73,
+          110,
+          102,
+          105,
+          110,
+          105,
+          116,
+          121
+        ]
+      },
+      "rawJSON": "-1e400"
+    },
+    {
+      "name": "large-int",
+      "expected": {
+        "valueJSON": "\"1000000000000000100\"",
+        "units": [
+          49,
+          48,
+          48,
+          48,
+          48,
+          48,
+          48,
+          48,
+          48,
+          48,
+          48,
+          48,
+          48,
+          48,
+          48,
+          48,
+          49,
+          48,
+          48
+        ]
+      },
+      "rawJSON": "1000000000000000128"
+    },
+    {
+      "name": "scientific",
+      "expected": {
+        "valueJSON": "\"1e-8\"",
+        "units": [
+          49,
+          101,
+          45,
+          56
+        ]
+      },
+      "rawJSON": "0.00000001"
+    },
+    {
+      "name": "lone-string",
+      "expected": {
+        "valueJSON": "\"\ud800\udfff\\ud800\"",
+        "units": [
+          55296,
+          57343,
+          55296
+        ]
+      },
+      "rawJSON": "\"\\ud800\\udfff\\ud800\""
+    },
+    {
+      "name": "html",
+      "expected": {
+        "valueJSON": "\"<>&/\"",
+        "units": [
+          60,
+          62,
+          38,
+          47
+        ]
+      },
+      "rawJSON": "\"<>&/\""
+    },
+    {
+      "name": "object",
+      "expected": {
+        "valueJSON": "\"[object Object]\"",
+        "units": [
+          91,
+          111,
+          98,
+          106,
+          101,
+          99,
+          116,
+          32,
+          79,
+          98,
+          106,
+          101,
+          99,
+          116,
+          93
+        ]
+      },
+      "rawJSON": "{}"
+    },
+    {
+      "name": "own-valueOf",
+      "expected": {
+        "valueJSON": "\"[object Object]\"",
+        "units": [
+          91,
+          111,
+          98,
+          106,
+          101,
+          99,
+          116,
+          32,
+          79,
+          98,
+          106,
+          101,
+          99,
+          116,
+          93
+        ]
+      },
+      "rawJSON": "{\"valueOf\":null}"
+    },
+    {
+      "name": "proto-data",
+      "expected": {
+        "valueJSON": "\"[object Object]\"",
+        "units": [
+          91,
+          111,
+          98,
+          106,
+          101,
+          99,
+          116,
+          32,
+          79,
+          98,
+          106,
+          101,
+          99,
+          116,
+          93
+        ]
+      },
+      "rawJSON": "{\"__proto__\":{\"toString\":null}}"
+    },
+    {
+      "name": "own-lowercase",
+      "expected": {
+        "valueJSON": "\"[object Object]\"",
+        "units": [
+          91,
+          111,
+          98,
+          106,
+          101,
+          99,
+          116,
+          32,
+          79,
+          98,
+          106,
+          101,
+          99,
+          116,
+          93
+        ]
+      },
+      "rawJSON": "{\"tostring\":null}"
+    },
+    {
+      "name": "own-toString-null",
+      "expected": {
+        "error": {
+          "name": "TypeError",
+          "message": "No default value"
+        }
+      },
+      "rawJSON": "{\"toString\":null}"
+    },
+    {
+      "name": "own-toString-false",
+      "expected": {
+        "error": {
+          "name": "TypeError",
+          "message": "No default value"
+        }
+      },
+      "rawJSON": "{\"toString\":false}"
+    },
+    {
+      "name": "own-toString-number",
+      "expected": {
+        "error": {
+          "name": "TypeError",
+          "message": "No default value"
+        }
+      },
+      "rawJSON": "{\"toString\":1}"
+    },
+    {
+      "name": "own-toString-string",
+      "expected": {
+        "error": {
+          "name": "TypeError",
+          "message": "No default value"
+        }
+      },
+      "rawJSON": "{\"toString\":\"value\"}"
+    },
+    {
+      "name": "own-toString-array",
+      "expected": {
+        "error": {
+          "name": "TypeError",
+          "message": "No default value"
+        }
+      },
+      "rawJSON": "{\"toString\":[]}"
+    },
+    {
+      "name": "own-toString-object",
+      "expected": {
+        "error": {
+          "name": "TypeError",
+          "message": "No default value"
+        }
+      },
+      "rawJSON": "{\"toString\":{}}"
+    },
+    {
+      "name": "own-escaped-toString",
+      "expected": {
+        "error": {
+          "name": "TypeError",
+          "message": "No default value"
+        }
+      },
+      "rawJSON": "{\"to\\u0053tring\":null}"
+    },
+    {
+      "name": "own-duplicate-toString",
+      "expected": {
+        "error": {
+          "name": "TypeError",
+          "message": "No default value"
+        }
+      },
+      "rawJSON": "{\"toString\":{},\"toString\":null}"
+    },
+    {
+      "name": "array-empty",
+      "expected": {
+        "valueJSON": "\"\"",
+        "units": []
+      },
+      "rawJSON": "[]"
+    },
+    {
+      "name": "array-null",
+      "expected": {
+        "valueJSON": "\",\"",
+        "units": [
+          44
+        ]
+      },
+      "rawJSON": "[null,null]"
+    },
+    {
+      "name": "array-nesting",
+      "expected": {
+        "valueJSON": "\"\\ud800,,[object Object],x,false,Infinity\"",
+        "units": [
+          55296,
+          44,
+          44,
+          91,
+          111,
+          98,
+          106,
+          101,
+          99,
+          116,
+          32,
+          79,
+          98,
+          106,
+          101,
+          99,
+          116,
+          93,
+          44,
+          120,
+          44,
+          102,
+          97,
+          108,
+          115,
+          101,
+          44,
+          73,
+          110,
+          102,
+          105,
+          110,
+          105,
+          116,
+          121
+        ]
+      },
+      "rawJSON": "[\"\\ud800\",null,{},[\"x\",false,1e400]]"
+    },
+    {
+      "name": "array-child-coercion-error",
+      "expected": {
+        "error": {
+          "name": "TypeError",
+          "message": "No default value"
+        }
+      },
+      "rawJSON": "[\"prefix\",{\"toString\":null}]"
+    },
+    {
+      "name": "array-deep-coercion-error",
+      "expected": {
+        "error": {
+          "name": "TypeError",
+          "message": "No default value"
+        }
+      },
+      "rawJSON": "[[[{\"toString\":null}]]]"
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "provenance": "artifacts/go-parity/cli-normal-bootstrap-next/source-runs/2026-10-03T01-25-37-947Z",
+  "capture": "Explicit actual Source entry exit/file/env observation; fixture expected only, never production input",
+  "cases": [
+    {
+      "name": "inline-write-before-invalid-source",
+      "args": [
+        "--bare",
+        "--settings",
+        " {\"ownerFuture\":{\"x\":1},\"env\":{\"FIXTURE_UNUSED\":\"original\"}} ",
+        "--setting-sources",
+        "future"
+      ],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "Error processing --setting-sources: Invalid setting source: future. Valid options are: user, project, local\n",
+      "environment": {
+        "COREPACK_ENABLE_AUTO_PIN": "0",
+        "NODE_OPTIONS": null,
+        "CLAUDE_CODE_SIMPLE": "1",
+        "NoDefaultCurrentDirectoryInExePath": "1",
+        "CLAUDE_CODE_ENTRYPOINT": "sdk-cli"
+      },
+      "files": {
+        ".claude/settings.json": {
+          "rawBase64": "e30=",
+          "mode": 416
+        },
+        ".claude/.claude.json": {
+          "rawBase64": "e30=",
+          "mode": 416
+        },
+        "tmp/claude-settings-b0e10e7d6a1fdf75.json": {
+          "rawBase64": "eyJvd25lckZ1dHVyZSI6eyJ4IjoxfSwiZW52Ijp7IkZJWFRVUkVfVU5VU0VEIjoib3JpZ2luYWwifX0=",
+          "mode": 420
+        }
+      }
+    },
+    {
+      "name": "invalid-inline-json",
+      "args": [
+        "--bare",
+        "--settings",
+        "{broken}"
+      ],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "Error: Invalid JSON provided to --settings\n",
+      "environment": {
+        "COREPACK_ENABLE_AUTO_PIN": "0",
+        "NODE_OPTIONS": null,
+        "CLAUDE_CODE_SIMPLE": "1",
+        "NoDefaultCurrentDirectoryInExePath": "1",
+        "CLAUDE_CODE_ENTRYPOINT": "sdk-cli"
+      },
+      "files": {
+        ".claude/settings.json": {
+          "rawBase64": "e30=",
+          "mode": 416
+        },
+        ".claude/.claude.json": {
+          "rawBase64": "e30=",
+          "mode": 416
+        }
+      }
+    },
+    {
+      "name": "invalid-source",
+      "args": [
+        "--bare",
+        "--setting-sources",
+        "future"
+      ],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "Error processing --setting-sources: Invalid setting source: future. Valid options are: user, project, local\n",
+      "environment": {
+        "COREPACK_ENABLE_AUTO_PIN": "0",
+        "NODE_OPTIONS": null,
+        "CLAUDE_CODE_SIMPLE": "1",
+        "NoDefaultCurrentDirectoryInExePath": "1",
+        "CLAUDE_CODE_ENTRYPOINT": "sdk-cli"
+      },
+      "files": {
+        ".claude/settings.json": {
+          "rawBase64": "e30=",
+          "mode": 416
+        },
+        ".claude/.claude.json": {
+          "rawBase64": "e30=",
+          "mode": 416
+        }
+      }
+    },
+    {
+      "name": "missing-settings-file",
+      "args": [
+        "--bare",
+        "--settings",
+        "absent.json"
+      ],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "Error: Settings file not found: absent.json\n",
+      "environment": {
+        "COREPACK_ENABLE_AUTO_PIN": "0",
+        "NODE_OPTIONS": null,
+        "CLAUDE_CODE_SIMPLE": "1",
+        "NoDefaultCurrentDirectoryInExePath": "1",
+        "CLAUDE_CODE_ENTRYPOINT": "sdk-cli"
+      },
+      "files": {
+        ".claude/settings.json": {
+          "rawBase64": "e30=",
+          "mode": 416
+        },
+        ".claude/.claude.json": {
+          "rawBase64": "e30=",
+          "mode": 416
+        }
+      }
+    }
+  ]
+}

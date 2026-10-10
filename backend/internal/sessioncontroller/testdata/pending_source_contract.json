@@ -1,0 +1,148 @@
+{
+  "cases": [
+    {
+      "mode": "open",
+      "input": {
+        "mode": "open",
+        "userSource": "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"first independent original prompt\"},\"uuid\":\"first-sdk-id\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+        "model": "fixture-model",
+        "nonInteractive": true,
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"first original partial text\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":1,\"content_block\":{\"type\":\"server_tool_use\",\"id\":\"original-server-tool\",\"name\":\"web_search\",\"input\":{}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":1,\"delta\":{\"type\":\"input_json_delta\",\"partial_json\":\"{\\\"query\\\":\\\"original transport query\\\"}\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":1}\n\n",
+        "tail": "event: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":9}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+        "requestID": "first-response",
+        "now": 1700000000000,
+        "files": {
+          ".claude/projects/<private-project-key>/11111111-1111-4111-8111-111111111111.jsonl": "{\"parentUuid\":null,\"isSidechain\":false,\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"type\":\"user\",\"uuid\":\"old-user\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"original user\"}}\n{\"parentUuid\":\"old-user\",\"isSidechain\":false,\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"type\":\"assistant\",\"uuid\":\"tool-assistant\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"message\":{\"id\":\"msg_old\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture\",\"content\":[{\"type\":\"tool_use\",\"id\":\"tool-id\",\"name\":\"Read\",\"input\":{\"file_path\":\"model-file.txt\"}}],\"stop_reason\":\"tool_use\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":1,\"output_tokens\":1}}}\n{\"parentUuid\":\"tool-assistant\",\"isSidechain\":false,\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"type\":\"user\",\"uuid\":\"tool-result-user\",\"timestamp\":\"2025-01-01T00:00:02Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"tool-id\",\"content\":\"  1\u2192first\\ud800\\n2\\tsecond<system-reminder>drop</system-reminder>\"}]}}\n{\"parentUuid\":\"tool-result-user\",\"isSidechain\":false,\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"type\":\"assistant\",\"uuid\":\"old-assistant\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"message\":{\"id\":\"msg_old\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture\",\"content\":[{\"type\":\"text\",\"text\":\"old answer\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":1,\"output_tokens\":1}}}\n",
+          "policy/managed-settings.json": "{}",
+          ".claude/.claude.json": "{\"userID\":\"fixture-controller-device\"}"
+        }
+      },
+      "expected": {
+        "files": {
+          ".claude/projects/<private-project-key>/11111111-1111-4111-8111-111111111111.jsonl": "{\"parentUuid\":null,\"isSidechain\":false,\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"type\":\"user\",\"uuid\":\"old-user\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"original user\"}}\n{\"parentUuid\":\"old-user\",\"isSidechain\":false,\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"type\":\"assistant\",\"uuid\":\"tool-assistant\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"message\":{\"id\":\"msg_old\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture\",\"content\":[{\"type\":\"tool_use\",\"id\":\"tool-id\",\"name\":\"Read\",\"input\":{\"file_path\":\"model-file.txt\"}}],\"stop_reason\":\"tool_use\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":1,\"output_tokens\":1}}}\n{\"parentUuid\":\"tool-assistant\",\"isSidechain\":false,\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"type\":\"user\",\"uuid\":\"tool-result-user\",\"timestamp\":\"2025-01-01T00:00:02Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"tool-id\",\"content\":\"  1\u2192first\\ud800\\n2\\tsecond<system-reminder>drop</system-reminder>\"}]}}\n{\"parentUuid\":\"tool-result-user\",\"isSidechain\":false,\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"type\":\"assistant\",\"uuid\":\"old-assistant\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"message\":{\"id\":\"msg_old\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture\",\"content\":[{\"type\":\"text\",\"text\":\"old answer\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":1,\"output_tokens\":1}}}\n",
+          ".claude/projects/<private-project-key>/00000000-0000-4000-8000-000000000000.jsonl": "{\"parentUuid\":null,\"isSidechain\":false,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"first independent original prompt\"},\"uuid\":\"first-sdk-id\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"userType\":\"external\",\"cwd\":\"<private-home>\",\"sessionId\":\"00000000-0000-4000-8000-000000000000\",\"version\":\"fixture-version\",\"gitBranch\":\"HEAD\"}\n{\"parentUuid\":\"first-sdk-id\",\"isSidechain\":false,\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"first original partial text\"}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"userType\":\"external\",\"cwd\":\"<private-home>\",\"sessionId\":\"00000000-0000-4000-8000-000000000000\",\"version\":\"fixture-version\",\"gitBranch\":\"HEAD\"}\n{\"parentUuid\":\"fixture-id-1\",\"isSidechain\":false,\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"server_tool_use\",\"id\":\"original-server-tool\",\"name\":\"web_search\",\"input\":{\"query\":\"original transport query\"}}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":9,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"userType\":\"external\",\"cwd\":\"<private-home>\",\"sessionId\":\"00000000-0000-4000-8000-000000000000\",\"version\":\"fixture-version\",\"gitBranch\":\"HEAD\"}\n"
+        },
+        "writerPhases": [
+          {
+            "phase": "flush-fulfilled"
+          },
+          {
+            "phase": "open-held",
+            "assistants": [
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"first original partial text\"}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"server_tool_use\",\"id\":\"original-server-tool\",\"name\":\"web_search\",\"input\":{\"query\":\"original transport query\"}}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+            ]
+          },
+          {
+            "phase": "actual-model-while-fs-held",
+            "type": "message_delta",
+            "assistants": [
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"first original partial text\"}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"server_tool_use\",\"id\":\"original-server-tool\",\"name\":\"web_search\",\"input\":{\"query\":\"original transport query\"}}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":9,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+            ]
+          },
+          {
+            "phase": "actual-model-while-fs-held",
+            "type": "message_stop",
+            "assistants": [
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"first original partial text\"}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"server_tool_use\",\"id\":\"original-server-tool\",\"name\":\"web_search\",\"input\":{\"query\":\"original transport query\"}}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":9,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+            ]
+          },
+          {
+            "phase": "checkpoint-waiting",
+            "assistants": [
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"first original partial text\"}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"server_tool_use\",\"id\":\"original-server-tool\",\"name\":\"web_search\",\"input\":{\"query\":\"original transport query\"}}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":9,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+            ]
+          },
+          {
+            "phase": "original-release"
+          },
+          {
+            "phase": "open-released",
+            "assistants": [
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"first original partial text\"}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"server_tool_use\",\"id\":\"original-server-tool\",\"name\":\"web_search\",\"input\":{\"query\":\"original transport query\"}}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":9,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+            ]
+          },
+          {
+            "phase": "flush-fulfilled"
+          }
+        ]
+      }
+    },
+    {
+      "mode": "stat",
+      "input": {
+        "mode": "stat",
+        "userSource": "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"first independent original prompt\"},\"uuid\":\"first-sdk-id\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+        "model": "fixture-model",
+        "nonInteractive": true,
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"first original partial text\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":1,\"content_block\":{\"type\":\"server_tool_use\",\"id\":\"original-server-tool\",\"name\":\"web_search\",\"input\":{}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":1,\"delta\":{\"type\":\"input_json_delta\",\"partial_json\":\"{\\\"query\\\":\\\"original transport query\\\"}\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":1}\n\n",
+        "tail": "event: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":9}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+        "requestID": "first-response",
+        "now": 1700000000000,
+        "files": {
+          ".claude/projects/<private-project-key>/11111111-1111-4111-8111-111111111111.jsonl": "{\"parentUuid\":null,\"isSidechain\":false,\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"type\":\"user\",\"uuid\":\"old-user\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"original user\"}}\n{\"parentUuid\":\"old-user\",\"isSidechain\":false,\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"type\":\"assistant\",\"uuid\":\"tool-assistant\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"message\":{\"id\":\"msg_old\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture\",\"content\":[{\"type\":\"tool_use\",\"id\":\"tool-id\",\"name\":\"Read\",\"input\":{\"file_path\":\"model-file.txt\"}}],\"stop_reason\":\"tool_use\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":1,\"output_tokens\":1}}}\n{\"parentUuid\":\"tool-assistant\",\"isSidechain\":false,\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"type\":\"user\",\"uuid\":\"tool-result-user\",\"timestamp\":\"2025-01-01T00:00:02Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"tool-id\",\"content\":\"  1\u2192first\\ud800\\n2\\tsecond<system-reminder>drop</system-reminder>\"}]}}\n{\"parentUuid\":\"tool-result-user\",\"isSidechain\":false,\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"type\":\"assistant\",\"uuid\":\"old-assistant\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"message\":{\"id\":\"msg_old\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture\",\"content\":[{\"type\":\"text\",\"text\":\"old answer\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":1,\"output_tokens\":1}}}\n",
+          "policy/managed-settings.json": "{}",
+          ".claude/.claude.json": "{\"userID\":\"fixture-controller-device\"}"
+        }
+      },
+      "expected": {
+        "files": {
+          ".claude/projects/<private-project-key>/11111111-1111-4111-8111-111111111111.jsonl": "{\"parentUuid\":null,\"isSidechain\":false,\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"type\":\"user\",\"uuid\":\"old-user\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"original user\"}}\n{\"parentUuid\":\"old-user\",\"isSidechain\":false,\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"type\":\"assistant\",\"uuid\":\"tool-assistant\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"message\":{\"id\":\"msg_old\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture\",\"content\":[{\"type\":\"tool_use\",\"id\":\"tool-id\",\"name\":\"Read\",\"input\":{\"file_path\":\"model-file.txt\"}}],\"stop_reason\":\"tool_use\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":1,\"output_tokens\":1}}}\n{\"parentUuid\":\"tool-assistant\",\"isSidechain\":false,\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"type\":\"user\",\"uuid\":\"tool-result-user\",\"timestamp\":\"2025-01-01T00:00:02Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"tool-id\",\"content\":\"  1\u2192first\\ud800\\n2\\tsecond<system-reminder>drop</system-reminder>\"}]}}\n{\"parentUuid\":\"tool-result-user\",\"isSidechain\":false,\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"type\":\"assistant\",\"uuid\":\"old-assistant\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"message\":{\"id\":\"msg_old\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture\",\"content\":[{\"type\":\"text\",\"text\":\"old answer\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":1,\"output_tokens\":1}}}\n",
+          ".claude/projects/<private-project-key>/00000000-0000-4000-8000-000000000000.jsonl": "{\"parentUuid\":null,\"isSidechain\":false,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"first independent original prompt\"},\"uuid\":\"first-sdk-id\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"userType\":\"external\",\"cwd\":\"<private-home>\",\"sessionId\":\"00000000-0000-4000-8000-000000000000\",\"version\":\"fixture-version\",\"gitBranch\":\"HEAD\"}\n{\"parentUuid\":\"first-sdk-id\",\"isSidechain\":false,\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"first original partial text\"}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"userType\":\"external\",\"cwd\":\"<private-home>\",\"sessionId\":\"00000000-0000-4000-8000-000000000000\",\"version\":\"fixture-version\",\"gitBranch\":\"HEAD\"}\n{\"parentUuid\":\"fixture-id-1\",\"isSidechain\":false,\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"server_tool_use\",\"id\":\"original-server-tool\",\"name\":\"web_search\",\"input\":{\"query\":\"original transport query\"}}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":9,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"userType\":\"external\",\"cwd\":\"<private-home>\",\"sessionId\":\"00000000-0000-4000-8000-000000000000\",\"version\":\"fixture-version\",\"gitBranch\":\"HEAD\"}\n"
+        },
+        "writerPhases": [
+          {
+            "phase": "flush-fulfilled"
+          },
+          {
+            "phase": "stat-held",
+            "assistants": [
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"first original partial text\"}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"server_tool_use\",\"id\":\"original-server-tool\",\"name\":\"web_search\",\"input\":{\"query\":\"original transport query\"}}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+            ]
+          },
+          {
+            "phase": "actual-model-while-fs-held",
+            "type": "message_delta",
+            "assistants": [
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"first original partial text\"}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"server_tool_use\",\"id\":\"original-server-tool\",\"name\":\"web_search\",\"input\":{\"query\":\"original transport query\"}}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":9,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+            ]
+          },
+          {
+            "phase": "actual-model-while-fs-held",
+            "type": "message_stop",
+            "assistants": [
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"first original partial text\"}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"server_tool_use\",\"id\":\"original-server-tool\",\"name\":\"web_search\",\"input\":{\"query\":\"original transport query\"}}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":9,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+            ]
+          },
+          {
+            "phase": "checkpoint-waiting",
+            "assistants": [
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"first original partial text\"}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"server_tool_use\",\"id\":\"original-server-tool\",\"name\":\"web_search\",\"input\":{\"query\":\"original transport query\"}}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":9,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+            ]
+          },
+          {
+            "phase": "original-release"
+          },
+          {
+            "phase": "stat-released",
+            "assistants": [
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"first original partial text\"}],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":0}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+              "{\"message\":{\"id\":\"probe-first\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"server_tool_use\",\"id\":\"original-server-tool\",\"name\":\"web_search\",\"input\":{\"query\":\"original transport query\"}}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":9,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":\"\",\"iterations\":[],\"speed\":\"standard\"}},\"requestId\":\"first-response\",\"type\":\"assistant\",\"uuid\":\"fixture-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+            ]
+          },
+          {
+            "phase": "flush-fulfilled"
+          }
+        ]
+      }
+    }
+  ]
+}

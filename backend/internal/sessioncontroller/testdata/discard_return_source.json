@@ -1,0 +1,218 @@
+{
+  "sourceRun": "artifacts/go-parity/record-discard-return-owner-next/runs/2026-10-02T23-58-38.084Z",
+  "cases": [
+    {
+      "input": {
+        "home": "<private-home>",
+        "profile": {
+          "name": "stat-return-mutate-uuid"
+        },
+        "sessionID": "11111111-1111-4111-8111-111111111111",
+        "target": "<private-home>/.claude/projects/<private-project-key>/11111111-1111-4111-8111-111111111111.jsonl",
+        "messages": [
+          {
+            "type": "user",
+            "message": {
+              "role": "user",
+              "content": "original old user"
+            },
+            "uuid": "00000000-0000-4000-8000-000000000001",
+            "timestamp": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "type": "assistant",
+            "message": {
+              "id": "original-assistant-message",
+              "type": "message",
+              "role": "assistant",
+              "model": "fixture-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "original ordinary assistant"
+                }
+              ],
+              "stop_reason": "end_turn",
+              "stop_sequence": null,
+              "usage": {
+                "input_tokens": 5,
+                "output_tokens": 1
+              }
+            },
+            "requestId": "original-request-id",
+            "uuid": "00000000-0000-4000-8000-000000000001",
+            "timestamp": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "queue": {
+          "type": "queue-operation",
+          "operation": "enqueue",
+          "timestamp": "2023-11-14T22:13:20.000Z",
+          "sessionId": "11111111-1111-4111-8111-111111111111",
+          "content": "original next queued prompt"
+        },
+        "lateEdits": {
+          "uuid": "00000000-0000-4000-8000-000000000002"
+        },
+        "replacementBytes": "{\"parentUuid\":null,\"isSidechain\":false,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original external replacement\"},\"uuid\":\"00000000-0000-4000-8000-000000000099\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"userType\":\"external\",\"cwd\":\"<private-home>\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"version\":\"replacement-old-version\"}\n"
+      },
+      "files": {
+        "<private-home>/.claude/projects/<private-project-key>/11111111-1111-4111-8111-111111111111.jsonl": "{\"parentUuid\":null,\"isSidechain\":false,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original old user\"},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"userType\":\"external\",\"cwd\":\"<private-home>\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"version\":\"original-old-version\"}\n",
+        "<private-home>/.claude/settings.json": "{}",
+        "<private-home>/.claude/.claude.json": "{\"userID\":\"fixture-record-device\"}",
+        "<private-home>/policy/managed-settings.json": "{}"
+      },
+      "observed": {
+        "profile": "stat-return-mutate-uuid",
+        "before": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original old user\"},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"},{\"type\":\"assistant\",\"message\":{\"id\":\"original-assistant-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"original ordinary assistant\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":1}},\"requestId\":\"original-request-id\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}]",
+        "after": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original old user\"},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"},{\"type\":\"assistant\",\"message\":{\"id\":\"original-assistant-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"original ordinary assistant\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":1}},\"requestId\":\"original-request-id\",\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}]",
+        "primed": true,
+        "trace": [
+          {
+            "phase": "native-stat-settled"
+          },
+          {
+            "phase": "stat-observer-microtask",
+            "beforeUUID": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "phase": "record-return",
+            "value": "00000000-0000-4000-8000-000000000002"
+          }
+        ],
+        "result": "00000000-0000-4000-8000-000000000002",
+        "cacheNew": true,
+        "bytes": "{\"parentUuid\":null,\"isSidechain\":false,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original old user\"},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"userType\":\"external\",\"cwd\":\"<private-home>\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"version\":\"original-old-version\"}\n{\"parentUuid\":\"00000000-0000-4000-8000-000000000001\",\"isSidechain\":false,\"type\":\"assistant\",\"message\":{\"id\":\"original-assistant-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"original ordinary assistant\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":1}},\"requestId\":\"original-request-id\",\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"userType\":\"external\",\"cwd\":\"<private-home>\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"version\":\"fixture-version\",\"gitBranch\":\"HEAD\"}\n",
+        "capabilities": {
+          "blocked": [],
+          "secureReads": [],
+          "absentReads": [
+            {
+              "operation": "statSync",
+              "path": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/.git"
+            },
+            {
+              "operation": "statSync",
+              "path": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/.git"
+            },
+            {
+              "operation": "statSync",
+              "path": "/private/var/folders/sx/.git"
+            },
+            {
+              "operation": "statSync",
+              "path": "/private/var/folders/.git"
+            },
+            {
+              "operation": "statSync",
+              "path": "/private/var/.git"
+            },
+            {
+              "operation": "statSync",
+              "path": "/private/.git"
+            },
+            {
+              "operation": "statSync",
+              "path": "/.git"
+            }
+          ]
+        },
+        "errors": [],
+        "scope": "Actual exported recordTranscript; stat Promise observer only; no Go/fullSDK proof"
+      },
+      "afterMode": 420
+    },
+    {
+      "input": {
+        "home": "<private-home>",
+        "profile": {
+          "name": "stat-return-observe-only"
+        },
+        "sessionID": "11111111-1111-4111-8111-111111111111",
+        "target": "<private-home>/.claude/projects/<private-project-key>/11111111-1111-4111-8111-111111111111.jsonl",
+        "messages": [
+          {
+            "type": "user",
+            "message": {
+              "role": "user",
+              "content": "original old user"
+            },
+            "uuid": "00000000-0000-4000-8000-000000000001",
+            "timestamp": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "type": "assistant",
+            "message": {
+              "id": "original-assistant-message",
+              "type": "message",
+              "role": "assistant",
+              "model": "fixture-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "original ordinary assistant"
+                }
+              ],
+              "stop_reason": "end_turn",
+              "stop_sequence": null,
+              "usage": {
+                "input_tokens": 5,
+                "output_tokens": 1
+              }
+            },
+            "requestId": "original-request-id",
+            "uuid": "00000000-0000-4000-8000-000000000001",
+            "timestamp": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "queue": {
+          "type": "queue-operation",
+          "operation": "enqueue",
+          "timestamp": "2023-11-14T22:13:20.000Z",
+          "sessionId": "11111111-1111-4111-8111-111111111111",
+          "content": "original next queued prompt"
+        },
+        "lateEdits": {
+          "uuid": "00000000-0000-4000-8000-000000000002"
+        },
+        "replacementBytes": "{\"parentUuid\":null,\"isSidechain\":false,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original external replacement\"},\"uuid\":\"00000000-0000-4000-8000-000000000099\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"userType\":\"external\",\"cwd\":\"<private-home>\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"version\":\"replacement-old-version\"}\n"
+      },
+      "files": {
+        "<private-home>/.claude/projects/<private-project-key>/11111111-1111-4111-8111-111111111111.jsonl": "{\"parentUuid\":null,\"isSidechain\":false,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original old user\"},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"userType\":\"external\",\"cwd\":\"<private-home>\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"version\":\"original-old-version\"}\n",
+        "<private-home>/.claude/settings.json": "{}",
+        "<private-home>/.claude/.claude.json": "{\"userID\":\"fixture-record-device\"}",
+        "<private-home>/policy/managed-settings.json": "{}"
+      },
+      "observed": {
+        "profile": "stat-return-observe-only",
+        "before": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original old user\"},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"},{\"type\":\"assistant\",\"message\":{\"id\":\"original-assistant-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"original ordinary assistant\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":1}},\"requestId\":\"original-request-id\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}]",
+        "after": "[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original old user\"},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"},{\"type\":\"assistant\",\"message\":{\"id\":\"original-assistant-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[{\"type\":\"text\",\"text\":\"original ordinary assistant\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":5,\"output_tokens\":1}},\"requestId\":\"original-request-id\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}]",
+        "primed": true,
+        "trace": [
+          {
+            "phase": "native-stat-settled"
+          },
+          {
+            "phase": "stat-observer-microtask",
+            "beforeUUID": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "phase": "record-return",
+            "value": "00000000-0000-4000-8000-000000000001"
+          }
+        ],
+        "result": "00000000-0000-4000-8000-000000000001",
+        "cacheNew": false,
+        "bytes": "{\"parentUuid\":null,\"isSidechain\":false,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original old user\"},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"userType\":\"external\",\"cwd\":\"<private-home>\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"version\":\"original-old-version\"}\n",
+        "capabilities": {
+          "blocked": [],
+          "secureReads": [],
+          "absentReads": []
+        },
+        "errors": [],
+        "scope": "Actual exported recordTranscript; stat Promise observer only; no Go/fullSDK proof"
+      },
+      "afterMode": 420
+    }
+  ]
+}

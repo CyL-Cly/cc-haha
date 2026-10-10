@@ -1,0 +1,16 @@
+import { assertDisposableFixtureHome } from './fixture-guard'
+import { absentManagedSettingsFixturePaths, installClientFixtureCapabilities } from './client-options-capabilities'
+const input=JSON.parse(await new Response(Bun.stdin.stream()).text())
+assertDisposableFixtureHome(input.homeDir,'WebFetch markdown')
+if(process.env.CC_HAHA_WEBFETCH_MARKDOWN_FIXTURE!=='1')throw new Error('Missing WebFetch fixture')
+const capabilities=await installClientFixtureCapabilities(input.homeDir,{absentPaths:absentManagedSettingsFixturePaths()})
+await import('../../../preload')
+const {default:Turndown}=await import('turndown')
+const {isPreapprovedHost,PREAPPROVED_HOSTS}=await import('../../../src/tools/WebFetchTool/preapproved')
+const {validateURL,isPermittedRedirect,shouldSkipWebFetchPreflight}=await import('../../../src/tools/WebFetchTool/utils')
+const {makeSecondaryModelPrompt}=await import('../../../src/tools/WebFetchTool/prompt')
+const {getProxyForUrl}=await import("proxy-from-env")
+const proxies=(input.proxyRows??[]).map((row:any)=>{const backup={...process.env};for(const key of ["http_proxy","HTTP_PROXY","https_proxy","HTTPS_PROXY","all_proxy","ALL_PROXY","no_proxy","NO_PROXY"])delete process.env[key];Object.assign(process.env,row.environment);const selected=getProxyForUrl(row.url);for(const key of Object.keys(process.env))if(!(key in backup))delete process.env[key];Object.assign(process.env,backup);return selected})
+const randoms=(input.randoms??[]).map((value:number)=>value.toString(36).slice(2,8))
+const service=new Turndown()
+process.stdout.write(JSON.stringify({proxies,randoms,markdown:input.html.map((value:string)=>service.turndown(value)),hosts:Array.from(PREAPPROVED_HOSTS),hostChecks:(input.hosts??[]).map((row:any)=>isPreapprovedHost(row.host,row.path)),urlChecks:(input.urls??[]).map(validateURL),redirectChecks:(input.redirects??[]).map((row:any)=>isPermittedRedirect(row[0],row[1])),prompts:(input.prompts??[]).map((row:any)=>makeSecondaryModelPrompt(row.content,row.prompt,row.preapproved)),capabilities}))

@@ -1,0 +1,1435 @@
+[
+  {
+    "input": {
+      "id": "empty",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": ""
+    },
+    "expected": {
+      "id": "empty",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 0,
+      "result": {
+        "error": "`export const meta = { name, description, phases }` must be the FIRST statement in the script"
+      },
+      "rename": {
+        "error": "`export const meta = { name, description, phases }` must be the FIRST statement in the script"
+      },
+      "banned": false,
+      "span": {},
+      "syntax": {
+        "accepted": true,
+        "statementCount": 0
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "comment",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "/* only comment */"
+    },
+    "expected": {
+      "id": "comment",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 18,
+      "result": {
+        "error": "`export const meta = { name, description, phases }` must be the FIRST statement in the script"
+      },
+      "rename": {
+        "error": "`export const meta = { name, description, phases }` must be the FIRST statement in the script"
+      },
+      "banned": false,
+      "span": {},
+      "syntax": {
+        "accepted": true,
+        "statementCount": 0
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "empty-semicolon",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": ";export const meta={name:\"a\",description:\"d\"}"
+    },
+    "expected": {
+      "id": "empty-semicolon",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 45,
+      "result": {
+        "error": "`export const meta = { name, description, phases }` must be the FIRST statement in the script"
+      },
+      "rename": {
+        "error": "`export const meta = { name, description, phases }` must be the FIRST statement in the script"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 1
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 2,
+        "firstType": "EmptyStatement"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "let",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export let meta={name:\"a\",description:\"d\"}"
+    },
+    "expected": {
+      "id": "let",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 42,
+      "result": {
+        "error": "`export const meta = { name, description, phases }` must be the FIRST statement in the script"
+      },
+      "rename": {
+        "error": "`export const meta = { name, description, phases }` must be the FIRST statement in the script"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 42
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "default",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export default {name:\"a\",description:\"d\"}"
+    },
+    "expected": {
+      "id": "default",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 41,
+      "result": {
+        "error": "`export const meta = { name, description, phases }` must be the FIRST statement in the script"
+      },
+      "rename": {
+        "error": "`export const meta = { name, description, phases }` must be the FIRST statement in the script"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 41
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportDefaultDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "other",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const other={name:\"a\",description:\"d\"}"
+    },
+    "expected": {
+      "id": "other",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 45,
+      "result": {
+        "error": "`export const meta = { name, description, phases }` must be the FIRST statement in the script"
+      },
+      "rename": {
+        "error": "`export const meta = { name, description, phases }` must be the FIRST statement in the script"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 45
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "array",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta=[]"
+    },
+    "expected": {
+      "id": "array",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 20,
+      "result": {
+        "error": "`export const meta = { name, description, phases }` must be the FIRST statement in the script"
+      },
+      "rename": {
+        "error": "`export const meta = { name, description, phases }` must be the FIRST statement in the script"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 20
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "destructuring",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const {meta}={meta:{name:\"a\",description:\"d\"}}"
+    },
+    "expected": {
+      "id": "destructuring",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 53,
+      "result": {
+        "error": "`export const meta = { name, description, phases }` must be the FIRST statement in the script"
+      },
+      "rename": {
+        "error": "`export const meta = { name, description, phases }` must be the FIRST statement in the script"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 53
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "multi",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:\"a\",description:\"d\"},other=1"
+    },
+    "expected": {
+      "id": "multi",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 52,
+      "result": {
+        "error": "`export const meta = { name, description, phases }` must be the FIRST statement in the script"
+      },
+      "rename": {
+        "error": "`export const meta = { name, description, phases }` must be the FIRST statement in the script"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 52
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-0",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-'0b10'}"
+    },
+    "expected": {
+      "id": "unary-coercion-0",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 59,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-'0b10'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 59
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-1",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-'0o12'}"
+    },
+    "expected": {
+      "id": "unary-coercion-1",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 59,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-'0o12'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 59
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-2",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-'0x2'}"
+    },
+    "expected": {
+      "id": "unary-coercion-2",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 58,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-'0x2'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 58
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-3",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-'0XFF'}"
+    },
+    "expected": {
+      "id": "unary-coercion-3",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 59,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-'0XFF'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 59
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-4",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-'0bno'}"
+    },
+    "expected": {
+      "id": "unary-coercion-4",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 59,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-'0bno'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 59
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-5",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-'0ono'}"
+    },
+    "expected": {
+      "id": "unary-coercion-5",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 59,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-'0ono'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 59
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-6",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-'0xno'}"
+    },
+    "expected": {
+      "id": "unary-coercion-6",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 59,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-'0xno'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 59
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-7",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-''}"
+    },
+    "expected": {
+      "id": "unary-coercion-7",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 55,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-''}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 55
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-8",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-'\ufeff  ' }"
+    },
+    "expected": {
+      "id": "unary-coercion-8",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 61,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-'\ufeff  ' }"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 59
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-9",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-'Infinity'}"
+    },
+    "expected": {
+      "id": "unary-coercion-9",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 63,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-'Infinity'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 63
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-10",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-'+Infinity'}"
+    },
+    "expected": {
+      "id": "unary-coercion-10",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 64,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-'+Infinity'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 64
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-11",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-'-Infinity'}"
+    },
+    "expected": {
+      "id": "unary-coercion-11",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 64,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-'-Infinity'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 64
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-12",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-'1e999'}"
+    },
+    "expected": {
+      "id": "unary-coercion-12",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 60,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-'1e999'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 60
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-13",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-'NaN'}"
+    },
+    "expected": {
+      "id": "unary-coercion-13",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 58,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-'NaN'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 58
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-14",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-'1e2'}"
+    },
+    "expected": {
+      "id": "unary-coercion-14",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 58,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-'1e2'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 58
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-15",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-true}"
+    },
+    "expected": {
+      "id": "unary-coercion-15",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 57,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-true}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 57
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-16",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-false}"
+    },
+    "expected": {
+      "id": "unary-coercion-16",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 58,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-false}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 58
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-17",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-null}"
+    },
+    "expected": {
+      "id": "unary-coercion-17",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 57,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-null}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 57
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-18",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-0}"
+    },
+    "expected": {
+      "id": "unary-coercion-18",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 54,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-0}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 54
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-19",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-0n}"
+    },
+    "expected": {
+      "id": "unary-coercion-19",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 55,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-0n}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 55
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-20",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-1n}"
+    },
+    "expected": {
+      "id": "unary-coercion-20",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 55,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-1n}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 55
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unary-coercion-21",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',unused:-/a/}"
+    },
+    "expected": {
+      "id": "unary-coercion-21",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 56,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={name:'renamed-valid',description:'d',unused:-/a/}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 56
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "key-coercion-0",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={0:'ignored',name:'a',description:'d'}"
+    },
+    "expected": {
+      "id": "key-coercion-0",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 56,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={0:'ignored',name:'renamed-valid',description:'d'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 56
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "key-coercion-1",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={1e100:'ignored',name:'a',description:'d'}"
+    },
+    "expected": {
+      "id": "key-coercion-1",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 60,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={1e100:'ignored',name:'renamed-valid',description:'d'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 60
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "key-coercion-2",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={1e-7:'ignored',name:'a',description:'d'}"
+    },
+    "expected": {
+      "id": "key-coercion-2",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 59,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={1e-7:'ignored',name:'renamed-valid',description:'d'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 59
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "key-coercion-3",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={1e999:'ignored',name:'a',description:'d'}"
+    },
+    "expected": {
+      "id": "key-coercion-3",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 60,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={1e999:'ignored',name:'renamed-valid',description:'d'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 60
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "key-coercion-4",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={0xFFFFFFFFFFFFFFFFFF:'ignored',name:'a',description:'d'}"
+    },
+    "expected": {
+      "id": "key-coercion-4",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 75,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={0xFFFFFFFFFFFFFFFFFF:'ignored',name:'renamed-valid',description:'d'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 75
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "key-coercion-5",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={123n:'ignored',name:'a',description:'d'}"
+    },
+    "expected": {
+      "id": "key-coercion-5",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 59,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={123n:'ignored',name:'renamed-valid',description:'d'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 59
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "key-coercion-6",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={'__proto__':'ignored',name:'a',description:'d'}"
+    },
+    "expected": {
+      "id": "key-coercion-6",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 66,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={'__proto__':'ignored',name:'renamed-valid',description:'d'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 66
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "key-coercion-7",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={'\\ud800':'ignored',name:'a',description:'d'}"
+    },
+    "expected": {
+      "id": "key-coercion-7",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 63,
+      "result": {
+        "meta": {
+          "name": "a",
+          "description": "d"
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={'\\ud800':'ignored',name:'renamed-valid',description:'d'}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 63
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "proto-phase-array",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',phases:[[]]}"
+    },
+    "expected": {
+      "id": "proto-phase-array",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 56,
+      "result": {
+        "error": "each meta.phases entry needs a non-empty title"
+      },
+      "rename": {
+        "error": "each meta.phases entry needs a non-empty title"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 56
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "proto-shadow",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={__proto__:{name:'fromproto',description:'d'},name:'own',phases:[{__proto__:{title:'fromproto'},title:'own'}]}"
+    },
+    "expected": {
+      "id": "proto-shadow",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 128,
+      "result": {
+        "meta": {
+          "name": "own",
+          "description": "d",
+          "phases": [
+            {
+              "title": "own"
+            }
+          ]
+        },
+        "scriptBody": ""
+      },
+      "rename": {
+        "script": "export const meta={__proto__:{name:'fromproto',description:'d'},name:'renamed-valid',phases:[{__proto__:{title:'fromproto'},title:'own'}]}"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 128
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "proto-rejected-call",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={__proto__:{name:'a',description:'d',unknown:f()}}"
+    },
+    "expected": {
+      "id": "proto-rejected-call",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 68,
+      "result": {
+        "error": "meta must be a pure literal: unsupported expression: CallExpression"
+      },
+      "rename": {
+        "error": "meta must be a pure literal: unsupported expression: CallExpression"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 68
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "phase-regexp",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',phases:[/a/]}"
+    },
+    "expected": {
+      "id": "phase-regexp",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 57,
+      "result": {
+        "error": "each meta.phases entry needs a non-empty title"
+      },
+      "rename": {
+        "error": "each meta.phases entry needs a non-empty title"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 57
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "phase-false",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'a',description:'d',phases:[false]}"
+    },
+    "expected": {
+      "id": "phase-false",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 59,
+      "result": {
+        "error": "each meta.phases entry must be an object"
+      },
+      "rename": {
+        "error": "each meta.phases entry must be an object"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 59
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "invalid-nel-name",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'\\u0085',description:'d'}"
+    },
+    "expected": {
+      "id": "invalid-nel-name",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 49,
+      "result": {
+        "error": "meta.name '\u0085' must start with a letter or digit and contain only letters, digits, '-' and '_'"
+      },
+      "rename": {
+        "error": "meta.name '\u0085' must start with a letter or digit and contain only letters, digits, '-' and '_'"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 49
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "invalid-lone-low-name",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "export const meta={name:'\\udc00',description:'d'}"
+    },
+    "expected": {
+      "id": "invalid-lone-low-name",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 49,
+      "result": {
+        "error": "meta.name '\udc00' must start with a letter or digit and contain only letters, digits, '-' and '_'"
+      },
+      "rename": {
+        "error": "meta.name '\udc00' must start with a letter or digit and contain only letters, digits, '-' and '_'"
+      },
+      "banned": false,
+      "span": {
+        "start": 0,
+        "end": 49
+      },
+      "syntax": {
+        "accepted": true,
+        "statementCount": 1,
+        "firstType": "ExportNamedDeclaration"
+      }
+    }
+  },
+  {
+    "input": {
+      "id": "unterminated-long-caret",
+      "origin": "additional original Source purity and numeric coercion program",
+      "script": "/*\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80*/export const meta={name:\"a\",description:\"d\"}; 'bad"
+    },
+    "expected": {
+      "id": "unterminated-long-caret",
+      "origin": "additional original Source purity and numeric coercion program",
+      "bytes": 454,
+      "result": {
+        "error": "Script parse error: Unterminated string constant (1:250)\n\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80*/export const meta={name:\"a\",description:\"d\"}; 'bad\n                                                                            ^\nWorkflow scripts must be plain JavaScript \u2014 common causes are TypeScript syntax (type annotations, interfaces, generics) and broken string quoting or escaping."
+      },
+      "rename": {
+        "error": "Script parse error: Unterminated string constant (1:250)\n\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80\ud83d\ude80*/export const meta={name:\"a\",description:\"d\"}; 'bad\n                                                                            ^\nWorkflow scripts must be plain JavaScript \u2014 common causes are TypeScript syntax (type annotations, interfaces, generics) and broken string quoting or escaping."
+      },
+      "banned": false,
+      "span": null,
+      "syntax": {
+        "accepted": false,
+        "error": "Unterminated string constant (1:250)"
+      }
+    }
+  }
+]

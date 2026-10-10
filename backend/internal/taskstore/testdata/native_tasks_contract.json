@@ -1,0 +1,749 @@
+{
+  "schemasSource": "[{\"name\":\"TaskCreate\",\"description\":\"Use this tool to create a structured task list for your current coding session. This helps you track progress, organize complex tasks, and demonstrate thoroughness to the user.\\nIt also helps the user understand the progress of the task and overall progress of their requests.\\n\\n## When to Use This Tool\\n\\nUse this tool proactively in these scenarios:\\n\\n- Complex multi-step tasks - When a task requires 3 or more distinct steps or actions\\n- Non-trivial and complex tasks - Tasks that require careful planning or multiple operations\\n- Plan mode - When using plan mode, create a task list to track the work\\n- User explicitly requests todo list - When the user directly asks you to use the todo list\\n- User provides multiple tasks - When users provide a list of things to be done (numbered or comma-separated)\\n- After receiving new instructions - Immediately capture user requirements as tasks\\n- When you start working on a task - Mark it as in_progress BEFORE beginning work\\n- After completing a task - Mark it as completed and add any new follow-up tasks discovered during implementation\\n\\n## When NOT to Use This Tool\\n\\nSkip using this tool when:\\n- There is only a single, straightforward task\\n- The task is trivial and tracking it provides no organizational benefit\\n- The task can be completed in less than 3 trivial steps\\n- The task is purely conversational or informational\\n\\nNOTE that you should not use this tool if there is only one trivial task to do. In this case you are better off just doing the task directly.\\n\\n## Task Fields\\n\\n- **subject**: A brief, actionable title in imperative form (e.g., \\\"Fix authentication bug in login flow\\\")\\n- **description**: What needs to be done\\n- **activeForm** (optional): Present continuous form shown in the spinner when the task is in_progress (e.g., \\\"Fixing authentication bug\\\"). If omitted, the spinner shows the subject instead.\\n\\nAll tasks are created with status `pending`.\\n\\n## Tips\\n\\n- Create tasks with clear, specific subjects that describe the outcome\\n- After creating tasks, use TaskUpdate to set up dependencies (blocks/blockedBy) if needed\\n- Check TaskList first to avoid creating duplicate tasks\\n\",\"input_schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"type\":\"object\",\"properties\":{\"subject\":{\"type\":\"string\",\"description\":\"A brief title for the task\"},\"description\":{\"type\":\"string\",\"description\":\"What needs to be done\"},\"activeForm\":{\"description\":\"Present continuous form shown in spinner when in_progress (e.g., \\\"Running tests\\\")\",\"type\":\"string\"},\"metadata\":{\"description\":\"Arbitrary metadata to attach to the task\",\"type\":\"object\",\"propertyNames\":{\"type\":\"string\"},\"additionalProperties\":{}}},\"required\":[\"subject\",\"description\"],\"additionalProperties\":false}},{\"name\":\"TaskGet\",\"description\":\"Use this tool to retrieve a task by its ID from the task list.\\n\\n## When to Use This Tool\\n\\n- When you need the full description and context before starting work on a task\\n- To understand task dependencies (what it blocks, what blocks it)\\n- After being assigned a task, to get complete requirements\\n\\n## Output\\n\\nReturns full task details:\\n- **subject**: Task title\\n- **description**: Detailed requirements and context\\n- **status**: 'pending', 'in_progress', or 'completed'\\n- **blocks**: Tasks waiting on this one to complete\\n- **blockedBy**: Tasks that must complete before this one can start\\n\\n## Tips\\n\\n- After fetching a task, verify its blockedBy list is empty before beginning work.\\n- Use TaskList to see all tasks in summary form.\\n\",\"input_schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"type\":\"object\",\"properties\":{\"taskId\":{\"type\":\"string\",\"description\":\"The ID of the task to retrieve\"}},\"required\":[\"taskId\"],\"additionalProperties\":false}},{\"name\":\"TaskUpdate\",\"description\":\"Use this tool to update a task in the task list.\\n\\n## When to Use This Tool\\n\\n**Mark tasks as resolved:**\\n- When you have completed the work described in a task\\n- When a task is no longer needed or has been superseded\\n- IMPORTANT: Always mark your assigned tasks as resolved when you finish them\\n- After resolving, call TaskList to find your next task\\n\\n- ONLY mark a task as completed when you have FULLY accomplished it\\n- If you encounter errors, blockers, or cannot finish, keep the task as in_progress\\n- When blocked, create a new task describing what needs to be resolved\\n- Never mark a task as completed if:\\n  - Tests are failing\\n  - Implementation is partial\\n  - You encountered unresolved errors\\n  - You couldn't find necessary files or dependencies\\n\\n**Delete tasks:**\\n- When a task is no longer relevant or was created in error\\n- Setting status to `deleted` permanently removes the task\\n\\n**Update task details:**\\n- When requirements change or become clearer\\n- When establishing dependencies between tasks\\n\\n## Fields You Can Update\\n\\n- **status**: The task status (see Status Workflow below)\\n- **subject**: Change the task title (imperative form, e.g., \\\"Run tests\\\")\\n- **description**: Change the task description\\n- **activeForm**: Present continuous form shown in spinner when in_progress (e.g., \\\"Running tests\\\")\\n- **owner**: Change the task owner (agent name)\\n- **metadata**: Merge metadata keys into the task (set a key to null to delete it)\\n- **addBlocks**: Mark tasks that cannot start until this one completes\\n- **addBlockedBy**: Mark tasks that must complete before this one can start\\n\\n## Status Workflow\\n\\nStatus progresses: `pending` \u2192 `in_progress` \u2192 `completed`\\n\\nUse `deleted` to permanently remove a task.\\n\\n## Staleness\\n\\nMake sure to read a task's latest state using `TaskGet` before updating it.\\n\\n## Examples\\n\\nMark task as in progress when starting work:\\n```json\\n{\\\"taskId\\\": \\\"1\\\", \\\"status\\\": \\\"in_progress\\\"}\\n```\\n\\nMark task as completed after finishing work:\\n```json\\n{\\\"taskId\\\": \\\"1\\\", \\\"status\\\": \\\"completed\\\"}\\n```\\n\\nDelete a task:\\n```json\\n{\\\"taskId\\\": \\\"1\\\", \\\"status\\\": \\\"deleted\\\"}\\n```\\n\\nClaim a task by setting owner:\\n```json\\n{\\\"taskId\\\": \\\"1\\\", \\\"owner\\\": \\\"my-name\\\"}\\n```\\n\\nSet up task dependencies:\\n```json\\n{\\\"taskId\\\": \\\"2\\\", \\\"addBlockedBy\\\": [\\\"1\\\"]}\\n```\\n\",\"input_schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"type\":\"object\",\"properties\":{\"taskId\":{\"type\":\"string\",\"description\":\"The ID of the task to update\"},\"subject\":{\"description\":\"New subject for the task\",\"type\":\"string\"},\"description\":{\"description\":\"New description for the task\",\"type\":\"string\"},\"activeForm\":{\"description\":\"Present continuous form shown in spinner when in_progress (e.g., \\\"Running tests\\\")\",\"type\":\"string\"},\"status\":{\"description\":\"New status for the task\",\"anyOf\":[{\"type\":\"string\",\"enum\":[\"pending\",\"in_progress\",\"completed\"]},{\"type\":\"string\",\"const\":\"deleted\"}]},\"addBlocks\":{\"description\":\"Task IDs that this task blocks\",\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"addBlockedBy\":{\"description\":\"Task IDs that block this task\",\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"owner\":{\"description\":\"New owner for the task\",\"type\":\"string\"},\"metadata\":{\"description\":\"Metadata keys to merge into the task. Set a key to null to delete it.\",\"type\":\"object\",\"propertyNames\":{\"type\":\"string\"},\"additionalProperties\":{}}},\"required\":[\"taskId\"],\"additionalProperties\":false}},{\"name\":\"TaskList\",\"description\":\"Use this tool to list all tasks in the task list.\\n\\n## When to Use This Tool\\n\\n- To see what tasks are available to work on (status: 'pending', no owner, not blocked)\\n- To check overall progress on the project\\n- To find tasks that are blocked and need dependencies resolved\\n- After completing a task, to check for newly unblocked work or claim the next available task\\n- **Prefer working on tasks in ID order** (lowest ID first) when multiple tasks are available, as earlier tasks often set up context for later ones\\n\\n## Output\\n\\nReturns a summary of each task:\\n- **id**: Task identifier (use with TaskGet, TaskUpdate)\\n- **subject**: Brief description of the task\\n- **status**: 'pending', 'in_progress', or 'completed'\\n- **owner**: Agent ID if assigned, empty if available\\n- **blockedBy**: List of open task IDs that must be resolved first (tasks with blockedBy cannot be claimed until dependencies resolve)\\n\\nUse TaskGet with a specific task ID to view full details including description and comments.\\n\",\"input_schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"type\":\"object\",\"properties\":{},\"additionalProperties\":false}}]",
+  "observations": [
+    {
+      "step": {
+        "name": "parse-0",
+        "tool": "TaskCreate",
+        "operation": "parse",
+        "inputSource": "{}"
+      },
+      "observation": {
+        "success": false,
+        "issuesSource": "[{\"expected\":\"string\",\"code\":\"invalid_type\",\"path\":[\"subject\"],\"message\":\"Invalid input: expected string, received undefined\"},{\"expected\":\"string\",\"code\":\"invalid_type\",\"path\":[\"description\"],\"message\":\"Invalid input: expected string, received undefined\"}]"
+      }
+    },
+    {
+      "step": {
+        "name": "parse-1",
+        "tool": "TaskCreate",
+        "operation": "parse",
+        "inputSource": "{\"subject\":\"\",\"description\":\"\",\"extra\":1}"
+      },
+      "observation": {
+        "success": false,
+        "issuesSource": "[{\"code\":\"unrecognized_keys\",\"keys\":[\"extra\"],\"path\":[],\"message\":\"Unrecognized key: \\\"extra\\\"\"}]"
+      }
+    },
+    {
+      "step": {
+        "name": "parse-2",
+        "tool": "TaskCreate",
+        "operation": "parse",
+        "inputSource": "{\"subject\":4,\"description\":null,\"metadata\":[]}"
+      },
+      "observation": {
+        "success": false,
+        "issuesSource": "[{\"expected\":\"string\",\"code\":\"invalid_type\",\"path\":[\"subject\"],\"message\":\"Invalid input: expected string, received number\"},{\"expected\":\"string\",\"code\":\"invalid_type\",\"path\":[\"description\"],\"message\":\"Invalid input: expected string, received null\"},{\"expected\":\"record\",\"code\":\"invalid_type\",\"path\":[\"metadata\"],\"message\":\"Invalid input: expected record, received array\"}]"
+      }
+    },
+    {
+      "step": {
+        "name": "parse-3",
+        "tool": "TaskCreate",
+        "operation": "parse",
+        "inputSource": "{\"subject\":\"\\\\ud800\",\"description\":\"x\",\"metadata\":{\"__proto__\":1,\"\\\\ud800\":null,\"nested\":{\"x\":1}}}"
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"subject\":\"\\\\ud800\",\"description\":\"x\",\"metadata\":{\"\\\\ud800\":null,\"nested\":{\"x\":1}}}"
+      }
+    },
+    {
+      "step": {
+        "name": "parse-4",
+        "tool": "TaskGet",
+        "operation": "parse",
+        "inputSource": "{\"taskId\":null,\"extra\":1}"
+      },
+      "observation": {
+        "success": false,
+        "issuesSource": "[{\"expected\":\"string\",\"code\":\"invalid_type\",\"path\":[\"taskId\"],\"message\":\"Invalid input: expected string, received null\"},{\"code\":\"unrecognized_keys\",\"keys\":[\"extra\"],\"path\":[],\"message\":\"Unrecognized key: \\\"extra\\\"\"}]"
+      }
+    },
+    {
+      "step": {
+        "name": "parse-5",
+        "tool": "TaskList",
+        "operation": "parse",
+        "inputSource": "{\"extra\":1}"
+      },
+      "observation": {
+        "success": false,
+        "issuesSource": "[{\"code\":\"unrecognized_keys\",\"keys\":[\"extra\"],\"path\":[],\"message\":\"Unrecognized key: \\\"extra\\\"\"}]"
+      }
+    },
+    {
+      "step": {
+        "name": "parse-6",
+        "tool": "TaskUpdate",
+        "operation": "parse",
+        "inputSource": "{\"taskId\":\"1\",\"status\":\"wrong\"}"
+      },
+      "observation": {
+        "success": false,
+        "issuesSource": "[{\"code\":\"invalid_union\",\"errors\":[[{\"code\":\"invalid_value\",\"values\":[\"pending\",\"in_progress\",\"completed\"],\"path\":[],\"message\":\"Invalid option: expected one of \\\"pending\\\"|\\\"in_progress\\\"|\\\"completed\\\"\"}],[{\"code\":\"invalid_value\",\"values\":[\"deleted\"],\"path\":[],\"message\":\"Invalid input: expected \\\"deleted\\\"\"}]],\"path\":[\"status\"],\"message\":\"Invalid input\"}]"
+      }
+    },
+    {
+      "step": {
+        "name": "parse-7",
+        "tool": "TaskUpdate",
+        "operation": "parse",
+        "inputSource": "{\"taskId\":\"1\",\"status\":false,\"addBlocks\":[\"a\",null,3],\"metadata\":[]}"
+      },
+      "observation": {
+        "success": false,
+        "issuesSource": "[{\"code\":\"invalid_union\",\"errors\":[[{\"code\":\"invalid_value\",\"values\":[\"pending\",\"in_progress\",\"completed\"],\"path\":[],\"message\":\"Invalid option: expected one of \\\"pending\\\"|\\\"in_progress\\\"|\\\"completed\\\"\"}],[{\"code\":\"invalid_value\",\"values\":[\"deleted\"],\"path\":[],\"message\":\"Invalid input: expected \\\"deleted\\\"\"}]],\"path\":[\"status\"],\"message\":\"Invalid input\"},{\"expected\":\"string\",\"code\":\"invalid_type\",\"path\":[\"addBlocks\",1],\"message\":\"Invalid input: expected string, received null\"},{\"expected\":\"string\",\"code\":\"invalid_type\",\"path\":[\"addBlocks\",2],\"message\":\"Invalid input: expected string, received number\"},{\"expected\":\"record\",\"code\":\"invalid_type\",\"path\":[\"metadata\"],\"message\":\"Invalid input: expected record, received array\"}]"
+      }
+    },
+    {
+      "step": {
+        "name": "parse-8",
+        "tool": "TaskUpdate",
+        "operation": "parse",
+        "inputSource": "{\"taskId\":\"1\",\"status\":\"deleted\",\"owner\":\"\",\"addBlockedBy\":[]}"
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"taskId\":\"1\",\"status\":\"deleted\",\"addBlockedBy\":[],\"owner\":\"\"}"
+      }
+    },
+    {
+      "step": {
+        "name": "parse-9",
+        "tool": "TaskUpdate",
+        "operation": "parse",
+        "inputSource": "{\"taskId\":\"1\",\"status\":\"completed\",\"metadata\":{\"__proto__\":{},\"gone\":null,\"object\":{\"a\":1}}}"
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"taskId\":\"1\",\"status\":\"completed\",\"metadata\":{\"gone\":null,\"object\":{\"a\":1}}}"
+      }
+    },
+    {
+      "step": {
+        "name": "root-array",
+        "tool": "TaskCreate",
+        "operation": "parse",
+        "inputSource": "[]"
+      },
+      "observation": {
+        "success": false,
+        "issuesSource": "[{\"expected\":\"object\",\"code\":\"invalid_type\",\"path\":[],\"message\":\"Invalid input: expected object, received array\"}]"
+      }
+    },
+    {
+      "step": {
+        "name": "empty-list",
+        "tool": "TaskList",
+        "operation": "call",
+        "inputSource": "{}"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "00000000-0000-4000-8000-000000000000",
+        "dataSource": "{}",
+        "resultSource": "{\"tasks\":[],\"taskListSnapshotAt\":\"2026-10-05T16:23:27.830Z\",\"taskListSnapshotRevision\":0}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"No tasks found\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"none\"}",
+        "files": {},
+        "updates": 0
+      }
+    },
+    {
+      "step": {
+        "name": "create-first",
+        "tool": "TaskCreate",
+        "operation": "call",
+        "inputSource": "{\"subject\":\"first\",\"description\":\"details\",\"activeForm\":\"\",\"metadata\":{\"remove\":1,\"nested\":{\"a\":2}}}"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "00000000-0000-4000-8000-000000000000",
+        "dataSource": "{\"subject\":\"first\",\"description\":\"details\",\"activeForm\":\"\",\"metadata\":{\"remove\":1,\"nested\":{\"a\":2}}}",
+        "resultSource": "{\"task\":{\"id\":\"1\",\"subject\":\"first\"},\"taskListMutationAt\":\"2026-10-05T16:23:27.834Z\",\"taskListMutationRevision\":1}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"Task #1 created successfully: first\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".revision": "1",
+          "1.json": "{\n  \"id\": \"1\",\n  \"subject\": \"first\",\n  \"description\": \"details\",\n  \"activeForm\": \"\",\n  \"status\": \"pending\",\n  \"blocks\": [],\n  \"blockedBy\": [],\n  \"metadata\": {\n    \"remove\": 1,\n    \"nested\": {\n      \"a\": 2\n    }\n  }\n}"
+        },
+        "updates": 1
+      }
+    },
+    {
+      "step": {
+        "name": "create-second",
+        "tool": "TaskCreate",
+        "operation": "call",
+        "inputSource": "{\"subject\":\"surrogate \\ud800\",\"description\":\"two\",\"metadata\":{\"__proto__\":1,\"\\ud800\":\"key\"}}"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "00000000-0000-4000-8000-000000000000",
+        "dataSource": "{\"subject\":\"surrogate \\ud800\",\"description\":\"two\",\"metadata\":{\"\\ud800\":\"key\"}}",
+        "resultSource": "{\"task\":{\"id\":\"2\",\"subject\":\"surrogate \\ud800\"},\"taskListMutationAt\":\"2026-10-05T16:23:27.837Z\",\"taskListMutationRevision\":2}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"Task #2 created successfully: surrogate \\ud800\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".revision": "2",
+          "1.json": "{\n  \"id\": \"1\",\n  \"subject\": \"first\",\n  \"description\": \"details\",\n  \"activeForm\": \"\",\n  \"status\": \"pending\",\n  \"blocks\": [],\n  \"blockedBy\": [],\n  \"metadata\": {\n    \"remove\": 1,\n    \"nested\": {\n      \"a\": 2\n    }\n  }\n}",
+          "2.json": "{\n  \"id\": \"2\",\n  \"subject\": \"surrogate \\ud800\",\n  \"description\": \"two\",\n  \"status\": \"pending\",\n  \"blocks\": [],\n  \"blockedBy\": [],\n  \"metadata\": {\n    \"\\ud800\": \"key\"\n  }\n}"
+        },
+        "updates": 2
+      }
+    },
+    {
+      "step": {
+        "name": "get-first",
+        "tool": "TaskGet",
+        "operation": "call",
+        "inputSource": "{\"taskId\":\"1\"}"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "00000000-0000-4000-8000-000000000000",
+        "dataSource": "{\"taskId\":\"1\"}",
+        "resultSource": "{\"task\":{\"id\":\"1\",\"subject\":\"first\",\"description\":\"details\",\"status\":\"pending\",\"blocks\":[],\"blockedBy\":[]}}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"Task #1: first\\nStatus: pending\\nDescription: details\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".revision": "2",
+          "1.json": "{\n  \"id\": \"1\",\n  \"subject\": \"first\",\n  \"description\": \"details\",\n  \"activeForm\": \"\",\n  \"status\": \"pending\",\n  \"blocks\": [],\n  \"blockedBy\": [],\n  \"metadata\": {\n    \"remove\": 1,\n    \"nested\": {\n      \"a\": 2\n    }\n  }\n}",
+          "2.json": "{\n  \"id\": \"2\",\n  \"subject\": \"surrogate \\ud800\",\n  \"description\": \"two\",\n  \"status\": \"pending\",\n  \"blocks\": [],\n  \"blockedBy\": [],\n  \"metadata\": {\n    \"\\ud800\": \"key\"\n  }\n}"
+        },
+        "updates": 2
+      }
+    },
+    {
+      "step": {
+        "name": "edges-and-owner",
+        "tool": "TaskUpdate",
+        "operation": "call",
+        "inputSource": "{\"taskId\":\"1\",\"subject\":\"renamed\",\"owner\":\"owner\",\"addBlocks\":[\"2\",\"2\",\"404\",\"1\"],\"addBlockedBy\":[\"2\",\"2\"],\"metadata\":{\"remove\":null,\"new\":3}}"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "00000000-0000-4000-8000-000000000000",
+        "dataSource": "{\"taskId\":\"1\",\"subject\":\"renamed\",\"addBlocks\":[\"2\",\"2\",\"404\",\"1\"],\"addBlockedBy\":[\"2\",\"2\"],\"owner\":\"owner\",\"metadata\":{\"remove\":null,\"new\":3}}",
+        "resultSource": "{\"success\":true,\"taskId\":\"1\",\"updatedFields\":[\"subject\",\"owner\",\"metadata\",\"blocks\",\"blockedBy\"],\"verificationNudgeNeeded\":false,\"taskListMutationAt\":\"2026-10-05T16:23:27.841Z\",\"taskListMutationRevision\":3}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"Updated task #1 subject, owner, metadata, blocks, blockedBy\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".revision": "3",
+          "1.json": "{\n  \"id\": \"1\",\n  \"subject\": \"renamed\",\n  \"description\": \"details\",\n  \"activeForm\": \"\",\n  \"status\": \"pending\",\n  \"blocks\": [\n    \"2\",\n    \"1\"\n  ],\n  \"blockedBy\": [\n    \"1\",\n    \"2\"\n  ],\n  \"metadata\": {\n    \"nested\": {\n      \"a\": 2\n    },\n    \"new\": 3\n  },\n  \"owner\": \"owner\"\n}",
+          "2.json": "{\n  \"id\": \"2\",\n  \"subject\": \"surrogate \\ud800\",\n  \"description\": \"two\",\n  \"status\": \"pending\",\n  \"blocks\": [\n    \"1\"\n  ],\n  \"blockedBy\": [\n    \"1\"\n  ],\n  \"metadata\": {\n    \"\\ud800\": \"key\"\n  }\n}"
+        },
+        "updates": 4
+      }
+    },
+    {
+      "step": {
+        "name": "list-blocked",
+        "tool": "TaskList",
+        "operation": "call",
+        "inputSource": "{}"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "00000000-0000-4000-8000-000000000000",
+        "dataSource": "{}",
+        "resultSource": "{\"tasks\":[{\"id\":\"1\",\"subject\":\"renamed\",\"status\":\"pending\",\"owner\":\"owner\",\"blockedBy\":[\"1\",\"2\"]},{\"id\":\"2\",\"subject\":\"surrogate \\ud800\",\"status\":\"pending\",\"blockedBy\":[\"1\"]}],\"taskListSnapshotAt\":\"2026-10-05T16:23:27.841Z\",\"taskListSnapshotRevision\":3}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"#1 [pending] renamed (owner) [blocked by #1, #2]\\n#2 [pending] surrogate \\ud800 [blocked by #1]\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".revision": "3",
+          "1.json": "{\n  \"id\": \"1\",\n  \"subject\": \"renamed\",\n  \"description\": \"details\",\n  \"activeForm\": \"\",\n  \"status\": \"pending\",\n  \"blocks\": [\n    \"2\",\n    \"1\"\n  ],\n  \"blockedBy\": [\n    \"1\",\n    \"2\"\n  ],\n  \"metadata\": {\n    \"nested\": {\n      \"a\": 2\n    },\n    \"new\": 3\n  },\n  \"owner\": \"owner\"\n}",
+          "2.json": "{\n  \"id\": \"2\",\n  \"subject\": \"surrogate \\ud800\",\n  \"description\": \"two\",\n  \"status\": \"pending\",\n  \"blocks\": [\n    \"1\"\n  ],\n  \"blockedBy\": [\n    \"1\"\n  ],\n  \"metadata\": {\n    \"\\ud800\": \"key\"\n  }\n}"
+        },
+        "updates": 4
+      }
+    },
+    {
+      "step": {
+        "name": "repeat-noop",
+        "tool": "TaskUpdate",
+        "operation": "call",
+        "inputSource": "{\"taskId\":\"1\",\"subject\":\"renamed\",\"owner\":\"owner\",\"addBlocks\":[\"2\",\"1\"],\"addBlockedBy\":[\"2\"],\"metadata\":{\"remove\":null,\"new\":3}}"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "00000000-0000-4000-8000-000000000000",
+        "dataSource": "{\"taskId\":\"1\",\"subject\":\"renamed\",\"addBlocks\":[\"2\",\"1\"],\"addBlockedBy\":[\"2\"],\"owner\":\"owner\",\"metadata\":{\"remove\":null,\"new\":3}}",
+        "resultSource": "{\"success\":true,\"taskId\":\"1\",\"updatedFields\":[],\"verificationNudgeNeeded\":false,\"taskListMutationAt\":\"2026-10-05T16:23:27.843Z\",\"taskListMutationRevision\":3}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"Updated task #1 \"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".revision": "3",
+          "1.json": "{\n  \"id\": \"1\",\n  \"subject\": \"renamed\",\n  \"description\": \"details\",\n  \"activeForm\": \"\",\n  \"status\": \"pending\",\n  \"blocks\": [\n    \"2\",\n    \"1\"\n  ],\n  \"blockedBy\": [\n    \"1\",\n    \"2\"\n  ],\n  \"metadata\": {\n    \"nested\": {\n      \"a\": 2\n    },\n    \"new\": 3\n  },\n  \"owner\": \"owner\"\n}",
+          "2.json": "{\n  \"id\": \"2\",\n  \"subject\": \"surrogate \\ud800\",\n  \"description\": \"two\",\n  \"status\": \"pending\",\n  \"blocks\": [\n    \"1\"\n  ],\n  \"blockedBy\": [\n    \"1\"\n  ],\n  \"metadata\": {\n    \"\\ud800\": \"key\"\n  }\n}"
+        },
+        "updates": 4
+      }
+    },
+    {
+      "step": {
+        "name": "complete-first",
+        "tool": "TaskUpdate",
+        "operation": "call",
+        "inputSource": "{\"taskId\":\"1\",\"status\":\"completed\"}"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "00000000-0000-4000-8000-000000000000",
+        "dataSource": "{\"taskId\":\"1\",\"status\":\"completed\"}",
+        "resultSource": "{\"success\":true,\"taskId\":\"1\",\"updatedFields\":[\"status\"],\"statusChange\":{\"from\":\"pending\",\"to\":\"completed\"},\"verificationNudgeNeeded\":false,\"taskListMutationAt\":\"2026-10-05T16:23:27.844Z\",\"taskListMutationRevision\":4}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"Updated task #1 status\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".revision": "4",
+          "1.json": "{\n  \"id\": \"1\",\n  \"subject\": \"renamed\",\n  \"description\": \"details\",\n  \"activeForm\": \"\",\n  \"owner\": \"owner\",\n  \"status\": \"completed\",\n  \"blocks\": [\n    \"2\",\n    \"1\"\n  ],\n  \"blockedBy\": [\n    \"1\",\n    \"2\"\n  ],\n  \"metadata\": {\n    \"nested\": {\n      \"a\": 2\n    },\n    \"new\": 3\n  }\n}",
+          "2.json": "{\n  \"id\": \"2\",\n  \"subject\": \"surrogate \\ud800\",\n  \"description\": \"two\",\n  \"status\": \"pending\",\n  \"blocks\": [\n    \"1\"\n  ],\n  \"blockedBy\": [\n    \"1\"\n  ],\n  \"metadata\": {\n    \"\\ud800\": \"key\"\n  }\n}"
+        },
+        "updates": 5
+      }
+    },
+    {
+      "step": {
+        "name": "list-completed-edge",
+        "tool": "TaskList",
+        "operation": "call",
+        "inputSource": "{}"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "00000000-0000-4000-8000-000000000000",
+        "dataSource": "{}",
+        "resultSource": "{\"tasks\":[{\"id\":\"1\",\"subject\":\"renamed\",\"status\":\"completed\",\"owner\":\"owner\",\"blockedBy\":[\"2\"]},{\"id\":\"2\",\"subject\":\"surrogate \\ud800\",\"status\":\"pending\",\"blockedBy\":[]}],\"taskListSnapshotAt\":\"2026-10-05T16:23:27.845Z\",\"taskListSnapshotRevision\":4}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"#1 [completed] renamed (owner) [blocked by #2]\\n#2 [pending] surrogate \\ud800\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".revision": "4",
+          "1.json": "{\n  \"id\": \"1\",\n  \"subject\": \"renamed\",\n  \"description\": \"details\",\n  \"activeForm\": \"\",\n  \"owner\": \"owner\",\n  \"status\": \"completed\",\n  \"blocks\": [\n    \"2\",\n    \"1\"\n  ],\n  \"blockedBy\": [\n    \"1\",\n    \"2\"\n  ],\n  \"metadata\": {\n    \"nested\": {\n      \"a\": 2\n    },\n    \"new\": 3\n  }\n}",
+          "2.json": "{\n  \"id\": \"2\",\n  \"subject\": \"surrogate \\ud800\",\n  \"description\": \"two\",\n  \"status\": \"pending\",\n  \"blocks\": [\n    \"1\"\n  ],\n  \"blockedBy\": [\n    \"1\"\n  ],\n  \"metadata\": {\n    \"\\ud800\": \"key\"\n  }\n}"
+        },
+        "updates": 5
+      }
+    },
+    {
+      "step": {
+        "name": "hide-internal",
+        "tool": "TaskUpdate",
+        "operation": "call",
+        "inputSource": "{\"taskId\":\"1\",\"metadata\":{\"_internal\":true}}"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "00000000-0000-4000-8000-000000000000",
+        "dataSource": "{\"taskId\":\"1\",\"metadata\":{\"_internal\":true}}",
+        "resultSource": "{\"success\":true,\"taskId\":\"1\",\"updatedFields\":[\"metadata\"],\"verificationNudgeNeeded\":false,\"taskListMutationAt\":\"2026-10-05T16:23:27.846Z\",\"taskListMutationRevision\":5}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"Updated task #1 metadata\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".revision": "5",
+          "1.json": "{\n  \"id\": \"1\",\n  \"subject\": \"renamed\",\n  \"description\": \"details\",\n  \"activeForm\": \"\",\n  \"owner\": \"owner\",\n  \"status\": \"completed\",\n  \"blocks\": [\n    \"2\",\n    \"1\"\n  ],\n  \"blockedBy\": [\n    \"1\",\n    \"2\"\n  ],\n  \"metadata\": {\n    \"nested\": {\n      \"a\": 2\n    },\n    \"new\": 3,\n    \"_internal\": true\n  }\n}",
+          "2.json": "{\n  \"id\": \"2\",\n  \"subject\": \"surrogate \\ud800\",\n  \"description\": \"two\",\n  \"status\": \"pending\",\n  \"blocks\": [\n    \"1\"\n  ],\n  \"blockedBy\": [\n    \"1\"\n  ],\n  \"metadata\": {\n    \"\\ud800\": \"key\"\n  }\n}"
+        },
+        "updates": 6
+      }
+    },
+    {
+      "step": {
+        "name": "list-hidden",
+        "tool": "TaskList",
+        "operation": "call",
+        "inputSource": "{}"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "00000000-0000-4000-8000-000000000000",
+        "dataSource": "{}",
+        "resultSource": "{\"tasks\":[{\"id\":\"2\",\"subject\":\"surrogate \\ud800\",\"status\":\"pending\",\"blockedBy\":[\"1\"]}],\"taskListSnapshotAt\":\"2026-10-05T16:23:27.846Z\",\"taskListSnapshotRevision\":5}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"#2 [pending] surrogate \\ud800 [blocked by #1]\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".revision": "5",
+          "1.json": "{\n  \"id\": \"1\",\n  \"subject\": \"renamed\",\n  \"description\": \"details\",\n  \"activeForm\": \"\",\n  \"owner\": \"owner\",\n  \"status\": \"completed\",\n  \"blocks\": [\n    \"2\",\n    \"1\"\n  ],\n  \"blockedBy\": [\n    \"1\",\n    \"2\"\n  ],\n  \"metadata\": {\n    \"nested\": {\n      \"a\": 2\n    },\n    \"new\": 3,\n    \"_internal\": true\n  }\n}",
+          "2.json": "{\n  \"id\": \"2\",\n  \"subject\": \"surrogate \\ud800\",\n  \"description\": \"two\",\n  \"status\": \"pending\",\n  \"blocks\": [\n    \"1\"\n  ],\n  \"blockedBy\": [\n    \"1\"\n  ],\n  \"metadata\": {\n    \"\\ud800\": \"key\"\n  }\n}"
+        },
+        "updates": 6
+      }
+    },
+    {
+      "step": {
+        "name": "delete-first",
+        "tool": "TaskUpdate",
+        "operation": "call",
+        "inputSource": "{\"taskId\":\"1\",\"status\":\"deleted\"}"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "00000000-0000-4000-8000-000000000000",
+        "dataSource": "{\"taskId\":\"1\",\"status\":\"deleted\"}",
+        "resultSource": "{\"success\":true,\"taskId\":\"1\",\"updatedFields\":[\"deleted\"],\"statusChange\":{\"from\":\"completed\",\"to\":\"deleted\"},\"taskListMutationAt\":\"2026-10-05T16:23:27.849Z\",\"taskListMutationRevision\":6}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"Updated task #1 deleted\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".highwatermark": "1",
+          ".revision": "6",
+          "2.json": "{\n  \"id\": \"2\",\n  \"subject\": \"surrogate \\ud800\",\n  \"description\": \"two\",\n  \"status\": \"pending\",\n  \"blocks\": [],\n  \"blockedBy\": [],\n  \"metadata\": {\n    \"\\ud800\": \"key\"\n  }\n}"
+        },
+        "updates": 8
+      }
+    },
+    {
+      "step": {
+        "name": "get-after-delete",
+        "tool": "TaskGet",
+        "operation": "call",
+        "inputSource": "{\"taskId\":\"1\"}"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "00000000-0000-4000-8000-000000000000",
+        "dataSource": "{\"taskId\":\"1\"}",
+        "resultSource": "{\"task\":null}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"Task not found\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".highwatermark": "1",
+          ".revision": "6",
+          "2.json": "{\n  \"id\": \"2\",\n  \"subject\": \"surrogate \\ud800\",\n  \"description\": \"two\",\n  \"status\": \"pending\",\n  \"blocks\": [],\n  \"blockedBy\": [],\n  \"metadata\": {\n    \"\\ud800\": \"key\"\n  }\n}"
+        },
+        "updates": 8
+      }
+    },
+    {
+      "step": {
+        "name": "missing-update",
+        "tool": "TaskUpdate",
+        "operation": "call",
+        "inputSource": "{\"taskId\":\"404\",\"status\":\"deleted\"}"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "00000000-0000-4000-8000-000000000000",
+        "dataSource": "{\"taskId\":\"404\",\"status\":\"deleted\"}",
+        "resultSource": "{\"success\":false,\"taskId\":\"404\",\"updatedFields\":[],\"error\":\"Task not found\"}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"Task not found\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".highwatermark": "1",
+          ".revision": "6",
+          "2.json": "{\n  \"id\": \"2\",\n  \"subject\": \"surrogate \\ud800\",\n  \"description\": \"two\",\n  \"status\": \"pending\",\n  \"blocks\": [],\n  \"blockedBy\": [],\n  \"metadata\": {\n    \"\\ud800\": \"key\"\n  }\n}"
+        },
+        "updates": 8
+      }
+    },
+    {
+      "step": {
+        "name": "create-high-water",
+        "tool": "TaskCreate",
+        "operation": "call",
+        "inputSource": "{\"subject\":\"third\",\"description\":\"id reuse forbidden\"}"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "00000000-0000-4000-8000-000000000000",
+        "dataSource": "{\"subject\":\"third\",\"description\":\"id reuse forbidden\"}",
+        "resultSource": "{\"task\":{\"id\":\"3\",\"subject\":\"third\"},\"taskListMutationAt\":\"2026-10-05T16:23:27.850Z\",\"taskListMutationRevision\":7}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"Task #3 created successfully: third\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".highwatermark": "1",
+          ".revision": "7",
+          "2.json": "{\n  \"id\": \"2\",\n  \"subject\": \"surrogate \\ud800\",\n  \"description\": \"two\",\n  \"status\": \"pending\",\n  \"blocks\": [],\n  \"blockedBy\": [],\n  \"metadata\": {\n    \"\\ud800\": \"key\"\n  }\n}",
+          "3.json": "{\n  \"id\": \"3\",\n  \"subject\": \"third\",\n  \"description\": \"id reuse forbidden\",\n  \"status\": \"pending\",\n  \"blocks\": [],\n  \"blockedBy\": []\n}"
+        },
+        "updates": 9
+      }
+    },
+    {
+      "step": {
+        "name": "child-create",
+        "tool": "TaskCreate",
+        "operation": "call",
+        "inputSource": "{\"subject\":\"child\",\"description\":\"\"}",
+        "agentId": "child-agent"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "child-agent",
+        "dataSource": "{\"subject\":\"child\",\"description\":\"\"}",
+        "resultSource": "{\"task\":{\"id\":\"1\",\"subject\":\"child\"},\"taskListMutationAt\":\"2026-10-05T16:23:27.851Z\",\"taskListMutationRevision\":1}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"Task #1 created successfully: child\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".revision": "1",
+          "1.json": "{\n  \"id\": \"1\",\n  \"subject\": \"child\",\n  \"description\": \"\",\n  \"status\": \"pending\",\n  \"blocks\": [],\n  \"blockedBy\": []\n}"
+        },
+        "updates": 10
+      }
+    },
+    {
+      "step": {
+        "name": "main-separate",
+        "tool": "TaskList",
+        "operation": "call",
+        "inputSource": "{}"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "00000000-0000-4000-8000-000000000000",
+        "dataSource": "{}",
+        "resultSource": "{\"tasks\":[{\"id\":\"2\",\"subject\":\"surrogate \\ud800\",\"status\":\"pending\",\"blockedBy\":[]},{\"id\":\"3\",\"subject\":\"third\",\"status\":\"pending\",\"blockedBy\":[]}],\"taskListSnapshotAt\":\"2026-10-05T16:23:27.855Z\",\"taskListSnapshotRevision\":7}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"#2 [pending] surrogate \\ud800\\n#3 [pending] third\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".highwatermark": "1",
+          ".revision": "7",
+          "2.json": "{\n  \"id\": \"2\",\n  \"subject\": \"surrogate \\ud800\",\n  \"description\": \"two\",\n  \"status\": \"pending\",\n  \"blocks\": [],\n  \"blockedBy\": [],\n  \"metadata\": {\n    \"\\ud800\": \"key\"\n  }\n}",
+          "3.json": "{\n  \"id\": \"3\",\n  \"subject\": \"third\",\n  \"description\": \"id reuse forbidden\",\n  \"status\": \"pending\",\n  \"blocks\": [],\n  \"blockedBy\": []\n}"
+        },
+        "updates": 10
+      }
+    },
+    {
+      "step": {
+        "name": "child-list",
+        "tool": "TaskList",
+        "operation": "call",
+        "inputSource": "{}",
+        "agentId": "child-agent"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "child-agent",
+        "dataSource": "{}",
+        "resultSource": "{\"tasks\":[{\"id\":\"1\",\"subject\":\"child\",\"status\":\"pending\",\"blockedBy\":[]}],\"taskListSnapshotAt\":\"2026-10-05T16:23:27.856Z\",\"taskListSnapshotRevision\":1}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"#1 [pending] child\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".revision": "1",
+          "1.json": "{\n  \"id\": \"1\",\n  \"subject\": \"child\",\n  \"description\": \"\",\n  \"status\": \"pending\",\n  \"blocks\": [],\n  \"blockedBy\": []\n}"
+        },
+        "updates": 10
+      }
+    },
+    {
+      "step": {
+        "name": "override-create",
+        "tool": "TaskCreate",
+        "operation": "call",
+        "inputSource": "{\"subject\":\"override\",\"description\":\"\"}",
+        "agentId": "child-agent",
+        "taskListOverride": " list/\ud83d\ude00 "
+      },
+      "observation": {
+        "success": true,
+        "taskListId": " list/\ud83d\ude00 ",
+        "dataSource": "{\"subject\":\"override\",\"description\":\"\"}",
+        "resultSource": "{\"task\":{\"id\":\"1\",\"subject\":\"override\"},\"taskListMutationAt\":\"2026-10-05T16:23:27.857Z\",\"taskListMutationRevision\":1}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"Task #1 created successfully: override\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".revision": "1",
+          "1.json": "{\n  \"id\": \"1\",\n  \"subject\": \"override\",\n  \"description\": \"\",\n  \"status\": \"pending\",\n  \"blocks\": [],\n  \"blockedBy\": []\n}"
+        },
+        "updates": 11
+      }
+    },
+    {
+      "step": {
+        "name": "override-list",
+        "tool": "TaskList",
+        "operation": "call",
+        "inputSource": "{}",
+        "taskListOverride": " list/\ud83d\ude00 "
+      },
+      "observation": {
+        "success": true,
+        "taskListId": " list/\ud83d\ude00 ",
+        "dataSource": "{}",
+        "resultSource": "{\"tasks\":[{\"id\":\"1\",\"subject\":\"override\",\"status\":\"pending\",\"blockedBy\":[]}],\"taskListSnapshotAt\":\"2026-10-05T16:23:27.858Z\",\"taskListSnapshotRevision\":1}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"#1 [pending] override\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".revision": "1",
+          "1.json": "{\n  \"id\": \"1\",\n  \"subject\": \"override\",\n  \"description\": \"\",\n  \"status\": \"pending\",\n  \"blocks\": [],\n  \"blockedBy\": []\n}"
+        },
+        "updates": 11
+      }
+    },
+    {
+      "step": {
+        "name": "bad-revision",
+        "tool": "TaskList",
+        "operation": "seed",
+        "inputSource": "not a number",
+        "path": "bad/.revision",
+        "taskListOverride": "bad"
+      },
+      "observation": {
+        "taskListId": "bad",
+        "files": {
+          ".revision": "not a number"
+        },
+        "updates": 11
+      }
+    },
+    {
+      "step": {
+        "name": "bad-revision-create",
+        "tool": "TaskCreate",
+        "operation": "call",
+        "inputSource": "{\"subject\":\"bad\",\"description\":\"\"}",
+        "taskListOverride": "bad"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "bad",
+        "dataSource": "{\"subject\":\"bad\",\"description\":\"\"}",
+        "error": "Invalid task-list revision for bad: not a number",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".revision": "not a number"
+        },
+        "updates": 11
+      }
+    },
+    {
+      "step": {
+        "name": "bad-revision-list",
+        "tool": "TaskList",
+        "operation": "call",
+        "inputSource": "{}",
+        "taskListOverride": "bad"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "bad",
+        "dataSource": "{}",
+        "error": "Invalid task-list revision for bad: not a number",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".revision": "not a number"
+        },
+        "updates": 11
+      }
+    },
+    {
+      "step": {
+        "name": "hex-revision",
+        "tool": "TaskList",
+        "operation": "seed",
+        "inputSource": "0x10",
+        "path": "hex/.revision",
+        "taskListOverride": "hex"
+      },
+      "observation": {
+        "taskListId": "hex",
+        "files": {
+          ".revision": "0x10"
+        },
+        "updates": 11
+      }
+    },
+    {
+      "step": {
+        "name": "hex-revision-create",
+        "tool": "TaskCreate",
+        "operation": "call",
+        "inputSource": "{\"subject\":\"hex\",\"description\":\"\"}",
+        "taskListOverride": "hex"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "hex",
+        "dataSource": "{\"subject\":\"hex\",\"description\":\"\"}",
+        "resultSource": "{\"task\":{\"id\":\"1\",\"subject\":\"hex\"},\"taskListMutationAt\":\"2026-10-05T16:23:27.860Z\",\"taskListMutationRevision\":17}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"Task #1 created successfully: hex\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {
+          ".revision": "17",
+          "1.json": "{\n  \"id\": \"1\",\n  \"subject\": \"hex\",\n  \"description\": \"\",\n  \"status\": \"pending\",\n  \"blocks\": [],\n  \"blockedBy\": []\n}"
+        },
+        "updates": 12
+      }
+    },
+    {
+      "step": {
+        "name": "terminal-seed",
+        "tool": "TaskList",
+        "operation": "seed",
+        "inputSource": "{\"schemaVersion\":1,\"generation\":1,\"deleted\":true,\"activeIdentity\":{\"teamName\":\"finished\",\"createdAt\":1},\"terminals\":[{\"frameId\":\"f\",\"generation\":1,\"identity\":{\"teamName\":\"finished\",\"createdAt\":1},\"tasks\":[{\"id\":\"8\",\"subject\":\"terminal\",\"description\":\"done\",\"status\":\"completed\",\"blocks\":[],\"blockedBy\":[]}],\"capturedAt\":\"2020-01-01T00:00:00.000Z\",\"revision\":99}],\"future\":true}",
+        "path": ".lifecycle-locks/terminal.state.json",
+        "taskListOverride": "terminal"
+      },
+      "observation": {
+        "taskListId": "terminal",
+        "files": {},
+        "updates": 12
+      }
+    },
+    {
+      "step": {
+        "name": "terminal-list",
+        "tool": "TaskList",
+        "operation": "call",
+        "inputSource": "{}",
+        "taskListOverride": "terminal"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "terminal",
+        "dataSource": "{}",
+        "resultSource": "{\"tasks\":[{\"id\":\"8\",\"subject\":\"terminal\",\"status\":\"completed\",\"blockedBy\":[]}],\"taskListSnapshotAt\":\"2020-01-01T00:00:00.000Z\",\"taskListSnapshotRevision\":99}",
+        "mappedSource": "{\"tool_use_id\":\"actual-task-use-id\",\"type\":\"tool_result\",\"content\":\"#8 [completed] terminal\"}",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {},
+        "updates": 12
+      }
+    },
+    {
+      "step": {
+        "name": "terminal-create-denied",
+        "tool": "TaskCreate",
+        "operation": "call",
+        "inputSource": "{\"subject\":\"deny\",\"description\":\"\"}",
+        "taskListOverride": "terminal"
+      },
+      "observation": {
+        "success": true,
+        "taskListId": "terminal",
+        "dataSource": "{\"subject\":\"deny\",\"description\":\"\"}",
+        "error": "Task list terminal belongs to a deleted Team lifecycle",
+        "stateSource": "{\"todos\":{},\"expandedView\":\"tasks\"}",
+        "files": {},
+        "updates": 12
+      }
+    }
+  ],
+  "sourceOnly": {
+    "consumer": "actual TaskCreate/TaskGet/TaskUpdate/TaskList tools + src/utils/tasks.ts filesystem transactions + proper-lockfile",
+    "runtime": "v24.3.0",
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [],
+      "absentReads": [
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "lstatSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "openSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+        },
+        {
+          "operation": "readdirSync",
+          "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+        }
+      ]
+    }
+  }
+}

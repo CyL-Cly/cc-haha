@@ -1,0 +1,1071 @@
+{
+  "schemaSource": "{\"name\":\"NotebookEdit\",\"description\":\"Completely replaces the contents of a specific cell in a Jupyter notebook (.ipynb file) with new source. Jupyter notebooks are interactive documents that combine code, text, and visualizations, commonly used for data analysis and scientific computing. The notebook_path parameter must be an absolute path, not a relative path. The cell_number is 0-indexed. Use edit_mode=insert to add a new cell at the index specified by cell_number. Use edit_mode=delete to delete the cell at the index specified by cell_number.\",\"input_schema\":{\"$schema\":\"https://json-schema.org/draft/2020-12/schema\",\"type\":\"object\",\"properties\":{\"notebook_path\":{\"type\":\"string\",\"description\":\"The absolute path to the Jupyter notebook file to edit (must be absolute, not relative)\"},\"cell_id\":{\"description\":\"The ID of the cell to edit. When inserting a new cell, the new cell will be inserted after the cell with this ID, or at the beginning if not specified.\",\"type\":\"string\"},\"new_source\":{\"type\":\"string\",\"description\":\"The new source for the cell\"},\"cell_type\":{\"description\":\"The type of the cell (code or markdown). If not specified, it defaults to the current cell type. If using edit_mode=insert, this is required.\",\"type\":\"string\",\"enum\":[\"code\",\"markdown\"]},\"edit_mode\":{\"description\":\"The type of edit to make (replace, insert, delete). Defaults to replace.\",\"type\":\"string\",\"enum\":[\"replace\",\"insert\",\"delete\"]}},\"required\":[\"notebook_path\",\"new_source\"],\"additionalProperties\":false}}",
+  "enabled": true,
+  "concurrencySafe": false,
+  "randoms": [
+    {
+      "value": 0,
+      "cellID": ""
+    },
+    {
+      "value": 0.5,
+      "cellID": "i"
+    },
+    {
+      "value": 0.25,
+      "cellID": "9"
+    },
+    {
+      "value": 0.75,
+      "cellID": "r"
+    },
+    {
+      "value": 0.1,
+      "cellID": "3lllllllllm"
+    },
+    {
+      "value": 0.123456789,
+      "cellID": "4fzzzxjylrz"
+    },
+    {
+      "value": 1.1102230246251565e-16,
+      "cellID": "0000000000em2"
+    },
+    {
+      "value": 0.9999999999999999,
+      "cellID": "zzzzzzzzzzl"
+    },
+    {
+      "value": 0.999999,
+      "cellID": "zzzybj7u3c"
+    },
+    {
+      "value": 1e-05,
+      "cellID": "000gsntn2omo6"
+    },
+    {
+      "value": 0.25202968234617507,
+      "cellID": "92mp34ofs6s"
+    },
+    {
+      "value": 0.030135811413049995,
+      "cellID": "1320l9yqkwwe"
+    },
+    {
+      "value": 0.6661929825651944,
+      "cellID": "nzdwe4tcbyo"
+    },
+    {
+      "value": 0.0182273848357708,
+      "cellID": "0nmf09cb7fb"
+    },
+    {
+      "value": 0.5699897931162797,
+      "cellID": "kipfz5ct4rq"
+    },
+    {
+      "value": 0.10713464621160762,
+      "cellID": "3uuh2dg3cy5"
+    },
+    {
+      "value": 0.4179502440454538,
+      "cellID": "f1nvx0kca6f"
+    },
+    {
+      "value": 0.6876099883468276,
+      "cellID": "or54qkouxuf"
+    },
+    {
+      "value": 0.4661922876649216,
+      "cellID": "gs6o0wyv36"
+    },
+    {
+      "value": 0.20393717601954509,
+      "cellID": "7caw56evc4j"
+    },
+    {
+      "value": 0.6261809396822489,
+      "cellID": "mjj3iwn1p7h"
+    },
+    {
+      "value": 0.748593516350039,
+      "cellID": "qy6dnb8gf4k"
+    },
+    {
+      "value": 0.253167398617943,
+      "cellID": "943s0hd1xw6"
+    },
+    {
+      "value": 0.04317123123702549,
+      "cellID": "1jy739kvuh4j"
+    },
+    {
+      "value": 0.2977095126202586,
+      "cellID": "aptxnsbwwph"
+    },
+    {
+      "value": 0.4922707370791479,
+      "cellID": "hpzdt104ngv"
+    },
+    {
+      "value": 0.3646498891575294,
+      "cellID": "d4l3sdjj1dq"
+    },
+    {
+      "value": 0.47001670308616417,
+      "cellID": "gx53kowi6l"
+    },
+    {
+      "value": 0.3197437671172755,
+      "cellID": "bidyqwb1ule"
+    },
+    {
+      "value": 0.7904835903889332,
+      "cellID": "sggsvwgflym"
+    },
+    {
+      "value": 0.030269318059522377,
+      "cellID": "1388twvhnlee"
+    },
+    {
+      "value": 0.9100439776666019,
+      "cellID": "wrf0fbkfx1"
+    },
+    {
+      "value": 0.3554592081845712,
+      "cellID": "csoaz1jlyij"
+    },
+    {
+      "value": 0.620036200006916,
+      "cellID": "mbkepzusvp7"
+    },
+    {
+      "value": 0.3588917827706619,
+      "cellID": "cx4gdp9quzq"
+    },
+    {
+      "value": 0.16007303876961643,
+      "cellID": "5rgd8j9hjx3"
+    },
+    {
+      "value": 0.49056164634749955,
+      "cellID": "hnrn6uhkuv9"
+    },
+    {
+      "value": 0.1903295656392029,
+      "cellID": "6uo0l0i2jvu"
+    },
+    {
+      "value": 0.3621225177736126,
+      "cellID": "d1b6rw5o1sq"
+    },
+    {
+      "value": 0.24234558760916802,
+      "cellID": "8q2viybcgx"
+    },
+    {
+      "value": 0.47394144281195083,
+      "cellID": "h287mp0esab"
+    },
+    {
+      "value": 0.5310349542639645,
+      "cellID": "j47yt08niic"
+    },
+    {
+      "value": 0.9992248488047992,
+      "cellID": "zyzu1kkjfxs"
+    },
+    {
+      "value": 0.6757149443523054,
+      "cellID": "obq5mr1cd9i"
+    },
+    {
+      "value": 0.7558367093513743,
+      "cellID": "r7kbfhte3pi"
+    },
+    {
+      "value": 0.3414557694574245,
+      "cellID": "caiyknhacod"
+    },
+    {
+      "value": 0.6167169747387962,
+      "cellID": "m79jp4x7wqr"
+    },
+    {
+      "value": 0.9250524233235274,
+      "cellID": "xav8umyq6o"
+    },
+    {
+      "value": 0.8541396219438044,
+      "cellID": "uqyqkpiwe"
+    },
+    {
+      "value": 0.7180955893993741,
+      "cellID": "punguakb13"
+    },
+    {
+      "value": 0.4480057247417033,
+      "cellID": "g4m5l01ltp"
+    },
+    {
+      "value": 0.22804834789756312,
+      "cellID": "87jtnjggsd8"
+    },
+    {
+      "value": 0.959018132255804,
+      "cellID": "yivy7674sp7"
+    },
+    {
+      "value": 0.8651931047757521,
+      "cellID": "v5ag6jpdhom"
+    },
+    {
+      "value": 0.5704871880961248,
+      "cellID": "kjcnepymox"
+    },
+    {
+      "value": 0.4338202151355417,
+      "cellID": "fm8bdhb1kis"
+    },
+    {
+      "value": 0.18278032186750348,
+      "cellID": "6kvsr40ces7"
+    },
+    {
+      "value": 0.13166020383635757,
+      "cellID": "4qmql22cfaj"
+    },
+    {
+      "value": 0.15636669011981363,
+      "cellID": "5mnfzszp3wl"
+    },
+    {
+      "value": 0.669463799574153,
+      "cellID": "o3mi3xi5s4"
+    },
+    {
+      "value": 0.04227779466671955,
+      "cellID": "1isigkmvo85"
+    },
+    {
+      "value": 0.037457779198407426,
+      "cellID": "1cjmoo3rxcp"
+    },
+    {
+      "value": 0.9555055376245162,
+      "cellID": "yec2e091lea"
+    },
+    {
+      "value": 0.1838628987010026,
+      "cellID": "6mab2e4yz6l"
+    },
+    {
+      "value": 0.858291125385689,
+      "cellID": "uwcfi8vv4kq"
+    },
+    {
+      "value": 0.19115694079422463,
+      "cellID": "6vqm984hkf"
+    },
+    {
+      "value": 0.33438726806533914,
+      "cellID": "c1d67eia9uj"
+    },
+    {
+      "value": 0.6078105625127915,
+      "cellID": "lvq0cg418o"
+    },
+    {
+      "value": 0.42694951621230326,
+      "cellID": "fdbr8l962p"
+    },
+    {
+      "value": 0.9536749292713846,
+      "cellID": "ybyno4bnwin"
+    },
+    {
+      "value": 0.925583794756249,
+      "cellID": "xbk1cmwvkp"
+    },
+    {
+      "value": 0.8558880737114044,
+      "cellID": "ut8bawg4o9r"
+    },
+    {
+      "value": 0.6108799708819624,
+      "cellID": "lzp7ru15jc"
+    },
+    {
+      "value": 0.9236256116661021,
+      "cellID": "x90ocsjvck"
+    },
+    {
+      "value": 0.3334400000321187,
+      "cellID": "c04z5q6oqlt"
+    },
+    {
+      "value": 0.5077379918481179,
+      "cellID": "ia10uryyjel"
+    },
+    {
+      "value": 0.07488225124630443,
+      "cellID": "2p1pfdsjk49"
+    },
+    {
+      "value": 0.4075495969294086,
+      "cellID": "eo6mtnn1959"
+    },
+    {
+      "value": 0.35533576941282685,
+      "cellID": "csijn67g0yd"
+    },
+    {
+      "value": 0.1238418628819331,
+      "cellID": "4ghyrvku11j"
+    },
+    {
+      "value": 0.21819472363176595,
+      "cellID": "7us3ck7k75k"
+    },
+    {
+      "value": 0.2955545672937788,
+      "cellID": "an1e6heqcm9"
+    },
+    {
+      "value": 0.9631900298792428,
+      "cellID": "yoaldv9367s"
+    },
+    {
+      "value": 0.26953674533039296,
+      "cellID": "9pbi8a4z0l5"
+    },
+    {
+      "value": 0.9944938346978791,
+      "cellID": "zsv3r8mq3h"
+    },
+    {
+      "value": 0.5705788061464878,
+      "cellID": "kjgxaiik9u"
+    },
+    {
+      "value": 0.26013307648603146,
+      "cellID": "9d4rodwjr3l"
+    },
+    {
+      "value": 0.1806101164113587,
+      "cellID": "6i2jn33uv5s"
+    },
+    {
+      "value": 0.6227002345303068,
+      "cellID": "mf0p9z5cmfo"
+    },
+    {
+      "value": 0.18985612466718838,
+      "cellID": "6u1xduk1t1d"
+    },
+    {
+      "value": 0.992742004489149,
+      "cellID": "zqldcrks2er"
+    },
+    {
+      "value": 0.24356135358569397,
+      "cellID": "8rnljo7tztt"
+    },
+    {
+      "value": 0.6806862577689212,
+      "cellID": "oi63j29p1vs"
+    },
+    {
+      "value": 0.7986601333003749,
+      "cellID": "sr2ac6mvtf"
+    },
+    {
+      "value": 0.1790452149211771,
+      "cellID": "6g1j7h6opz3"
+    },
+    {
+      "value": 0.5307180614604715,
+      "cellID": "j3t6jpkzz8"
+    },
+    {
+      "value": 0.27300523834156587,
+      "cellID": "9ttbysggs0g"
+    },
+    {
+      "value": 0.3226140451355728,
+      "cellID": "bm3vpmsof6c"
+    },
+    {
+      "value": 0.39405091831762007,
+      "cellID": "e6ou86h7z1"
+    },
+    {
+      "value": 0.27713809953490953,
+      "cellID": "9z65l3p7gkm"
+    },
+    {
+      "value": 0.1847876863746052,
+      "cellID": "6nhgcrlz9qy"
+    },
+    {
+      "value": 0.5233407809178241,
+      "cellID": "iu8zjrlz17g"
+    },
+    {
+      "value": 0.9657485495716109,
+      "cellID": "yrlyprq3qep"
+    },
+    {
+      "value": 0.9496769657076889,
+      "cellID": "y6s4mjuwpo"
+    },
+    {
+      "value": 0.37850403279342737,
+      "cellID": "dmjhfgotl7"
+    },
+    {
+      "value": 0.4336547658362314,
+      "cellID": "fm0lhe703r"
+    },
+    {
+      "value": 0.6412260499380057,
+      "cellID": "n311j6vyzf"
+    },
+    {
+      "value": 0.6266460761738823,
+      "cellID": "mk4srxjekej"
+    },
+    {
+      "value": 0.8369395364525288,
+      "cellID": "u4o91b8zv"
+    },
+    {
+      "value": 0.17055383625765796,
+      "cellID": "651cya3p3v"
+    }
+  ],
+  "observations": [
+    {
+      "step": {
+        "name": "replace-code",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"replace-code.ipynb\", \"cell_id\": \"actual-code\", \"new_source\": \"print(\\\"\\u4e16\\u754c\\\")\"}",
+        "readBefore": true,
+        "file": "replace-code.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"replace-code.ipynb\",\"cell_id\":\"actual-code\",\"new_source\":\"print(\\\"\u4e16\u754c\\\")\"}",
+        "validationSource": "{\"result\":true}",
+        "resultSource": "{\"new_source\":\"print(\\\"\u4e16\u754c\\\")\",\"cell_type\":\"code\",\"language\":\"julia\",\"edit_mode\":\"replace\",\"cell_id\":\"actual-code\",\"error\":\"\",\"notebook_path\":\"/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/cc-haha-tools-go-bq9x0yau/notebook-home/replace-code.ipynb\",\"original_file\":\"{\\n  \\\"cells\\\": [\\n    {\\n      \\\"cell_type\\\": \\\"code\\\",\\n      \\\"id\\\": \\\"actual-code\\\",\\n      \\\"source\\\": [\\n        \\\"print(1)\\\\n\\\",\\n        \\\"print(2)\\\"\\n      ],\\n      \\\"metadata\\\": {\\n        \\\"unknown\\\": \\\"retained\\\"\\n      },\\n      \\\"execution_count\\\": 2,\\n      \\\"outputs\\\": [\\n        {\\n          \\\"output_type\\\": \\\"stream\\\",\\n          \\\"name\\\": \\\"stdout\\\",\\n          \\\"text\\\": [\\n            \\\"one\\\\n\\\",\\n            \\\"two\\\"\\n          ]\\n        }\\n      ]\\n    },\\n    {\\n      \\\"cell_type\\\": \\\"markdown\\\",\\n      \\\"id\\\": \\\"actual-md\\\",\\n      \\\"source\\\": \\\"# note\\\",\\n      \\\"metadata\\\": {}\\n    }\\n  ],\\n  \\\"metadata\\\": {\\n    \\\"language_info\\\": {\\n      \\\"name\\\": \\\"julia\\\"\\n    },\\n    \\\"unknown\\\": true\\n  },\\n  \\\"nbformat\\\": 4,\\n  \\\"nbformat_minor\\\": 5,\\n  \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"updated_file\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": \\\"print(\\\\\\\"\u4e16\u754c\\\\\\\")\\\",\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": null,\\n   \\\"outputs\\\": []\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\"}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":\"Updated cell actual-code with print(\\\"\u4e16\u754c\\\")\"}",
+        "cacheSource": "{\"content\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": \\\"print(\\\\\\\"\u4e16\u754c\\\\\\\")\\\",\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": null,\\n   \\\"outputs\\\": []\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"timestampMatchesFile\":true}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogImNlbGxzIjogWwogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgInNvdXJjZSI6ICJwcmludChcIuS4lueVjFwiKSIsCiAgICJtZXRhZGF0YSI6IHsKICAgICJ1bmtub3duIjogInJldGFpbmVkIgogICB9LAogICAiZXhlY3V0aW9uX2NvdW50IjogbnVsbCwKICAgIm91dHB1dHMiOiBbXQogIH0sCiAgewogICAiY2VsbF90eXBlIjogIm1hcmtkb3duIiwKICAgImlkIjogImFjdHVhbC1tZCIsCiAgICJzb3VyY2UiOiAiIyBub3RlIiwKICAgIm1ldGFkYXRhIjoge30KICB9CiBdLAogIm1ldGFkYXRhIjogewogICJsYW5ndWFnZV9pbmZvIjogewogICAibmFtZSI6ICJqdWxpYSIKICB9LAogICJ1bmtub3duIjogdHJ1ZQogfSwKICJuYmZvcm1hdCI6IDQsCiAibmJmb3JtYXRfbWlub3IiOiA1LAogInVua25vd24iOiAi5LiW55WMIgp9",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "replace-md",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"replace-md.ipynb\", \"cell_id\": \"actual-md\", \"new_source\": \"\\u4e2d\\u6587\\nnew\"}",
+        "readBefore": true,
+        "file": "replace-md.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"replace-md.ipynb\",\"cell_id\":\"actual-md\",\"new_source\":\"\u4e2d\u6587\\nnew\"}",
+        "validationSource": "{\"result\":true}",
+        "resultSource": "{\"new_source\":\"\u4e2d\u6587\\nnew\",\"cell_type\":\"code\",\"language\":\"julia\",\"edit_mode\":\"replace\",\"cell_id\":\"actual-md\",\"error\":\"\",\"notebook_path\":\"/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/cc-haha-tools-go-bq9x0yau/notebook-home/replace-md.ipynb\",\"original_file\":\"{\\n  \\\"cells\\\": [\\n    {\\n      \\\"cell_type\\\": \\\"code\\\",\\n      \\\"id\\\": \\\"actual-code\\\",\\n      \\\"source\\\": [\\n        \\\"print(1)\\\\n\\\",\\n        \\\"print(2)\\\"\\n      ],\\n      \\\"metadata\\\": {\\n        \\\"unknown\\\": \\\"retained\\\"\\n      },\\n      \\\"execution_count\\\": 2,\\n      \\\"outputs\\\": [\\n        {\\n          \\\"output_type\\\": \\\"stream\\\",\\n          \\\"name\\\": \\\"stdout\\\",\\n          \\\"text\\\": [\\n            \\\"one\\\\n\\\",\\n            \\\"two\\\"\\n          ]\\n        }\\n      ]\\n    },\\n    {\\n      \\\"cell_type\\\": \\\"markdown\\\",\\n      \\\"id\\\": \\\"actual-md\\\",\\n      \\\"source\\\": \\\"# note\\\",\\n      \\\"metadata\\\": {}\\n    }\\n  ],\\n  \\\"metadata\\\": {\\n    \\\"language_info\\\": {\\n      \\\"name\\\": \\\"julia\\\"\\n    },\\n    \\\"unknown\\\": true\\n  },\\n  \\\"nbformat\\\": 4,\\n  \\\"nbformat_minor\\\": 5,\\n  \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"updated_file\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": [\\n    \\\"print(1)\\\\n\\\",\\n    \\\"print(2)\\\"\\n   ],\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": 2,\\n   \\\"outputs\\\": [\\n    {\\n     \\\"output_type\\\": \\\"stream\\\",\\n     \\\"name\\\": \\\"stdout\\\",\\n     \\\"text\\\": [\\n      \\\"one\\\\n\\\",\\n      \\\"two\\\"\\n     ]\\n    }\\n   ]\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"\u4e2d\u6587\\\\nnew\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\"}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":\"Updated cell actual-md with \u4e2d\u6587\\nnew\"}",
+        "cacheSource": "{\"content\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": [\\n    \\\"print(1)\\\\n\\\",\\n    \\\"print(2)\\\"\\n   ],\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": 2,\\n   \\\"outputs\\\": [\\n    {\\n     \\\"output_type\\\": \\\"stream\\\",\\n     \\\"name\\\": \\\"stdout\\\",\\n     \\\"text\\\": [\\n      \\\"one\\\\n\\\",\\n      \\\"two\\\"\\n     ]\\n    }\\n   ]\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"\u4e2d\u6587\\\\nnew\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"timestampMatchesFile\":true}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogImNlbGxzIjogWwogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgInNvdXJjZSI6IFsKICAgICJwcmludCgxKVxuIiwKICAgICJwcmludCgyKSIKICAgXSwKICAgIm1ldGFkYXRhIjogewogICAgInVua25vd24iOiAicmV0YWluZWQiCiAgIH0sCiAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAib3V0cHV0cyI6IFsKICAgIHsKICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAibmFtZSI6ICJzdGRvdXQiLAogICAgICJ0ZXh0IjogWwogICAgICAib25lXG4iLAogICAgICAidHdvIgogICAgIF0KICAgIH0KICAgXQogIH0sCiAgewogICAiY2VsbF90eXBlIjogIm1hcmtkb3duIiwKICAgImlkIjogImFjdHVhbC1tZCIsCiAgICJzb3VyY2UiOiAi5Lit5paHXG5uZXciLAogICAibWV0YWRhdGEiOiB7fQogIH0KIF0sCiAibWV0YWRhdGEiOiB7CiAgImxhbmd1YWdlX2luZm8iOiB7CiAgICJuYW1lIjogImp1bGlhIgogIH0sCiAgInVua25vd24iOiB0cnVlCiB9LAogIm5iZm9ybWF0IjogNCwKICJuYmZvcm1hdF9taW5vciI6IDUsCiAidW5rbm93biI6ICLkuJbnlYwiCn0=",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "replace-code-to-md",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"replace-code-to-md.ipynb\", \"cell_id\": \"actual-code\", \"new_source\": \"#changed\", \"cell_type\": \"markdown\"}",
+        "readBefore": true,
+        "file": "replace-code-to-md.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"replace-code-to-md.ipynb\",\"cell_id\":\"actual-code\",\"new_source\":\"#changed\",\"cell_type\":\"markdown\"}",
+        "validationSource": "{\"result\":true}",
+        "resultSource": "{\"new_source\":\"#changed\",\"cell_type\":\"markdown\",\"language\":\"julia\",\"edit_mode\":\"replace\",\"cell_id\":\"actual-code\",\"error\":\"\",\"notebook_path\":\"/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/cc-haha-tools-go-bq9x0yau/notebook-home/replace-code-to-md.ipynb\",\"original_file\":\"{\\n  \\\"cells\\\": [\\n    {\\n      \\\"cell_type\\\": \\\"code\\\",\\n      \\\"id\\\": \\\"actual-code\\\",\\n      \\\"source\\\": [\\n        \\\"print(1)\\\\n\\\",\\n        \\\"print(2)\\\"\\n      ],\\n      \\\"metadata\\\": {\\n        \\\"unknown\\\": \\\"retained\\\"\\n      },\\n      \\\"execution_count\\\": 2,\\n      \\\"outputs\\\": [\\n        {\\n          \\\"output_type\\\": \\\"stream\\\",\\n          \\\"name\\\": \\\"stdout\\\",\\n          \\\"text\\\": [\\n            \\\"one\\\\n\\\",\\n            \\\"two\\\"\\n          ]\\n        }\\n      ]\\n    },\\n    {\\n      \\\"cell_type\\\": \\\"markdown\\\",\\n      \\\"id\\\": \\\"actual-md\\\",\\n      \\\"source\\\": \\\"# note\\\",\\n      \\\"metadata\\\": {}\\n    }\\n  ],\\n  \\\"metadata\\\": {\\n    \\\"language_info\\\": {\\n      \\\"name\\\": \\\"julia\\\"\\n    },\\n    \\\"unknown\\\": true\\n  },\\n  \\\"nbformat\\\": 4,\\n  \\\"nbformat_minor\\\": 5,\\n  \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"updated_file\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": \\\"#changed\\\",\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": null,\\n   \\\"outputs\\\": []\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\"}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":\"Updated cell actual-code with #changed\"}",
+        "cacheSource": "{\"content\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": \\\"#changed\\\",\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": null,\\n   \\\"outputs\\\": []\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"timestampMatchesFile\":true}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogImNlbGxzIjogWwogIHsKICAgImNlbGxfdHlwZSI6ICJtYXJrZG93biIsCiAgICJpZCI6ICJhY3R1YWwtY29kZSIsCiAgICJzb3VyY2UiOiAiI2NoYW5nZWQiLAogICAibWV0YWRhdGEiOiB7CiAgICAidW5rbm93biI6ICJyZXRhaW5lZCIKICAgfSwKICAgImV4ZWN1dGlvbl9jb3VudCI6IG51bGwsCiAgICJvdXRwdXRzIjogW10KICB9LAogIHsKICAgImNlbGxfdHlwZSI6ICJtYXJrZG93biIsCiAgICJpZCI6ICJhY3R1YWwtbWQiLAogICAic291cmNlIjogIiMgbm90ZSIsCiAgICJtZXRhZGF0YSI6IHt9CiAgfQogXSwKICJtZXRhZGF0YSI6IHsKICAibGFuZ3VhZ2VfaW5mbyI6IHsKICAgIm5hbWUiOiAianVsaWEiCiAgfSwKICAidW5rbm93biI6IHRydWUKIH0sCiAibmJmb3JtYXQiOiA0LAogIm5iZm9ybWF0X21pbm9yIjogNSwKICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "replace-md-to-code",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"replace-md-to-code.ipynb\", \"cell_id\": \"actual-md\", \"new_source\": \"run()\", \"cell_type\": \"code\"}",
+        "readBefore": true,
+        "file": "replace-md-to-code.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"replace-md-to-code.ipynb\",\"cell_id\":\"actual-md\",\"new_source\":\"run()\",\"cell_type\":\"code\"}",
+        "validationSource": "{\"result\":true}",
+        "resultSource": "{\"new_source\":\"run()\",\"cell_type\":\"code\",\"language\":\"julia\",\"edit_mode\":\"replace\",\"cell_id\":\"actual-md\",\"error\":\"\",\"notebook_path\":\"/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/cc-haha-tools-go-bq9x0yau/notebook-home/replace-md-to-code.ipynb\",\"original_file\":\"{\\n  \\\"cells\\\": [\\n    {\\n      \\\"cell_type\\\": \\\"code\\\",\\n      \\\"id\\\": \\\"actual-code\\\",\\n      \\\"source\\\": [\\n        \\\"print(1)\\\\n\\\",\\n        \\\"print(2)\\\"\\n      ],\\n      \\\"metadata\\\": {\\n        \\\"unknown\\\": \\\"retained\\\"\\n      },\\n      \\\"execution_count\\\": 2,\\n      \\\"outputs\\\": [\\n        {\\n          \\\"output_type\\\": \\\"stream\\\",\\n          \\\"name\\\": \\\"stdout\\\",\\n          \\\"text\\\": [\\n            \\\"one\\\\n\\\",\\n            \\\"two\\\"\\n          ]\\n        }\\n      ]\\n    },\\n    {\\n      \\\"cell_type\\\": \\\"markdown\\\",\\n      \\\"id\\\": \\\"actual-md\\\",\\n      \\\"source\\\": \\\"# note\\\",\\n      \\\"metadata\\\": {}\\n    }\\n  ],\\n  \\\"metadata\\\": {\\n    \\\"language_info\\\": {\\n      \\\"name\\\": \\\"julia\\\"\\n    },\\n    \\\"unknown\\\": true\\n  },\\n  \\\"nbformat\\\": 4,\\n  \\\"nbformat_minor\\\": 5,\\n  \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"updated_file\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": [\\n    \\\"print(1)\\\\n\\\",\\n    \\\"print(2)\\\"\\n   ],\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": 2,\\n   \\\"outputs\\\": [\\n    {\\n     \\\"output_type\\\": \\\"stream\\\",\\n     \\\"name\\\": \\\"stdout\\\",\\n     \\\"text\\\": [\\n      \\\"one\\\\n\\\",\\n      \\\"two\\\"\\n     ]\\n    }\\n   ]\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"run()\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\"}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":\"Updated cell actual-md with run()\"}",
+        "cacheSource": "{\"content\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": [\\n    \\\"print(1)\\\\n\\\",\\n    \\\"print(2)\\\"\\n   ],\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": 2,\\n   \\\"outputs\\\": [\\n    {\\n     \\\"output_type\\\": \\\"stream\\\",\\n     \\\"name\\\": \\\"stdout\\\",\\n     \\\"text\\\": [\\n      \\\"one\\\\n\\\",\\n      \\\"two\\\"\\n     ]\\n    }\\n   ]\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"run()\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"timestampMatchesFile\":true}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogImNlbGxzIjogWwogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgInNvdXJjZSI6IFsKICAgICJwcmludCgxKVxuIiwKICAgICJwcmludCgyKSIKICAgXSwKICAgIm1ldGFkYXRhIjogewogICAgInVua25vd24iOiAicmV0YWluZWQiCiAgIH0sCiAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAib3V0cHV0cyI6IFsKICAgIHsKICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAibmFtZSI6ICJzdGRvdXQiLAogICAgICJ0ZXh0IjogWwogICAgICAib25lXG4iLAogICAgICAidHdvIgogICAgIF0KICAgIH0KICAgXQogIH0sCiAgewogICAiY2VsbF90eXBlIjogImNvZGUiLAogICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgInNvdXJjZSI6ICJydW4oKSIsCiAgICJtZXRhZGF0YSI6IHt9CiAgfQogXSwKICJtZXRhZGF0YSI6IHsKICAibGFuZ3VhZ2VfaW5mbyI6IHsKICAgIm5hbWUiOiAianVsaWEiCiAgfSwKICAidW5rbm93biI6IHRydWUKIH0sCiAibmJmb3JtYXQiOiA0LAogIm5iZm9ybWF0X21pbm9yIjogNSwKICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "numeric-id",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"numeric-id.ipynb\", \"cell_id\": \"cell-01\", \"new_source\": \"legacy index\"}",
+        "readBefore": true,
+        "file": "numeric-id.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"numeric-id.ipynb\",\"cell_id\":\"cell-01\",\"new_source\":\"legacy index\"}",
+        "validationSource": "{\"result\":true}",
+        "resultSource": "{\"new_source\":\"legacy index\",\"cell_type\":\"code\",\"language\":\"julia\",\"edit_mode\":\"replace\",\"cell_id\":\"cell-01\",\"error\":\"\",\"notebook_path\":\"/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/cc-haha-tools-go-bq9x0yau/notebook-home/numeric-id.ipynb\",\"original_file\":\"{\\n  \\\"cells\\\": [\\n    {\\n      \\\"cell_type\\\": \\\"code\\\",\\n      \\\"id\\\": \\\"actual-code\\\",\\n      \\\"source\\\": [\\n        \\\"print(1)\\\\n\\\",\\n        \\\"print(2)\\\"\\n      ],\\n      \\\"metadata\\\": {\\n        \\\"unknown\\\": \\\"retained\\\"\\n      },\\n      \\\"execution_count\\\": 2,\\n      \\\"outputs\\\": [\\n        {\\n          \\\"output_type\\\": \\\"stream\\\",\\n          \\\"name\\\": \\\"stdout\\\",\\n          \\\"text\\\": [\\n            \\\"one\\\\n\\\",\\n            \\\"two\\\"\\n          ]\\n        }\\n      ]\\n    },\\n    {\\n      \\\"cell_type\\\": \\\"markdown\\\",\\n      \\\"id\\\": \\\"actual-md\\\",\\n      \\\"source\\\": \\\"# note\\\",\\n      \\\"metadata\\\": {}\\n    }\\n  ],\\n  \\\"metadata\\\": {\\n    \\\"language_info\\\": {\\n      \\\"name\\\": \\\"julia\\\"\\n    },\\n    \\\"unknown\\\": true\\n  },\\n  \\\"nbformat\\\": 4,\\n  \\\"nbformat_minor\\\": 5,\\n  \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"updated_file\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": [\\n    \\\"print(1)\\\\n\\\",\\n    \\\"print(2)\\\"\\n   ],\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": 2,\\n   \\\"outputs\\\": [\\n    {\\n     \\\"output_type\\\": \\\"stream\\\",\\n     \\\"name\\\": \\\"stdout\\\",\\n     \\\"text\\\": [\\n      \\\"one\\\\n\\\",\\n      \\\"two\\\"\\n     ]\\n    }\\n   ]\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"legacy index\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\"}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":\"Updated cell cell-01 with legacy index\"}",
+        "cacheSource": "{\"content\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": [\\n    \\\"print(1)\\\\n\\\",\\n    \\\"print(2)\\\"\\n   ],\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": 2,\\n   \\\"outputs\\\": [\\n    {\\n     \\\"output_type\\\": \\\"stream\\\",\\n     \\\"name\\\": \\\"stdout\\\",\\n     \\\"text\\\": [\\n      \\\"one\\\\n\\\",\\n      \\\"two\\\"\\n     ]\\n    }\\n   ]\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"legacy index\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"timestampMatchesFile\":true}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogImNlbGxzIjogWwogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgInNvdXJjZSI6IFsKICAgICJwcmludCgxKVxuIiwKICAgICJwcmludCgyKSIKICAgXSwKICAgIm1ldGFkYXRhIjogewogICAgInVua25vd24iOiAicmV0YWluZWQiCiAgIH0sCiAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAib3V0cHV0cyI6IFsKICAgIHsKICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAibmFtZSI6ICJzdGRvdXQiLAogICAgICJ0ZXh0IjogWwogICAgICAib25lXG4iLAogICAgICAidHdvIgogICAgIF0KICAgIH0KICAgXQogIH0sCiAgewogICAiY2VsbF90eXBlIjogIm1hcmtkb3duIiwKICAgImlkIjogImFjdHVhbC1tZCIsCiAgICJzb3VyY2UiOiAibGVnYWN5IGluZGV4IiwKICAgIm1ldGFkYXRhIjoge30KICB9CiBdLAogIm1ldGFkYXRhIjogewogICJsYW5ndWFnZV9pbmZvIjogewogICAibmFtZSI6ICJqdWxpYSIKICB9LAogICJ1bmtub3duIjogdHJ1ZQogfSwKICJuYmZvcm1hdCI6IDQsCiAibmJmb3JtYXRfbWlub3IiOiA1LAogInVua25vd24iOiAi5LiW55WMIgp9",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "insert-begin",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"insert-begin.ipynb\", \"new_source\": \"new\\nsource\", \"edit_mode\": \"insert\", \"cell_type\": \"code\"}",
+        "readBefore": true,
+        "random": 0.5,
+        "file": "insert-begin.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"insert-begin.ipynb\",\"new_source\":\"new\\nsource\",\"cell_type\":\"code\",\"edit_mode\":\"insert\"}",
+        "validationSource": "{\"result\":true}",
+        "resultSource": "{\"new_source\":\"new\\nsource\",\"cell_type\":\"code\",\"language\":\"julia\",\"edit_mode\":\"insert\",\"cell_id\":\"i\",\"error\":\"\",\"notebook_path\":\"/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/cc-haha-tools-go-bq9x0yau/notebook-home/insert-begin.ipynb\",\"original_file\":\"{\\n  \\\"cells\\\": [\\n    {\\n      \\\"cell_type\\\": \\\"code\\\",\\n      \\\"id\\\": \\\"actual-code\\\",\\n      \\\"source\\\": [\\n        \\\"print(1)\\\\n\\\",\\n        \\\"print(2)\\\"\\n      ],\\n      \\\"metadata\\\": {\\n        \\\"unknown\\\": \\\"retained\\\"\\n      },\\n      \\\"execution_count\\\": 2,\\n      \\\"outputs\\\": [\\n        {\\n          \\\"output_type\\\": \\\"stream\\\",\\n          \\\"name\\\": \\\"stdout\\\",\\n          \\\"text\\\": [\\n            \\\"one\\\\n\\\",\\n            \\\"two\\\"\\n          ]\\n        }\\n      ]\\n    },\\n    {\\n      \\\"cell_type\\\": \\\"markdown\\\",\\n      \\\"id\\\": \\\"actual-md\\\",\\n      \\\"source\\\": \\\"# note\\\",\\n      \\\"metadata\\\": {}\\n    }\\n  ],\\n  \\\"metadata\\\": {\\n    \\\"language_info\\\": {\\n      \\\"name\\\": \\\"julia\\\"\\n    },\\n    \\\"unknown\\\": true\\n  },\\n  \\\"nbformat\\\": 4,\\n  \\\"nbformat_minor\\\": 5,\\n  \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"updated_file\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"i\\\",\\n   \\\"source\\\": \\\"new\\\\nsource\\\",\\n   \\\"metadata\\\": {},\\n   \\\"execution_count\\\": null,\\n   \\\"outputs\\\": []\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": [\\n    \\\"print(1)\\\\n\\\",\\n    \\\"print(2)\\\"\\n   ],\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": 2,\\n   \\\"outputs\\\": [\\n    {\\n     \\\"output_type\\\": \\\"stream\\\",\\n     \\\"name\\\": \\\"stdout\\\",\\n     \\\"text\\\": [\\n      \\\"one\\\\n\\\",\\n      \\\"two\\\"\\n     ]\\n    }\\n   ]\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\"}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":\"Inserted cell i with new\\nsource\"}",
+        "cacheSource": "{\"content\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"i\\\",\\n   \\\"source\\\": \\\"new\\\\nsource\\\",\\n   \\\"metadata\\\": {},\\n   \\\"execution_count\\\": null,\\n   \\\"outputs\\\": []\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": [\\n    \\\"print(1)\\\\n\\\",\\n    \\\"print(2)\\\"\\n   ],\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": 2,\\n   \\\"outputs\\\": [\\n    {\\n     \\\"output_type\\\": \\\"stream\\\",\\n     \\\"name\\\": \\\"stdout\\\",\\n     \\\"text\\\": [\\n      \\\"one\\\\n\\\",\\n      \\\"two\\\"\\n     ]\\n    }\\n   ]\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"timestampMatchesFile\":true}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogImNlbGxzIjogWwogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgImlkIjogImkiLAogICAic291cmNlIjogIm5ld1xuc291cmNlIiwKICAgIm1ldGFkYXRhIjoge30sCiAgICJleGVjdXRpb25fY291bnQiOiBudWxsLAogICAib3V0cHV0cyI6IFtdCiAgfSwKICB7CiAgICJjZWxsX3R5cGUiOiAiY29kZSIsCiAgICJpZCI6ICJhY3R1YWwtY29kZSIsCiAgICJzb3VyY2UiOiBbCiAgICAicHJpbnQoMSlcbiIsCiAgICAicHJpbnQoMikiCiAgIF0sCiAgICJtZXRhZGF0YSI6IHsKICAgICJ1bmtub3duIjogInJldGFpbmVkIgogICB9LAogICAiZXhlY3V0aW9uX2NvdW50IjogMiwKICAgIm91dHB1dHMiOiBbCiAgICB7CiAgICAgIm91dHB1dF90eXBlIjogInN0cmVhbSIsCiAgICAgIm5hbWUiOiAic3Rkb3V0IiwKICAgICAidGV4dCI6IFsKICAgICAgIm9uZVxuIiwKICAgICAgInR3byIKICAgICBdCiAgICB9CiAgIF0KICB9LAogIHsKICAgImNlbGxfdHlwZSI6ICJtYXJrZG93biIsCiAgICJpZCI6ICJhY3R1YWwtbWQiLAogICAic291cmNlIjogIiMgbm90ZSIsCiAgICJtZXRhZGF0YSI6IHt9CiAgfQogXSwKICJtZXRhZGF0YSI6IHsKICAibGFuZ3VhZ2VfaW5mbyI6IHsKICAgIm5hbWUiOiAianVsaWEiCiAgfSwKICAidW5rbm93biI6IHRydWUKIH0sCiAibmJmb3JtYXQiOiA0LAogIm5iZm9ybWF0X21pbm9yIjogNSwKICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "randomCalls": 1
+      }
+    },
+    {
+      "step": {
+        "name": "insert-after",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"insert-after.ipynb\", \"new_source\": \"new\\nsource\", \"edit_mode\": \"insert\", \"cell_type\": \"code\", \"cell_id\": \"actual-code\"}",
+        "readBefore": true,
+        "random": 0.5,
+        "file": "insert-after.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"insert-after.ipynb\",\"cell_id\":\"actual-code\",\"new_source\":\"new\\nsource\",\"cell_type\":\"code\",\"edit_mode\":\"insert\"}",
+        "validationSource": "{\"result\":true}",
+        "resultSource": "{\"new_source\":\"new\\nsource\",\"cell_type\":\"code\",\"language\":\"julia\",\"edit_mode\":\"insert\",\"cell_id\":\"i\",\"error\":\"\",\"notebook_path\":\"/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/cc-haha-tools-go-bq9x0yau/notebook-home/insert-after.ipynb\",\"original_file\":\"{\\n  \\\"cells\\\": [\\n    {\\n      \\\"cell_type\\\": \\\"code\\\",\\n      \\\"id\\\": \\\"actual-code\\\",\\n      \\\"source\\\": [\\n        \\\"print(1)\\\\n\\\",\\n        \\\"print(2)\\\"\\n      ],\\n      \\\"metadata\\\": {\\n        \\\"unknown\\\": \\\"retained\\\"\\n      },\\n      \\\"execution_count\\\": 2,\\n      \\\"outputs\\\": [\\n        {\\n          \\\"output_type\\\": \\\"stream\\\",\\n          \\\"name\\\": \\\"stdout\\\",\\n          \\\"text\\\": [\\n            \\\"one\\\\n\\\",\\n            \\\"two\\\"\\n          ]\\n        }\\n      ]\\n    },\\n    {\\n      \\\"cell_type\\\": \\\"markdown\\\",\\n      \\\"id\\\": \\\"actual-md\\\",\\n      \\\"source\\\": \\\"# note\\\",\\n      \\\"metadata\\\": {}\\n    }\\n  ],\\n  \\\"metadata\\\": {\\n    \\\"language_info\\\": {\\n      \\\"name\\\": \\\"julia\\\"\\n    },\\n    \\\"unknown\\\": true\\n  },\\n  \\\"nbformat\\\": 4,\\n  \\\"nbformat_minor\\\": 5,\\n  \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"updated_file\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": [\\n    \\\"print(1)\\\\n\\\",\\n    \\\"print(2)\\\"\\n   ],\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": 2,\\n   \\\"outputs\\\": [\\n    {\\n     \\\"output_type\\\": \\\"stream\\\",\\n     \\\"name\\\": \\\"stdout\\\",\\n     \\\"text\\\": [\\n      \\\"one\\\\n\\\",\\n      \\\"two\\\"\\n     ]\\n    }\\n   ]\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"i\\\",\\n   \\\"source\\\": \\\"new\\\\nsource\\\",\\n   \\\"metadata\\\": {},\\n   \\\"execution_count\\\": null,\\n   \\\"outputs\\\": []\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\"}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":\"Inserted cell i with new\\nsource\"}",
+        "cacheSource": "{\"content\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": [\\n    \\\"print(1)\\\\n\\\",\\n    \\\"print(2)\\\"\\n   ],\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": 2,\\n   \\\"outputs\\\": [\\n    {\\n     \\\"output_type\\\": \\\"stream\\\",\\n     \\\"name\\\": \\\"stdout\\\",\\n     \\\"text\\\": [\\n      \\\"one\\\\n\\\",\\n      \\\"two\\\"\\n     ]\\n    }\\n   ]\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"i\\\",\\n   \\\"source\\\": \\\"new\\\\nsource\\\",\\n   \\\"metadata\\\": {},\\n   \\\"execution_count\\\": null,\\n   \\\"outputs\\\": []\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"timestampMatchesFile\":true}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogImNlbGxzIjogWwogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgInNvdXJjZSI6IFsKICAgICJwcmludCgxKVxuIiwKICAgICJwcmludCgyKSIKICAgXSwKICAgIm1ldGFkYXRhIjogewogICAgInVua25vd24iOiAicmV0YWluZWQiCiAgIH0sCiAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAib3V0cHV0cyI6IFsKICAgIHsKICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAibmFtZSI6ICJzdGRvdXQiLAogICAgICJ0ZXh0IjogWwogICAgICAib25lXG4iLAogICAgICAidHdvIgogICAgIF0KICAgIH0KICAgXQogIH0sCiAgewogICAiY2VsbF90eXBlIjogImNvZGUiLAogICAiaWQiOiAiaSIsCiAgICJzb3VyY2UiOiAibmV3XG5zb3VyY2UiLAogICAibWV0YWRhdGEiOiB7fSwKICAgImV4ZWN1dGlvbl9jb3VudCI6IG51bGwsCiAgICJvdXRwdXRzIjogW10KICB9LAogIHsKICAgImNlbGxfdHlwZSI6ICJtYXJrZG93biIsCiAgICJpZCI6ICJhY3R1YWwtbWQiLAogICAic291cmNlIjogIiMgbm90ZSIsCiAgICJtZXRhZGF0YSI6IHt9CiAgfQogXSwKICJtZXRhZGF0YSI6IHsKICAibGFuZ3VhZ2VfaW5mbyI6IHsKICAgIm5hbWUiOiAianVsaWEiCiAgfSwKICAidW5rbm93biI6IHRydWUKIH0sCiAibmJmb3JtYXQiOiA0LAogIm5iZm9ybWF0X21pbm9yIjogNSwKICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "randomCalls": 1
+      }
+    },
+    {
+      "step": {
+        "name": "insert-markdown",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"insert-markdown.ipynb\", \"new_source\": \"new\\nsource\", \"edit_mode\": \"insert\", \"cell_type\": \"markdown\", \"cell_id\": \"actual-md\"}",
+        "readBefore": true,
+        "random": 0.5,
+        "file": "insert-markdown.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"insert-markdown.ipynb\",\"cell_id\":\"actual-md\",\"new_source\":\"new\\nsource\",\"cell_type\":\"markdown\",\"edit_mode\":\"insert\"}",
+        "validationSource": "{\"result\":true}",
+        "resultSource": "{\"new_source\":\"new\\nsource\",\"cell_type\":\"markdown\",\"language\":\"julia\",\"edit_mode\":\"insert\",\"cell_id\":\"i\",\"error\":\"\",\"notebook_path\":\"/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/cc-haha-tools-go-bq9x0yau/notebook-home/insert-markdown.ipynb\",\"original_file\":\"{\\n  \\\"cells\\\": [\\n    {\\n      \\\"cell_type\\\": \\\"code\\\",\\n      \\\"id\\\": \\\"actual-code\\\",\\n      \\\"source\\\": [\\n        \\\"print(1)\\\\n\\\",\\n        \\\"print(2)\\\"\\n      ],\\n      \\\"metadata\\\": {\\n        \\\"unknown\\\": \\\"retained\\\"\\n      },\\n      \\\"execution_count\\\": 2,\\n      \\\"outputs\\\": [\\n        {\\n          \\\"output_type\\\": \\\"stream\\\",\\n          \\\"name\\\": \\\"stdout\\\",\\n          \\\"text\\\": [\\n            \\\"one\\\\n\\\",\\n            \\\"two\\\"\\n          ]\\n        }\\n      ]\\n    },\\n    {\\n      \\\"cell_type\\\": \\\"markdown\\\",\\n      \\\"id\\\": \\\"actual-md\\\",\\n      \\\"source\\\": \\\"# note\\\",\\n      \\\"metadata\\\": {}\\n    }\\n  ],\\n  \\\"metadata\\\": {\\n    \\\"language_info\\\": {\\n      \\\"name\\\": \\\"julia\\\"\\n    },\\n    \\\"unknown\\\": true\\n  },\\n  \\\"nbformat\\\": 4,\\n  \\\"nbformat_minor\\\": 5,\\n  \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"updated_file\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": [\\n    \\\"print(1)\\\\n\\\",\\n    \\\"print(2)\\\"\\n   ],\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": 2,\\n   \\\"outputs\\\": [\\n    {\\n     \\\"output_type\\\": \\\"stream\\\",\\n     \\\"name\\\": \\\"stdout\\\",\\n     \\\"text\\\": [\\n      \\\"one\\\\n\\\",\\n      \\\"two\\\"\\n     ]\\n    }\\n   ]\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"i\\\",\\n   \\\"source\\\": \\\"new\\\\nsource\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\"}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":\"Inserted cell i with new\\nsource\"}",
+        "cacheSource": "{\"content\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": [\\n    \\\"print(1)\\\\n\\\",\\n    \\\"print(2)\\\"\\n   ],\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": 2,\\n   \\\"outputs\\\": [\\n    {\\n     \\\"output_type\\\": \\\"stream\\\",\\n     \\\"name\\\": \\\"stdout\\\",\\n     \\\"text\\\": [\\n      \\\"one\\\\n\\\",\\n      \\\"two\\\"\\n     ]\\n    }\\n   ]\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"i\\\",\\n   \\\"source\\\": \\\"new\\\\nsource\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"timestampMatchesFile\":true}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogImNlbGxzIjogWwogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgInNvdXJjZSI6IFsKICAgICJwcmludCgxKVxuIiwKICAgICJwcmludCgyKSIKICAgXSwKICAgIm1ldGFkYXRhIjogewogICAgInVua25vd24iOiAicmV0YWluZWQiCiAgIH0sCiAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAib3V0cHV0cyI6IFsKICAgIHsKICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAibmFtZSI6ICJzdGRvdXQiLAogICAgICJ0ZXh0IjogWwogICAgICAib25lXG4iLAogICAgICAidHdvIgogICAgIF0KICAgIH0KICAgXQogIH0sCiAgewogICAiY2VsbF90eXBlIjogIm1hcmtkb3duIiwKICAgImlkIjogImFjdHVhbC1tZCIsCiAgICJzb3VyY2UiOiAiIyBub3RlIiwKICAgIm1ldGFkYXRhIjoge30KICB9LAogIHsKICAgImNlbGxfdHlwZSI6ICJtYXJrZG93biIsCiAgICJpZCI6ICJpIiwKICAgInNvdXJjZSI6ICJuZXdcbnNvdXJjZSIsCiAgICJtZXRhZGF0YSI6IHt9CiAgfQogXSwKICJtZXRhZGF0YSI6IHsKICAibGFuZ3VhZ2VfaW5mbyI6IHsKICAgIm5hbWUiOiAianVsaWEiCiAgfSwKICAidW5rbm93biI6IHRydWUKIH0sCiAibmJmb3JtYXQiOiA0LAogIm5iZm9ybWF0X21pbm9yIjogNSwKICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "randomCalls": 1
+      }
+    },
+    {
+      "step": {
+        "name": "delete",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"delete.ipynb\", \"cell_id\": \"actual-code\", \"new_source\": \"ignored\", \"edit_mode\": \"delete\"}",
+        "readBefore": true,
+        "file": "delete.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"delete.ipynb\",\"cell_id\":\"actual-code\",\"new_source\":\"ignored\",\"edit_mode\":\"delete\"}",
+        "validationSource": "{\"result\":true}",
+        "resultSource": "{\"new_source\":\"ignored\",\"cell_type\":\"code\",\"language\":\"julia\",\"edit_mode\":\"delete\",\"cell_id\":\"actual-code\",\"error\":\"\",\"notebook_path\":\"/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/cc-haha-tools-go-bq9x0yau/notebook-home/delete.ipynb\",\"original_file\":\"{\\n  \\\"cells\\\": [\\n    {\\n      \\\"cell_type\\\": \\\"code\\\",\\n      \\\"id\\\": \\\"actual-code\\\",\\n      \\\"source\\\": [\\n        \\\"print(1)\\\\n\\\",\\n        \\\"print(2)\\\"\\n      ],\\n      \\\"metadata\\\": {\\n        \\\"unknown\\\": \\\"retained\\\"\\n      },\\n      \\\"execution_count\\\": 2,\\n      \\\"outputs\\\": [\\n        {\\n          \\\"output_type\\\": \\\"stream\\\",\\n          \\\"name\\\": \\\"stdout\\\",\\n          \\\"text\\\": [\\n            \\\"one\\\\n\\\",\\n            \\\"two\\\"\\n          ]\\n        }\\n      ]\\n    },\\n    {\\n      \\\"cell_type\\\": \\\"markdown\\\",\\n      \\\"id\\\": \\\"actual-md\\\",\\n      \\\"source\\\": \\\"# note\\\",\\n      \\\"metadata\\\": {}\\n    }\\n  ],\\n  \\\"metadata\\\": {\\n    \\\"language_info\\\": {\\n      \\\"name\\\": \\\"julia\\\"\\n    },\\n    \\\"unknown\\\": true\\n  },\\n  \\\"nbformat\\\": 4,\\n  \\\"nbformat_minor\\\": 5,\\n  \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"updated_file\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\"}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":\"Deleted cell actual-code\"}",
+        "cacheSource": "{\"content\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"timestampMatchesFile\":true}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogImNlbGxzIjogWwogIHsKICAgImNlbGxfdHlwZSI6ICJtYXJrZG93biIsCiAgICJpZCI6ICJhY3R1YWwtbWQiLAogICAic291cmNlIjogIiMgbm90ZSIsCiAgICJtZXRhZGF0YSI6IHt9CiAgfQogXSwKICJtZXRhZGF0YSI6IHsKICAibGFuZ3VhZ2VfaW5mbyI6IHsKICAgIm5hbWUiOiAianVsaWEiCiAgfSwKICAidW5rbm93biI6IHRydWUKIH0sCiAibmJmb3JtYXQiOiA0LAogIm5iZm9ybWF0X21pbm9yIjogNSwKICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "legacy-insert",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"legacy-insert.ipynb\", \"new_source\": \"legacy\", \"edit_mode\": \"insert\", \"cell_type\": \"code\"}",
+        "readBefore": true,
+        "random": 0.5,
+        "file": "legacy-insert.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA0LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"legacy-insert.ipynb\",\"new_source\":\"legacy\",\"cell_type\":\"code\",\"edit_mode\":\"insert\"}",
+        "validationSource": "{\"result\":true}",
+        "resultSource": "{\"new_source\":\"legacy\",\"cell_type\":\"code\",\"language\":\"julia\",\"edit_mode\":\"insert\",\"error\":\"\",\"notebook_path\":\"/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/cc-haha-tools-go-bq9x0yau/notebook-home/legacy-insert.ipynb\",\"original_file\":\"{\\n  \\\"cells\\\": [\\n    {\\n      \\\"cell_type\\\": \\\"code\\\",\\n      \\\"id\\\": \\\"actual-code\\\",\\n      \\\"source\\\": [\\n        \\\"print(1)\\\\n\\\",\\n        \\\"print(2)\\\"\\n      ],\\n      \\\"metadata\\\": {\\n        \\\"unknown\\\": \\\"retained\\\"\\n      },\\n      \\\"execution_count\\\": 2,\\n      \\\"outputs\\\": [\\n        {\\n          \\\"output_type\\\": \\\"stream\\\",\\n          \\\"name\\\": \\\"stdout\\\",\\n          \\\"text\\\": [\\n            \\\"one\\\\n\\\",\\n            \\\"two\\\"\\n          ]\\n        }\\n      ]\\n    },\\n    {\\n      \\\"cell_type\\\": \\\"markdown\\\",\\n      \\\"id\\\": \\\"actual-md\\\",\\n      \\\"source\\\": \\\"# note\\\",\\n      \\\"metadata\\\": {}\\n    }\\n  ],\\n  \\\"metadata\\\": {\\n    \\\"language_info\\\": {\\n      \\\"name\\\": \\\"julia\\\"\\n    },\\n    \\\"unknown\\\": true\\n  },\\n  \\\"nbformat\\\": 4,\\n  \\\"nbformat_minor\\\": 4,\\n  \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"updated_file\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"source\\\": \\\"legacy\\\",\\n   \\\"metadata\\\": {},\\n   \\\"execution_count\\\": null,\\n   \\\"outputs\\\": []\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": [\\n    \\\"print(1)\\\\n\\\",\\n    \\\"print(2)\\\"\\n   ],\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": 2,\\n   \\\"outputs\\\": [\\n    {\\n     \\\"output_type\\\": \\\"stream\\\",\\n     \\\"name\\\": \\\"stdout\\\",\\n     \\\"text\\\": [\\n      \\\"one\\\\n\\\",\\n      \\\"two\\\"\\n     ]\\n    }\\n   ]\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 4,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\"}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":\"Inserted cell undefined with legacy\"}",
+        "cacheSource": "{\"content\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"source\\\": \\\"legacy\\\",\\n   \\\"metadata\\\": {},\\n   \\\"execution_count\\\": null,\\n   \\\"outputs\\\": []\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": [\\n    \\\"print(1)\\\\n\\\",\\n    \\\"print(2)\\\"\\n   ],\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": 2,\\n   \\\"outputs\\\": [\\n    {\\n     \\\"output_type\\\": \\\"stream\\\",\\n     \\\"name\\\": \\\"stdout\\\",\\n     \\\"text\\\": [\\n      \\\"one\\\\n\\\",\\n      \\\"two\\\"\\n     ]\\n    }\\n   ]\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 4,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"timestampMatchesFile\":true}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA0LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogImNlbGxzIjogWwogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgInNvdXJjZSI6ICJsZWdhY3kiLAogICAibWV0YWRhdGEiOiB7fSwKICAgImV4ZWN1dGlvbl9jb3VudCI6IG51bGwsCiAgICJvdXRwdXRzIjogW10KICB9LAogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgInNvdXJjZSI6IFsKICAgICJwcmludCgxKVxuIiwKICAgICJwcmludCgyKSIKICAgXSwKICAgIm1ldGFkYXRhIjogewogICAgInVua25vd24iOiAicmV0YWluZWQiCiAgIH0sCiAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAib3V0cHV0cyI6IFsKICAgIHsKICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAibmFtZSI6ICJzdGRvdXQiLAogICAgICJ0ZXh0IjogWwogICAgICAib25lXG4iLAogICAgICAidHdvIgogICAgIF0KICAgIH0KICAgXQogIH0sCiAgewogICAiY2VsbF90eXBlIjogIm1hcmtkb3duIiwKICAgImlkIjogImFjdHVhbC1tZCIsCiAgICJzb3VyY2UiOiAiIyBub3RlIiwKICAgIm1ldGFkYXRhIjoge30KICB9CiBdLAogIm1ldGFkYXRhIjogewogICJsYW5ndWFnZV9pbmZvIjogewogICAibmFtZSI6ICJqdWxpYSIKICB9LAogICJ1bmtub3duIjogdHJ1ZQogfSwKICJuYmZvcm1hdCI6IDQsCiAibmJmb3JtYXRfbWlub3IiOiA0LAogInVua25vd24iOiAi5LiW55WMIgp9",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "unpaired-source",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"unpaired-source.ipynb\", \"cell_id\": \"actual-code\", \"new_source\": \"\\ud800\"}",
+        "readBefore": true,
+        "file": "unpaired-source.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"unpaired-source.ipynb\",\"cell_id\":\"actual-code\",\"new_source\":\"\\ud800\"}",
+        "validationSource": "{\"result\":true}",
+        "resultSource": "{\"new_source\":\"\\ud800\",\"cell_type\":\"code\",\"language\":\"julia\",\"edit_mode\":\"replace\",\"cell_id\":\"actual-code\",\"error\":\"\",\"notebook_path\":\"/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/cc-haha-tools-go-bq9x0yau/notebook-home/unpaired-source.ipynb\",\"original_file\":\"{\\n  \\\"cells\\\": [\\n    {\\n      \\\"cell_type\\\": \\\"code\\\",\\n      \\\"id\\\": \\\"actual-code\\\",\\n      \\\"source\\\": [\\n        \\\"print(1)\\\\n\\\",\\n        \\\"print(2)\\\"\\n      ],\\n      \\\"metadata\\\": {\\n        \\\"unknown\\\": \\\"retained\\\"\\n      },\\n      \\\"execution_count\\\": 2,\\n      \\\"outputs\\\": [\\n        {\\n          \\\"output_type\\\": \\\"stream\\\",\\n          \\\"name\\\": \\\"stdout\\\",\\n          \\\"text\\\": [\\n            \\\"one\\\\n\\\",\\n            \\\"two\\\"\\n          ]\\n        }\\n      ]\\n    },\\n    {\\n      \\\"cell_type\\\": \\\"markdown\\\",\\n      \\\"id\\\": \\\"actual-md\\\",\\n      \\\"source\\\": \\\"# note\\\",\\n      \\\"metadata\\\": {}\\n    }\\n  ],\\n  \\\"metadata\\\": {\\n    \\\"language_info\\\": {\\n      \\\"name\\\": \\\"julia\\\"\\n    },\\n    \\\"unknown\\\": true\\n  },\\n  \\\"nbformat\\\": 4,\\n  \\\"nbformat_minor\\\": 5,\\n  \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"updated_file\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": \\\"\\\\ud800\\\",\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": null,\\n   \\\"outputs\\\": []\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\"}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":\"Updated cell actual-code with \\ud800\"}",
+        "cacheSource": "{\"content\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": \\\"\\\\ud800\\\",\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": null,\\n   \\\"outputs\\\": []\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"timestampMatchesFile\":true}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogImNlbGxzIjogWwogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgInNvdXJjZSI6ICJcdWQ4MDAiLAogICAibWV0YWRhdGEiOiB7CiAgICAidW5rbm93biI6ICJyZXRhaW5lZCIKICAgfSwKICAgImV4ZWN1dGlvbl9jb3VudCI6IG51bGwsCiAgICJvdXRwdXRzIjogW10KICB9LAogIHsKICAgImNlbGxfdHlwZSI6ICJtYXJrZG93biIsCiAgICJpZCI6ICJhY3R1YWwtbWQiLAogICAic291cmNlIjogIiMgbm90ZSIsCiAgICJtZXRhZGF0YSI6IHt9CiAgfQogXSwKICJtZXRhZGF0YSI6IHsKICAibGFuZ3VhZ2VfaW5mbyI6IHsKICAgIm5hbWUiOiAianVsaWEiCiAgfSwKICAidW5rbm93biI6IHRydWUKIH0sCiAibmJmb3JtYXQiOiA0LAogIm5iZm9ybWF0X21pbm9yIjogNSwKICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "no-read",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"no-read.ipynb\", \"cell_id\": \"actual-code\", \"new_source\": \"print(\\\"\\u4e16\\u754c\\\")\"}",
+        "file": "no-read.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"no-read.ipynb\",\"cell_id\":\"actual-code\",\"new_source\":\"print(\\\"\u4e16\u754c\\\")\"}",
+        "validationSource": "{\"result\":false,\"message\":\"File has not been read yet. Read it first before writing to it.\",\"errorCode\":9}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "stale",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"stale.ipynb\", \"cell_id\": \"actual-code\", \"new_source\": \"print(\\\"\\u4e16\\u754c\\\")\"}",
+        "readBefore": true,
+        "stale": true,
+        "file": "stale.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"stale.ipynb\",\"cell_id\":\"actual-code\",\"new_source\":\"print(\\\"\u4e16\u754c\\\")\"}",
+        "validationSource": "{\"result\":false,\"message\":\"File has been modified since read, either by the user or by a linter. Read it again before attempting to write it.\",\"errorCode\":10}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "no-cell-id",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"no-cell-id.ipynb\", \"new_source\": \"no id\"}",
+        "readBefore": true,
+        "file": "no-cell-id.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"no-cell-id.ipynb\",\"new_source\":\"no id\"}",
+        "validationSource": "{\"result\":false,\"message\":\"Cell ID must be specified when not inserting a new cell.\",\"errorCode\":7}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "missing-id",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"missing-id.ipynb\", \"cell_id\": \"missing\", \"new_source\": \"x\"}",
+        "readBefore": true,
+        "file": "missing-id.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"missing-id.ipynb\",\"cell_id\":\"missing\",\"new_source\":\"x\"}",
+        "validationSource": "{\"result\":false,\"message\":\"Cell with ID \\\"missing\\\" not found in notebook.\",\"errorCode\":8}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "missing-index",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"missing-index.ipynb\", \"cell_id\": \"cell-10\", \"new_source\": \"x\"}",
+        "readBefore": true,
+        "file": "missing-index.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"missing-index.ipynb\",\"cell_id\":\"cell-10\",\"new_source\":\"x\"}",
+        "validationSource": "{\"result\":false,\"message\":\"Cell with index 10 does not exist in notebook.\",\"errorCode\":7}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "insert-missing-type",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"insert-missing-type.ipynb\", \"new_source\": \"x\", \"edit_mode\": \"insert\"}",
+        "readBefore": true,
+        "file": "insert-missing-type.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"insert-missing-type.ipynb\",\"new_source\":\"x\",\"edit_mode\":\"insert\"}",
+        "validationSource": "{\"result\":false,\"message\":\"Cell type is required when using edit_mode=insert.\",\"errorCode\":5}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "invalid-json",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"invalid-json.ipynb\", \"cell_id\": \"actual-code\", \"new_source\": \"print(\\\"\\u4e16\\u754c\\\")\"}",
+        "readBefore": true,
+        "file": "invalid-json.ipynb",
+        "contentBase64": "e2Jyb2tlbg=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"invalid-json.ipynb\",\"cell_id\":\"actual-code\",\"new_source\":\"print(\\\"\u4e16\u754c\\\")\"}",
+        "validationSource": "{\"result\":false,\"message\":\"Notebook is not valid JSON.\",\"errorCode\":6}",
+        "beforeBase64": "e2Jyb2tlbg==",
+        "afterBase64": "e2Jyb2tlbg==",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "invalid-json-call",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"invalid-json-call.ipynb\", \"cell_id\": \"actual-code\", \"new_source\": \"print(\\\"\\u4e16\\u754c\\\")\"}",
+        "readBefore": true,
+        "skipValidation": true,
+        "file": "invalid-json-call.ipynb",
+        "contentBase64": "e2Jyb2tlbg=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"invalid-json-call.ipynb\",\"cell_id\":\"actual-code\",\"new_source\":\"print(\\\"\u4e16\u754c\\\")\"}",
+        "resultSource": "{\"new_source\":\"print(\\\"\u4e16\u754c\\\")\",\"cell_type\":\"code\",\"language\":\"python\",\"edit_mode\":\"replace\",\"error\":\"Notebook is not valid JSON.\",\"cell_id\":\"actual-code\",\"notebook_path\":\"/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/cc-haha-tools-go-bq9x0yau/notebook-home/invalid-json-call.ipynb\",\"original_file\":\"\",\"updated_file\":\"\"}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":\"Notebook is not valid JSON.\",\"is_error\":true}",
+        "cacheSource": "{\"content\":\"original read\",\"offset\":1,\"timestampMatchesFile\":true}",
+        "beforeBase64": "e2Jyb2tlbg==",
+        "afterBase64": "e2Jyb2tlbg==",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "missing-cells",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"missing-cells.ipynb\", \"cell_id\": \"actual-code\", \"new_source\": \"print(\\\"\\u4e16\\u754c\\\")\"}",
+        "readBefore": true,
+        "file": "missing-cells.ipynb",
+        "contentBase64": "eyJtZXRhZGF0YSI6e319"
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"missing-cells.ipynb\",\"cell_id\":\"actual-code\",\"new_source\":\"print(\\\"\u4e16\u754c\\\")\"}",
+        "error": "undefined is not an object (evaluating 'notebook.cells.findIndex')",
+        "beforeBase64": "eyJtZXRhZGF0YSI6e319",
+        "afterBase64": "eyJtZXRhZGF0YSI6e319",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "null-cells",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"null-cells.ipynb\", \"cell_id\": \"actual-code\", \"new_source\": \"print(\\\"\\u4e16\\u754c\\\")\"}",
+        "readBefore": true,
+        "file": "null-cells.ipynb",
+        "contentBase64": "eyJtZXRhZGF0YSI6e30sImNlbGxzIjpudWxsfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"null-cells.ipynb\",\"cell_id\":\"actual-code\",\"new_source\":\"print(\\\"\u4e16\u754c\\\")\"}",
+        "error": "null is not an object (evaluating 'notebook.cells.findIndex')",
+        "beforeBase64": "eyJtZXRhZGF0YSI6e30sImNlbGxzIjpudWxsfQ==",
+        "afterBase64": "eyJtZXRhZGF0YSI6e30sImNlbGxzIjpudWxsfQ==",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "crlf",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"crlf.ipynb\", \"cell_id\": \"actual-code\", \"new_source\": \"print(\\\"\\u4e16\\u754c\\\")\"}",
+        "readBefore": true,
+        "file": "crlf.ipynb",
+        "contentBase64": "ew0KICAiY2VsbHMiOiBbDQogICAgew0KICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwNCiAgICAgICJpZCI6ICJhY3R1YWwtY29kZSIsDQogICAgICAic291cmNlIjogWw0KICAgICAgICAicHJpbnQoMSlcbiIsDQogICAgICAgICJwcmludCgyKSINCiAgICAgIF0sDQogICAgICAibWV0YWRhdGEiOiB7DQogICAgICAgICJ1bmtub3duIjogInJldGFpbmVkIg0KICAgICAgfSwNCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLA0KICAgICAgIm91dHB1dHMiOiBbDQogICAgICAgIHsNCiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwNCiAgICAgICAgICAibmFtZSI6ICJzdGRvdXQiLA0KICAgICAgICAgICJ0ZXh0IjogWw0KICAgICAgICAgICAgIm9uZVxuIiwNCiAgICAgICAgICAgICJ0d28iDQogICAgICAgICAgXQ0KICAgICAgICB9DQogICAgICBdDQogICAgfSwNCiAgICB7DQogICAgICAiY2VsbF90eXBlIjogIm1hcmtkb3duIiwNCiAgICAgICJpZCI6ICJhY3R1YWwtbWQiLA0KICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLA0KICAgICAgIm1ldGFkYXRhIjoge30NCiAgICB9DQogIF0sDQogICJtZXRhZGF0YSI6IHsNCiAgICAibGFuZ3VhZ2VfaW5mbyI6IHsNCiAgICAgICJuYW1lIjogImp1bGlhIg0KICAgIH0sDQogICAgInVua25vd24iOiB0cnVlDQogIH0sDQogICJuYmZvcm1hdCI6IDQsDQogICJuYmZvcm1hdF9taW5vciI6IDUsDQogICJ1bmtub3duIjogIuS4lueVjCINCn0="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"crlf.ipynb\",\"cell_id\":\"actual-code\",\"new_source\":\"print(\\\"\u4e16\u754c\\\")\"}",
+        "validationSource": "{\"result\":true}",
+        "resultSource": "{\"new_source\":\"print(\\\"\u4e16\u754c\\\")\",\"cell_type\":\"code\",\"language\":\"julia\",\"edit_mode\":\"replace\",\"cell_id\":\"actual-code\",\"error\":\"\",\"notebook_path\":\"/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/cc-haha-tools-go-bq9x0yau/notebook-home/crlf.ipynb\",\"original_file\":\"{\\n  \\\"cells\\\": [\\n    {\\n      \\\"cell_type\\\": \\\"code\\\",\\n      \\\"id\\\": \\\"actual-code\\\",\\n      \\\"source\\\": [\\n        \\\"print(1)\\\\n\\\",\\n        \\\"print(2)\\\"\\n      ],\\n      \\\"metadata\\\": {\\n        \\\"unknown\\\": \\\"retained\\\"\\n      },\\n      \\\"execution_count\\\": 2,\\n      \\\"outputs\\\": [\\n        {\\n          \\\"output_type\\\": \\\"stream\\\",\\n          \\\"name\\\": \\\"stdout\\\",\\n          \\\"text\\\": [\\n            \\\"one\\\\n\\\",\\n            \\\"two\\\"\\n          ]\\n        }\\n      ]\\n    },\\n    {\\n      \\\"cell_type\\\": \\\"markdown\\\",\\n      \\\"id\\\": \\\"actual-md\\\",\\n      \\\"source\\\": \\\"# note\\\",\\n      \\\"metadata\\\": {}\\n    }\\n  ],\\n  \\\"metadata\\\": {\\n    \\\"language_info\\\": {\\n      \\\"name\\\": \\\"julia\\\"\\n    },\\n    \\\"unknown\\\": true\\n  },\\n  \\\"nbformat\\\": 4,\\n  \\\"nbformat_minor\\\": 5,\\n  \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"updated_file\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": \\\"print(\\\\\\\"\u4e16\u754c\\\\\\\")\\\",\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": null,\\n   \\\"outputs\\\": []\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\"}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":\"Updated cell actual-code with print(\\\"\u4e16\u754c\\\")\"}",
+        "cacheSource": "{\"content\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": \\\"print(\\\\\\\"\u4e16\u754c\\\\\\\")\\\",\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": null,\\n   \\\"outputs\\\": []\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"timestampMatchesFile\":true}",
+        "beforeBase64": "ew0KICAiY2VsbHMiOiBbDQogICAgew0KICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwNCiAgICAgICJpZCI6ICJhY3R1YWwtY29kZSIsDQogICAgICAic291cmNlIjogWw0KICAgICAgICAicHJpbnQoMSlcbiIsDQogICAgICAgICJwcmludCgyKSINCiAgICAgIF0sDQogICAgICAibWV0YWRhdGEiOiB7DQogICAgICAgICJ1bmtub3duIjogInJldGFpbmVkIg0KICAgICAgfSwNCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLA0KICAgICAgIm91dHB1dHMiOiBbDQogICAgICAgIHsNCiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwNCiAgICAgICAgICAibmFtZSI6ICJzdGRvdXQiLA0KICAgICAgICAgICJ0ZXh0IjogWw0KICAgICAgICAgICAgIm9uZVxuIiwNCiAgICAgICAgICAgICJ0d28iDQogICAgICAgICAgXQ0KICAgICAgICB9DQogICAgICBdDQogICAgfSwNCiAgICB7DQogICAgICAiY2VsbF90eXBlIjogIm1hcmtkb3duIiwNCiAgICAgICJpZCI6ICJhY3R1YWwtbWQiLA0KICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLA0KICAgICAgIm1ldGFkYXRhIjoge30NCiAgICB9DQogIF0sDQogICJtZXRhZGF0YSI6IHsNCiAgICAibGFuZ3VhZ2VfaW5mbyI6IHsNCiAgICAgICJuYW1lIjogImp1bGlhIg0KICAgIH0sDQogICAgInVua25vd24iOiB0cnVlDQogIH0sDQogICJuYmZvcm1hdCI6IDQsDQogICJuYmZvcm1hdF9taW5vciI6IDUsDQogICJ1bmtub3duIjogIuS4lueVjCINCn0=",
+        "afterBase64": "ew0KICJjZWxscyI6IFsNCiAgew0KICAgImNlbGxfdHlwZSI6ICJjb2RlIiwNCiAgICJpZCI6ICJhY3R1YWwtY29kZSIsDQogICAic291cmNlIjogInByaW50KFwi5LiW55WMXCIpIiwNCiAgICJtZXRhZGF0YSI6IHsNCiAgICAidW5rbm93biI6ICJyZXRhaW5lZCINCiAgIH0sDQogICAiZXhlY3V0aW9uX2NvdW50IjogbnVsbCwNCiAgICJvdXRwdXRzIjogW10NCiAgfSwNCiAgew0KICAgImNlbGxfdHlwZSI6ICJtYXJrZG93biIsDQogICAiaWQiOiAiYWN0dWFsLW1kIiwNCiAgICJzb3VyY2UiOiAiIyBub3RlIiwNCiAgICJtZXRhZGF0YSI6IHt9DQogIH0NCiBdLA0KICJtZXRhZGF0YSI6IHsNCiAgImxhbmd1YWdlX2luZm8iOiB7DQogICAibmFtZSI6ICJqdWxpYSINCiAgfSwNCiAgInVua25vd24iOiB0cnVlDQogfSwNCiAibmJmb3JtYXQiOiA0LA0KICJuYmZvcm1hdF9taW5vciI6IDUsDQogInVua25vd24iOiAi5LiW55WMIg0KfQ==",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "bom",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"bom.ipynb\", \"cell_id\": \"actual-code\", \"new_source\": \"print(\\\"\\u4e16\\u754c\\\")\"}",
+        "readBefore": true,
+        "file": "bom.ipynb",
+        "contentBase64": "77u/ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"bom.ipynb\",\"cell_id\":\"actual-code\",\"new_source\":\"print(\\\"\u4e16\u754c\\\")\"}",
+        "validationSource": "{\"result\":true}",
+        "resultSource": "{\"new_source\":\"print(\\\"\u4e16\u754c\\\")\",\"cell_type\":\"code\",\"language\":\"python\",\"edit_mode\":\"replace\",\"error\":\"Notebook is not valid JSON.\",\"cell_id\":\"actual-code\",\"notebook_path\":\"/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/cc-haha-tools-go-bq9x0yau/notebook-home/bom.ipynb\",\"original_file\":\"\",\"updated_file\":\"\"}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":\"Notebook is not valid JSON.\",\"is_error\":true}",
+        "cacheSource": "{\"content\":\"original read\",\"offset\":1,\"timestampMatchesFile\":true}",
+        "beforeBase64": "77u/ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "77u/ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "missing-input",
+        "operation": "parse",
+        "inputSource": "{}"
+      },
+      "observation": {
+        "success": false,
+        "issuesSource": "[{\"expected\":\"string\",\"code\":\"invalid_type\",\"path\":[\"notebook_path\"],\"message\":\"Invalid input: expected string, received undefined\"},{\"expected\":\"string\",\"code\":\"invalid_type\",\"path\":[\"new_source\"],\"message\":\"Invalid input: expected string, received undefined\"}]"
+      }
+    },
+    {
+      "step": {
+        "name": "enum-invalid",
+        "operation": "parse",
+        "inputSource": "{\"notebook_path\": \"x\", \"new_source\": \"x\", \"edit_mode\": \"x\"}"
+      },
+      "observation": {
+        "success": false,
+        "issuesSource": "[{\"code\":\"invalid_value\",\"values\":[\"replace\",\"insert\",\"delete\"],\"path\":[\"edit_mode\"],\"message\":\"Invalid option: expected one of \\\"replace\\\"|\\\"insert\\\"|\\\"delete\\\"\"}]"
+      }
+    },
+    {
+      "step": {
+        "name": "unknown-field",
+        "operation": "parse",
+        "inputSource": "{\"notebook_path\": \"x\", \"new_source\": \"x\", \"extra\": \"x\"}"
+      },
+      "observation": {
+        "success": false,
+        "issuesSource": "[{\"code\":\"unrecognized_keys\",\"keys\":[\"extra\"],\"path\":[],\"message\":\"Unrecognized key: \\\"extra\\\"\"}]"
+      }
+    },
+    {
+      "step": {
+        "name": "null-input",
+        "operation": "parse",
+        "inputSource": "null"
+      },
+      "observation": {
+        "success": false,
+        "issuesSource": "[{\"expected\":\"object\",\"code\":\"invalid_type\",\"path\":[],\"message\":\"Invalid input: expected object, received null\"}]"
+      }
+    },
+    {
+      "step": {
+        "name": "types-invalid",
+        "operation": "parse",
+        "inputSource": "{\"notebook_path\": null, \"cell_id\": 4, \"new_source\": false}"
+      },
+      "observation": {
+        "success": false,
+        "issuesSource": "[{\"expected\":\"string\",\"code\":\"invalid_type\",\"path\":[\"notebook_path\"],\"message\":\"Invalid input: expected string, received null\"},{\"expected\":\"string\",\"code\":\"invalid_type\",\"path\":[\"cell_id\"],\"message\":\"Invalid input: expected string, received number\"},{\"expected\":\"string\",\"code\":\"invalid_type\",\"path\":[\"new_source\"],\"message\":\"Invalid input: expected string, received boolean\"}]"
+      }
+    },
+    {
+      "step": {
+        "name": "read-notebook",
+        "operation": "read",
+        "inputSource": "{\"file_path\": \"read-notebook.ipynb\"}",
+        "file": "read-notebook.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"file_path\":\"read-notebook.ipynb\"}",
+        "resultSource": "{\"type\":\"notebook\",\"file\":{\"filePath\":\"read-notebook.ipynb\",\"cells\":[{\"cellType\":\"code\",\"source\":\"print(1)\\nprint(2)\",\"execution_count\":2,\"cell_id\":\"actual-code\",\"language\":\"julia\",\"outputs\":[{\"output_type\":\"stream\",\"text\":\"one\\ntwo\"}]},{\"cellType\":\"markdown\",\"source\":\"# note\",\"cell_id\":\"actual-md\"}]}}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":[{\"text\":\"<cell id=\\\"actual-code\\\"><language>julia</language>print(1)\\nprint(2)</cell id=\\\"actual-code\\\">\\n\\none\\ntwo\\n<cell id=\\\"actual-md\\\"><cell_type>markdown</cell_type># note</cell id=\\\"actual-md\\\">\",\"type\":\"text\"}]}",
+        "cacheSource": "{\"content\":\"[{\\\"cellType\\\":\\\"code\\\",\\\"source\\\":\\\"print(1)\\\\nprint(2)\\\",\\\"execution_count\\\":2,\\\"cell_id\\\":\\\"actual-code\\\",\\\"language\\\":\\\"julia\\\",\\\"outputs\\\":[{\\\"output_type\\\":\\\"stream\\\",\\\"text\\\":\\\"one\\\\ntwo\\\"}]},{\\\"cellType\\\":\\\"markdown\\\",\\\"source\\\":\\\"# note\\\",\\\"cell_id\\\":\\\"actual-md\\\"}]\",\"offset\":1,\"timestampMatchesFile\":true}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "read-outputs",
+        "operation": "read",
+        "inputSource": "{\"file_path\": \"read-outputs.ipynb\"}",
+        "file": "read-outputs.ipynb",
+        "contentBase64": "eyJjZWxscyI6IFt7ImNlbGxfdHlwZSI6ICJjb2RlIiwgImlkIjogImFjdHVhbC1jb2RlIiwgInNvdXJjZSI6IFsicHJpbnQoMSlcbiIsICJwcmludCgyKSJdLCAibWV0YWRhdGEiOiB7InVua25vd24iOiAicmV0YWluZWQifSwgImV4ZWN1dGlvbl9jb3VudCI6IDIsICJvdXRwdXRzIjogW3sib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwgInRleHQiOiBbImFcbiIsICJiIl19LCB7Im91dHB1dF90eXBlIjogImV4ZWN1dGVfcmVzdWx0IiwgImRhdGEiOiB7InRleHQvcGxhaW4iOiAidmFsdWUiLCAiaW1hZ2UvcG5nIjogIllXIEpqXG4ifX0sIHsib3V0cHV0X3R5cGUiOiAiZGlzcGxheV9kYXRhIiwgImRhdGEiOiB7InRleHQvcGxhaW4iOiBbIngiLCAieSJdLCAiaW1hZ2UvanBlZyI6ICJZV1x0SmoifX0sIHsib3V0cHV0X3R5cGUiOiAiZXJyb3IiLCAiZW5hbWUiOiAiRXJyb3IiLCAiZXZhbHVlIjogImZhaWxlZCIsICJ0cmFjZWJhY2siOiBbImxpbmUxIiwgImxpbmUyIl19XX0sIHsiY2VsbF90eXBlIjogIm1hcmtkb3duIiwgImlkIjogImFjdHVhbC1tZCIsICJzb3VyY2UiOiAiIyBub3RlIiwgIm1ldGFkYXRhIjoge319XSwgIm1ldGFkYXRhIjogeyJsYW5ndWFnZV9pbmZvIjogeyJuYW1lIjogImp1bGlhIn0sICJ1bmtub3duIjogdHJ1ZX0sICJuYmZvcm1hdCI6IDQsICJuYmZvcm1hdF9taW5vciI6IDUsICJ1bmtub3duIjogIuS4lueVjCJ9"
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"file_path\":\"read-outputs.ipynb\"}",
+        "resultSource": "{\"type\":\"notebook\",\"file\":{\"filePath\":\"read-outputs.ipynb\",\"cells\":[{\"cellType\":\"code\",\"source\":\"print(1)\\nprint(2)\",\"execution_count\":2,\"cell_id\":\"actual-code\",\"language\":\"julia\",\"outputs\":[{\"output_type\":\"stream\",\"text\":\"a\\nb\"},{\"output_type\":\"execute_result\",\"text\":\"value\",\"image\":{\"image_data\":\"YWJj\",\"media_type\":\"image/png\"}},{\"output_type\":\"display_data\",\"text\":\"xy\",\"image\":{\"image_data\":\"YWJj\",\"media_type\":\"image/jpeg\"}},{\"output_type\":\"error\",\"text\":\"Error: failed\\nline1\\nline2\"}]},{\"cellType\":\"markdown\",\"source\":\"# note\",\"cell_id\":\"actual-md\"}]}}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":[{\"text\":\"<cell id=\\\"actual-code\\\"><language>julia</language>print(1)\\nprint(2)</cell id=\\\"actual-code\\\">\\n\\na\\nb\\n\\nvalue\",\"type\":\"text\"},{\"type\":\"image\",\"source\":{\"data\":\"YWJj\",\"media_type\":\"image/png\",\"type\":\"base64\"}},{\"text\":\"\\nxy\",\"type\":\"text\"},{\"type\":\"image\",\"source\":{\"data\":\"YWJj\",\"media_type\":\"image/jpeg\",\"type\":\"base64\"}},{\"text\":\"\\nError: failed\\nline1\\nline2\\n<cell id=\\\"actual-md\\\"><cell_type>markdown</cell_type># note</cell id=\\\"actual-md\\\">\",\"type\":\"text\"}]}",
+        "cacheSource": "{\"content\":\"[{\\\"cellType\\\":\\\"code\\\",\\\"source\\\":\\\"print(1)\\\\nprint(2)\\\",\\\"execution_count\\\":2,\\\"cell_id\\\":\\\"actual-code\\\",\\\"language\\\":\\\"julia\\\",\\\"outputs\\\":[{\\\"output_type\\\":\\\"stream\\\",\\\"text\\\":\\\"a\\\\nb\\\"},{\\\"output_type\\\":\\\"execute_result\\\",\\\"text\\\":\\\"value\\\",\\\"image\\\":{\\\"image_data\\\":\\\"YWJj\\\",\\\"media_type\\\":\\\"image/png\\\"}},{\\\"output_type\\\":\\\"display_data\\\",\\\"text\\\":\\\"xy\\\",\\\"image\\\":{\\\"image_data\\\":\\\"YWJj\\\",\\\"media_type\\\":\\\"image/jpeg\\\"}},{\\\"output_type\\\":\\\"error\\\",\\\"text\\\":\\\"Error: failed\\\\nline1\\\\nline2\\\"}]},{\\\"cellType\\\":\\\"markdown\\\",\\\"source\\\":\\\"# note\\\",\\\"cell_id\\\":\\\"actual-md\\\"}]\",\"offset\":1,\"timestampMatchesFile\":true}",
+        "beforeBase64": "eyJjZWxscyI6IFt7ImNlbGxfdHlwZSI6ICJjb2RlIiwgImlkIjogImFjdHVhbC1jb2RlIiwgInNvdXJjZSI6IFsicHJpbnQoMSlcbiIsICJwcmludCgyKSJdLCAibWV0YWRhdGEiOiB7InVua25vd24iOiAicmV0YWluZWQifSwgImV4ZWN1dGlvbl9jb3VudCI6IDIsICJvdXRwdXRzIjogW3sib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwgInRleHQiOiBbImFcbiIsICJiIl19LCB7Im91dHB1dF90eXBlIjogImV4ZWN1dGVfcmVzdWx0IiwgImRhdGEiOiB7InRleHQvcGxhaW4iOiAidmFsdWUiLCAiaW1hZ2UvcG5nIjogIllXIEpqXG4ifX0sIHsib3V0cHV0X3R5cGUiOiAiZGlzcGxheV9kYXRhIiwgImRhdGEiOiB7InRleHQvcGxhaW4iOiBbIngiLCAieSJdLCAiaW1hZ2UvanBlZyI6ICJZV1x0SmoifX0sIHsib3V0cHV0X3R5cGUiOiAiZXJyb3IiLCAiZW5hbWUiOiAiRXJyb3IiLCAiZXZhbHVlIjogImZhaWxlZCIsICJ0cmFjZWJhY2siOiBbImxpbmUxIiwgImxpbmUyIl19XX0sIHsiY2VsbF90eXBlIjogIm1hcmtkb3duIiwgImlkIjogImFjdHVhbC1tZCIsICJzb3VyY2UiOiAiIyBub3RlIiwgIm1ldGFkYXRhIjoge319XSwgIm1ldGFkYXRhIjogeyJsYW5ndWFnZV9pbmZvIjogeyJuYW1lIjogImp1bGlhIn0sICJ1bmtub3duIjogdHJ1ZX0sICJuYmZvcm1hdCI6IDQsICJuYmZvcm1hdF9taW5vciI6IDUsICJ1bmtub3duIjogIuS4lueVjCJ9",
+        "afterBase64": "eyJjZWxscyI6IFt7ImNlbGxfdHlwZSI6ICJjb2RlIiwgImlkIjogImFjdHVhbC1jb2RlIiwgInNvdXJjZSI6IFsicHJpbnQoMSlcbiIsICJwcmludCgyKSJdLCAibWV0YWRhdGEiOiB7InVua25vd24iOiAicmV0YWluZWQifSwgImV4ZWN1dGlvbl9jb3VudCI6IDIsICJvdXRwdXRzIjogW3sib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwgInRleHQiOiBbImFcbiIsICJiIl19LCB7Im91dHB1dF90eXBlIjogImV4ZWN1dGVfcmVzdWx0IiwgImRhdGEiOiB7InRleHQvcGxhaW4iOiAidmFsdWUiLCAiaW1hZ2UvcG5nIjogIllXIEpqXG4ifX0sIHsib3V0cHV0X3R5cGUiOiAiZGlzcGxheV9kYXRhIiwgImRhdGEiOiB7InRleHQvcGxhaW4iOiBbIngiLCAieSJdLCAiaW1hZ2UvanBlZyI6ICJZV1x0SmoifX0sIHsib3V0cHV0X3R5cGUiOiAiZXJyb3IiLCAiZW5hbWUiOiAiRXJyb3IiLCAiZXZhbHVlIjogImZhaWxlZCIsICJ0cmFjZWJhY2siOiBbImxpbmUxIiwgImxpbmUyIl19XX0sIHsiY2VsbF90eXBlIjogIm1hcmtkb3duIiwgImlkIjogImFjdHVhbC1tZCIsICJzb3VyY2UiOiAiIyBub3RlIiwgIm1ldGFkYXRhIjoge319XSwgIm1ldGFkYXRhIjogeyJsYW5ndWFnZV9pbmZvIjogeyJuYW1lIjogImp1bGlhIn0sICJ1bmtub3duIjogdHJ1ZX0sICJuYmZvcm1hdCI6IDQsICJuYmZvcm1hdF9taW5vciI6IDUsICJ1bmtub3duIjogIuS4lueVjCJ9",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "read-large-output",
+        "operation": "read",
+        "inputSource": "{\"file_path\": \"read-large-output.ipynb\"}",
+        "file": "read-large-output.ipynb",
+        "contentBase64": "eyJjZWxscyI6IFt7ImNlbGxfdHlwZSI6ICJjb2RlIiwgImlkIjogImFjdHVhbC1jb2RlIiwgInNvdXJjZSI6IFsicHJpbnQoMSlcbiIsICJwcmludCgyKSJdLCAibWV0YWRhdGEiOiB7InVua25vd24iOiAicmV0YWluZWQifSwgImV4ZWN1dGlvbl9jb3VudCI6IDIsICJvdXRwdXRzIjogW3sib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwgInRleHQiOiAieHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHgifV19LCB7ImNlbGxfdHlwZSI6ICJtYXJrZG93biIsICJpZCI6ICJhY3R1YWwtbWQiLCAic291cmNlIjogIiMgbm90ZSIsICJtZXRhZGF0YSI6IHt9fV0sICJtZXRhZGF0YSI6IHsibGFuZ3VhZ2VfaW5mbyI6IHsibmFtZSI6ICJqdWxpYSJ9LCAidW5rbm93biI6IHRydWV9LCAibmJmb3JtYXQiOiA0LCAibmJmb3JtYXRfbWlub3IiOiA1LCAidW5rbm93biI6ICJcdTRlMTZcdTc1NGMifQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"file_path\":\"read-large-output.ipynb\"}",
+        "resultSource": "{\"type\":\"notebook\",\"file\":{\"filePath\":\"read-large-output.ipynb\",\"cells\":[{\"cellType\":\"code\",\"source\":\"print(1)\\nprint(2)\",\"execution_count\":2,\"cell_id\":\"actual-code\",\"language\":\"julia\",\"outputs\":[{\"output_type\":\"stream\",\"text\":\"Outputs are too large to include. Use Bash with: cat <notebook_path> | jq '.cells[0].outputs'\"}]},{\"cellType\":\"markdown\",\"source\":\"# note\",\"cell_id\":\"actual-md\"}]}}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":[{\"text\":\"<cell id=\\\"actual-code\\\"><language>julia</language>print(1)\\nprint(2)</cell id=\\\"actual-code\\\">\\n\\nOutputs are too large to include. Use Bash with: cat <notebook_path> | jq '.cells[0].outputs'\\n<cell id=\\\"actual-md\\\"><cell_type>markdown</cell_type># note</cell id=\\\"actual-md\\\">\",\"type\":\"text\"}]}",
+        "cacheSource": "{\"content\":\"[{\\\"cellType\\\":\\\"code\\\",\\\"source\\\":\\\"print(1)\\\\nprint(2)\\\",\\\"execution_count\\\":2,\\\"cell_id\\\":\\\"actual-code\\\",\\\"language\\\":\\\"julia\\\",\\\"outputs\\\":[{\\\"output_type\\\":\\\"stream\\\",\\\"text\\\":\\\"Outputs are too large to include. Use Bash with: cat <notebook_path> | jq '.cells[0].outputs'\\\"}]},{\\\"cellType\\\":\\\"markdown\\\",\\\"source\\\":\\\"# note\\\",\\\"cell_id\\\":\\\"actual-md\\\"}]\",\"offset\":1,\"timestampMatchesFile\":true}",
+        "beforeBase64": "eyJjZWxscyI6IFt7ImNlbGxfdHlwZSI6ICJjb2RlIiwgImlkIjogImFjdHVhbC1jb2RlIiwgInNvdXJjZSI6IFsicHJpbnQoMSlcbiIsICJwcmludCgyKSJdLCAibWV0YWRhdGEiOiB7InVua25vd24iOiAicmV0YWluZWQifSwgImV4ZWN1dGlvbl9jb3VudCI6IDIsICJvdXRwdXRzIjogW3sib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwgInRleHQiOiAieHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHgifV19LCB7ImNlbGxfdHlwZSI6ICJtYXJrZG93biIsICJpZCI6ICJhY3R1YWwtbWQiLCAic291cmNlIjogIiMgbm90ZSIsICJtZXRhZGF0YSI6IHt9fV0sICJtZXRhZGF0YSI6IHsibGFuZ3VhZ2VfaW5mbyI6IHsibmFtZSI6ICJqdWxpYSJ9LCAidW5rbm93biI6IHRydWV9LCAibmJmb3JtYXQiOiA0LCAibmJmb3JtYXRfbWlub3IiOiA1LCAidW5rbm93biI6ICJcdTRlMTZcdTc1NGMifQ==",
+        "afterBase64": "eyJjZWxscyI6IFt7ImNlbGxfdHlwZSI6ICJjb2RlIiwgImlkIjogImFjdHVhbC1jb2RlIiwgInNvdXJjZSI6IFsicHJpbnQoMSlcbiIsICJwcmludCgyKSJdLCAibWV0YWRhdGEiOiB7InVua25vd24iOiAicmV0YWluZWQifSwgImV4ZWN1dGlvbl9jb3VudCI6IDIsICJvdXRwdXRzIjogW3sib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwgInRleHQiOiAieHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHgifV19LCB7ImNlbGxfdHlwZSI6ICJtYXJrZG93biIsICJpZCI6ICJhY3R1YWwtbWQiLCAic291cmNlIjogIiMgbm90ZSIsICJtZXRhZGF0YSI6IHt9fV0sICJtZXRhZGF0YSI6IHsibGFuZ3VhZ2VfaW5mbyI6IHsibmFtZSI6ICJqdWxpYSJ9LCAidW5rbm93biI6IHRydWV9LCAibmJmb3JtYXQiOiA0LCAibmJmb3JtYXRfbWlub3IiOiA1LCAidW5rbm93biI6ICJcdTRlMTZcdTc1NGMifQ==",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "read-offset",
+        "operation": "read",
+        "inputSource": "{\"file_path\": \"read-offset.ipynb\", \"offset\": 10, \"limit\": 1}",
+        "file": "read-offset.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"file_path\":\"read-offset.ipynb\",\"offset\":10,\"limit\":1}",
+        "resultSource": "{\"type\":\"notebook\",\"file\":{\"filePath\":\"read-offset.ipynb\",\"cells\":[{\"cellType\":\"code\",\"source\":\"print(1)\\nprint(2)\",\"execution_count\":2,\"cell_id\":\"actual-code\",\"language\":\"julia\",\"outputs\":[{\"output_type\":\"stream\",\"text\":\"one\\ntwo\"}]},{\"cellType\":\"markdown\",\"source\":\"# note\",\"cell_id\":\"actual-md\"}]}}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":[{\"text\":\"<cell id=\\\"actual-code\\\"><language>julia</language>print(1)\\nprint(2)</cell id=\\\"actual-code\\\">\\n\\none\\ntwo\\n<cell id=\\\"actual-md\\\"><cell_type>markdown</cell_type># note</cell id=\\\"actual-md\\\">\",\"type\":\"text\"}]}",
+        "cacheSource": "{\"content\":\"[{\\\"cellType\\\":\\\"code\\\",\\\"source\\\":\\\"print(1)\\\\nprint(2)\\\",\\\"execution_count\\\":2,\\\"cell_id\\\":\\\"actual-code\\\",\\\"language\\\":\\\"julia\\\",\\\"outputs\\\":[{\\\"output_type\\\":\\\"stream\\\",\\\"text\\\":\\\"one\\\\ntwo\\\"}]},{\\\"cellType\\\":\\\"markdown\\\",\\\"source\\\":\\\"# note\\\",\\\"cell_id\\\":\\\"actual-md\\\"}]\",\"offset\":10,\"limit\":1,\"timestampMatchesFile\":true}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "randomCalls": 0
+      }
+    },
+    {
+      "step": {
+        "name": "past-end-call",
+        "operation": "call",
+        "inputSource": "{\"notebook_path\": \"past-end-call.ipynb\", \"cell_id\": \"cell-2\", \"new_source\": \"append\", \"edit_mode\": \"replace\"}",
+        "readBefore": true,
+        "skipValidation": true,
+        "random": 0.5,
+        "file": "past-end-call.ipynb",
+        "contentBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ=="
+      },
+      "observation": {
+        "success": true,
+        "dataSource": "{\"notebook_path\":\"past-end-call.ipynb\",\"cell_id\":\"cell-2\",\"new_source\":\"append\",\"edit_mode\":\"replace\"}",
+        "resultSource": "{\"new_source\":\"append\",\"cell_type\":\"code\",\"language\":\"julia\",\"edit_mode\":\"insert\",\"cell_id\":\"i\",\"error\":\"\",\"notebook_path\":\"/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/cc-haha-tools-go-bq9x0yau/notebook-home/past-end-call.ipynb\",\"original_file\":\"{\\n  \\\"cells\\\": [\\n    {\\n      \\\"cell_type\\\": \\\"code\\\",\\n      \\\"id\\\": \\\"actual-code\\\",\\n      \\\"source\\\": [\\n        \\\"print(1)\\\\n\\\",\\n        \\\"print(2)\\\"\\n      ],\\n      \\\"metadata\\\": {\\n        \\\"unknown\\\": \\\"retained\\\"\\n      },\\n      \\\"execution_count\\\": 2,\\n      \\\"outputs\\\": [\\n        {\\n          \\\"output_type\\\": \\\"stream\\\",\\n          \\\"name\\\": \\\"stdout\\\",\\n          \\\"text\\\": [\\n            \\\"one\\\\n\\\",\\n            \\\"two\\\"\\n          ]\\n        }\\n      ]\\n    },\\n    {\\n      \\\"cell_type\\\": \\\"markdown\\\",\\n      \\\"id\\\": \\\"actual-md\\\",\\n      \\\"source\\\": \\\"# note\\\",\\n      \\\"metadata\\\": {}\\n    }\\n  ],\\n  \\\"metadata\\\": {\\n    \\\"language_info\\\": {\\n      \\\"name\\\": \\\"julia\\\"\\n    },\\n    \\\"unknown\\\": true\\n  },\\n  \\\"nbformat\\\": 4,\\n  \\\"nbformat_minor\\\": 5,\\n  \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"updated_file\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": [\\n    \\\"print(1)\\\\n\\\",\\n    \\\"print(2)\\\"\\n   ],\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": 2,\\n   \\\"outputs\\\": [\\n    {\\n     \\\"output_type\\\": \\\"stream\\\",\\n     \\\"name\\\": \\\"stdout\\\",\\n     \\\"text\\\": [\\n      \\\"one\\\\n\\\",\\n      \\\"two\\\"\\n     ]\\n    }\\n   ]\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"i\\\",\\n   \\\"source\\\": \\\"append\\\",\\n   \\\"metadata\\\": {},\\n   \\\"execution_count\\\": null,\\n   \\\"outputs\\\": []\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\"}",
+        "mappedSource": "{\"tool_use_id\":\"actual-notebook-tool-use-id\",\"type\":\"tool_result\",\"content\":\"Inserted cell i with append\"}",
+        "cacheSource": "{\"content\":\"{\\n \\\"cells\\\": [\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"actual-code\\\",\\n   \\\"source\\\": [\\n    \\\"print(1)\\\\n\\\",\\n    \\\"print(2)\\\"\\n   ],\\n   \\\"metadata\\\": {\\n    \\\"unknown\\\": \\\"retained\\\"\\n   },\\n   \\\"execution_count\\\": 2,\\n   \\\"outputs\\\": [\\n    {\\n     \\\"output_type\\\": \\\"stream\\\",\\n     \\\"name\\\": \\\"stdout\\\",\\n     \\\"text\\\": [\\n      \\\"one\\\\n\\\",\\n      \\\"two\\\"\\n     ]\\n    }\\n   ]\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"markdown\\\",\\n   \\\"id\\\": \\\"actual-md\\\",\\n   \\\"source\\\": \\\"# note\\\",\\n   \\\"metadata\\\": {}\\n  },\\n  {\\n   \\\"cell_type\\\": \\\"code\\\",\\n   \\\"id\\\": \\\"i\\\",\\n   \\\"source\\\": \\\"append\\\",\\n   \\\"metadata\\\": {},\\n   \\\"execution_count\\\": null,\\n   \\\"outputs\\\": []\\n  }\\n ],\\n \\\"metadata\\\": {\\n  \\\"language_info\\\": {\\n   \\\"name\\\": \\\"julia\\\"\\n  },\\n  \\\"unknown\\\": true\\n },\\n \\\"nbformat\\\": 4,\\n \\\"nbformat_minor\\\": 5,\\n \\\"unknown\\\": \\\"\u4e16\u754c\\\"\\n}\",\"timestampMatchesFile\":true}",
+        "beforeBase64": "ewogICJjZWxscyI6IFsKICAgIHsKICAgICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgICAgInNvdXJjZSI6IFsKICAgICAgICAicHJpbnQoMSlcbiIsCiAgICAgICAgInByaW50KDIpIgogICAgICBdLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInVua25vd24iOiAicmV0YWluZWQiCiAgICAgIH0sCiAgICAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAgICAib3V0cHV0cyI6IFsKICAgICAgICB7CiAgICAgICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAgICAgICJuYW1lIjogInN0ZG91dCIsCiAgICAgICAgICAidGV4dCI6IFsKICAgICAgICAgICAgIm9uZVxuIiwKICAgICAgICAgICAgInR3byIKICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAgICAiaWQiOiAiYWN0dWFsLW1kIiwKICAgICAgInNvdXJjZSI6ICIjIG5vdGUiLAogICAgICAibWV0YWRhdGEiOiB7fQogICAgfQogIF0sCiAgIm1ldGFkYXRhIjogewogICAgImxhbmd1YWdlX2luZm8iOiB7CiAgICAgICJuYW1lIjogImp1bGlhIgogICAgfSwKICAgICJ1bmtub3duIjogdHJ1ZQogIH0sCiAgIm5iZm9ybWF0IjogNCwKICAibmJmb3JtYXRfbWlub3IiOiA1LAogICJ1bmtub3duIjogIuS4lueVjCIKfQ==",
+        "afterBase64": "ewogImNlbGxzIjogWwogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgImlkIjogImFjdHVhbC1jb2RlIiwKICAgInNvdXJjZSI6IFsKICAgICJwcmludCgxKVxuIiwKICAgICJwcmludCgyKSIKICAgXSwKICAgIm1ldGFkYXRhIjogewogICAgInVua25vd24iOiAicmV0YWluZWQiCiAgIH0sCiAgICJleGVjdXRpb25fY291bnQiOiAyLAogICAib3V0cHV0cyI6IFsKICAgIHsKICAgICAib3V0cHV0X3R5cGUiOiAic3RyZWFtIiwKICAgICAibmFtZSI6ICJzdGRvdXQiLAogICAgICJ0ZXh0IjogWwogICAgICAib25lXG4iLAogICAgICAidHdvIgogICAgIF0KICAgIH0KICAgXQogIH0sCiAgewogICAiY2VsbF90eXBlIjogIm1hcmtkb3duIiwKICAgImlkIjogImFjdHVhbC1tZCIsCiAgICJzb3VyY2UiOiAiIyBub3RlIiwKICAgIm1ldGFkYXRhIjoge30KICB9LAogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgImlkIjogImkiLAogICAic291cmNlIjogImFwcGVuZCIsCiAgICJtZXRhZGF0YSI6IHt9LAogICAiZXhlY3V0aW9uX2NvdW50IjogbnVsbCwKICAgIm91dHB1dHMiOiBbXQogIH0KIF0sCiAibWV0YWRhdGEiOiB7CiAgImxhbmd1YWdlX2luZm8iOiB7CiAgICJuYW1lIjogImp1bGlhIgogIH0sCiAgInVua25vd24iOiB0cnVlCiB9LAogIm5iZm9ybWF0IjogNCwKICJuYmZvcm1hdF9taW5vciI6IDUsCiAidW5rbm93biI6ICLkuJbnlYwiCn0=",
+        "randomCalls": 1
+      }
+    }
+  ],
+  "sourceOnly": {
+    "consumer": "actual NotebookEditTool inputSchema/validateInput/call/map/toolToAPISchema + FileReadTool notebook call + notebook.ts",
+    "runtime": "v24.3.0",
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [],
+      "absentReads": []
+    }
+  }
+}

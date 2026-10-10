@@ -1,0 +1,178 @@
+{
+  "cases": [
+    {
+      "input": {
+        "fault": "none",
+        "queue": {
+          "type": "queue-operation",
+          "operation": "enqueue",
+          "timestamp": "2023-11-14T22:13:20.000Z",
+          "sessionId": "00000000-0000-4000-8000-000000000000",
+          "content": "original next queued prompt"
+        }
+      },
+      "expected": {
+        "fault": "none",
+        "error": null,
+        "counts": {
+          "open": 1,
+          "stat": 1,
+          "append": 1,
+          "close": 1
+        },
+        "disk": "{\"type\":\"queue-operation\",\"operation\":\"enqueue\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"sessionId\":\"00000000-0000-4000-8000-000000000000\",\"content\":\"original next queued prompt\"}\n"
+      },
+      "rawFile": "/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/transcript-tracked-flush-next/source/runs/2026-10-02T20-58-48.118Z/none-1-raw.json"
+    },
+    {
+      "input": {
+        "fault": "stat",
+        "queue": {
+          "type": "queue-operation",
+          "operation": "enqueue",
+          "timestamp": "2023-11-14T22:13:20.000Z",
+          "sessionId": "00000000-0000-4000-8000-000000000000",
+          "content": "original next queued prompt"
+        }
+      },
+      "expected": {
+        "fault": "stat",
+        "error": {
+          "name": "Error",
+          "message": "fixture physical drain completion failure: stat",
+          "code": "EIO",
+          "syscall": "stat",
+          "path": "<private-home>/.claude/projects/<private-project>/00000000-0000-4000-8000-000000000000.jsonl"
+        },
+        "counts": {
+          "open": 1,
+          "stat": 1,
+          "append": 0,
+          "close": 1
+        },
+        "disk": ""
+      },
+      "rawFile": "/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/transcript-tracked-flush-next/source/runs/2026-10-02T20-58-48.118Z/stat-1-raw.json"
+    },
+    {
+      "input": {
+        "fault": "append",
+        "queue": {
+          "type": "queue-operation",
+          "operation": "enqueue",
+          "timestamp": "2023-11-14T22:13:20.000Z",
+          "sessionId": "00000000-0000-4000-8000-000000000000",
+          "content": "original next queued prompt"
+        }
+      },
+      "expected": {
+        "fault": "append",
+        "error": {
+          "name": "Error",
+          "message": "fixture physical drain completion failure: appendFile",
+          "code": "EIO",
+          "syscall": "appendFile",
+          "path": "<private-home>/.claude/projects/<private-project>/00000000-0000-4000-8000-000000000000.jsonl"
+        },
+        "counts": {
+          "open": 1,
+          "stat": 1,
+          "append": 1,
+          "close": 1
+        },
+        "disk": "{\"type\":\"queue-operation\",\"operation\":\"enqueue\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"sessionId\":\"00000000-0000-4000-8000-000000000000\",\"content\":\"original next queued prompt\"}\n"
+      },
+      "rawFile": "/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/transcript-tracked-flush-next/source/runs/2026-10-02T20-58-48.118Z/append-1-raw.json"
+    },
+    {
+      "input": {
+        "fault": "close",
+        "queue": {
+          "type": "queue-operation",
+          "operation": "enqueue",
+          "timestamp": "2023-11-14T22:13:20.000Z",
+          "sessionId": "00000000-0000-4000-8000-000000000000",
+          "content": "original next queued prompt"
+        }
+      },
+      "expected": {
+        "fault": "close",
+        "error": {
+          "name": "Error",
+          "message": "fixture physical drain completion failure: close",
+          "code": "EBADF",
+          "syscall": "close",
+          "path": "<private-home>/.claude/projects/<private-project>/00000000-0000-4000-8000-000000000000.jsonl"
+        },
+        "counts": {
+          "open": 1,
+          "stat": 1,
+          "append": 1,
+          "close": 1
+        },
+        "disk": "{\"type\":\"queue-operation\",\"operation\":\"enqueue\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"sessionId\":\"00000000-0000-4000-8000-000000000000\",\"content\":\"original next queued prompt\"}\n"
+      },
+      "rawFile": "/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/transcript-tracked-flush-next/source/runs/2026-10-02T20-58-48.118Z/close-1-raw.json"
+    },
+    {
+      "input": {
+        "fault": "stat-close",
+        "queue": {
+          "type": "queue-operation",
+          "operation": "enqueue",
+          "timestamp": "2023-11-14T22:13:20.000Z",
+          "sessionId": "00000000-0000-4000-8000-000000000000",
+          "content": "original next queued prompt"
+        }
+      },
+      "expected": {
+        "fault": "stat-close",
+        "error": {
+          "name": "Error",
+          "message": "fixture physical drain completion failure: close",
+          "code": "EBADF",
+          "syscall": "close",
+          "path": "<private-home>/.claude/projects/<private-project>/00000000-0000-4000-8000-000000000000.jsonl"
+        },
+        "counts": {
+          "open": 1,
+          "stat": 1,
+          "append": 0,
+          "close": 1
+        },
+        "disk": ""
+      },
+      "rawFile": "/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/transcript-tracked-flush-next/source/runs/2026-10-02T20-58-48.118Z/stat-close-1-raw.json"
+    },
+    {
+      "input": {
+        "fault": "append-close",
+        "queue": {
+          "type": "queue-operation",
+          "operation": "enqueue",
+          "timestamp": "2023-11-14T22:13:20.000Z",
+          "sessionId": "00000000-0000-4000-8000-000000000000",
+          "content": "original next queued prompt"
+        }
+      },
+      "expected": {
+        "fault": "append-close",
+        "error": {
+          "name": "Error",
+          "message": "fixture physical drain completion failure: close",
+          "code": "EBADF",
+          "syscall": "close",
+          "path": "<private-home>/.claude/projects/<private-project>/00000000-0000-4000-8000-000000000000.jsonl"
+        },
+        "counts": {
+          "open": 1,
+          "stat": 1,
+          "append": 1,
+          "close": 1
+        },
+        "disk": "{\"type\":\"queue-operation\",\"operation\":\"enqueue\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"sessionId\":\"00000000-0000-4000-8000-000000000000\",\"content\":\"original next queued prompt\"}\n"
+      },
+      "rawFile": "/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/transcript-tracked-flush-next/source/runs/2026-10-02T20-58-48.118Z/append-close-1-raw.json"
+    }
+  ]
+}

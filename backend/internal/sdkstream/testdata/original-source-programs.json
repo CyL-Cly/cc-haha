@@ -1,0 +1,4912 @@
+[
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+        }
+      ],
+      "cancelError": null,
+      "abortBody": false,
+      "name": "buffered-three-and-eof",
+      "operations": [
+        {
+          "op": "next",
+          "id": "n1"
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        },
+        {
+          "op": "next",
+          "id": "n2"
+        },
+        {
+          "op": "await",
+          "id": "n2"
+        },
+        {
+          "op": "next",
+          "id": "n3"
+        },
+        {
+          "op": "await",
+          "id": "n3"
+        },
+        {
+          "op": "next",
+          "id": "eof"
+        },
+        {
+          "op": "await",
+          "id": "eof"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "buffered-three-and-eof",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+          }
+        ],
+        "operations": [
+          {
+            "op": "next",
+            "id": "n1"
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          },
+          {
+            "op": "next",
+            "id": "n2"
+          },
+          {
+            "op": "await",
+            "id": "n2"
+          },
+          {
+            "op": "next",
+            "id": "n3"
+          },
+          {
+            "op": "await",
+            "id": "n3"
+          },
+          {
+            "op": "next",
+            "id": "eof"
+          },
+          {
+            "op": "await",
+            "id": "eof"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 415,
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f9982227d7d0a0a6576656e743a206d6573736167655f73746f700a646174613a207b2274797065223a226d6573736167655f73746f70227d0a0a"
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n2",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n2",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n2",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n3",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n3",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n3",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n3",
+          "source": "{\"value\":{\"type\":\"message_stop\"},\"done\":false}",
+          "valueReference": 3,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n3",
+          "source": "{\"value\":{\"type\":\"message_stop\"},\"done\":false}",
+          "valueReference": 3,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "eof",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "eof",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "eof",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 2
+        },
+        {
+          "phase": "physical-eof",
+          "number": 2
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "pullCount": 2
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 2,
+          "signalAborted": false
+        }
+      ],
+      "results": [
+        {
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "n3",
+          "source": "{\"value\":{\"type\":\"message_stop\"},\"done\":false}",
+          "valueReference": 3,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 2,
+          "signalAborted": false
+        }
+      ],
+      "final": {
+        "pullCount": 2,
+        "cancelCount": 0,
+        "signalAborted": false,
+        "signalReason": null,
+        "bodyLocked": false,
+        "observedIDs": [
+          "n1",
+          "n2",
+          "n3",
+          "eof"
+        ]
+      }
+    },
+    "sourceCode": 0
+  },
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+          "closeAfter": true
+        }
+      ],
+      "cancelError": null,
+      "abortBody": false,
+      "name": "closed-body-buffered-events-and-eof",
+      "operations": [
+        {
+          "op": "next",
+          "id": "n1"
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        },
+        {
+          "op": "next",
+          "id": "n2"
+        },
+        {
+          "op": "await",
+          "id": "n2"
+        },
+        {
+          "op": "next",
+          "id": "n3"
+        },
+        {
+          "op": "await",
+          "id": "n3"
+        },
+        {
+          "op": "next",
+          "id": "eof"
+        },
+        {
+          "op": "await",
+          "id": "eof"
+        },
+        {
+          "op": "next",
+          "id": "doneAgain"
+        },
+        {
+          "op": "await",
+          "id": "doneAgain"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "closed-body-buffered-events-and-eof",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+            "closeAfter": true
+          }
+        ],
+        "operations": [
+          {
+            "op": "next",
+            "id": "n1"
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          },
+          {
+            "op": "next",
+            "id": "n2"
+          },
+          {
+            "op": "await",
+            "id": "n2"
+          },
+          {
+            "op": "next",
+            "id": "n3"
+          },
+          {
+            "op": "await",
+            "id": "n3"
+          },
+          {
+            "op": "next",
+            "id": "eof"
+          },
+          {
+            "op": "await",
+            "id": "eof"
+          },
+          {
+            "op": "next",
+            "id": "doneAgain"
+          },
+          {
+            "op": "await",
+            "id": "doneAgain"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 415,
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f9982227d7d0a0a6576656e743a206d6573736167655f73746f700a646174613a207b2274797065223a226d6573736167655f73746f70227d0a0a"
+        },
+        {
+          "phase": "physical-close-after-chunk",
+          "number": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n2",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n2",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n2",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n3",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n3",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n3",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n3",
+          "source": "{\"value\":{\"type\":\"message_stop\"},\"done\":false}",
+          "valueReference": 3,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n3",
+          "source": "{\"value\":{\"type\":\"message_stop\"},\"done\":false}",
+          "valueReference": 3,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "eof",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "eof",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "eof",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "doneAgain",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "doneAgain",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "doneAgain",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "doneAgain",
+          "observed": true,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "doneAgain",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        }
+      ],
+      "results": [
+        {
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "n3",
+          "source": "{\"value\":{\"type\":\"message_stop\"},\"done\":false}",
+          "valueReference": 3,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "doneAgain",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        }
+      ],
+      "final": {
+        "pullCount": 1,
+        "cancelCount": 0,
+        "signalAborted": false,
+        "signalReason": null,
+        "bodyLocked": false,
+        "observedIDs": [
+          "n1",
+          "n2",
+          "n3",
+          "eof",
+          "doneAgain"
+        ]
+      }
+    },
+    "sourceCode": 0
+  },
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+        }
+      ],
+      "cancelError": null,
+      "abortBody": false,
+      "name": "queued-three-next-demands",
+      "operations": [
+        {
+          "op": "next",
+          "id": "n1"
+        },
+        {
+          "op": "next",
+          "id": "n2"
+        },
+        {
+          "op": "next",
+          "id": "n3"
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        },
+        {
+          "op": "await",
+          "id": "n2"
+        },
+        {
+          "op": "await",
+          "id": "n3"
+        },
+        {
+          "op": "next",
+          "id": "eof"
+        },
+        {
+          "op": "await",
+          "id": "eof"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "queued-three-next-demands",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+          }
+        ],
+        "operations": [
+          {
+            "op": "next",
+            "id": "n1"
+          },
+          {
+            "op": "next",
+            "id": "n2"
+          },
+          {
+            "op": "next",
+            "id": "n3"
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          },
+          {
+            "op": "await",
+            "id": "n2"
+          },
+          {
+            "op": "await",
+            "id": "n3"
+          },
+          {
+            "op": "next",
+            "id": "eof"
+          },
+          {
+            "op": "await",
+            "id": "eof"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n2",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n2",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n3",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n3",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 415,
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f9982227d7d0a0a6576656e743a206d6573736167655f73746f700a646174613a207b2274797065223a226d6573736167655f73746f70227d0a0a"
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n2",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n3",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n3",
+          "source": "{\"value\":{\"type\":\"message_stop\"},\"done\":false}",
+          "valueReference": 3,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n3",
+          "source": "{\"value\":{\"type\":\"message_stop\"},\"done\":false}",
+          "valueReference": 3,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "eof",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "eof",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "eof",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 2
+        },
+        {
+          "phase": "physical-eof",
+          "number": 2
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "pullCount": 2
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 2,
+          "signalAborted": false
+        }
+      ],
+      "results": [
+        {
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "n3",
+          "source": "{\"value\":{\"type\":\"message_stop\"},\"done\":false}",
+          "valueReference": 3,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 2,
+          "signalAborted": false
+        }
+      ],
+      "final": {
+        "pullCount": 2,
+        "cancelCount": 0,
+        "signalAborted": false,
+        "signalReason": null,
+        "bodyLocked": false,
+        "observedIDs": [
+          "n1",
+          "n2",
+          "n3",
+          "eof"
+        ]
+      }
+    },
+    "sourceCode": 0
+  },
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+        }
+      ],
+      "cancelError": null,
+      "abortBody": false,
+      "name": "return-after-first-buffered",
+      "operations": [
+        {
+          "op": "next",
+          "id": "n1"
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        },
+        {
+          "op": "return",
+          "id": "r",
+          "value": {
+            "originalReturn": 7
+          }
+        },
+        {
+          "op": "await",
+          "id": "r"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "return-after-first-buffered",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+          }
+        ],
+        "operations": [
+          {
+            "op": "next",
+            "id": "n1"
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          },
+          {
+            "op": "return",
+            "id": "r",
+            "value": {
+              "originalReturn": 7
+            }
+          },
+          {
+            "op": "await",
+            "id": "r"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 415,
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f9982227d7d0a0a6576656e743a206d6573736167655f73746f700a646174613a207b2274797065223a226d6573736167655f73746f70227d0a0a"
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "return",
+          "id": "r",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "r",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "r",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "physical-cancel-start",
+          "count": 1,
+          "reason": {
+            "undefined": true
+          }
+        },
+        {
+          "phase": "physical-cancel-fulfilled",
+          "count": 1
+        },
+        {
+          "phase": "controller-abort",
+          "reason": "AbortError: The operation was aborted."
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "r",
+          "source": "{\"value\":{\"originalReturn\":7},\"done\":true}",
+          "valueReference": 2,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "r",
+          "source": "{\"value\":{\"originalReturn\":7},\"done\":true}",
+          "valueReference": 2,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "results": [
+        {
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "r",
+          "source": "{\"value\":{\"originalReturn\":7},\"done\":true}",
+          "valueReference": 2,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "final": {
+        "pullCount": 1,
+        "cancelCount": 1,
+        "signalAborted": true,
+        "signalReason": "AbortError: The operation was aborted.",
+        "bodyLocked": false,
+        "observedIDs": [
+          "n1",
+          "r"
+        ]
+      }
+    },
+    "sourceCode": 0
+  },
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+        }
+      ],
+      "cancelError": null,
+      "abortBody": false,
+      "name": "return-before-start-then-new-iterator",
+      "operations": [
+        {
+          "op": "return",
+          "id": "r",
+          "value": "original-return"
+        },
+        {
+          "op": "await",
+          "id": "r"
+        },
+        {
+          "op": "new-iterator"
+        },
+        {
+          "op": "next",
+          "id": "n1"
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        },
+        {
+          "op": "next",
+          "id": "n2"
+        },
+        {
+          "op": "await",
+          "id": "n2"
+        },
+        {
+          "op": "next",
+          "id": "n3"
+        },
+        {
+          "op": "await",
+          "id": "n3"
+        },
+        {
+          "op": "next",
+          "id": "eof"
+        },
+        {
+          "op": "await",
+          "id": "eof"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "return-before-start-then-new-iterator",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+          }
+        ],
+        "operations": [
+          {
+            "op": "return",
+            "id": "r",
+            "value": "original-return"
+          },
+          {
+            "op": "await",
+            "id": "r"
+          },
+          {
+            "op": "new-iterator"
+          },
+          {
+            "op": "next",
+            "id": "n1"
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          },
+          {
+            "op": "next",
+            "id": "n2"
+          },
+          {
+            "op": "await",
+            "id": "n2"
+          },
+          {
+            "op": "next",
+            "id": "n3"
+          },
+          {
+            "op": "await",
+            "id": "n3"
+          },
+          {
+            "op": "next",
+            "id": "eof"
+          },
+          {
+            "op": "await",
+            "id": "eof"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "return",
+          "id": "r",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "r",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "r",
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "r",
+          "source": "{\"value\":\"original-return\",\"done\":true}",
+          "valueReference": null,
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "r",
+          "source": "{\"value\":\"original-return\",\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 0,
+          "signalAborted": false
+        },
+        {
+          "phase": "original-new-iterator"
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 415,
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f9982227d7d0a0a6576656e743a206d6573736167655f73746f700a646174613a207b2274797065223a226d6573736167655f73746f70227d0a0a"
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n2",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n2",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n2",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n3",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n3",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n3",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n3",
+          "source": "{\"value\":{\"type\":\"message_stop\"},\"done\":false}",
+          "valueReference": 3,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n3",
+          "source": "{\"value\":{\"type\":\"message_stop\"},\"done\":false}",
+          "valueReference": 3,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "eof",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "eof",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "eof",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 2
+        },
+        {
+          "phase": "physical-eof",
+          "number": 2
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "pullCount": 2
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 2,
+          "signalAborted": false
+        }
+      ],
+      "results": [
+        {
+          "id": "r",
+          "source": "{\"value\":\"original-return\",\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 0,
+          "signalAborted": false
+        },
+        {
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "n3",
+          "source": "{\"value\":{\"type\":\"message_stop\"},\"done\":false}",
+          "valueReference": 3,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 2,
+          "signalAborted": false
+        }
+      ],
+      "final": {
+        "pullCount": 2,
+        "cancelCount": 0,
+        "signalAborted": false,
+        "signalReason": null,
+        "bodyLocked": false,
+        "observedIDs": [
+          "r",
+          "n1",
+          "n2",
+          "n3",
+          "eof"
+        ]
+      }
+    },
+    "sourceCode": 0
+  },
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+        }
+      ],
+      "cancelError": null,
+      "abortBody": false,
+      "name": "throw-after-yield",
+      "operations": [
+        {
+          "op": "next",
+          "id": "n1"
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        },
+        {
+          "op": "throw",
+          "id": "t",
+          "name": "Error",
+          "message": "original-consumer-throw"
+        },
+        {
+          "op": "await",
+          "id": "t"
+        },
+        {
+          "op": "next",
+          "id": "done"
+        },
+        {
+          "op": "await",
+          "id": "done"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "throw-after-yield",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+          }
+        ],
+        "operations": [
+          {
+            "op": "next",
+            "id": "n1"
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          },
+          {
+            "op": "throw",
+            "id": "t",
+            "name": "Error",
+            "message": "original-consumer-throw"
+          },
+          {
+            "op": "await",
+            "id": "t"
+          },
+          {
+            "op": "next",
+            "id": "done"
+          },
+          {
+            "op": "await",
+            "id": "done"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 415,
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f9982227d7d0a0a6576656e743a206d6573736167655f73746f700a646174613a207b2274797065223a226d6573736167655f73746f70227d0a0a"
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "throw",
+          "id": "t",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "t",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "t",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "physical-cancel-start",
+          "count": 1,
+          "reason": {
+            "undefined": true
+          }
+        },
+        {
+          "phase": "physical-cancel-fulfilled",
+          "count": 1
+        },
+        {
+          "phase": "controller-abort",
+          "reason": "AbortError: The operation was aborted."
+        },
+        {
+          "phase": "promise-observer-rejected",
+          "id": "t",
+          "error": {
+            "name": "Error",
+            "message": "original-consumer-throw",
+            "string": "Error: original-consumer-throw",
+            "stack": "Error: original-consumer-throw\n    at errorFrom (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:32:131)\n    at invoke (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:69:26)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:80:54",
+            "reference": 2
+          },
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-rejected",
+          "id": "t",
+          "error": {
+            "name": "Error",
+            "message": "original-consumer-throw",
+            "string": "Error: original-consumer-throw",
+            "stack": "Error: original-consumer-throw\n    at errorFrom (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:32:131)\n    at invoke (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:69:26)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:80:54",
+            "reference": 2
+          },
+          "sameObserverError": true,
+          "pullCount": 1,
+          "signalAborted": true
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "done",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "done",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "done",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "done",
+          "observed": true,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "done",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "results": [
+        {
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "t",
+          "error": {
+            "name": "Error",
+            "message": "original-consumer-throw",
+            "string": "Error: original-consumer-throw",
+            "stack": "Error: original-consumer-throw\n    at errorFrom (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:32:131)\n    at invoke (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:69:26)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:80:54",
+            "reference": 2
+          },
+          "sameObserverError": true,
+          "pullCount": 1,
+          "signalAborted": true
+        },
+        {
+          "id": "done",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "final": {
+        "pullCount": 1,
+        "cancelCount": 1,
+        "signalAborted": true,
+        "signalReason": "AbortError: The operation was aborted.",
+        "bodyLocked": false,
+        "observedIDs": [
+          "n1",
+          "t",
+          "done"
+        ]
+      }
+    },
+    "sourceCode": 0
+  },
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+        }
+      ],
+      "cancelError": null,
+      "abortBody": false,
+      "name": "throw-aborterror-after-yield",
+      "operations": [
+        {
+          "op": "next",
+          "id": "n1"
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        },
+        {
+          "op": "throw",
+          "id": "t",
+          "name": "AbortError",
+          "message": "original-abort-throw"
+        },
+        {
+          "op": "await",
+          "id": "t"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "throw-aborterror-after-yield",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+          }
+        ],
+        "operations": [
+          {
+            "op": "next",
+            "id": "n1"
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          },
+          {
+            "op": "throw",
+            "id": "t",
+            "name": "AbortError",
+            "message": "original-abort-throw"
+          },
+          {
+            "op": "await",
+            "id": "t"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 415,
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f9982227d7d0a0a6576656e743a206d6573736167655f73746f700a646174613a207b2274797065223a226d6573736167655f73746f70227d0a0a"
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "throw",
+          "id": "t",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "t",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "t",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "physical-cancel-start",
+          "count": 1,
+          "reason": {
+            "undefined": true
+          }
+        },
+        {
+          "phase": "physical-cancel-fulfilled",
+          "count": 1
+        },
+        {
+          "phase": "controller-abort",
+          "reason": "AbortError: The operation was aborted."
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "t",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "t",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "results": [
+        {
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "t",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "final": {
+        "pullCount": 1,
+        "cancelCount": 1,
+        "signalAborted": true,
+        "signalReason": "AbortError: The operation was aborted.",
+        "bodyLocked": false,
+        "observedIDs": [
+          "n1",
+          "t"
+        ]
+      }
+    },
+    "sourceCode": 0
+  },
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\n",
+          "gate": true
+        }
+      ],
+      "cancelError": null,
+      "abortBody": true,
+      "name": "quiet-abort-pending-body",
+      "operations": [
+        {
+          "op": "next",
+          "id": "n1"
+        },
+        {
+          "op": "wait-pull",
+          "number": 1
+        },
+        {
+          "op": "abort",
+          "reason": "original-caller-abort"
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        },
+        {
+          "op": "next",
+          "id": "eof"
+        },
+        {
+          "op": "await",
+          "id": "eof"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "quiet-abort-pending-body",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\n",
+            "gate": true
+          }
+        ],
+        "operations": [
+          {
+            "op": "next",
+            "id": "n1"
+          },
+          {
+            "op": "wait-pull",
+            "number": 1
+          },
+          {
+            "op": "abort",
+            "reason": "original-caller-abort"
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          },
+          {
+            "op": "next",
+            "id": "eof"
+          },
+          {
+            "op": "await",
+            "id": "eof"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": true
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "external-original-pull-ready",
+          "number": 1
+        },
+        {
+          "phase": "controller-abort",
+          "reason": "original-caller-abort"
+        },
+        {
+          "phase": "physical-body-abort-error"
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n1",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n1",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "eof",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "eof",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "eof",
+          "observed": true,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "results": [
+        {
+          "id": "n1",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        },
+        {
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "final": {
+        "pullCount": 1,
+        "cancelCount": 0,
+        "signalAborted": true,
+        "signalReason": "original-caller-abort",
+        "bodyLocked": false,
+        "observedIDs": [
+          "n1",
+          "eof"
+        ]
+      }
+    },
+    "sourceCode": 0
+  },
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+        }
+      ],
+      "cancelError": null,
+      "abortBody": false,
+      "name": "signal-only-abort-does-not-rewrite-buffer",
+      "operations": [
+        {
+          "op": "next",
+          "id": "n1"
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        },
+        {
+          "op": "abort",
+          "reason": "signal-only"
+        },
+        {
+          "op": "next",
+          "id": "n2"
+        },
+        {
+          "op": "await",
+          "id": "n2"
+        },
+        {
+          "op": "next",
+          "id": "n3"
+        },
+        {
+          "op": "await",
+          "id": "n3"
+        },
+        {
+          "op": "next",
+          "id": "eof"
+        },
+        {
+          "op": "await",
+          "id": "eof"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "signal-only-abort-does-not-rewrite-buffer",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+          }
+        ],
+        "operations": [
+          {
+            "op": "next",
+            "id": "n1"
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          },
+          {
+            "op": "abort",
+            "reason": "signal-only"
+          },
+          {
+            "op": "next",
+            "id": "n2"
+          },
+          {
+            "op": "await",
+            "id": "n2"
+          },
+          {
+            "op": "next",
+            "id": "n3"
+          },
+          {
+            "op": "await",
+            "id": "n3"
+          },
+          {
+            "op": "next",
+            "id": "eof"
+          },
+          {
+            "op": "await",
+            "id": "eof"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 415,
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f9982227d7d0a0a6576656e743a206d6573736167655f73746f700a646174613a207b2274797065223a226d6573736167655f73746f70227d0a0a"
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "controller-abort",
+          "reason": "signal-only"
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n2",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n2",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n2",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n3",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n3",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n3",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n3",
+          "source": "{\"value\":{\"type\":\"message_stop\"},\"done\":false}",
+          "valueReference": 3,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n3",
+          "source": "{\"value\":{\"type\":\"message_stop\"},\"done\":false}",
+          "valueReference": 3,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "eof",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "eof",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "eof",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 2
+        },
+        {
+          "phase": "physical-eof",
+          "number": 2
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "pullCount": 2
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 2,
+          "signalAborted": true
+        }
+      ],
+      "results": [
+        {
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        },
+        {
+          "id": "n3",
+          "source": "{\"value\":{\"type\":\"message_stop\"},\"done\":false}",
+          "valueReference": 3,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        },
+        {
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 2,
+          "signalAborted": true
+        }
+      ],
+      "final": {
+        "pullCount": 2,
+        "cancelCount": 0,
+        "signalAborted": true,
+        "signalReason": "signal-only",
+        "bodyLocked": false,
+        "observedIDs": [
+          "n1",
+          "n2",
+          "n3",
+          "eof"
+        ]
+      }
+    },
+    "sourceCode": 0
+  },
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\n",
+          "gate": true
+        }
+      ],
+      "cancelError": null,
+      "abortBody": false,
+      "name": "return-queued-behind-held-next",
+      "operations": [
+        {
+          "op": "next",
+          "id": "n1"
+        },
+        {
+          "op": "return",
+          "id": "r",
+          "value": "queued-original-return"
+        },
+        {
+          "op": "wait-pull",
+          "number": 1
+        },
+        {
+          "op": "held-snapshot"
+        },
+        {
+          "op": "release",
+          "number": 1
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        },
+        {
+          "op": "await",
+          "id": "r"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "return-queued-behind-held-next",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\n",
+            "gate": true
+          }
+        ],
+        "operations": [
+          {
+            "op": "next",
+            "id": "n1"
+          },
+          {
+            "op": "return",
+            "id": "r",
+            "value": "queued-original-return"
+          },
+          {
+            "op": "wait-pull",
+            "number": 1
+          },
+          {
+            "op": "held-snapshot"
+          },
+          {
+            "op": "release",
+            "number": 1
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          },
+          {
+            "op": "await",
+            "id": "r"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "return",
+          "id": "r",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "r",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "r",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "external-original-pull-ready",
+          "number": 1
+        },
+        {
+          "phase": "held-snapshot",
+          "observed": [],
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "external-original-release",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 364,
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f9982227d7d0a0a"
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "physical-cancel-start",
+          "count": 1,
+          "reason": {
+            "undefined": true
+          }
+        },
+        {
+          "phase": "physical-cancel-fulfilled",
+          "count": 1
+        },
+        {
+          "phase": "controller-abort",
+          "reason": "AbortError: The operation was aborted."
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "r",
+          "source": "{\"value\":\"queued-original-return\",\"done\":true}",
+          "valueReference": null,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "r",
+          "source": "{\"value\":\"queued-original-return\",\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "results": [
+        {
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "r",
+          "source": "{\"value\":\"queued-original-return\",\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "final": {
+        "pullCount": 1,
+        "cancelCount": 1,
+        "signalAborted": true,
+        "signalReason": "AbortError: The operation was aborted.",
+        "bodyLocked": false,
+        "observedIDs": [
+          "n1",
+          "r"
+        ]
+      }
+    },
+    "sourceCode": 0
+  },
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\n",
+          "gate": true
+        }
+      ],
+      "cancelError": null,
+      "abortBody": false,
+      "name": "body-nonabort-error",
+      "operations": [
+        {
+          "op": "next",
+          "id": "n1"
+        },
+        {
+          "op": "wait-pull",
+          "number": 1
+        },
+        {
+          "op": "body-error",
+          "name": "Error",
+          "message": "original-body-error"
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "body-nonabort-error",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\n",
+            "gate": true
+          }
+        ],
+        "operations": [
+          {
+            "op": "next",
+            "id": "n1"
+          },
+          {
+            "op": "wait-pull",
+            "number": 1
+          },
+          {
+            "op": "body-error",
+            "name": "Error",
+            "message": "original-body-error"
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "external-original-pull-ready",
+          "number": 1
+        },
+        {
+          "phase": "external-original-body-error",
+          "name": "Error",
+          "message": "original-body-error"
+        },
+        {
+          "phase": "controller-abort",
+          "reason": "AbortError: The operation was aborted."
+        },
+        {
+          "phase": "promise-observer-rejected",
+          "id": "n1",
+          "error": {
+            "name": "Error",
+            "message": "original-body-error",
+            "string": "Error: original-body-error",
+            "stack": "Error: original-body-error\n    at errorFrom (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:32:131)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:94:79",
+            "reference": 1
+          },
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-rejected",
+          "id": "n1",
+          "error": {
+            "name": "Error",
+            "message": "original-body-error",
+            "string": "Error: original-body-error",
+            "stack": "Error: original-body-error\n    at errorFrom (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:32:131)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:94:79",
+            "reference": 1
+          },
+          "sameObserverError": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "results": [
+        {
+          "id": "n1",
+          "error": {
+            "name": "Error",
+            "message": "original-body-error",
+            "string": "Error: original-body-error",
+            "stack": "Error: original-body-error\n    at errorFrom (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:32:131)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:94:79",
+            "reference": 1
+          },
+          "sameObserverError": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "final": {
+        "pullCount": 1,
+        "cancelCount": 0,
+        "signalAborted": true,
+        "signalReason": "AbortError: The operation was aborted.",
+        "bodyLocked": false,
+        "observedIDs": [
+          "n1"
+        ]
+      }
+    },
+    "sourceCode": 0
+  },
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "source": "event: error\ndata: {\"type\":\"error\",\"error\":{\"type\":\"api_error\",\"message\":\"original-wire-error\"}}\n\n"
+        }
+      ],
+      "cancelError": null,
+      "abortBody": false,
+      "name": "sdk-error-event",
+      "operations": [
+        {
+          "op": "next",
+          "id": "n1"
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "sdk-error-event",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "source": "event: error\ndata: {\"type\":\"error\",\"error\":{\"type\":\"api_error\",\"message\":\"original-wire-error\"}}\n\n"
+          }
+        ],
+        "operations": [
+          {
+            "op": "next",
+            "id": "n1"
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 98,
+          "hex": "6576656e743a206572726f720a646174613a207b2274797065223a226572726f72222c226572726f72223a7b2274797065223a226170695f6572726f72222c226d657373616765223a226f726967696e616c2d776972652d6572726f72227d7d0a0a"
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "physical-cancel-start",
+          "count": 1,
+          "reason": {
+            "undefined": true
+          }
+        },
+        {
+          "phase": "physical-cancel-fulfilled",
+          "count": 1
+        },
+        {
+          "phase": "controller-abort",
+          "reason": "AbortError: The operation was aborted."
+        },
+        {
+          "phase": "promise-observer-rejected",
+          "id": "n1",
+          "error": {
+            "name": "Error",
+            "message": "{\"type\":\"error\",\"error\":{\"type\":\"api_error\",\"message\":\"original-wire-error\"}}",
+            "string": "Error: {\"type\":\"error\",\"error\":{\"type\":\"api_error\",\"message\":\"original-wire-error\"}}",
+            "stack": "Error: {\"type\":\"error\",\"error\":{\"type\":\"api_error\",\"message\":\"original-wire-error\"}}\n    at iterator (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/node_modules/@anthropic-ai/sdk/core/streaming.mjs:59:35)",
+            "reference": 1
+          },
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-rejected",
+          "id": "n1",
+          "error": {
+            "name": "Error",
+            "message": "{\"type\":\"error\",\"error\":{\"type\":\"api_error\",\"message\":\"original-wire-error\"}}",
+            "string": "Error: {\"type\":\"error\",\"error\":{\"type\":\"api_error\",\"message\":\"original-wire-error\"}}",
+            "stack": "Error: {\"type\":\"error\",\"error\":{\"type\":\"api_error\",\"message\":\"original-wire-error\"}}\n    at iterator (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/node_modules/@anthropic-ai/sdk/core/streaming.mjs:59:35)",
+            "reference": 1
+          },
+          "sameObserverError": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "results": [
+        {
+          "id": "n1",
+          "error": {
+            "name": "Error",
+            "message": "{\"type\":\"error\",\"error\":{\"type\":\"api_error\",\"message\":\"original-wire-error\"}}",
+            "string": "Error: {\"type\":\"error\",\"error\":{\"type\":\"api_error\",\"message\":\"original-wire-error\"}}",
+            "stack": "Error: {\"type\":\"error\",\"error\":{\"type\":\"api_error\",\"message\":\"original-wire-error\"}}\n    at iterator (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/node_modules/@anthropic-ai/sdk/core/streaming.mjs:59:35)",
+            "reference": 1
+          },
+          "sameObserverError": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "final": {
+        "pullCount": 1,
+        "cancelCount": 1,
+        "signalAborted": true,
+        "signalReason": "AbortError: The operation was aborted.",
+        "bodyLocked": false,
+        "observedIDs": [
+          "n1"
+        ]
+      }
+    },
+    "sourceCode": 0
+  },
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {not-json}\n\n"
+        }
+      ],
+      "cancelError": null,
+      "abortBody": false,
+      "name": "invalid-json-event",
+      "operations": [
+        {
+          "op": "next",
+          "id": "n1"
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "invalid-json-event",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {not-json}\n\n"
+          }
+        ],
+        "operations": [
+          {
+            "op": "next",
+            "id": "n1"
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 39,
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b6e6f742d6a736f6e7d0a0a"
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "physical-cancel-start",
+          "count": 1,
+          "reason": {
+            "undefined": true
+          }
+        },
+        {
+          "phase": "physical-cancel-fulfilled",
+          "count": 1
+        },
+        {
+          "phase": "controller-abort",
+          "reason": "AbortError: The operation was aborted."
+        },
+        {
+          "phase": "promise-observer-rejected",
+          "id": "n1",
+          "error": {
+            "name": "SyntaxError",
+            "message": "JSON Parse error: Expected '}'",
+            "string": "SyntaxError: JSON Parse error: Expected '}'",
+            "stack": "SyntaxError: JSON Parse error: Expected '}'\n    at <parse> (:0)\n    at parse (unknown)\n    at iterator (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/node_modules/@anthropic-ai/sdk/core/streaming.mjs:47:40)",
+            "reference": 1
+          },
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-rejected",
+          "id": "n1",
+          "error": {
+            "name": "SyntaxError",
+            "message": "JSON Parse error: Expected '}'",
+            "string": "SyntaxError: JSON Parse error: Expected '}'",
+            "stack": "SyntaxError: JSON Parse error: Expected '}'\n    at <parse> (:0)\n    at parse (unknown)\n    at iterator (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/node_modules/@anthropic-ai/sdk/core/streaming.mjs:47:40)",
+            "reference": 1
+          },
+          "sameObserverError": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "results": [
+        {
+          "id": "n1",
+          "error": {
+            "name": "SyntaxError",
+            "message": "JSON Parse error: Expected '}'",
+            "string": "SyntaxError: JSON Parse error: Expected '}'",
+            "stack": "SyntaxError: JSON Parse error: Expected '}'\n    at <parse> (:0)\n    at parse (unknown)\n    at iterator (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/node_modules/@anthropic-ai/sdk/core/streaming.mjs:47:40)",
+            "reference": 1
+          },
+          "sameObserverError": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "final": {
+        "pullCount": 1,
+        "cancelCount": 1,
+        "signalAborted": true,
+        "signalReason": "AbortError: The operation was aborted.",
+        "bodyLocked": false,
+        "observedIDs": [
+          "n1"
+        ]
+      }
+    },
+    "sourceCode": 0
+  },
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f"
+        },
+        {
+          "hex": "9982227d7d0a0a6576656e743a206d6573736167655f73746f700a646174613a207b2274797065223a226d6573736167655f73746f70227d0a0a"
+        }
+      ],
+      "cancelError": null,
+      "abortBody": false,
+      "name": "split-utf8-original-chunks",
+      "operations": [
+        {
+          "op": "next",
+          "id": "n1"
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        },
+        {
+          "op": "next",
+          "id": "n2"
+        },
+        {
+          "op": "await",
+          "id": "n2"
+        },
+        {
+          "op": "next",
+          "id": "n3"
+        },
+        {
+          "op": "await",
+          "id": "n3"
+        },
+        {
+          "op": "next",
+          "id": "eof"
+        },
+        {
+          "op": "await",
+          "id": "eof"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "split-utf8-original-chunks",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f"
+          },
+          {
+            "hex": "9982227d7d0a0a6576656e743a206d6573736167655f73746f700a646174613a207b2274797065223a226d6573736167655f73746f70227d0a0a"
+          }
+        ],
+        "operations": [
+          {
+            "op": "next",
+            "id": "n1"
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          },
+          {
+            "op": "next",
+            "id": "n2"
+          },
+          {
+            "op": "await",
+            "id": "n2"
+          },
+          {
+            "op": "next",
+            "id": "n3"
+          },
+          {
+            "op": "await",
+            "id": "n3"
+          },
+          {
+            "op": "next",
+            "id": "eof"
+          },
+          {
+            "op": "await",
+            "id": "eof"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 357,
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f"
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n2",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n2",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n2",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 2
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 2,
+          "bytes": 58,
+          "hex": "9982227d7d0a0a6576656e743a206d6573736167655f73746f700a646174613a207b2274797065223a226d6573736167655f73746f70227d0a0a"
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "pullCount": 2
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "sameObserverValue": true,
+          "pullCount": 2,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n3",
+          "pullCount": 2
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n3",
+          "promise": true,
+          "observed": false,
+          "pullCount": 2
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n3",
+          "observed": false,
+          "pullCount": 2
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n3",
+          "source": "{\"value\":{\"type\":\"message_stop\"},\"done\":false}",
+          "valueReference": 3,
+          "pullCount": 2
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n3",
+          "source": "{\"value\":{\"type\":\"message_stop\"},\"done\":false}",
+          "valueReference": 3,
+          "sameObserverValue": true,
+          "pullCount": 2,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "eof",
+          "pullCount": 2
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "eof",
+          "promise": true,
+          "observed": false,
+          "pullCount": 2
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "eof",
+          "observed": false,
+          "pullCount": 2
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 3
+        },
+        {
+          "phase": "physical-eof",
+          "number": 3
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "pullCount": 3
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 3,
+          "signalAborted": false
+        }
+      ],
+      "results": [
+        {
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "sameObserverValue": true,
+          "pullCount": 2,
+          "signalAborted": false
+        },
+        {
+          "id": "n3",
+          "source": "{\"value\":{\"type\":\"message_stop\"},\"done\":false}",
+          "valueReference": 3,
+          "sameObserverValue": true,
+          "pullCount": 2,
+          "signalAborted": false
+        },
+        {
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 3,
+          "signalAborted": false
+        }
+      ],
+      "final": {
+        "pullCount": 3,
+        "cancelCount": 0,
+        "signalAborted": false,
+        "signalReason": null,
+        "bodyLocked": false,
+        "observedIDs": [
+          "n1",
+          "n2",
+          "n3",
+          "eof"
+        ]
+      }
+    },
+    "sourceCode": 0
+  },
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+        }
+      ],
+      "cancelError": null,
+      "abortBody": false,
+      "name": "shared-yield-object-mutation",
+      "operations": [
+        {
+          "op": "next",
+          "id": "n1",
+          "mutate": {
+            "observedMutation": "original-consumer-write"
+          }
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        },
+        {
+          "op": "next",
+          "id": "n2"
+        },
+        {
+          "op": "await",
+          "id": "n2"
+        },
+        {
+          "op": "return",
+          "id": "r",
+          "value": null
+        },
+        {
+          "op": "await",
+          "id": "r"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "shared-yield-object-mutation",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+          }
+        ],
+        "operations": [
+          {
+            "op": "next",
+            "id": "n1",
+            "mutate": {
+              "observedMutation": "original-consumer-write"
+            }
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          },
+          {
+            "op": "next",
+            "id": "n2"
+          },
+          {
+            "op": "await",
+            "id": "n2"
+          },
+          {
+            "op": "return",
+            "id": "r",
+            "value": null
+          },
+          {
+            "op": "await",
+            "id": "r"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 415,
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f9982227d7d0a0a6576656e743a206d6573736167655f73746f700a646174613a207b2274797065223a226d6573736167655f73746f70227d0a0a"
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}},\"observedMutation\":\"original-consumer-write\"},\"done\":false}",
+          "valueReference": 1,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}},\"observedMutation\":\"original-consumer-write\"},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n2",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n2",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n2",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "return",
+          "id": "r",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "r",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "r",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "physical-cancel-start",
+          "count": 1,
+          "reason": {
+            "undefined": true
+          }
+        },
+        {
+          "phase": "physical-cancel-fulfilled",
+          "count": 1
+        },
+        {
+          "phase": "controller-abort",
+          "reason": "AbortError: The operation was aborted."
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "r",
+          "source": "{\"value\":null,\"done\":true}",
+          "valueReference": null,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "r",
+          "source": "{\"value\":null,\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "results": [
+        {
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}},\"observedMutation\":\"original-consumer-write\"},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "n2",
+          "source": "{\"value\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}},\"done\":false}",
+          "valueReference": 2,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "r",
+          "source": "{\"value\":null,\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "final": {
+        "pullCount": 1,
+        "cancelCount": 1,
+        "signalAborted": true,
+        "signalReason": "AbortError: The operation was aborted.",
+        "bodyLocked": false,
+        "observedIDs": [
+          "n1",
+          "n2",
+          "r"
+        ]
+      }
+    },
+    "sourceCode": 0
+  },
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+        }
+      ],
+      "cancelError": null,
+      "abortBody": false,
+      "name": "consumed-stream-rejects-reiteration",
+      "operations": [
+        {
+          "op": "next",
+          "id": "n1"
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        },
+        {
+          "op": "return",
+          "id": "r",
+          "value": null
+        },
+        {
+          "op": "await",
+          "id": "r"
+        },
+        {
+          "op": "new-iterator"
+        },
+        {
+          "op": "next",
+          "id": "again"
+        },
+        {
+          "op": "await",
+          "id": "again"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "consumed-stream-rejects-reiteration",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+          }
+        ],
+        "operations": [
+          {
+            "op": "next",
+            "id": "n1"
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          },
+          {
+            "op": "return",
+            "id": "r",
+            "value": null
+          },
+          {
+            "op": "await",
+            "id": "r"
+          },
+          {
+            "op": "new-iterator"
+          },
+          {
+            "op": "next",
+            "id": "again"
+          },
+          {
+            "op": "await",
+            "id": "again"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 415,
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f9982227d7d0a0a6576656e743a206d6573736167655f73746f700a646174613a207b2274797065223a226d6573736167655f73746f70227d0a0a"
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "return",
+          "id": "r",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "r",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "r",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "physical-cancel-start",
+          "count": 1,
+          "reason": {
+            "undefined": true
+          }
+        },
+        {
+          "phase": "physical-cancel-fulfilled",
+          "count": 1
+        },
+        {
+          "phase": "controller-abort",
+          "reason": "AbortError: The operation was aborted."
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "r",
+          "source": "{\"value\":null,\"done\":true}",
+          "valueReference": null,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "r",
+          "source": "{\"value\":null,\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        },
+        {
+          "phase": "original-new-iterator"
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "again",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "again",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-rejected",
+          "id": "again",
+          "error": {
+            "name": "Error",
+            "message": "Cannot iterate over a consumed stream, use `.tee()` to split the stream.",
+            "string": "Error: Cannot iterate over a consumed stream, use `.tee()` to split the stream.",
+            "stack": "Error: Cannot iterate over a consumed stream, use `.tee()` to split the stream.\n    at iterator (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/node_modules/@anthropic-ai/sdk/core/streaming.mjs:24:27)\n    at next (native:1:11)\n    at invoke (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:67:44)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:80:54",
+            "reference": 2
+          },
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "again",
+          "observed": true,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-rejected",
+          "id": "again",
+          "error": {
+            "name": "Error",
+            "message": "Cannot iterate over a consumed stream, use `.tee()` to split the stream.",
+            "string": "Error: Cannot iterate over a consumed stream, use `.tee()` to split the stream.",
+            "stack": "Error: Cannot iterate over a consumed stream, use `.tee()` to split the stream.\n    at iterator (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/node_modules/@anthropic-ai/sdk/core/streaming.mjs:24:27)\n    at next (native:1:11)\n    at invoke (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:67:44)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:80:54",
+            "reference": 2
+          },
+          "sameObserverError": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "results": [
+        {
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "r",
+          "source": "{\"value\":null,\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        },
+        {
+          "id": "again",
+          "error": {
+            "name": "Error",
+            "message": "Cannot iterate over a consumed stream, use `.tee()` to split the stream.",
+            "string": "Error: Cannot iterate over a consumed stream, use `.tee()` to split the stream.",
+            "stack": "Error: Cannot iterate over a consumed stream, use `.tee()` to split the stream.\n    at iterator (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/node_modules/@anthropic-ai/sdk/core/streaming.mjs:24:27)\n    at next (native:1:11)\n    at invoke (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:67:44)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:80:54",
+            "reference": 2
+          },
+          "sameObserverError": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "final": {
+        "pullCount": 1,
+        "cancelCount": 1,
+        "signalAborted": true,
+        "signalReason": "AbortError: The operation was aborted.",
+        "bodyLocked": false,
+        "observedIDs": [
+          "n1",
+          "r",
+          "again"
+        ]
+      }
+    },
+    "sourceCode": 0
+  },
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+        }
+      ],
+      "cancelError": {
+        "name": "Error",
+        "message": "original-cancel-failure"
+      },
+      "abortBody": false,
+      "name": "return-cancel-error-priority",
+      "operations": [
+        {
+          "op": "next",
+          "id": "n1"
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        },
+        {
+          "op": "return",
+          "id": "r",
+          "value": "original-return"
+        },
+        {
+          "op": "await",
+          "id": "r"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "return-cancel-error-priority",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+          }
+        ],
+        "operations": [
+          {
+            "op": "next",
+            "id": "n1"
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          },
+          {
+            "op": "return",
+            "id": "r",
+            "value": "original-return"
+          },
+          {
+            "op": "await",
+            "id": "r"
+          }
+        ],
+        "cancelError": {
+          "name": "Error",
+          "message": "original-cancel-failure"
+        },
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 415,
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f9982227d7d0a0a6576656e743a206d6573736167655f73746f700a646174613a207b2274797065223a226d6573736167655f73746f70227d0a0a"
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "return",
+          "id": "r",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "r",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "r",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "physical-cancel-start",
+          "count": 1,
+          "reason": {
+            "undefined": true
+          }
+        },
+        {
+          "phase": "physical-cancel-reject",
+          "error": {
+            "name": "Error",
+            "message": "original-cancel-failure",
+            "string": "Error: original-cancel-failure",
+            "stack": "Error: original-cancel-failure\n    at errorFrom (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:32:131)\n    at cancel (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:51:46)\n    at <anonymous> (native:1:11)\n    at <anonymous> (native:1:11)\n    at <anonymous> (native:1:11)\n    at ReadableStreamAsyncIterator (native:2:153)",
+            "reference": 2
+          }
+        },
+        {
+          "phase": "controller-abort",
+          "reason": "AbortError: The operation was aborted."
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "r",
+          "source": "{\"value\":\"original-return\",\"done\":true}",
+          "valueReference": null,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "r",
+          "source": "{\"value\":\"original-return\",\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "results": [
+        {
+          "id": "n1",
+          "source": "{\"value\":{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "r",
+          "source": "{\"value\":\"original-return\",\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "final": {
+        "pullCount": 1,
+        "cancelCount": 1,
+        "signalAborted": true,
+        "signalReason": "AbortError: The operation was aborted.",
+        "bodyLocked": false,
+        "observedIDs": [
+          "n1",
+          "r"
+        ]
+      }
+    },
+    "sourceCode": 1
+  },
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+        }
+      ],
+      "cancelError": null,
+      "abortBody": false,
+      "name": "for-await-break",
+      "operations": [
+        {
+          "op": "consume-for-await",
+          "action": "break"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "for-await-break",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+          }
+        ],
+        "operations": [
+          {
+            "op": "consume-for-await",
+            "action": "break"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 415,
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f9982227d7d0a0a6576656e743a206d6573736167655f73746f700a646174613a207b2274797065223a226d6573736167655f73746f70227d0a0a"
+        },
+        {
+          "phase": "actual-for-await-consumer-value",
+          "source": "{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}",
+          "reference": 1,
+          "pullCount": 1
+        },
+        {
+          "phase": "physical-cancel-start",
+          "count": 1,
+          "reason": {
+            "undefined": true
+          }
+        },
+        {
+          "phase": "physical-cancel-fulfilled",
+          "count": 1
+        },
+        {
+          "phase": "controller-abort",
+          "reason": "AbortError: The operation was aborted."
+        },
+        {
+          "phase": "actual-for-await-closed",
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "results": [],
+      "final": {
+        "pullCount": 1,
+        "cancelCount": 1,
+        "signalAborted": true,
+        "signalReason": "AbortError: The operation was aborted.",
+        "bodyLocked": false,
+        "observedIDs": []
+      }
+    },
+    "sourceCode": 0
+  },
+  {
+    "input": {
+      "layer": "sdk",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+        }
+      ],
+      "cancelError": {
+        "name": "Error",
+        "message": "original-cancel-failure"
+      },
+      "abortBody": false,
+      "name": "for-await-bodythrow-preserves-bodyerror",
+      "operations": [
+        {
+          "op": "consume-for-await",
+          "action": "throw"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "for-await-bodythrow-preserves-bodyerror",
+        "layer": "sdk",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+          }
+        ],
+        "operations": [
+          {
+            "op": "consume-for-await",
+            "action": "throw"
+          }
+        ],
+        "cancelError": {
+          "name": "Error",
+          "message": "original-cancel-failure"
+        },
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 415,
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f9982227d7d0a0a6576656e743a206d6573736167655f73746f700a646174613a207b2274797065223a226d6573736167655f73746f70227d0a0a"
+        },
+        {
+          "phase": "actual-for-await-consumer-value",
+          "source": "{\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}",
+          "reference": 1,
+          "pullCount": 1
+        },
+        {
+          "phase": "physical-cancel-start",
+          "count": 1,
+          "reason": {
+            "undefined": true
+          }
+        },
+        {
+          "phase": "physical-cancel-reject",
+          "error": {
+            "name": "Error",
+            "message": "original-cancel-failure",
+            "string": "Error: original-cancel-failure",
+            "stack": "Error: original-cancel-failure\n    at errorFrom (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:32:131)\n    at cancel (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:51:46)\n    at <anonymous> (native:1:11)\n    at <anonymous> (native:1:11)\n    at <anonymous> (native:1:11)\n    at ReadableStreamAsyncIterator (native:2:153)",
+            "reference": 2
+          }
+        },
+        {
+          "phase": "controller-abort",
+          "reason": "AbortError: The operation was aborted."
+        },
+        {
+          "phase": "actual-for-await-error",
+          "error": {
+            "name": "Error",
+            "message": "original-for-await-body-error",
+            "string": "Error: original-for-await-body-error",
+            "stack": "Error: original-for-await-body-error\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/model-stream-demand-owner-design-next/source.fixture.ts:101:48",
+            "reference": 3
+          },
+          "pullCount": 1,
+          "signalAborted": true
+        }
+      ],
+      "results": [],
+      "final": {
+        "pullCount": 1,
+        "cancelCount": 1,
+        "signalAborted": true,
+        "signalReason": "AbortError: The operation was aborted.",
+        "bodyLocked": false,
+        "observedIDs": []
+      }
+    },
+    "sourceCode": 1
+  },
+  {
+    "input": {
+      "layer": "sse",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+        }
+      ],
+      "cancelError": null,
+      "abortBody": false,
+      "name": "sse-helper-buffered-eof",
+      "operations": [
+        {
+          "op": "next",
+          "id": "n1"
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        },
+        {
+          "op": "next",
+          "id": "n2"
+        },
+        {
+          "op": "await",
+          "id": "n2"
+        },
+        {
+          "op": "next",
+          "id": "n3"
+        },
+        {
+          "op": "await",
+          "id": "n3"
+        },
+        {
+          "op": "next",
+          "id": "eof"
+        },
+        {
+          "op": "await",
+          "id": "eof"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "sse-helper-buffered-eof",
+        "layer": "sse",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+          }
+        ],
+        "operations": [
+          {
+            "op": "next",
+            "id": "n1"
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          },
+          {
+            "op": "next",
+            "id": "n2"
+          },
+          {
+            "op": "await",
+            "id": "n2"
+          },
+          {
+            "op": "next",
+            "id": "n3"
+          },
+          {
+            "op": "await",
+            "id": "n3"
+          },
+          {
+            "op": "next",
+            "id": "eof"
+          },
+          {
+            "op": "await",
+            "id": "eof"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 415,
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f9982227d7d0a0a6576656e743a206d6573736167655f73746f700a646174613a207b2274797065223a226d6573736167655f73746f70227d0a0a"
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"event\":\"message_start\",\"data\":\"{\\\"type\\\":\\\"message_start\\\",\\\"message\\\":{\\\"id\\\":\\\"msg_original\\\",\\\"type\\\":\\\"message\\\",\\\"role\\\":\\\"assistant\\\",\\\"model\\\":\\\"fixture-model\\\",\\\"content\\\":[],\\\"stop_reason\\\":null,\\\"stop_sequence\\\":null,\\\"usage\\\":{\\\"input_tokens\\\":3,\\\"output_tokens\\\":0}}}\",\"raw\":[\"event: message_start\",\"data: {\\\"type\\\":\\\"message_start\\\",\\\"message\\\":{\\\"id\\\":\\\"msg_original\\\",\\\"type\\\":\\\"message\\\",\\\"role\\\":\\\"assistant\\\",\\\"model\\\":\\\"fixture-model\\\",\\\"content\\\":[],\\\"stop_reason\\\":null,\\\"stop_sequence\\\":null,\\\"usage\\\":{\\\"input_tokens\\\":3,\\\"output_tokens\\\":0}}}\"]},\"done\":false}",
+          "valueReference": 1,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"event\":\"message_start\",\"data\":\"{\\\"type\\\":\\\"message_start\\\",\\\"message\\\":{\\\"id\\\":\\\"msg_original\\\",\\\"type\\\":\\\"message\\\",\\\"role\\\":\\\"assistant\\\",\\\"model\\\":\\\"fixture-model\\\",\\\"content\\\":[],\\\"stop_reason\\\":null,\\\"stop_sequence\\\":null,\\\"usage\\\":{\\\"input_tokens\\\":3,\\\"output_tokens\\\":0}}}\",\"raw\":[\"event: message_start\",\"data: {\\\"type\\\":\\\"message_start\\\",\\\"message\\\":{\\\"id\\\":\\\"msg_original\\\",\\\"type\\\":\\\"message\\\",\\\"role\\\":\\\"assistant\\\",\\\"model\\\":\\\"fixture-model\\\",\\\"content\\\":[],\\\"stop_reason\\\":null,\\\"stop_sequence\\\":null,\\\"usage\\\":{\\\"input_tokens\\\":3,\\\"output_tokens\\\":0}}}\"]},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n2",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n2",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n2",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n2",
+          "source": "{\"value\":{\"event\":\"content_block_delta\",\"data\":\"{\\\"type\\\":\\\"content_block_delta\\\",\\\"index\\\":0,\\\"delta\\\":{\\\"type\\\":\\\"text_delta\\\",\\\"text\\\":\\\"é🙂\\\"}}\",\"raw\":[\"event: content_block_delta\",\"data: {\\\"type\\\":\\\"content_block_delta\\\",\\\"index\\\":0,\\\"delta\\\":{\\\"type\\\":\\\"text_delta\\\",\\\"text\\\":\\\"é🙂\\\"}}\"]},\"done\":false}",
+          "valueReference": 2,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n2",
+          "source": "{\"value\":{\"event\":\"content_block_delta\",\"data\":\"{\\\"type\\\":\\\"content_block_delta\\\",\\\"index\\\":0,\\\"delta\\\":{\\\"type\\\":\\\"text_delta\\\",\\\"text\\\":\\\"é🙂\\\"}}\",\"raw\":[\"event: content_block_delta\",\"data: {\\\"type\\\":\\\"content_block_delta\\\",\\\"index\\\":0,\\\"delta\\\":{\\\"type\\\":\\\"text_delta\\\",\\\"text\\\":\\\"é🙂\\\"}}\"]},\"done\":false}",
+          "valueReference": 2,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n3",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n3",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n3",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n3",
+          "source": "{\"value\":{\"event\":\"message_stop\",\"data\":\"{\\\"type\\\":\\\"message_stop\\\"}\",\"raw\":[\"event: message_stop\",\"data: {\\\"type\\\":\\\"message_stop\\\"}\"]},\"done\":false}",
+          "valueReference": 3,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n3",
+          "source": "{\"value\":{\"event\":\"message_stop\",\"data\":\"{\\\"type\\\":\\\"message_stop\\\"}\",\"raw\":[\"event: message_stop\",\"data: {\\\"type\\\":\\\"message_stop\\\"}\"]},\"done\":false}",
+          "valueReference": 3,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "eof",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "eof",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "eof",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 2
+        },
+        {
+          "phase": "physical-eof",
+          "number": 2
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "pullCount": 2
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 2,
+          "signalAborted": false
+        }
+      ],
+      "results": [
+        {
+          "id": "n1",
+          "source": "{\"value\":{\"event\":\"message_start\",\"data\":\"{\\\"type\\\":\\\"message_start\\\",\\\"message\\\":{\\\"id\\\":\\\"msg_original\\\",\\\"type\\\":\\\"message\\\",\\\"role\\\":\\\"assistant\\\",\\\"model\\\":\\\"fixture-model\\\",\\\"content\\\":[],\\\"stop_reason\\\":null,\\\"stop_sequence\\\":null,\\\"usage\\\":{\\\"input_tokens\\\":3,\\\"output_tokens\\\":0}}}\",\"raw\":[\"event: message_start\",\"data: {\\\"type\\\":\\\"message_start\\\",\\\"message\\\":{\\\"id\\\":\\\"msg_original\\\",\\\"type\\\":\\\"message\\\",\\\"role\\\":\\\"assistant\\\",\\\"model\\\":\\\"fixture-model\\\",\\\"content\\\":[],\\\"stop_reason\\\":null,\\\"stop_sequence\\\":null,\\\"usage\\\":{\\\"input_tokens\\\":3,\\\"output_tokens\\\":0}}}\"]},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "n2",
+          "source": "{\"value\":{\"event\":\"content_block_delta\",\"data\":\"{\\\"type\\\":\\\"content_block_delta\\\",\\\"index\\\":0,\\\"delta\\\":{\\\"type\\\":\\\"text_delta\\\",\\\"text\\\":\\\"é🙂\\\"}}\",\"raw\":[\"event: content_block_delta\",\"data: {\\\"type\\\":\\\"content_block_delta\\\",\\\"index\\\":0,\\\"delta\\\":{\\\"type\\\":\\\"text_delta\\\",\\\"text\\\":\\\"é🙂\\\"}}\"]},\"done\":false}",
+          "valueReference": 2,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "n3",
+          "source": "{\"value\":{\"event\":\"message_stop\",\"data\":\"{\\\"type\\\":\\\"message_stop\\\"}\",\"raw\":[\"event: message_stop\",\"data: {\\\"type\\\":\\\"message_stop\\\"}\"]},\"done\":false}",
+          "valueReference": 3,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "eof",
+          "source": "{\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 2,
+          "signalAborted": false
+        }
+      ],
+      "final": {
+        "pullCount": 2,
+        "cancelCount": 0,
+        "signalAborted": false,
+        "signalReason": null,
+        "bodyLocked": false,
+        "observedIDs": [
+          "n1",
+          "n2",
+          "n3",
+          "eof"
+        ]
+      }
+    },
+    "sourceCode": 0
+  },
+  {
+    "input": {
+      "layer": "sse",
+      "chunks": [
+        {
+          "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+        }
+      ],
+      "cancelError": null,
+      "abortBody": false,
+      "name": "sse-helper-return-after-first",
+      "operations": [
+        {
+          "op": "next",
+          "id": "n1"
+        },
+        {
+          "op": "await",
+          "id": "n1"
+        },
+        {
+          "op": "return",
+          "id": "r",
+          "value": null
+        },
+        {
+          "op": "await",
+          "id": "r"
+        }
+      ]
+    },
+    "observed": {
+      "original": {
+        "name": "sse-helper-return-after-first",
+        "layer": "sse",
+        "chunks": [
+          {
+            "source": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_original\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":3,\"output_tokens\":0}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"é🙂\"}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+          }
+        ],
+        "operations": [
+          {
+            "op": "next",
+            "id": "n1"
+          },
+          {
+            "op": "await",
+            "id": "n1"
+          },
+          {
+            "op": "return",
+            "id": "r",
+            "value": null
+          },
+          {
+            "op": "await",
+            "id": "r"
+          }
+        ],
+        "cancelError": null,
+        "abortBody": false
+      },
+      "timeline": [
+        {
+          "phase": "consumer-call",
+          "operation": "next",
+          "id": "n1",
+          "pullCount": 0
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "n1",
+          "promise": true,
+          "observed": false,
+          "pullCount": 0
+        },
+        {
+          "phase": "physical-pull-start",
+          "number": 1
+        },
+        {
+          "phase": "physical-chunk-enqueue",
+          "number": 1,
+          "bytes": 415,
+          "hex": "6576656e743a206d6573736167655f73746172740a646174613a207b2274797065223a226d6573736167655f7374617274222c226d657373616765223a7b226964223a226d73675f6f726967696e616c222c2274797065223a226d657373616765222c22726f6c65223a22617373697374616e74222c226d6f64656c223a22666978747572652d6d6f64656c222c22636f6e74656e74223a5b5d2c2273746f705f726561736f6e223a6e756c6c2c2273746f705f73657175656e6365223a6e756c6c2c227573616765223a7b22696e7075745f746f6b656e73223a332c226f75747075745f746f6b656e73223a307d7d7d0a0a6576656e743a20636f6e74656e745f626c6f636b5f64656c74610a646174613a207b2274797065223a22636f6e74656e745f626c6f636b5f64656c7461222c22696e646578223a302c2264656c7461223a7b2274797065223a22746578745f64656c7461222c2274657874223a22c3a9f09f9982227d7d0a0a6576656e743a206d6573736167655f73746f700a646174613a207b2274797065223a226d6573736167655f73746f70227d0a0a"
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "n1",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"event\":\"message_start\",\"data\":\"{\\\"type\\\":\\\"message_start\\\",\\\"message\\\":{\\\"id\\\":\\\"msg_original\\\",\\\"type\\\":\\\"message\\\",\\\"role\\\":\\\"assistant\\\",\\\"model\\\":\\\"fixture-model\\\",\\\"content\\\":[],\\\"stop_reason\\\":null,\\\"stop_sequence\\\":null,\\\"usage\\\":{\\\"input_tokens\\\":3,\\\"output_tokens\\\":0}}}\",\"raw\":[\"event: message_start\",\"data: {\\\"type\\\":\\\"message_start\\\",\\\"message\\\":{\\\"id\\\":\\\"msg_original\\\",\\\"type\\\":\\\"message\\\",\\\"role\\\":\\\"assistant\\\",\\\"model\\\":\\\"fixture-model\\\",\\\"content\\\":[],\\\"stop_reason\\\":null,\\\"stop_sequence\\\":null,\\\"usage\\\":{\\\"input_tokens\\\":3,\\\"output_tokens\\\":0}}}\"]},\"done\":false}",
+          "valueReference": 1,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "n1",
+          "source": "{\"value\":{\"event\":\"message_start\",\"data\":\"{\\\"type\\\":\\\"message_start\\\",\\\"message\\\":{\\\"id\\\":\\\"msg_original\\\",\\\"type\\\":\\\"message\\\",\\\"role\\\":\\\"assistant\\\",\\\"model\\\":\\\"fixture-model\\\",\\\"content\\\":[],\\\"stop_reason\\\":null,\\\"stop_sequence\\\":null,\\\"usage\\\":{\\\"input_tokens\\\":3,\\\"output_tokens\\\":0}}}\",\"raw\":[\"event: message_start\",\"data: {\\\"type\\\":\\\"message_start\\\",\\\"message\\\":{\\\"id\\\":\\\"msg_original\\\",\\\"type\\\":\\\"message\\\",\\\"role\\\":\\\"assistant\\\",\\\"model\\\":\\\"fixture-model\\\",\\\"content\\\":[],\\\"stop_reason\\\":null,\\\"stop_sequence\\\":null,\\\"usage\\\":{\\\"input_tokens\\\":3,\\\"output_tokens\\\":0}}}\"]},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "phase": "consumer-call",
+          "operation": "return",
+          "id": "r",
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-call-returned-promise",
+          "id": "r",
+          "promise": true,
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "caller-queued-microtask",
+          "id": "r",
+          "observed": false,
+          "pullCount": 1
+        },
+        {
+          "phase": "physical-cancel-start",
+          "count": 1,
+          "reason": {
+            "undefined": true
+          }
+        },
+        {
+          "phase": "physical-cancel-fulfilled",
+          "count": 1
+        },
+        {
+          "phase": "promise-observer-fulfilled",
+          "id": "r",
+          "source": "{\"value\":null,\"done\":true}",
+          "valueReference": null,
+          "pullCount": 1
+        },
+        {
+          "phase": "consumer-await-fulfilled",
+          "id": "r",
+          "source": "{\"value\":null,\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        }
+      ],
+      "results": [
+        {
+          "id": "n1",
+          "source": "{\"value\":{\"event\":\"message_start\",\"data\":\"{\\\"type\\\":\\\"message_start\\\",\\\"message\\\":{\\\"id\\\":\\\"msg_original\\\",\\\"type\\\":\\\"message\\\",\\\"role\\\":\\\"assistant\\\",\\\"model\\\":\\\"fixture-model\\\",\\\"content\\\":[],\\\"stop_reason\\\":null,\\\"stop_sequence\\\":null,\\\"usage\\\":{\\\"input_tokens\\\":3,\\\"output_tokens\\\":0}}}\",\"raw\":[\"event: message_start\",\"data: {\\\"type\\\":\\\"message_start\\\",\\\"message\\\":{\\\"id\\\":\\\"msg_original\\\",\\\"type\\\":\\\"message\\\",\\\"role\\\":\\\"assistant\\\",\\\"model\\\":\\\"fixture-model\\\",\\\"content\\\":[],\\\"stop_reason\\\":null,\\\"stop_sequence\\\":null,\\\"usage\\\":{\\\"input_tokens\\\":3,\\\"output_tokens\\\":0}}}\"]},\"done\":false}",
+          "valueReference": 1,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        },
+        {
+          "id": "r",
+          "source": "{\"value\":null,\"done\":true}",
+          "valueReference": null,
+          "sameObserverValue": true,
+          "pullCount": 1,
+          "signalAborted": false
+        }
+      ],
+      "final": {
+        "pullCount": 1,
+        "cancelCount": 1,
+        "signalAborted": false,
+        "signalReason": null,
+        "bodyLocked": false,
+        "observedIDs": [
+          "n1",
+          "r"
+        ]
+      }
+    },
+    "sourceCode": 0
+  }
+]

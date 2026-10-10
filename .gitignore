@@ -25,6 +25,9 @@ e2e-*.png
 
 # Local/generated artifacts
 artifacts/
+/bin/native/
+__pycache__/
+*.pyc
 
 # Desktop build output
 desktop/dist/

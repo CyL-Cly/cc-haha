@@ -1,0 +1,1391 @@
+[
+  {
+    "input": {
+      "profile": "actual-assistant-multi",
+      "message": {
+        "type": "assistant",
+        "uuid": "00000000-0000-4000-0000-000000000011",
+        "timestamp": "2023-11-14T22:13:20.000Z",
+        "message": {
+          "id": "fixture-message",
+          "type": "message",
+          "role": "assistant",
+          "model": "fixture-model",
+          "content": [
+            {
+              "type": "text",
+              "text": "first"
+            },
+            {
+              "type": "text",
+              "text": "second"
+            }
+          ],
+          "stop_reason": null,
+          "usage": {
+            "input_tokens": 2,
+            "output_tokens": 3
+          }
+        },
+        "unknownOriginalField": "retained-input"
+      }
+    },
+    "classification": "actual exports + explicit original language composition (not QueryEngine.ask)",
+    "events": [
+      "caller:next:0",
+      "ask:start",
+      "normalize:next",
+      "normalize:next-returned",
+      "caller:returned:0",
+      "independent:0",
+      "consumer:0",
+      "caller:next:1",
+      "normalize:next",
+      "normalize:next-returned",
+      "caller:returned:1",
+      "independent:1",
+      "consumer:1",
+      "caller:next:2",
+      "normalize:next",
+      "normalize:next-returned",
+      "caller:returned:2",
+      "independent:2",
+      "ask:after-normalize",
+      "ask:finally",
+      "consumer:2"
+    ],
+    "methodCalls": [
+      {
+        "name": "normalize",
+        "method": "next",
+        "arguments": [
+          null
+        ],
+        "result": {
+          "done": false,
+          "defined": true,
+          "keys": [
+            "value",
+            "done"
+          ],
+          "value": {
+            "type": "assistant",
+            "message": {
+              "id": "fixture-message",
+              "type": "message",
+              "role": "assistant",
+              "model": "fixture-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "first"
+                }
+              ],
+              "stop_reason": null,
+              "usage": {
+                "input_tokens": 2,
+                "output_tokens": 3
+              },
+              "context_management": null
+            },
+            "parent_tool_use_id": null,
+            "session_id": "00000000-0000-4000-0000-000000000022",
+            "uuid": "00000000-0000-4000-0000-000000000000"
+          }
+        }
+      },
+      {
+        "name": "normalize",
+        "method": "next",
+        "arguments": [
+          null
+        ],
+        "result": {
+          "done": false,
+          "defined": true,
+          "keys": [
+            "value",
+            "done"
+          ],
+          "value": {
+            "type": "assistant",
+            "message": {
+              "id": "fixture-message",
+              "type": "message",
+              "role": "assistant",
+              "model": "fixture-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "second"
+                }
+              ],
+              "stop_reason": null,
+              "usage": {
+                "input_tokens": 2,
+                "output_tokens": 3
+              },
+              "context_management": null
+            },
+            "parent_tool_use_id": null,
+            "session_id": "00000000-0000-4000-0000-000000000022",
+            "uuid": "00000000-0000-4000-0000-000000000001"
+          }
+        }
+      },
+      {
+        "name": "normalize",
+        "method": "next",
+        "arguments": [
+          null
+        ],
+        "result": {
+          "done": true,
+          "defined": false,
+          "keys": [
+            "value",
+            "done"
+          ]
+        }
+      }
+    ],
+    "iteratorResults": [
+      {
+        "done": false,
+        "defined": true,
+        "keys": [
+          "value",
+          "done"
+        ],
+        "value": {
+          "type": "assistant",
+          "message": {
+            "id": "fixture-message",
+            "type": "message",
+            "role": "assistant",
+            "model": "fixture-model",
+            "content": [
+              {
+                "type": "text",
+                "text": "first"
+              }
+            ],
+            "stop_reason": null,
+            "usage": {
+              "input_tokens": 2,
+              "output_tokens": 3
+            },
+            "context_management": null
+          },
+          "parent_tool_use_id": null,
+          "session_id": "00000000-0000-4000-0000-000000000022",
+          "uuid": "00000000-0000-4000-0000-000000000000"
+        }
+      },
+      {
+        "done": false,
+        "defined": true,
+        "keys": [
+          "value",
+          "done"
+        ],
+        "value": {
+          "type": "assistant",
+          "message": {
+            "id": "fixture-message",
+            "type": "message",
+            "role": "assistant",
+            "model": "fixture-model",
+            "content": [
+              {
+                "type": "text",
+                "text": "second"
+              }
+            ],
+            "stop_reason": null,
+            "usage": {
+              "input_tokens": 2,
+              "output_tokens": 3
+            },
+            "context_management": null
+          },
+          "parent_tool_use_id": null,
+          "session_id": "00000000-0000-4000-0000-000000000022",
+          "uuid": "00000000-0000-4000-0000-000000000001"
+        }
+      },
+      {
+        "done": true,
+        "defined": false,
+        "keys": [
+          "value",
+          "done"
+        ]
+      }
+    ],
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [],
+      "absentReads": []
+    }
+  },
+  {
+    "input": {
+      "profile": "actual-assistant-single",
+      "message": {
+        "type": "assistant",
+        "uuid": "00000000-0000-4000-0000-000000000011",
+        "timestamp": "2023-11-14T22:13:20.000Z",
+        "message": {
+          "id": "fixture-message",
+          "type": "message",
+          "role": "assistant",
+          "model": "fixture-model",
+          "content": [
+            {
+              "type": "text",
+              "text": "first"
+            }
+          ],
+          "stop_reason": null,
+          "usage": {
+            "input_tokens": 2,
+            "output_tokens": 3
+          }
+        },
+        "unknownOriginalField": "retained-input"
+      }
+    },
+    "classification": "actual exports + explicit original language composition (not QueryEngine.ask)",
+    "events": [
+      "caller:next:0",
+      "ask:start",
+      "normalize:next",
+      "normalize:next-returned",
+      "caller:returned:0",
+      "independent:0",
+      "consumer:0",
+      "caller:next:1",
+      "normalize:next",
+      "normalize:next-returned",
+      "caller:returned:1",
+      "independent:1",
+      "ask:after-normalize",
+      "ask:finally",
+      "consumer:1"
+    ],
+    "methodCalls": [
+      {
+        "name": "normalize",
+        "method": "next",
+        "arguments": [
+          null
+        ],
+        "result": {
+          "done": false,
+          "defined": true,
+          "keys": [
+            "value",
+            "done"
+          ],
+          "value": {
+            "type": "assistant",
+            "message": {
+              "id": "fixture-message",
+              "type": "message",
+              "role": "assistant",
+              "model": "fixture-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "first"
+                }
+              ],
+              "stop_reason": null,
+              "usage": {
+                "input_tokens": 2,
+                "output_tokens": 3
+              },
+              "context_management": null
+            },
+            "parent_tool_use_id": null,
+            "session_id": "00000000-0000-4000-0000-000000000022",
+            "uuid": "00000000-0000-4000-0000-000000000011"
+          }
+        }
+      },
+      {
+        "name": "normalize",
+        "method": "next",
+        "arguments": [
+          null
+        ],
+        "result": {
+          "done": true,
+          "defined": false,
+          "keys": [
+            "value",
+            "done"
+          ]
+        }
+      }
+    ],
+    "iteratorResults": [
+      {
+        "done": false,
+        "defined": true,
+        "keys": [
+          "value",
+          "done"
+        ],
+        "value": {
+          "type": "assistant",
+          "message": {
+            "id": "fixture-message",
+            "type": "message",
+            "role": "assistant",
+            "model": "fixture-model",
+            "content": [
+              {
+                "type": "text",
+                "text": "first"
+              }
+            ],
+            "stop_reason": null,
+            "usage": {
+              "input_tokens": 2,
+              "output_tokens": 3
+            },
+            "context_management": null
+          },
+          "parent_tool_use_id": null,
+          "session_id": "00000000-0000-4000-0000-000000000022",
+          "uuid": "00000000-0000-4000-0000-000000000011"
+        }
+      },
+      {
+        "done": true,
+        "defined": false,
+        "keys": [
+          "value",
+          "done"
+        ]
+      }
+    ],
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [],
+      "absentReads": []
+    }
+  },
+  {
+    "input": {
+      "profile": "actual-empty-assistant",
+      "message": {
+        "type": "assistant",
+        "uuid": "00000000-0000-4000-0000-000000000011",
+        "timestamp": "2023-11-14T22:13:20.000Z",
+        "message": {
+          "id": "fixture-message",
+          "type": "message",
+          "role": "assistant",
+          "model": "fixture-model",
+          "content": [
+            {
+              "type": "text",
+              "text": " "
+            }
+          ],
+          "stop_reason": null,
+          "usage": {
+            "input_tokens": 2,
+            "output_tokens": 3
+          }
+        },
+        "unknownOriginalField": "retained-input"
+      }
+    },
+    "classification": "actual exports + explicit original language composition (not QueryEngine.ask)",
+    "events": [
+      "caller:next:0",
+      "ask:start",
+      "normalize:next",
+      "normalize:next-returned",
+      "caller:returned:0",
+      "independent:0",
+      "ask:after-normalize",
+      "ask:finally",
+      "consumer:0"
+    ],
+    "methodCalls": [
+      {
+        "name": "normalize",
+        "method": "next",
+        "arguments": [
+          null
+        ],
+        "result": {
+          "done": true,
+          "defined": false,
+          "keys": [
+            "value",
+            "done"
+          ]
+        }
+      }
+    ],
+    "iteratorResults": [
+      {
+        "done": true,
+        "defined": false,
+        "keys": [
+          "value",
+          "done"
+        ]
+      }
+    ],
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [],
+      "absentReads": []
+    }
+  },
+  {
+    "input": {
+      "profile": "actual-filehistory-normalizer",
+      "message": {
+        "type": "assistant",
+        "uuid": "00000000-0000-4000-0000-000000000011",
+        "timestamp": "2023-11-14T22:13:20.000Z",
+        "message": {
+          "id": "fixture-message",
+          "type": "message",
+          "role": "assistant",
+          "model": "fixture-model",
+          "content": [
+            {
+              "type": "text",
+              "text": "first"
+            },
+            {
+              "type": "text",
+              "text": "second"
+            }
+          ],
+          "stop_reason": null,
+          "usage": {
+            "input_tokens": 2,
+            "output_tokens": 3
+          }
+        },
+        "unknownOriginalField": "retained-input"
+      }
+    },
+    "classification": "actual exports + explicit original language composition (not QueryEngine.ask)",
+    "events": [
+      "caller:next:0",
+      "query:start",
+      "caller:returned:0",
+      "independent:0",
+      "ask:message",
+      "normalize:next",
+      "normalize:next-returned",
+      "consumer:0",
+      "caller:next:1",
+      "normalize:next",
+      "normalize:next-returned",
+      "caller:returned:1",
+      "independent:1",
+      "consumer:1",
+      "caller:next:2",
+      "normalize:next",
+      "normalize:next-returned",
+      "caller:returned:2",
+      "independent:2",
+      "ask:after-normalize",
+      "query:after-yield",
+      "query:finally",
+      "checkpoint:entry",
+      "checkpoint:completed",
+      "ask:after-query",
+      "ask:finally",
+      "consumer:2"
+    ],
+    "methodCalls": [
+      {
+        "name": "normalize",
+        "method": "next",
+        "arguments": [
+          null
+        ],
+        "result": {
+          "done": false,
+          "defined": true,
+          "keys": [
+            "value",
+            "done"
+          ],
+          "value": {
+            "type": "assistant",
+            "message": {
+              "id": "fixture-message",
+              "type": "message",
+              "role": "assistant",
+              "model": "fixture-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "first"
+                }
+              ],
+              "stop_reason": null,
+              "usage": {
+                "input_tokens": 2,
+                "output_tokens": 3
+              },
+              "context_management": null
+            },
+            "parent_tool_use_id": null,
+            "session_id": "00000000-0000-4000-0000-000000000022",
+            "uuid": "00000000-0000-4000-0000-000000000000"
+          }
+        }
+      },
+      {
+        "name": "normalize",
+        "method": "next",
+        "arguments": [
+          null
+        ],
+        "result": {
+          "done": false,
+          "defined": true,
+          "keys": [
+            "value",
+            "done"
+          ],
+          "value": {
+            "type": "assistant",
+            "message": {
+              "id": "fixture-message",
+              "type": "message",
+              "role": "assistant",
+              "model": "fixture-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "second"
+                }
+              ],
+              "stop_reason": null,
+              "usage": {
+                "input_tokens": 2,
+                "output_tokens": 3
+              },
+              "context_management": null
+            },
+            "parent_tool_use_id": null,
+            "session_id": "00000000-0000-4000-0000-000000000022",
+            "uuid": "00000000-0000-4000-0000-000000000001"
+          }
+        }
+      },
+      {
+        "name": "normalize",
+        "method": "next",
+        "arguments": [
+          null
+        ],
+        "result": {
+          "done": true,
+          "defined": false,
+          "keys": [
+            "value",
+            "done"
+          ]
+        }
+      }
+    ],
+    "iteratorResults": [
+      {
+        "done": false,
+        "defined": true,
+        "keys": [
+          "value",
+          "done"
+        ],
+        "value": {
+          "type": "assistant",
+          "message": {
+            "id": "fixture-message",
+            "type": "message",
+            "role": "assistant",
+            "model": "fixture-model",
+            "content": [
+              {
+                "type": "text",
+                "text": "first"
+              }
+            ],
+            "stop_reason": null,
+            "usage": {
+              "input_tokens": 2,
+              "output_tokens": 3
+            },
+            "context_management": null
+          },
+          "parent_tool_use_id": null,
+          "session_id": "00000000-0000-4000-0000-000000000022",
+          "uuid": "00000000-0000-4000-0000-000000000000"
+        }
+      },
+      {
+        "done": false,
+        "defined": true,
+        "keys": [
+          "value",
+          "done"
+        ],
+        "value": {
+          "type": "assistant",
+          "message": {
+            "id": "fixture-message",
+            "type": "message",
+            "role": "assistant",
+            "model": "fixture-model",
+            "content": [
+              {
+                "type": "text",
+                "text": "second"
+              }
+            ],
+            "stop_reason": null,
+            "usage": {
+              "input_tokens": 2,
+              "output_tokens": 3
+            },
+            "context_management": null
+          },
+          "parent_tool_use_id": null,
+          "session_id": "00000000-0000-4000-0000-000000000022",
+          "uuid": "00000000-0000-4000-0000-000000000001"
+        }
+      },
+      {
+        "done": true,
+        "defined": false,
+        "keys": [
+          "value",
+          "done"
+        ]
+      }
+    ],
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [],
+      "absentReads": []
+    }
+  },
+  {
+    "input": {
+      "profile": "actual-filehistory-return",
+      "message": {
+        "type": "assistant",
+        "uuid": "00000000-0000-4000-0000-000000000011",
+        "timestamp": "2023-11-14T22:13:20.000Z",
+        "message": {
+          "id": "fixture-message",
+          "type": "message",
+          "role": "assistant",
+          "model": "fixture-model",
+          "content": [
+            {
+              "type": "text",
+              "text": "first"
+            },
+            {
+              "type": "text",
+              "text": "second"
+            }
+          ],
+          "stop_reason": null,
+          "usage": {
+            "input_tokens": 2,
+            "output_tokens": 3
+          }
+        },
+        "unknownOriginalField": "retained-input"
+      }
+    },
+    "classification": "actual exports + explicit original language composition (not QueryEngine.ask)",
+    "events": [
+      "caller:next:0",
+      "query:start",
+      "caller:returned:0",
+      "independent:0",
+      "ask:message",
+      "normalize:next",
+      "normalize:next-returned",
+      "consumer:0",
+      "caller:next:1",
+      "caller:returned:1",
+      "normalize:return",
+      "normalize:return-returned",
+      "independent:1",
+      "query:finally",
+      "checkpoint:entry",
+      "checkpoint:completed",
+      "ask:finally",
+      "consumer:1"
+    ],
+    "methodCalls": [
+      {
+        "name": "normalize",
+        "method": "next",
+        "arguments": [
+          null
+        ],
+        "result": {
+          "done": false,
+          "defined": true,
+          "keys": [
+            "value",
+            "done"
+          ],
+          "value": {
+            "type": "assistant",
+            "message": {
+              "id": "fixture-message",
+              "type": "message",
+              "role": "assistant",
+              "model": "fixture-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "first"
+                }
+              ],
+              "stop_reason": null,
+              "usage": {
+                "input_tokens": 2,
+                "output_tokens": 3
+              },
+              "context_management": null
+            },
+            "parent_tool_use_id": null,
+            "session_id": "00000000-0000-4000-0000-000000000022",
+            "uuid": "00000000-0000-4000-0000-000000000000"
+          }
+        }
+      },
+      {
+        "name": "normalize",
+        "method": "return",
+        "arguments": [
+          "return-value"
+        ],
+        "result": {
+          "done": true,
+          "defined": true,
+          "keys": [
+            "value",
+            "done"
+          ],
+          "value": "return-value"
+        }
+      }
+    ],
+    "iteratorResults": [
+      {
+        "done": false,
+        "defined": true,
+        "keys": [
+          "value",
+          "done"
+        ],
+        "value": {
+          "type": "assistant",
+          "message": {
+            "id": "fixture-message",
+            "type": "message",
+            "role": "assistant",
+            "model": "fixture-model",
+            "content": [
+              {
+                "type": "text",
+                "text": "first"
+              }
+            ],
+            "stop_reason": null,
+            "usage": {
+              "input_tokens": 2,
+              "output_tokens": 3
+            },
+            "context_management": null
+          },
+          "parent_tool_use_id": null,
+          "session_id": "00000000-0000-4000-0000-000000000022",
+          "uuid": "00000000-0000-4000-0000-000000000000"
+        }
+      },
+      {
+        "done": true,
+        "defined": true,
+        "keys": [
+          "value",
+          "done"
+        ],
+        "value": "return-value"
+      }
+    ],
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [],
+      "absentReads": []
+    }
+  },
+  {
+    "input": {
+      "profile": "actual-normalizer-return",
+      "message": {
+        "type": "assistant",
+        "uuid": "00000000-0000-4000-0000-000000000011",
+        "timestamp": "2023-11-14T22:13:20.000Z",
+        "message": {
+          "id": "fixture-message",
+          "type": "message",
+          "role": "assistant",
+          "model": "fixture-model",
+          "content": [
+            {
+              "type": "text",
+              "text": "first"
+            },
+            {
+              "type": "text",
+              "text": "second"
+            }
+          ],
+          "stop_reason": null,
+          "usage": {
+            "input_tokens": 2,
+            "output_tokens": 3
+          }
+        },
+        "unknownOriginalField": "retained-input"
+      }
+    },
+    "classification": "actual exports + explicit original language composition (not QueryEngine.ask)",
+    "events": [
+      "caller:next:0",
+      "ask:start",
+      "normalize:next",
+      "normalize:next-returned",
+      "caller:returned:0",
+      "independent:0",
+      "consumer:0",
+      "caller:next:1",
+      "caller:returned:1",
+      "normalize:return",
+      "normalize:return-returned",
+      "independent:1",
+      "ask:finally",
+      "consumer:1"
+    ],
+    "methodCalls": [
+      {
+        "name": "normalize",
+        "method": "next",
+        "arguments": [
+          null
+        ],
+        "result": {
+          "done": false,
+          "defined": true,
+          "keys": [
+            "value",
+            "done"
+          ],
+          "value": {
+            "type": "assistant",
+            "message": {
+              "id": "fixture-message",
+              "type": "message",
+              "role": "assistant",
+              "model": "fixture-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "first"
+                }
+              ],
+              "stop_reason": null,
+              "usage": {
+                "input_tokens": 2,
+                "output_tokens": 3
+              },
+              "context_management": null
+            },
+            "parent_tool_use_id": null,
+            "session_id": "00000000-0000-4000-0000-000000000022",
+            "uuid": "00000000-0000-4000-0000-000000000000"
+          }
+        }
+      },
+      {
+        "name": "normalize",
+        "method": "return",
+        "arguments": [
+          "return-value"
+        ],
+        "result": {
+          "done": true,
+          "defined": true,
+          "keys": [
+            "value",
+            "done"
+          ],
+          "value": "return-value"
+        }
+      }
+    ],
+    "iteratorResults": [
+      {
+        "done": false,
+        "defined": true,
+        "keys": [
+          "value",
+          "done"
+        ],
+        "value": {
+          "type": "assistant",
+          "message": {
+            "id": "fixture-message",
+            "type": "message",
+            "role": "assistant",
+            "model": "fixture-model",
+            "content": [
+              {
+                "type": "text",
+                "text": "first"
+              }
+            ],
+            "stop_reason": null,
+            "usage": {
+              "input_tokens": 2,
+              "output_tokens": 3
+            },
+            "context_management": null
+          },
+          "parent_tool_use_id": null,
+          "session_id": "00000000-0000-4000-0000-000000000022",
+          "uuid": "00000000-0000-4000-0000-000000000000"
+        }
+      },
+      {
+        "done": true,
+        "defined": true,
+        "keys": [
+          "value",
+          "done"
+        ],
+        "value": "return-value"
+      }
+    ],
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [],
+      "absentReads": []
+    }
+  },
+  {
+    "input": {
+      "profile": "language-async-fallthrough"
+    },
+    "classification": "language semantics only",
+    "events": [
+      "caller:next:0",
+      "inner:start",
+      "caller:returned:0",
+      "independent:0",
+      "consumer:0",
+      "caller:next:1",
+      "inner:done",
+      "caller:returned:1",
+      "independent:1",
+      "consumer:1"
+    ],
+    "methodCalls": [],
+    "iteratorResults": [
+      {
+        "done": false,
+        "defined": true,
+        "keys": [
+          "value",
+          "done"
+        ],
+        "value": "one"
+      },
+      {
+        "done": true,
+        "defined": false,
+        "keys": [
+          "value",
+          "done"
+        ]
+      }
+    ],
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [],
+      "absentReads": []
+    }
+  },
+  {
+    "input": {
+      "profile": "language-sync-fallthrough"
+    },
+    "classification": "language semantics only",
+    "events": [
+      "caller:next:0",
+      "outer:start",
+      "sync:next",
+      "inner:start",
+      "sync:next-returned",
+      "caller:returned:0",
+      "independent:0",
+      "consumer:0",
+      "caller:next:1",
+      "sync:next",
+      "inner:done",
+      "inner:finally",
+      "sync:next-returned",
+      "caller:returned:1",
+      "independent:1",
+      "outer:after:undefined",
+      "outer:finally",
+      "consumer:1"
+    ],
+    "methodCalls": [
+      {
+        "name": "sync",
+        "method": "next",
+        "arguments": [
+          null
+        ],
+        "result": {
+          "done": false,
+          "defined": true,
+          "keys": [
+            "value",
+            "done"
+          ],
+          "value": "one"
+        }
+      },
+      {
+        "name": "sync",
+        "method": "next",
+        "arguments": [
+          null
+        ],
+        "result": {
+          "done": true,
+          "defined": false,
+          "keys": [
+            "value",
+            "done"
+          ]
+        }
+      }
+    ],
+    "iteratorResults": [
+      {
+        "done": false,
+        "defined": true,
+        "keys": [
+          "value",
+          "done"
+        ],
+        "value": "one"
+      },
+      {
+        "done": true,
+        "defined": false,
+        "keys": [
+          "value",
+          "done"
+        ]
+      }
+    ],
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [],
+      "absentReads": []
+    }
+  },
+  {
+    "input": {
+      "profile": "language-sync-return"
+    },
+    "classification": "language semantics only",
+    "events": [
+      "caller:next:0",
+      "outer:start",
+      "sync:next",
+      "inner:start",
+      "sync:next-returned",
+      "caller:returned:0",
+      "independent:0",
+      "consumer:0",
+      "caller:next:1",
+      "sync:next",
+      "inner:done",
+      "inner:finally",
+      "sync:next-returned",
+      "caller:returned:1",
+      "independent:1",
+      "outer:after:final",
+      "outer:finally",
+      "consumer:1"
+    ],
+    "methodCalls": [
+      {
+        "name": "sync",
+        "method": "next",
+        "arguments": [
+          null
+        ],
+        "result": {
+          "done": false,
+          "defined": true,
+          "keys": [
+            "value",
+            "done"
+          ],
+          "value": "one"
+        }
+      },
+      {
+        "name": "sync",
+        "method": "next",
+        "arguments": [
+          null
+        ],
+        "result": {
+          "done": true,
+          "defined": true,
+          "keys": [
+            "value",
+            "done"
+          ],
+          "value": "final"
+        }
+      }
+    ],
+    "iteratorResults": [
+      {
+        "done": false,
+        "defined": true,
+        "keys": [
+          "value",
+          "done"
+        ],
+        "value": "one"
+      },
+      {
+        "done": true,
+        "defined": false,
+        "keys": [
+          "value",
+          "done"
+        ]
+      }
+    ],
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [],
+      "absentReads": []
+    }
+  },
+  {
+    "input": {
+      "profile": "language-sync-return-promise"
+    },
+    "classification": "language semantics only",
+    "events": [
+      "caller:next:0",
+      "outer:start",
+      "sync:next",
+      "inner:start",
+      "sync:next-returned",
+      "caller:returned:0",
+      "independent:0",
+      "consumer:0",
+      "caller:next:1",
+      "sync:next",
+      "inner:done",
+      "inner:finally",
+      "sync:next-returned",
+      "caller:returned:1",
+      "independent:1",
+      "outer:after:final",
+      "outer:finally",
+      "consumer:1"
+    ],
+    "methodCalls": [
+      {
+        "name": "sync",
+        "method": "next",
+        "arguments": [
+          null
+        ],
+        "result": {
+          "done": false,
+          "defined": true,
+          "keys": [
+            "value",
+            "done"
+          ],
+          "value": "one"
+        }
+      },
+      {
+        "name": "sync",
+        "method": "next",
+        "arguments": [
+          null
+        ],
+        "result": {
+          "done": true,
+          "defined": true,
+          "keys": [
+            "value",
+            "done"
+          ],
+          "value": {}
+        }
+      }
+    ],
+    "iteratorResults": [
+      {
+        "done": false,
+        "defined": true,
+        "keys": [
+          "value",
+          "done"
+        ],
+        "value": "one"
+      },
+      {
+        "done": true,
+        "defined": false,
+        "keys": [
+          "value",
+          "done"
+        ]
+      }
+    ],
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [],
+      "absentReads": []
+    }
+  },
+  {
+    "input": {
+      "profile": "language-sync-yield-rejection"
+    },
+    "classification": "language semantics only",
+    "events": [
+      "caller:next:0",
+      "outer:start",
+      "sync:next",
+      "inner:start",
+      "sync:next-returned",
+      "caller:returned:0",
+      "sync:return",
+      "inner:finally",
+      "sync:return-returned",
+      "independent:0",
+      "outer:finally",
+      "consumer:error:original-failure"
+    ],
+    "methodCalls": [
+      {
+        "name": "sync",
+        "method": "next",
+        "arguments": [
+          null
+        ],
+        "result": {
+          "done": false,
+          "defined": true,
+          "keys": [
+            "value",
+            "done"
+          ],
+          "value": {}
+        }
+      },
+      {
+        "name": "sync",
+        "method": "return",
+        "arguments": [],
+        "result": {
+          "done": true,
+          "defined": false,
+          "keys": [
+            "value",
+            "done"
+          ]
+        }
+      }
+    ],
+    "iteratorResults": [
+      {
+        "done": true,
+        "defined": false,
+        "keys": [
+          "value",
+          "done"
+        ]
+      }
+    ],
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [],
+      "absentReads": []
+    }
+  },
+  {
+    "input": {
+      "profile": "async-delegate-fallthrough"
+    },
+    "events": [
+      "caller:next:0",
+      "outer:start",
+      "inner:start",
+      "caller:returned:0",
+      "independent:0",
+      "consumer:0",
+      "caller:next:1",
+      "inner:done",
+      "caller:returned:1",
+      "outer:after",
+      "independent:1",
+      "consumer:1"
+    ],
+    "results": [
+      {
+        "done": false,
+        "defined": true,
+        "value": "one"
+      },
+      {
+        "done": true,
+        "defined": false
+      }
+    ]
+  }
+]

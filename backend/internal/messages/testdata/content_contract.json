@@ -1,0 +1,2417 @@
+{
+  "sourceCommit": "6b9d2aec1d9321a4dfff90d16b51f10c1ab984c8",
+  "frozenFeatures": [
+    "TRANSCRIPT_CLASSIFIER"
+  ],
+  "provenance": "Actual unmodified src/utils/messages.ts via messages.fixture.ts, explicit cached gate input and fixed UUID/clock; no Go result used",
+  "cases": [
+    {
+      "name": "user prompt seams preserve newline metadata and stable UUID 1",
+      "input": {
+        "operation": "merge-user",
+        "a": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": "2 + 2",
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "b": {
+          "type": "user",
+          "uuid": "second",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": "3 + 3",
+            "future": {
+              "keep": true
+            }
+          }
+        }
+      },
+      "expected": {
+        "merged": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "2 + 2\n"
+              },
+              {
+                "type": "text",
+                "text": "3 + 3"
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "aAfter": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": "2 + 2",
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "bAfter": {
+          "type": "user",
+          "uuid": "second",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": "3 + 3",
+            "future": {
+              "keep": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "user prompt seams preserve newline metadata and stable UUID 2",
+      "input": {
+        "operation": "merge-user",
+        "a": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": true,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "before\ud800",
+                "future": {
+                  "keep": 1
+                }
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "b": {
+          "type": "user",
+          "uuid": "non-meta",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "<system-reminder>after\udfff</system-reminder>"
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        }
+      },
+      "expected": {
+        "merged": {
+          "type": "user",
+          "uuid": "non-meta",
+          "timestamp": "",
+          "isMeta": true,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "before\ud800\n",
+                "future": {
+                  "keep": 1
+                }
+              },
+              {
+                "type": "text",
+                "text": "<system-reminder>after\udfff</system-reminder>"
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "aAfter": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": true,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "before\ud800",
+                "future": {
+                  "keep": 1
+                }
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "bAfter": {
+          "type": "user",
+          "uuid": "non-meta",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "<system-reminder>after\udfff</system-reminder>"
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "user prompt seams preserve newline metadata and stable UUID 3",
+      "input": {
+        "operation": "merge-user",
+        "a": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [],
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "b": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "after"
+              },
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": "tool output",
+                "future": {
+                  "keep": "\ud800"
+                }
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        }
+      },
+      "expected": {
+        "merged": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": "tool output",
+                "future": {
+                  "keep": "\ud800"
+                }
+              },
+              {
+                "type": "text",
+                "text": "after"
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "aAfter": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [],
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "bAfter": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "after"
+              },
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": "tool output",
+                "future": {
+                  "keep": "\ud800"
+                }
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "user prompt seams preserve newline metadata and stable UUID 4",
+      "input": {
+        "operation": "merge-user",
+        "a": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": "first",
+                "future": {
+                  "keep": "\ud800"
+                }
+              },
+              {
+                "type": "text",
+                "text": "tail"
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "b": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": "second",
+                "future": {
+                  "keep": "\ud800"
+                }
+              },
+              {
+                "type": "text",
+                "text": "head"
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        }
+      },
+      "expected": {
+        "merged": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": "first",
+                "future": {
+                  "keep": "\ud800"
+                }
+              },
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": "second",
+                "future": {
+                  "keep": "\ud800"
+                }
+              },
+              {
+                "type": "text",
+                "text": "tail"
+              },
+              {
+                "type": "text",
+                "text": "head"
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "aAfter": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": "first",
+                "future": {
+                  "keep": "\ud800"
+                }
+              },
+              {
+                "type": "text",
+                "text": "tail"
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "bAfter": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": "second",
+                "future": {
+                  "keep": "\ud800"
+                }
+              },
+              {
+                "type": "text",
+                "text": "head"
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "assistant tool clusters retain original order and all displaced blocks 1",
+      "input": {
+        "operation": "reorder-tools",
+        "blocksA": []
+      },
+      "expected": {
+        "merged": [],
+        "blocksAAfter": []
+      }
+    },
+    {
+      "name": "assistant tool clusters retain original order and all displaced blocks 2",
+      "input": {
+        "operation": "reorder-tools",
+        "blocksA": [
+          {
+            "type": "text",
+            "text": "plain"
+          }
+        ]
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "text",
+            "text": "plain"
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "text",
+            "text": "plain"
+          }
+        ]
+      }
+    },
+    {
+      "name": "assistant tool clusters retain original order and all displaced blocks 3",
+      "input": {
+        "operation": "reorder-tools",
+        "blocksA": [
+          {
+            "type": "tool_use",
+            "id": "one",
+            "name": "fixture",
+            "input": {
+              "unknown": "\udfff"
+            }
+          },
+          {
+            "type": "text",
+            "text": "tail"
+          }
+        ]
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "tool_use",
+            "id": "one",
+            "name": "fixture",
+            "input": {
+              "unknown": "\udfff"
+            }
+          },
+          {
+            "type": "text",
+            "text": "tail"
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "tool_use",
+            "id": "one",
+            "name": "fixture",
+            "input": {
+              "unknown": "\udfff"
+            }
+          },
+          {
+            "type": "text",
+            "text": "tail"
+          }
+        ]
+      }
+    },
+    {
+      "name": "assistant tool clusters retain original order and all displaced blocks 4",
+      "input": {
+        "operation": "reorder-tools",
+        "blocksA": [
+          {
+            "type": "tool_use",
+            "id": "one",
+            "name": "fixture",
+            "input": {
+              "unknown": "\udfff"
+            }
+          },
+          {
+            "type": "tool_use",
+            "id": "two",
+            "name": "fixture",
+            "input": {
+              "unknown": "\udfff"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "tool_use",
+            "id": "one",
+            "name": "fixture",
+            "input": {
+              "unknown": "\udfff"
+            }
+          },
+          {
+            "type": "tool_use",
+            "id": "two",
+            "name": "fixture",
+            "input": {
+              "unknown": "\udfff"
+            }
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "tool_use",
+            "id": "one",
+            "name": "fixture",
+            "input": {
+              "unknown": "\udfff"
+            }
+          },
+          {
+            "type": "tool_use",
+            "id": "two",
+            "name": "fixture",
+            "input": {
+              "unknown": "\udfff"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "assistant tool clusters retain original order and all displaced blocks 5",
+      "input": {
+        "operation": "reorder-tools",
+        "blocksA": [
+          {
+            "type": "thinking",
+            "thinking": "head",
+            "signature": "sig"
+          },
+          {
+            "type": "tool_use",
+            "id": "one",
+            "name": "fixture",
+            "input": {
+              "unknown": "\udfff"
+            }
+          },
+          {
+            "type": "text",
+            "text": "between"
+          },
+          {
+            "type": "redacted_thinking",
+            "data": "signed"
+          },
+          {
+            "type": "tool_use",
+            "id": "two",
+            "name": "fixture",
+            "input": {
+              "unknown": "\udfff"
+            }
+          },
+          {
+            "type": "text",
+            "text": "tail"
+          }
+        ]
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "thinking",
+            "thinking": "head",
+            "signature": "sig"
+          },
+          {
+            "type": "tool_use",
+            "id": "one",
+            "name": "fixture",
+            "input": {
+              "unknown": "\udfff"
+            }
+          },
+          {
+            "type": "tool_use",
+            "id": "two",
+            "name": "fixture",
+            "input": {
+              "unknown": "\udfff"
+            }
+          },
+          {
+            "type": "text",
+            "text": "between"
+          },
+          {
+            "type": "redacted_thinking",
+            "data": "signed"
+          },
+          {
+            "type": "text",
+            "text": "tail"
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "thinking",
+            "thinking": "head",
+            "signature": "sig"
+          },
+          {
+            "type": "tool_use",
+            "id": "one",
+            "name": "fixture",
+            "input": {
+              "unknown": "\udfff"
+            }
+          },
+          {
+            "type": "text",
+            "text": "between"
+          },
+          {
+            "type": "redacted_thinking",
+            "data": "signed"
+          },
+          {
+            "type": "tool_use",
+            "id": "two",
+            "name": "fixture",
+            "input": {
+              "unknown": "\udfff"
+            }
+          },
+          {
+            "type": "text",
+            "text": "tail"
+          }
+        ]
+      }
+    },
+    {
+      "name": "assistant merging retains first envelope and groups tools without mutation 1",
+      "input": {
+        "operation": "merge-assistant",
+        "a": {
+          "type": "assistant",
+          "uuid": "assistant-first",
+          "requestId": "request-first",
+          "message": {
+            "role": "assistant",
+            "id": "api-first",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "one",
+                "name": "fixture",
+                "input": {
+                  "unknown": "\udfff"
+                }
+              },
+              {
+                "type": "text",
+                "text": "between"
+              }
+            ],
+            "usage": {
+              "output_tokens": 12
+            },
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "b": {
+          "type": "assistant",
+          "uuid": "second",
+          "requestId": "request-first",
+          "message": {
+            "role": "assistant",
+            "id": "api-first",
+            "content": [
+              {
+                "type": "thinking",
+                "thinking": "middle",
+                "signature": "sig"
+              },
+              {
+                "type": "tool_use",
+                "id": "two",
+                "name": "fixture",
+                "input": {
+                  "unknown": "\udfff"
+                }
+              }
+            ],
+            "usage": {
+              "output_tokens": 12
+            },
+            "future": {
+              "keep": true
+            }
+          }
+        }
+      },
+      "expected": {
+        "merged": {
+          "type": "assistant",
+          "uuid": "assistant-first",
+          "requestId": "request-first",
+          "message": {
+            "role": "assistant",
+            "id": "api-first",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "one",
+                "name": "fixture",
+                "input": {
+                  "unknown": "\udfff"
+                }
+              },
+              {
+                "type": "tool_use",
+                "id": "two",
+                "name": "fixture",
+                "input": {
+                  "unknown": "\udfff"
+                }
+              },
+              {
+                "type": "text",
+                "text": "between"
+              },
+              {
+                "type": "thinking",
+                "thinking": "middle",
+                "signature": "sig"
+              }
+            ],
+            "usage": {
+              "output_tokens": 12
+            },
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "aAfter": {
+          "type": "assistant",
+          "uuid": "assistant-first",
+          "requestId": "request-first",
+          "message": {
+            "role": "assistant",
+            "id": "api-first",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "one",
+                "name": "fixture",
+                "input": {
+                  "unknown": "\udfff"
+                }
+              },
+              {
+                "type": "text",
+                "text": "between"
+              }
+            ],
+            "usage": {
+              "output_tokens": 12
+            },
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "bAfter": {
+          "type": "assistant",
+          "uuid": "second",
+          "requestId": "request-first",
+          "message": {
+            "role": "assistant",
+            "id": "api-first",
+            "content": [
+              {
+                "type": "thinking",
+                "thinking": "middle",
+                "signature": "sig"
+              },
+              {
+                "type": "tool_use",
+                "id": "two",
+                "name": "fixture",
+                "input": {
+                  "unknown": "\udfff"
+                }
+              }
+            ],
+            "usage": {
+              "output_tokens": 12
+            },
+            "future": {
+              "keep": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "legacy tool result smoosh trims JS whitespace and preserves fallback siblings 1",
+      "input": {
+        "operation": "merge-content",
+        "blocksA": [],
+        "blocksB": [
+          {
+            "type": "text",
+            "text": "after"
+          }
+        ],
+        "universal": false
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "text",
+            "text": "after"
+          }
+        ],
+        "blocksAAfter": [],
+        "blocksBAfter": [
+          {
+            "type": "text",
+            "text": "after"
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy tool result smoosh trims JS whitespace and preserves fallback siblings 2",
+      "input": {
+        "operation": "merge-content",
+        "blocksA": [
+          {
+            "type": "text",
+            "text": "plain"
+          }
+        ],
+        "blocksB": [
+          {
+            "type": "text",
+            "text": "after"
+          }
+        ],
+        "universal": false
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "text",
+            "text": "plain"
+          },
+          {
+            "type": "text",
+            "text": "after"
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "text",
+            "text": "plain"
+          }
+        ],
+        "blocksBAfter": [
+          {
+            "type": "text",
+            "text": "after"
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy tool result smoosh trims JS whitespace and preserves fallback siblings 3",
+      "input": {
+        "operation": "merge-content",
+        "blocksA": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": " ﻿before\ud800  ",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksB": [
+          {
+            "type": "text",
+            "text": " after\udfff\n "
+          },
+          {
+            "type": "text",
+            "text": "\n\t"
+          }
+        ],
+        "universal": false
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "before\ud800\n\nafter\udfff",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": " ﻿before\ud800  ",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksBAfter": [
+          {
+            "type": "text",
+            "text": " after\udfff\n "
+          },
+          {
+            "type": "text",
+            "text": "\n\t"
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy tool result smoosh trims JS whitespace and preserves fallback siblings 4",
+      "input": {
+        "operation": "merge-content",
+        "blocksA": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksB": [],
+        "universal": false
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksBAfter": []
+      }
+    },
+    {
+      "name": "legacy tool result smoosh trims JS whitespace and preserves fallback siblings 5",
+      "input": {
+        "operation": "merge-content",
+        "blocksA": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "before",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksB": [
+          {
+            "type": "image",
+            "source": {
+              "type": "url",
+              "url": "fixture"
+            }
+          }
+        ],
+        "universal": false
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "before",
+            "future": {
+              "keep": "\ud800"
+            }
+          },
+          {
+            "type": "image",
+            "source": {
+              "type": "url",
+              "url": "fixture"
+            }
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "before",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksBAfter": [
+          {
+            "type": "image",
+            "source": {
+              "type": "url",
+              "url": "fixture"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy tool result smoosh trims JS whitespace and preserves fallback siblings 6",
+      "input": {
+        "operation": "merge-content",
+        "blocksA": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": [
+              {
+                "type": "text",
+                "text": "array"
+              }
+            ],
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksB": [
+          {
+            "type": "text",
+            "text": "after"
+          }
+        ],
+        "universal": false
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": [
+              {
+                "type": "text",
+                "text": "array"
+              }
+            ],
+            "future": {
+              "keep": "\ud800"
+            }
+          },
+          {
+            "type": "text",
+            "text": "after"
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": [
+              {
+                "type": "text",
+                "text": "array"
+              }
+            ],
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksBAfter": [
+          {
+            "type": "text",
+            "text": "after"
+          }
+        ]
+      }
+    },
+    {
+      "name": "universal tool result smoosh handles missing content and media but honors tool references 1",
+      "input": {
+        "operation": "merge-content",
+        "blocksA": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksB": [
+          {
+            "type": "text",
+            "text": " ﻿after\ud800\n "
+          },
+          {
+            "type": "text",
+            "text": " next\udfff "
+          }
+        ],
+        "universal": true
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "future": {
+              "keep": "\ud800"
+            },
+            "content": "after\ud800\n\nnext\udfff"
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksBAfter": [
+          {
+            "type": "text",
+            "text": " ﻿after\ud800\n "
+          },
+          {
+            "type": "text",
+            "text": " next\udfff "
+          }
+        ]
+      }
+    },
+    {
+      "name": "universal tool result smoosh handles missing content and media but honors tool references 2",
+      "input": {
+        "operation": "merge-content",
+        "blocksA": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": " before ",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksB": [
+          {
+            "type": "image",
+            "source": {
+              "type": "url",
+              "url": "fixture"
+            }
+          },
+          {
+            "type": "text",
+            "text": " after "
+          },
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "second",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "universal": true
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": [
+              {
+                "type": "text",
+                "text": "before"
+              },
+              {
+                "type": "image",
+                "source": {
+                  "type": "url",
+                  "url": "fixture"
+                }
+              },
+              {
+                "type": "text",
+                "text": "after"
+              }
+            ],
+            "future": {
+              "keep": "\ud800"
+            }
+          },
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "second",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": " before ",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksBAfter": [
+          {
+            "type": "image",
+            "source": {
+              "type": "url",
+              "url": "fixture"
+            }
+          },
+          {
+            "type": "text",
+            "text": " after "
+          },
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "second",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "universal tool result smoosh handles missing content and media but honors tool references 3",
+      "input": {
+        "operation": "merge-content",
+        "blocksA": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": [
+              {
+                "type": "text",
+                "text": " first ",
+                "future": "preserve-first-text-metadata"
+              },
+              {
+                "type": "text",
+                "text": " second "
+              },
+              {
+                "type": "document",
+                "source": {
+                  "type": "url",
+                  "url": "fixture"
+                }
+              }
+            ],
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksB": [
+          {
+            "type": "text",
+            "text": " third "
+          },
+          {
+            "type": "text",
+            "text": "\n"
+          },
+          {
+            "type": "search_result",
+            "source": "fixture",
+            "title": "fixture",
+            "content": []
+          }
+        ],
+        "universal": true
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": [
+              {
+                "type": "text",
+                "text": "first\n\nsecond"
+              },
+              {
+                "type": "document",
+                "source": {
+                  "type": "url",
+                  "url": "fixture"
+                }
+              },
+              {
+                "type": "text",
+                "text": "third"
+              },
+              {
+                "type": "search_result",
+                "source": "fixture",
+                "title": "fixture",
+                "content": []
+              }
+            ],
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": [
+              {
+                "type": "text",
+                "text": " first ",
+                "future": "preserve-first-text-metadata"
+              },
+              {
+                "type": "text",
+                "text": " second "
+              },
+              {
+                "type": "document",
+                "source": {
+                  "type": "url",
+                  "url": "fixture"
+                }
+              }
+            ],
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksBAfter": [
+          {
+            "type": "text",
+            "text": " third "
+          },
+          {
+            "type": "text",
+            "text": "\n"
+          },
+          {
+            "type": "search_result",
+            "source": "fixture",
+            "title": "fixture",
+            "content": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "universal tool result smoosh handles missing content and media but honors tool references 4",
+      "input": {
+        "operation": "merge-content",
+        "blocksA": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": [
+              {
+                "type": "tool_reference",
+                "tool_name": "fixture"
+              }
+            ],
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksB": [
+          {
+            "type": "text",
+            "text": "keep sibling"
+          }
+        ],
+        "universal": true
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": [
+              {
+                "type": "tool_reference",
+                "tool_name": "fixture"
+              }
+            ],
+            "future": {
+              "keep": "\ud800"
+            }
+          },
+          {
+            "type": "text",
+            "text": "keep sibling"
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": [
+              {
+                "type": "tool_reference",
+                "tool_name": "fixture"
+              }
+            ],
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksBAfter": [
+          {
+            "type": "text",
+            "text": "keep sibling"
+          }
+        ]
+      }
+    },
+    {
+      "name": "universal tool result smoosh handles missing content and media but honors tool references 5",
+      "input": {
+        "operation": "merge-content",
+        "blocksA": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "first",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksB": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "second",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "universal": true
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "first",
+            "future": {
+              "keep": "\ud800"
+            }
+          },
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "second",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "first",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksBAfter": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "second",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "universal tool result smoosh handles missing content and media but honors tool references 6",
+      "input": {
+        "operation": "merge-content",
+        "blocksA": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "first",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksB": [],
+        "universal": true
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "first",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "first",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksBAfter": []
+      }
+    },
+    {
+      "name": "error tool results accept only text and preserve untouched error content 1",
+      "input": {
+        "operation": "merge-content",
+        "blocksA": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "error",
+            "is_error": true,
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksB": [
+          {
+            "type": "image",
+            "source": {
+              "type": "url",
+              "url": "fixture"
+            }
+          }
+        ],
+        "universal": true
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "error",
+            "is_error": true,
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "error",
+            "is_error": true,
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksBAfter": [
+          {
+            "type": "image",
+            "source": {
+              "type": "url",
+              "url": "fixture"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "error tool results accept only text and preserve untouched error content 2",
+      "input": {
+        "operation": "merge-content",
+        "blocksA": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "error",
+            "is_error": true,
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksB": [
+          {
+            "type": "image",
+            "source": {
+              "type": "url",
+              "url": "fixture"
+            }
+          },
+          {
+            "type": "text",
+            "text": " explanation "
+          }
+        ],
+        "universal": true
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "error\n\nexplanation",
+            "is_error": true,
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "error",
+            "is_error": true,
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksBAfter": [
+          {
+            "type": "image",
+            "source": {
+              "type": "url",
+              "url": "fixture"
+            }
+          },
+          {
+            "type": "text",
+            "text": " explanation "
+          }
+        ]
+      }
+    },
+    {
+      "name": "error tool results accept only text and preserve untouched error content 3",
+      "input": {
+        "operation": "merge-content",
+        "blocksA": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": [
+              {
+                "type": "text",
+                "text": " original "
+              },
+              {
+                "type": "image",
+                "source": {
+                  "type": "url",
+                  "url": "legacy"
+                }
+              }
+            ],
+            "is_error": true,
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksB": [
+          {
+            "type": "text",
+            "text": " incoming "
+          }
+        ],
+        "universal": true
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": [
+              {
+                "type": "text",
+                "text": "original"
+              },
+              {
+                "type": "image",
+                "source": {
+                  "type": "url",
+                  "url": "legacy"
+                }
+              },
+              {
+                "type": "text",
+                "text": "incoming"
+              }
+            ],
+            "is_error": true,
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": [
+              {
+                "type": "text",
+                "text": " original "
+              },
+              {
+                "type": "image",
+                "source": {
+                  "type": "url",
+                  "url": "legacy"
+                }
+              }
+            ],
+            "is_error": true,
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksBAfter": [
+          {
+            "type": "text",
+            "text": " incoming "
+          }
+        ]
+      }
+    },
+    {
+      "name": "error tool results accept only text and preserve untouched error content 4",
+      "input": {
+        "operation": "merge-content",
+        "blocksA": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksB": [
+          {
+            "type": "document",
+            "source": {
+              "type": "url",
+              "url": "fixture"
+            }
+          },
+          {
+            "type": "text",
+            "text": " after "
+          }
+        ],
+        "universal": true
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "future": {
+              "keep": "\ud800"
+            },
+            "content": [
+              {
+                "type": "document",
+                "source": {
+                  "type": "url",
+                  "url": "fixture"
+                }
+              },
+              {
+                "type": "text",
+                "text": "after"
+              }
+            ]
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksBAfter": [
+          {
+            "type": "document",
+            "source": {
+              "type": "url",
+              "url": "fixture"
+            }
+          },
+          {
+            "type": "text",
+            "text": " after "
+          }
+        ]
+      }
+    },
+    {
+      "name": "error tool results accept only text and preserve untouched error content 5",
+      "input": {
+        "operation": "merge-content",
+        "blocksA": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "\n\t",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksB": [
+          {
+            "type": "image",
+            "source": {
+              "type": "url",
+              "url": "fixture"
+            }
+          }
+        ],
+        "universal": true
+      },
+      "expected": {
+        "merged": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": [
+              {
+                "type": "image",
+                "source": {
+                  "type": "url",
+                  "url": "fixture"
+                }
+              }
+            ],
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksAAfter": [
+          {
+            "type": "tool_result",
+            "tool_use_id": "fixture-call",
+            "content": "\n\t",
+            "future": {
+              "keep": "\ud800"
+            }
+          }
+        ],
+        "blocksBAfter": [
+          {
+            "type": "image",
+            "source": {
+              "type": "url",
+              "url": "fixture"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "user tool results merge honors gate then hoists results ahead of user content 1",
+      "input": {
+        "operation": "merge-user-tools",
+        "a": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": true,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "head"
+              },
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": " output ",
+                "future": {
+                  "keep": "\ud800"
+                }
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "b": {
+          "type": "user",
+          "uuid": "second",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": " reminder "
+              },
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": "second",
+                "future": {
+                  "keep": "\ud800"
+                }
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "universal": false
+      },
+      "expected": {
+        "merged": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": true,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": " output ",
+                "future": {
+                  "keep": "\ud800"
+                }
+              },
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": "second",
+                "future": {
+                  "keep": "\ud800"
+                }
+              },
+              {
+                "type": "text",
+                "text": "head"
+              },
+              {
+                "type": "text",
+                "text": " reminder "
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "aAfter": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": true,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "head"
+              },
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": " output ",
+                "future": {
+                  "keep": "\ud800"
+                }
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "bAfter": {
+          "type": "user",
+          "uuid": "second",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": " reminder "
+              },
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": "second",
+                "future": {
+                  "keep": "\ud800"
+                }
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "user tool results merge honors gate then hoists results ahead of user content 2",
+      "input": {
+        "operation": "merge-user-tools",
+        "a": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": true,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "head"
+              },
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": " output ",
+                "future": {
+                  "keep": "\ud800"
+                }
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "b": {
+          "type": "user",
+          "uuid": "second",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": " reminder "
+              },
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": "second",
+                "future": {
+                  "keep": "\ud800"
+                }
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "universal": true
+      },
+      "expected": {
+        "merged": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": true,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": "output\n\nreminder",
+                "future": {
+                  "keep": "\ud800"
+                }
+              },
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": "second",
+                "future": {
+                  "keep": "\ud800"
+                }
+              },
+              {
+                "type": "text",
+                "text": "head"
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "aAfter": {
+          "type": "user",
+          "uuid": "user-first",
+          "timestamp": "",
+          "isMeta": true,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "head"
+              },
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": " output ",
+                "future": {
+                  "keep": "\ud800"
+                }
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        },
+        "bAfter": {
+          "type": "user",
+          "uuid": "second",
+          "timestamp": "",
+          "isMeta": false,
+          "toolUseResult": {
+            "source": "first"
+          },
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": " reminder "
+              },
+              {
+                "type": "tool_result",
+                "tool_use_id": "fixture-call",
+                "content": "second",
+                "future": {
+                  "keep": "\ud800"
+                }
+              }
+            ],
+            "future": {
+              "keep": true
+            }
+          }
+        }
+      }
+    }
+  ]
+}

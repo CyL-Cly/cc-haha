@@ -1,0 +1,12 @@
+{
+  "theme": "dark",
+  "env": { "OLD_ENV": "replaced by a top-level env patch" },
+  "desktopTerminal": {
+    "startupShell": "system",
+    "customShellPath": "",
+    "legacyEncoding": "utf-8",
+    "futureProfile": { "id": "work", "inheritEnvironment": false }
+  },
+  "futureSetting": { "keep": true },
+  "removeMe": "explicitly unset"
+}

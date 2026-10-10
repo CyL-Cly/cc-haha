@@ -1,0 +1,133 @@
+{
+  "observations": [
+    {
+      "scenario": {
+        "name": "both-valid",
+        "content": "{\"futureRoot\":{\"keep\":true},\"outputStyle\":\"Explanatory\",\"respectGitignore\":false,\"model\":\"actual\",\"effortLevel\":\"bogus\"}"
+      },
+      "observation": {
+        "settingsSource": "{\"respectGitignore\":false,\"model\":\"actual\",\"outputStyle\":\"Explanatory\",\"futureRoot\":{\"keep\":true}}",
+        "errorsSource": "[]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "empty-style",
+        "content": "{\"outputStyle\":\"\",\"respectGitignore\":true}"
+      },
+      "observation": {
+        "settingsSource": "{\"respectGitignore\":true,\"outputStyle\":\"\"}",
+        "errorsSource": "[]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "unicode-style",
+        "content": "{\"outputStyle\":\"\u4e2d\u6587\\ud800\",\"respectGitignore\":false,\"futureField\":7}"
+      },
+      "observation": {
+        "settingsSource": "{\"respectGitignore\":false,\"outputStyle\":\"\u4e2d\u6587\\ud800\",\"futureField\":7}",
+        "errorsSource": "[]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "style-number",
+        "content": "{\"outputStyle\":3}"
+      },
+      "observation": {
+        "settingsSource": null,
+        "errorsSource": "[{\"file\":\"fixture\",\"path\":\"outputStyle\",\"message\":\"Expected string, but received number\",\"invalidValue\":\"number\"}]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "style-null",
+        "content": "{\"outputStyle\":null}"
+      },
+      "observation": {
+        "settingsSource": null,
+        "errorsSource": "[{\"file\":\"fixture\",\"path\":\"outputStyle\",\"message\":\"Expected string, but received null\",\"invalidValue\":\"null\"}]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "style-object",
+        "content": "{\"outputStyle\":{}}"
+      },
+      "observation": {
+        "settingsSource": null,
+        "errorsSource": "[{\"file\":\"fixture\",\"path\":\"outputStyle\",\"message\":\"Expected string, but received object\",\"invalidValue\":\"object\"}]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "style-bool",
+        "content": "{\"outputStyle\":false}"
+      },
+      "observation": {
+        "settingsSource": null,
+        "errorsSource": "[{\"file\":\"fixture\",\"path\":\"outputStyle\",\"message\":\"Expected string, but received boolean\",\"invalidValue\":\"boolean\"}]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "respect-string",
+        "content": "{\"respectGitignore\":\"false\"}"
+      },
+      "observation": {
+        "settingsSource": null,
+        "errorsSource": "[{\"file\":\"fixture\",\"path\":\"respectGitignore\",\"message\":\"Expected boolean, but received string\",\"invalidValue\":\"string\",\"suggestion\":\"Use true or false without quotes. Example: \\\"includeGitInstructions\\\": true\"}]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "respect-null",
+        "content": "{\"respectGitignore\":null}"
+      },
+      "observation": {
+        "settingsSource": null,
+        "errorsSource": "[{\"file\":\"fixture\",\"path\":\"respectGitignore\",\"message\":\"Expected boolean, but received null\",\"invalidValue\":\"null\",\"suggestion\":\"Use true or false without quotes. Example: \\\"includeGitInstructions\\\": true\"}]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "respect-number",
+        "content": "{\"respectGitignore\":0}"
+      },
+      "observation": {
+        "settingsSource": null,
+        "errorsSource": "[{\"file\":\"fixture\",\"path\":\"respectGitignore\",\"message\":\"Expected boolean, but received number\",\"invalidValue\":\"number\",\"suggestion\":\"Use true or false without quotes. Example: \\\"includeGitInstructions\\\": true\"}]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "both-invalid",
+        "content": "{\"outputStyle\":[],\"respectGitignore\":\"true\",\"model\":null}"
+      },
+      "observation": {
+        "settingsSource": null,
+        "errorsSource": "[{\"file\":\"fixture\",\"path\":\"respectGitignore\",\"message\":\"Expected boolean, but received string\",\"invalidValue\":\"string\",\"suggestion\":\"Use true or false without quotes. Example: \\\"includeGitInstructions\\\": true\"},{\"file\":\"fixture\",\"path\":\"model\",\"message\":\"Expected string, but received null\",\"invalidValue\":\"null\"},{\"file\":\"fixture\",\"path\":\"outputStyle\",\"message\":\"Expected string, but received array\",\"invalidValue\":\"array\"}]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "absent-unknown",
+        "content": "{\"futureOutputStyle\":{},\"futureRespectGitignore\":\"false\"}"
+      },
+      "observation": {
+        "settingsSource": "{\"futureOutputStyle\":{},\"futureRespectGitignore\":\"false\"}",
+        "errorsSource": "[]"
+      }
+    }
+  ],
+  "sourceOnly": {
+    "consumer": "src/utils/settings/types.ts SettingsSchema + validation.ts formatZodError",
+    "runtime": "v24.3.0",
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [],
+      "absentReads": []
+    }
+  }
+}

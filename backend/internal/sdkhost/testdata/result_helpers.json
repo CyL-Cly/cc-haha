@@ -1,0 +1,394 @@
+[
+  {
+    "original": {
+      "message": null,
+      "stop": null
+    },
+    "expected": {
+      "success": false,
+      "text": "",
+      "isApiError": false
+    }
+  },
+  {
+    "original": {
+      "message": {
+        "type": "assistant",
+        "message": {
+          "role": "assistant",
+          "content": []
+        }
+      },
+      "stop": null
+    },
+    "expected": {
+      "success": false,
+      "text": "",
+      "isApiError": false
+    }
+  },
+  {
+    "original": {
+      "message": {
+        "type": "assistant",
+        "message": {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "tool_use",
+              "id": "i",
+              "name": "n",
+              "input": {}
+            }
+          ]
+        }
+      },
+      "stop": null
+    },
+    "expected": {
+      "success": false,
+      "text": "",
+      "isApiError": false
+    }
+  },
+  {
+    "original": {
+      "message": {
+        "type": "assistant",
+        "message": {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "actual ordinary"
+            }
+          ]
+        }
+      },
+      "stop": null
+    },
+    "expected": {
+      "success": true,
+      "text": "actual ordinary",
+      "isApiError": false
+    }
+  },
+  {
+    "original": {
+      "message": {
+        "type": "assistant",
+        "message": {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "thinking",
+              "thinking": "original"
+            }
+          ]
+        }
+      },
+      "stop": null
+    },
+    "expected": {
+      "success": true,
+      "text": "",
+      "isApiError": false
+    }
+  },
+  {
+    "original": {
+      "message": {
+        "type": "assistant",
+        "message": {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "redacted_thinking",
+              "data": "original"
+            }
+          ]
+        }
+      },
+      "stop": null
+    },
+    "expected": {
+      "success": true,
+      "text": "",
+      "isApiError": false
+    }
+  },
+  {
+    "original": {
+      "message": {
+        "type": "user",
+        "message": {
+          "role": "user",
+          "content": [
+            {
+              "type": "tool_result",
+              "tool_use_id": "original",
+              "content": "result"
+            }
+          ]
+        }
+      },
+      "stop": null
+    },
+    "expected": {
+      "success": true,
+      "text": "",
+      "isApiError": false
+    }
+  },
+  {
+    "original": {
+      "message": {
+        "type": "user",
+        "message": {
+          "role": "user",
+          "content": [
+            {
+              "type": "tool_result",
+              "tool_use_id": "original",
+              "content": "result"
+            },
+            {
+              "type": "text",
+              "text": "mixed"
+            }
+          ]
+        }
+      },
+      "stop": null
+    },
+    "expected": {
+      "success": false,
+      "text": "",
+      "isApiError": false
+    }
+  },
+  {
+    "original": {
+      "message": {
+        "type": "user",
+        "message": {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "[Request interrupted by user]"
+            }
+          ]
+        }
+      },
+      "stop": null
+    },
+    "expected": {
+      "success": true,
+      "text": "",
+      "isApiError": false
+    }
+  },
+  {
+    "original": {
+      "message": {
+        "type": "user",
+        "message": {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "[Request interrupted by user for tool use]"
+            }
+          ]
+        }
+      },
+      "stop": null
+    },
+    "expected": {
+      "success": true,
+      "text": "",
+      "isApiError": false
+    }
+  },
+  {
+    "original": {
+      "message": {
+        "type": "user",
+        "message": {
+          "role": "user",
+          "content": "original string"
+        }
+      },
+      "stop": "end_turn"
+    },
+    "expected": {
+      "success": true,
+      "text": "",
+      "isApiError": false
+    }
+  },
+  {
+    "original": {
+      "message": {
+        "type": "user",
+        "message": {
+          "role": "user",
+          "content": []
+        }
+      },
+      "stop": null
+    },
+    "expected": {
+      "success": false,
+      "text": "",
+      "isApiError": false
+    }
+  },
+  {
+    "original": {
+      "message": {
+        "type": "system"
+      },
+      "stop": "end_turn"
+    },
+    "expected": {
+      "success": true,
+      "text": "",
+      "isApiError": false
+    }
+  },
+  {
+    "original": {
+      "message": {
+        "type": "assistant",
+        "message": {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "original API error"
+            }
+          ]
+        },
+        "isApiErrorMessage": true
+      },
+      "stop": null
+    },
+    "expected": {
+      "success": true,
+      "text": "original API error",
+      "isApiError": true
+    }
+  },
+  {
+    "original": {
+      "message": {
+        "type": "assistant",
+        "message": {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "[Request interrupted by user]"
+            }
+          ]
+        }
+      },
+      "stop": "end_turn"
+    },
+    "expected": {
+      "success": true,
+      "text": "",
+      "isApiError": false
+    }
+  },
+  {
+    "original": {
+      "message": {
+        "type": "assistant",
+        "message": {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "[Request interrupted by user for tool use]"
+            }
+          ]
+        }
+      },
+      "stop": "end_turn"
+    },
+    "expected": {
+      "success": true,
+      "text": "",
+      "isApiError": false
+    }
+  },
+  {
+    "original": {
+      "message": {
+        "type": "assistant",
+        "message": {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "The user doesn't want to take this action right now. STOP what you are doing and wait for the user to tell you how to proceed."
+            }
+          ]
+        }
+      },
+      "stop": "end_turn"
+    },
+    "expected": {
+      "success": true,
+      "text": "",
+      "isApiError": false
+    }
+  },
+  {
+    "original": {
+      "message": {
+        "type": "assistant",
+        "message": {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). STOP what you are doing and wait for the user to tell you how to proceed."
+            }
+          ]
+        }
+      },
+      "stop": "end_turn"
+    },
+    "expected": {
+      "success": true,
+      "text": "",
+      "isApiError": false
+    }
+  },
+  {
+    "original": {
+      "message": {
+        "type": "assistant",
+        "message": {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "text",
+              "text": "No response requested."
+            }
+          ]
+        }
+      },
+      "stop": "end_turn"
+    },
+    "expected": {
+      "success": true,
+      "text": "",
+      "isApiError": false
+    }
+  }
+]

@@ -1,0 +1,3372 @@
+{
+  "boundary": "actual Source only; no Go results or fullquery/HTTP",
+  "profiles": 73,
+  "rows": [
+    {
+      "name": "rough-ascii0",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-ascii0",
+        "kind": "rough-content",
+        "contentSource": "\"\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "2b81ac745e3363ebc1613f36c14d0d24e4d9b82c05074da5b017ca0100481fc0",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "0",
+              "value": 0
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-ascii1",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-ascii1",
+        "kind": "rough-content",
+        "contentSource": "\"a\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "243325d40d4c153db875a1949bcf3c2f15a96956fd9bbb8c223a9051f99938e9",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "0",
+              "value": 0
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-ascii2",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-ascii2",
+        "kind": "rough-content",
+        "contentSource": "\"ab\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "011a83d689ecfd7e55d88feb7eed464c9cf4421141839e86bf51cddd9acf70a4",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "1",
+              "value": 1
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-ascii3",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-ascii3",
+        "kind": "rough-content",
+        "contentSource": "\"abc\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "e16c1185b489f28457c383c73b13fadb462df5089357542189d10fb8620529d4",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "1",
+              "value": 1
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-ascii4",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-ascii4",
+        "kind": "rough-content",
+        "contentSource": "\"abcd\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "ff1730066a6a45b6bca8b0bda8cbde5c78dcd3eeda9d84939b477333207b64fe",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "1",
+              "value": 1
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-ascii5",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-ascii5",
+        "kind": "rough-content",
+        "contentSource": "\"abcde\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "473c9466de8c11d6af188a6ef76a97b76c83e0b67159b9a882219097a92b9d11",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "1",
+              "value": 1
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-astral-one",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-astral-one",
+        "kind": "rough-content",
+        "contentSource": "\"\ud83d\ude00\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "abd41b5819c984245e338b3db564f986819a6d49cabeda11c7b125469c0444b8",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "1",
+              "value": 1
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-astral-and-ascii",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-astral-and-ascii",
+        "kind": "rough-content",
+        "contentSource": "\"\ud83d\ude00a\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "048ec9e6673f5de089b8a33e76f6b667c80e0b957fd5c19b87589a27e525bc93",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "1",
+              "value": 1
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-lone-high",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-lone-high",
+        "kind": "rough-content",
+        "contentSource": "\"\\ud800\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "0617cc768b2fa9cb5d9e6f4f365583da91bf717774c480bf8e8cb91e1e9c84c3",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "0",
+              "value": 0
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-lone-low-plus-ascii",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-lone-low-plus-ascii",
+        "kind": "rough-content",
+        "contentSource": "\"\\udc00a\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "fe64542a410f47002e880f47d8d560fabe545dedcad95192cf222f354ada6142",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "1",
+              "value": 1
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-literal-replacement",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-literal-replacement",
+        "kind": "rough-content",
+        "contentSource": "\"\ufffd\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "c9958b8d3a1f7677344da088315dd043539dcacc6e4cd9827f41d9b9cb4a6b6d",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "0",
+              "value": 0
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-null",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-null",
+        "kind": "rough-content",
+        "contentSource": "null"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "da62301c4e124bfe55ac4bad1e0d9f0d05efad7be221e1de3a4a7239f9369d85",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "0",
+              "value": 0
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-false",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-false",
+        "kind": "rough-content",
+        "contentSource": "false"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "77c98c37b28002e61729978c8a5c91611ca16603f05acb696628d6f1ff3724d3",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "0",
+              "value": 0
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-blocks-independent-rounding",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-blocks-independent-rounding",
+        "kind": "rough-content",
+        "contentSource": "[{\"type\":\"text\",\"text\":\"aa\"},{\"type\":\"text\",\"text\":\"aa\"}]"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "9dc822780dde08b8f0a31a50d687bc0f1957cdd99899d3b393e228c1793c59c1",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "2",
+              "value": 2
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-string-blocks",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-string-blocks",
+        "kind": "rough-content",
+        "contentSource": "[\"aa\",\"aa\"]"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "b71e0ba143a27f4594eb453d0447c9faced59b6f5d1c1958a23dd344edbbcbca",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "2",
+              "value": 2
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-thinking",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-thinking",
+        "kind": "rough-content",
+        "contentSource": "[{\"type\":\"thinking\",\"thinking\":\"\ud83d\ude00aa\",\"signature\":\"ignored\"}]"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "abb9bf4fde1fc6c3085201761e74033a9c650ffc879fd69aa21b53f14b6870fb",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "1",
+              "value": 1
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-redacted-ordinary",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-redacted-ordinary",
+        "kind": "rough-content",
+        "contentSource": "[{\"type\":\"redacted_thinking\",\"data\":\"abcdef\"}]"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "e4290a00be64be01978d1461ecf378b32f4e6a121cb9dafd237da63d502312d4",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "2",
+              "value": 2
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-openai-encrypted-summary-only",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-openai-encrypted-summary-only",
+        "kind": "rough-content",
+        "contentSource": "[{\"type\":\"redacted_thinking\",\"data\":\"cc-haha:openai-reasoning:v1:{\\\"summary\\\":[{\\\"type\\\":\\\"summary_text\\\",\\\"text\\\":\\\"abc\\\"},{\\\"type\\\":\\\"summary_text\\\",\\\"text\\\":\\\"def\\\"}],\\\"encrypted_content\\\":\\\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\\\"}\"}]"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "a20917b980186d60536631153ff7d6c399eeed82d38951636a4d80334dcd697a",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "2",
+              "value": 2
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-openai-empty-summary",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-openai-empty-summary",
+        "kind": "rough-content",
+        "contentSource": "[{\"type\":\"redacted_thinking\",\"data\":\"cc-haha:openai-reasoning:v1:{\\\"summary\\\":[],\\\"encrypted_content\\\":\\\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\\\"}\"}]"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "b2e7fb0332c08e662ef16ab87468e400e703185094c3fe12c052141c693ada4c",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "0",
+              "value": 0
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-image-document-constant",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-image-document-constant",
+        "kind": "rough-content",
+        "contentSource": "[{\"type\":\"image\",\"source\":{\"type\":\"base64\",\"data\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}},{\"type\":\"document\",\"source\":{\"type\":\"base64\",\"data\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}}]"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "4894b38c1ee8fc81d999a306294846a582850a8c1a973dad8ca8f48491dbb20b",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "4000",
+              "value": 4000
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-tool-use-ordered-numeric-utf16",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-tool-use-ordered-numeric-utf16",
+        "kind": "rough-content",
+        "contentSource": "[{\"type\":\"tool_use\",\"id\":\"t\",\"name\":\"Write\",\"input\":{\"1\":\"one\",\"2\":\"two\",\"z\":\"\\ud800\",\"a\":\"\ud83d\ude00\"}}]"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "acc75e0a6df11ed77da6deb58e0d7fc27c34f1c2ee9b0a733ede98fd36baa5ab",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "12",
+              "value": 12
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-tool-use-null-input",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-tool-use-null-input",
+        "kind": "rough-content",
+        "contentSource": "[{\"type\":\"tool_use\",\"id\":\"t\",\"name\":\"Tool\",\"input\":null}]"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "dd1557f5166b840aa33a247cafff8aca4a17a2d472aaab05a05f76a3f54a716b",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "2",
+              "value": 2
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-nested-results",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-nested-results",
+        "kind": "rough-content",
+        "contentSource": "[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":[{\"type\":\"text\",\"text\":\"abc\"},{\"type\":\"image\",\"source\":{\"type\":\"base64\",\"data\":\"ignored\"}}]}]"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "c2e03ffeea9e56475ace3413f4fc85d41953be198faee748e88e0ba9a06a9f49",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "2001",
+              "value": 2001
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-server-tool-catchall",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-server-tool-catchall",
+        "kind": "rough-content",
+        "contentSource": "[{\"type\":\"server_tool_use\",\"name\":\"nested\",\"input\":{\"future\":true,\"num\":9007199254740992,\"text\":\"\\ud800\"}}]"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "99c7c3e0002ce1155cbba1b1fde7c737703e215e05843981b81ce9b9669744a2",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "26",
+              "value": 26
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-malformed-number",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-malformed-number",
+        "kind": "rough-content",
+        "contentSource": "123"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "f9df38b596e559fd13bd268bf5af06d5add5a5b930cafe99fc7ea90259c9f393",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": {
+            "class": "TypeError",
+            "name": "TypeError",
+            "message": "number is not iterable",
+            "messageJSON": "\"number is not iterable\"",
+            "stack": "TypeError: number is not iterable\n    at roughTokenCountEstimationForContent (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/services/tokenEstimation.ts:404:14)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/query-preflight-next/source-helper.fixture.ts:42:75\n    at processTicksAndRejections (native:7:39)"
+          },
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-malformed-null-block",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-malformed-null-block",
+        "kind": "rough-content",
+        "contentSource": "[null]"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "656f85d14bb2a090615bf7129d9d2197044db8be0f2cca3c3638716d82b50169",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": {
+            "class": "TypeError",
+            "name": "TypeError",
+            "message": "null is not an object (evaluating 'block.type')",
+            "messageJSON": "\"null is not an object (evaluating 'block.type')\"",
+            "stack": "TypeError: null is not an object (evaluating 'block.type')\n    at roughTokenCountEstimationForBlock (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/services/tokenEstimation.ts:416:7)\n    at roughTokenCountEstimationForContent (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/services/tokenEstimation.ts:405:20)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/query-preflight-next/source-helper.fixture.ts:42:75\n    at processTicksAndRejections (native:7:39)"
+          },
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-malformed-text-number",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-malformed-text-number",
+        "kind": "rough-content",
+        "contentSource": "[{\"type\":\"text\",\"text\":123}]"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "161244141d5dee663379ad0cc03b9036d94d4f7550922e5dca7150518ac7521e",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "NaN",
+              "raw": "null",
+              "value": null
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-malformed-thinking-missing",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-malformed-thinking-missing",
+        "kind": "rough-content",
+        "contentSource": "[{\"type\":\"thinking\"}]"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "e17e0588922a00a52794ee354437b9bd15de232f224f42f8429cc75d7a422d86",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": {
+            "class": "TypeError",
+            "name": "TypeError",
+            "message": "undefined is not an object (evaluating 'content.length')",
+            "messageJSON": "\"undefined is not an object (evaluating 'content.length')\"",
+            "stack": "TypeError: undefined is not an object (evaluating 'content.length')\n    at roughTokenCountEstimation (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/services/tokenEstimation.ts:208:21)\n    at roughTokenCountEstimationForContent (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/services/tokenEstimation.ts:405:20)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/query-preflight-next/source-helper.fixture.ts:42:75\n    at processTicksAndRejections (native:7:39)"
+          },
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "tokens-empty",
+      "kind": "tokens",
+      "originalCase": {
+        "name": "tokens-empty",
+        "kind": "tokens",
+        "historySources": []
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "1ae9d94ff9f22ef12a9036895a620b9e3c7e59dbbd4831dd8e06139b9754cdab",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "0",
+              "value": 0
+            },
+            "hasUsableContextUsage": false
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "tokens-no-usage-utf16",
+      "kind": "tokens",
+      "originalCase": {
+        "name": "tokens-no-usage-utf16",
+        "kind": "tokens",
+        "historySources": [
+          "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"\ud83d\ude00aa\"}}",
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"abcde\"}]}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "ffb8dbff8c42ef0452df47151f023224e6ccc6cbc6af31083386dbf4b20f4936",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "2",
+              "value": 2
+            },
+            "hasUsableContextUsage": false
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"\ud83d\ude00aa\"}}",
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"abcde\"}]}}"
+          ],
+          "after": [
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"\ud83d\ude00aa\"}}",
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"abcde\"}]}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "tokens-real-anchor-zero-tail",
+      "kind": "tokens",
+      "originalCase": {
+        "name": "tokens-real-anchor-zero-tail",
+        "kind": "tokens",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"real\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+          "{\"type\":\"assistant\",\"uuid\":\"zero\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"zero\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"placeholder\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "bb9dd434816f6b94249bf5f0857182638bc1462f767aaf4727f5e2e72a6de688",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "1403",
+              "value": 1403
+            },
+            "hasUsableContextUsage": true
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"real\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+            "{\"type\":\"assistant\",\"uuid\":\"zero\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"zero\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"placeholder\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"real\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+            "{\"type\":\"assistant\",\"uuid\":\"zero\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"zero\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"placeholder\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "tokens-all-zero-full-estimate",
+      "kind": "tokens",
+      "originalCase": {
+        "name": "tokens-all-zero-full-estimate",
+        "kind": "tokens",
+        "historySources": [
+          "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}}",
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"tail\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "2896a43a9011671ef381c5d4e27bde3477be91c3840385512f0096a705fd081f",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "21",
+              "value": 21
+            },
+            "hasUsableContextUsage": false
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}}",
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"tail\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}"
+          ],
+          "after": [
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}}",
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"tail\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "tokens-output-only-keeps-old-anchor",
+      "kind": "tokens",
+      "originalCase": {
+        "name": "tokens-output-only-keeps-old-anchor",
+        "kind": "tokens",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"old\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+          "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}",
+          "{\"type\":\"assistant\",\"uuid\":\"out\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"out\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"out\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":50,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "cbad44b92e54042132555093fda392d6c5c79ca8b77c55a4ba14d936111245d4",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "1402",
+              "value": 1402
+            },
+            "hasUsableContextUsage": true
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"old\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}",
+            "{\"type\":\"assistant\",\"uuid\":\"out\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"out\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"out\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":50,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"old\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}",
+            "{\"type\":\"assistant\",\"uuid\":\"out\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"out\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"out\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":50,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "tokens-prompt-only-estimates-output",
+      "kind": "tokens",
+      "originalCase": {
+        "name": "tokens-prompt-only-estimates-output",
+        "kind": "tokens",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "c6295270e517104ab0bee19051f14a09bdb793022d5a67aa85d3281a5eec5bff",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "1010",
+              "value": 1010
+            },
+            "hasUsableContextUsage": true
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "tokens-cache-only-valid-anchor",
+      "kind": "tokens",
+      "originalCase": {
+        "name": "tokens-cache-only-valid-anchor",
+        "kind": "tokens",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"x\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":400}}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "4f276b846df6320e3b61459abc44d3eda122582cb0abec584731e671973c3517",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "400",
+              "value": 400
+            },
+            "hasUsableContextUsage": true
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"x\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":400}}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"x\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":400}}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "tokens-optional-cache-absent",
+      "kind": "tokens",
+      "originalCase": {
+        "name": "tokens-optional-cache-absent",
+        "kind": "tokens",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"x\"}],\"usage\":{\"input_tokens\":100,\"output_tokens\":10}}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "31b118c4be043506fd35f0bb51e34f3b228055fd26321373d44869b2efc98c2c",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "110",
+              "value": 110
+            },
+            "hasUsableContextUsage": true
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"x\"}],\"usage\":{\"input_tokens\":100,\"output_tokens\":10}}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"x\"}],\"usage\":{\"input_tokens\":100,\"output_tokens\":10}}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "tokens-numeric-string-invalid",
+      "kind": "tokens",
+      "originalCase": {
+        "name": "tokens-numeric-string-invalid",
+        "kind": "tokens",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"old\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+          "{\"type\":\"assistant\",\"uuid\":\"new\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"new\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new\"}],\"usage\":{\"input_tokens\":\"5000\",\"output_tokens\":1}}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "780ca4d534341839d77a34b47310a3c5e7a4825f2e29f7657892894250dd6456",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "1401",
+              "value": 1401
+            },
+            "hasUsableContextUsage": true
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"old\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+            "{\"type\":\"assistant\",\"uuid\":\"new\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"new\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new\"}],\"usage\":{\"input_tokens\":\"5000\",\"output_tokens\":1}}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"old\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+            "{\"type\":\"assistant\",\"uuid\":\"new\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"new\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new\"}],\"usage\":{\"input_tokens\":\"5000\",\"output_tokens\":1}}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "tokens-negative-invalid",
+      "kind": "tokens",
+      "originalCase": {
+        "name": "tokens-negative-invalid",
+        "kind": "tokens",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"old\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+          "{\"type\":\"assistant\",\"uuid\":\"new\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"new\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new\"}],\"usage\":{\"input_tokens\":5000,\"output_tokens\":-1}}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "d82cb3e7b4237c41efc3d00b409bf3b24fc405ead63216e1fb01ca525bce9d46",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "1401",
+              "value": 1401
+            },
+            "hasUsableContextUsage": true
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"old\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+            "{\"type\":\"assistant\",\"uuid\":\"new\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"new\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new\"}],\"usage\":{\"input_tokens\":5000,\"output_tokens\":-1}}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"old\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+            "{\"type\":\"assistant\",\"uuid\":\"new\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"new\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new\"}],\"usage\":{\"input_tokens\":5000,\"output_tokens\":-1}}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "tokens-cache-null-invalid",
+      "kind": "tokens",
+      "originalCase": {
+        "name": "tokens-cache-null-invalid",
+        "kind": "tokens",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"old\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+          "{\"type\":\"assistant\",\"uuid\":\"new\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"new\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new\"}],\"usage\":{\"input_tokens\":5000,\"output_tokens\":1,\"cache_read_input_tokens\":null}}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "b4737b98df790078aac7694ddb8cfc7f1fc8980dc73108d34284f3377dc5dc57",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "1401",
+              "value": 1401
+            },
+            "hasUsableContextUsage": true
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"old\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+            "{\"type\":\"assistant\",\"uuid\":\"new\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"new\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new\"}],\"usage\":{\"input_tokens\":5000,\"output_tokens\":1,\"cache_read_input_tokens\":null}}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"old\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+            "{\"type\":\"assistant\",\"uuid\":\"new\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"new\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new\"}],\"usage\":{\"input_tokens\":5000,\"output_tokens\":1,\"cache_read_input_tokens\":null}}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "tokens-infinite-cache-invalid",
+      "kind": "tokens",
+      "originalCase": {
+        "name": "tokens-infinite-cache-invalid",
+        "kind": "tokens",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"old\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+          "{\"type\":\"assistant\",\"uuid\":\"new\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"new\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new\"}],\"usage\":{\"input_tokens\":5000,\"output_tokens\":1,\"cache_creation_input_tokens\":1e400}}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "4883da51682ab1abb42d54a48590e0d64c04cbd3350d1a1e9b741c983afe2b89",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "1401",
+              "value": 1401
+            },
+            "hasUsableContextUsage": true
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"old\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+            "{\"type\":\"assistant\",\"uuid\":\"new\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"new\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new\"}],\"usage\":{\"input_tokens\":5000,\"output_tokens\":1,\"cache_creation_input_tokens\":null}}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"old\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+            "{\"type\":\"assistant\",\"uuid\":\"new\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"new\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new\"}],\"usage\":{\"input_tokens\":5000,\"output_tokens\":1,\"cache_creation_input_tokens\":null}}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "tokens-usage-null-error",
+      "kind": "tokens",
+      "originalCase": {
+        "name": "tokens-usage-null-error",
+        "kind": "tokens",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"x\"}],\"usage\":null}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "71d39f43e3855d0542f5336b5614af850e9d85a3ae3a0c16df33b94a5c7a03d2",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": {
+            "class": "TypeError",
+            "name": "TypeError",
+            "message": "null is not an object (evaluating 'usage.input_tokens')",
+            "messageJSON": "\"null is not an object (evaluating 'usage.input_tokens')\"",
+            "stack": "TypeError: null is not an object (evaluating 'usage.input_tokens')\n    at hasValidUsageShape (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/utils/tokens.ts:63:12)\n    at isUsableContextUsage (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/utils/tokens.ts:84:5)\n    at some (native:1:11)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/query-preflight-next/source-helper.fixture.ts:44:133\n    at processTicksAndRejections (native:7:39)"
+          },
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"x\"}],\"usage\":null}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"x\"}],\"usage\":null}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "tokens-synthetic-usage-ignored",
+      "kind": "tokens",
+      "originalCase": {
+        "name": "tokens-synthetic-usage-ignored",
+        "kind": "tokens",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"syn\",\"model\":\"<synthetic>\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"xxxxxxxxxxxxxxxxxxxx\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "a377a779b60edf87b0ef2aba9dbb665149118a8b78c949a214b36d665c02a1b2",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "5",
+              "value": 5
+            },
+            "hasUsableContextUsage": false
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"syn\",\"model\":\"<synthetic>\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"xxxxxxxxxxxxxxxxxxxx\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"syn\",\"model\":\"<synthetic>\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"xxxxxxxxxxxxxxxxxxxx\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "tokens-interleaved-same-id",
+      "kind": "tokens",
+      "originalCase": {
+        "name": "tokens-interleaved-same-id",
+        "kind": "tokens",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"a1\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"s\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}",
+          "{\"type\":\"assistant\",\"uuid\":\"a2\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"tool_use\",\"id\":\"t1\",\"name\":\"Write\",\"input\":{\"content\":\"x\"}}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}",
+          "{\"type\":\"user\",\"uuid\":\"user-t1\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t1\",\"content\":\"rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\"}]}}",
+          "{\"type\":\"assistant\",\"uuid\":\"a3\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"done\"}],\"usage\":{\"input_tokens\":2000,\"output_tokens\":500,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":500}}}",
+          "{\"type\":\"user\",\"uuid\":\"tail\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn\"}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "264b28bd29b256103f3b6c1e2a42df0cd3fedfc2336e521917f299208f17dfae",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "3110",
+              "value": 3110
+            },
+            "hasUsableContextUsage": true
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"a1\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"s\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}",
+            "{\"type\":\"assistant\",\"uuid\":\"a2\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"tool_use\",\"id\":\"t1\",\"name\":\"Write\",\"input\":{\"content\":\"x\"}}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}",
+            "{\"type\":\"user\",\"uuid\":\"user-t1\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t1\",\"content\":\"rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"a3\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"done\"}],\"usage\":{\"input_tokens\":2000,\"output_tokens\":500,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":500}}}",
+            "{\"type\":\"user\",\"uuid\":\"tail\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn\"}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"a1\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"s\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}",
+            "{\"type\":\"assistant\",\"uuid\":\"a2\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"tool_use\",\"id\":\"t1\",\"name\":\"Write\",\"input\":{\"content\":\"x\"}}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}",
+            "{\"type\":\"user\",\"uuid\":\"user-t1\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t1\",\"content\":\"rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"a3\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"done\"}],\"usage\":{\"input_tokens\":2000,\"output_tokens\":500,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":500}}}",
+            "{\"type\":\"user\",\"uuid\":\"tail\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn\"}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "tokens-other-response-stops-walk",
+      "kind": "tokens",
+      "originalCase": {
+        "name": "tokens-other-response-stops-walk",
+        "kind": "tokens",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"a0\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"same old\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}",
+          "{\"type\":\"user\",\"uuid\":\"user-old\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"old\",\"content\":\"rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\"}]}}",
+          "{\"type\":\"assistant\",\"uuid\":\"other\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"different\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"different\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+          "{\"type\":\"assistant\",\"uuid\":\"a1\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new\"}],\"usage\":{\"input_tokens\":200,\"output_tokens\":10}}}",
+          "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"tail\"}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "be0d5d94a35a4af5b8821743660145095661c2ede62e4b6f3a5d0279c0c1e3bf",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "211",
+              "value": 211
+            },
+            "hasUsableContextUsage": true
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"a0\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"same old\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}",
+            "{\"type\":\"user\",\"uuid\":\"user-old\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"old\",\"content\":\"rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"other\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"different\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"different\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+            "{\"type\":\"assistant\",\"uuid\":\"a1\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new\"}],\"usage\":{\"input_tokens\":200,\"output_tokens\":10}}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"tail\"}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"a0\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"same old\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}",
+            "{\"type\":\"user\",\"uuid\":\"user-old\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"old\",\"content\":\"rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"other\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"different\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"different\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+            "{\"type\":\"assistant\",\"uuid\":\"a1\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new\"}],\"usage\":{\"input_tokens\":200,\"output_tokens\":10}}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"tail\"}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "tokens-same-id-prompt-only-all-visible",
+      "kind": "tokens",
+      "originalCase": {
+        "name": "tokens-same-id-prompt-only-all-visible",
+        "kind": "tokens",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"a1\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}",
+          "{\"type\":\"user\",\"uuid\":\"user-t\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\"}]}}",
+          "{\"type\":\"assistant\",\"uuid\":\"a2\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}],\"usage\":{\"input_tokens\":100,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "b86ffd680f53a414127cc31034fc9564dc9c9731c049f5a132dc26be40357a82",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "130",
+              "value": 130
+            },
+            "hasUsableContextUsage": true
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"a1\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}",
+            "{\"type\":\"user\",\"uuid\":\"user-t\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"a2\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}],\"usage\":{\"input_tokens\":100,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"a1\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}],\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}",
+            "{\"type\":\"user\",\"uuid\":\"user-t\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"a2\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"shared\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}],\"usage\":{\"input_tokens\":100,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0}}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "tokens-ignored-system-progress",
+      "kind": "tokens",
+      "originalCase": {
+        "name": "tokens-ignored-system-progress",
+        "kind": "tokens",
+        "historySources": [
+          "{\"type\":\"system\",\"subtype\":\"compact_boundary\",\"content\":\"ignored\"}",
+          "{\"type\":\"progress\",\"data\":\"ignored\"}",
+          "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"abcd\"}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "0996812fab76ad1e1475fb9bc812ea613f980a0547795d323c789e1099410b1a",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "1",
+              "value": 1
+            },
+            "hasUsableContextUsage": false
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"system\",\"subtype\":\"compact_boundary\",\"content\":\"ignored\"}",
+            "{\"type\":\"progress\",\"data\":\"ignored\"}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"abcd\"}}"
+          ],
+          "after": [
+            "{\"type\":\"system\",\"subtype\":\"compact_boundary\",\"content\":\"ignored\"}",
+            "{\"type\":\"progress\",\"data\":\"ignored\"}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"abcd\"}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "attachment-listing-rough-allocations",
+      "kind": "rough-history",
+      "originalCase": {
+        "name": "attachment-listing-rough-allocations",
+        "kind": "rough-history",
+        "historySources": [
+          "{\"type\":\"attachment\",\"uuid\":\"retained\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}"
+        ],
+        "repeat": 2
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "e5da1ffadca7a6bd1ad2e809b4a9de51c854a7c32942594ccfe6f60d82e75dcf",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "27",
+              "value": 27
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"attachment\",\"uuid\":\"retained\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}"
+          ],
+          "after": [
+            "{\"type\":\"attachment\",\"uuid\":\"retained\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}"
+          ],
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "preflight-id-1"
+            },
+            {
+              "kind": "date",
+              "args": [],
+              "value": "2023-11-14T22:13:20.000Z"
+            }
+          ],
+          "uuidCalls": 1
+        },
+        {
+          "repeat": 1,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "27",
+              "value": 27
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"attachment\",\"uuid\":\"retained\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}"
+          ],
+          "after": [
+            "{\"type\":\"attachment\",\"uuid\":\"retained\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}"
+          ],
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "preflight-id-2"
+            },
+            {
+              "kind": "date",
+              "args": [],
+              "value": "2023-11-14T22:13:20.000Z"
+            }
+          ],
+          "uuidCalls": 2
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "attachment-invoked-rough-allocations",
+      "kind": "rough-history",
+      "originalCase": {
+        "name": "attachment-invoked-rough-allocations",
+        "kind": "rough-history",
+        "historySources": [
+          "{\"type\":\"attachment\",\"uuid\":\"retained\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"p\",\"content\":\"body\"},{\"name\":\"one\",\"path\":\"p2\",\"content\":\"duplicate\"}]}}"
+        ],
+        "repeat": 2
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "f202eded2b305a41615143efc3b78f3fadce85b43c5dd358147290a61ebe053c",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "49",
+              "value": 49
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"attachment\",\"uuid\":\"retained\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"p\",\"content\":\"body\"},{\"name\":\"one\",\"path\":\"p2\",\"content\":\"duplicate\"}]}}"
+          ],
+          "after": [
+            "{\"type\":\"attachment\",\"uuid\":\"retained\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"p\",\"content\":\"body\"},{\"name\":\"one\",\"path\":\"p2\",\"content\":\"duplicate\"}]}}"
+          ],
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "preflight-id-1"
+            },
+            {
+              "kind": "date",
+              "args": [],
+              "value": "2023-11-14T22:13:20.000Z"
+            }
+          ],
+          "uuidCalls": 1
+        },
+        {
+          "repeat": 1,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "49",
+              "value": 49
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"attachment\",\"uuid\":\"retained\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"p\",\"content\":\"body\"},{\"name\":\"one\",\"path\":\"p2\",\"content\":\"duplicate\"}]}}"
+          ],
+          "after": [
+            "{\"type\":\"attachment\",\"uuid\":\"retained\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"p\",\"content\":\"body\"},{\"name\":\"one\",\"path\":\"p2\",\"content\":\"duplicate\"}]}}"
+          ],
+          "allocations": [
+            {
+              "kind": "uuid",
+              "value": "preflight-id-2"
+            },
+            {
+              "kind": "date",
+              "args": [],
+              "value": "2023-11-14T22:13:20.000Z"
+            }
+          ],
+          "uuidCalls": 2
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "attachment-malformed-rough-error",
+      "kind": "rough-history",
+      "originalCase": {
+        "name": "attachment-malformed-rough-error",
+        "kind": "rough-history",
+        "historySources": [
+          "{\"type\":\"attachment\",\"uuid\":\"retained\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[null]}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "a87ea6c520b39641098a6bd2812919f58e43d56074e165fbd2c761897d0e5243",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": {
+            "class": "TypeError",
+            "name": "TypeError",
+            "message": "null is not an object (evaluating 'skill.name')",
+            "messageJSON": "\"null is not an object (evaluating 'skill.name')\"",
+            "stack": "TypeError: null is not an object (evaluating 'skill.name')\n    at <anonymous> (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/utils/messages.ts:3935:27)\n    at map (native:1:11)\n    at normalizeAttachmentForAPI (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/utils/messages.ts:3933:10)\n    at roughTokenCountEstimationForMessage (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/services/tokenEstimation.ts:379:26)\n    at roughTokenCountEstimationForMessages (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/services/tokenEstimation.ts:355:20)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/query-preflight-next/source-helper.fixture.ts:43:80\n    at processTicksAndRejections (native:7:39)"
+          },
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"attachment\",\"uuid\":\"retained\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[null]}}"
+          ],
+          "after": [
+            "{\"type\":\"attachment\",\"uuid\":\"retained\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[null]}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "boundary-no-marker",
+      "kind": "boundary",
+      "originalCase": {
+        "name": "boundary-no-marker",
+        "kind": "boundary",
+        "historySources": [
+          "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"old\"}}",
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"visible\"}]}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "5c4584383e6d5bc948e0a11abf27239cf4a3e55193fa19e654b90c402c66256a",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "index": -1
+          },
+          "error": null,
+          "view": [
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"old\"}}",
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "viewSameArray": true,
+          "viewReferenceIndices": [
+            0,
+            1
+          ],
+          "viewMessageSame": [
+            true,
+            true
+          ],
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"old\"}}",
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "after": [
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"old\"}}",
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "boundary-last-inclusive",
+      "kind": "boundary",
+      "originalCase": {
+        "name": "boundary-last-inclusive",
+        "kind": "boundary",
+        "historySources": [
+          "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"old\"}}",
+          "{\"type\":\"system\",\"uuid\":\"first\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+          "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"middle\"}}",
+          "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+          "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"new\"}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "645af3033d1aa2a572a1708cd1fa452a3a4de3ce8a5bb202fbc1c67710f7d711",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "index": 3
+          },
+          "error": null,
+          "view": [
+            "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"new\"}}"
+          ],
+          "viewSameArray": false,
+          "viewReferenceIndices": [
+            3,
+            4
+          ],
+          "viewMessageSame": [
+            true,
+            false
+          ],
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"old\"}}",
+            "{\"type\":\"system\",\"uuid\":\"first\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"middle\"}}",
+            "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"new\"}}"
+          ],
+          "after": [
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"old\"}}",
+            "{\"type\":\"system\",\"uuid\":\"first\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"middle\"}}",
+            "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"new\"}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "boundary-marker-last",
+      "kind": "boundary",
+      "originalCase": {
+        "name": "boundary-marker-last",
+        "kind": "boundary",
+        "historySources": [
+          "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"old\"}}",
+          "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "7935d6f4a97b20687860dda96a8c08cfe646a96fd12bb4c996b1b157dd32d9b9",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "index": 1
+          },
+          "error": null,
+          "view": [
+            "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}"
+          ],
+          "viewSameArray": false,
+          "viewReferenceIndices": [
+            1
+          ],
+          "viewMessageSame": [
+            true
+          ],
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"old\"}}",
+            "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}"
+          ],
+          "after": [
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"old\"}}",
+            "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "boundary-subtype-other-type-ignored",
+      "kind": "boundary",
+      "originalCase": {
+        "name": "boundary-subtype-other-type-ignored",
+        "kind": "boundary",
+        "historySources": [
+          "{\"type\":\"user\",\"subtype\":\"compact_boundary\",\"uuid\":\"not-system\",\"message\":{\"role\":\"user\",\"content\":\"text\"}}",
+          "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"new\"}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "af33d10e9ce4c44c51d133ac75d36705e18047f1d4a045ea5a1b022efd492eb3",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "index": -1
+          },
+          "error": null,
+          "view": [
+            "{\"type\":\"user\",\"subtype\":\"compact_boundary\",\"uuid\":\"not-system\",\"message\":{\"role\":\"user\",\"content\":\"text\"}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"new\"}}"
+          ],
+          "viewSameArray": true,
+          "viewReferenceIndices": [
+            0,
+            1
+          ],
+          "viewMessageSame": [
+            true,
+            true
+          ],
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"user\",\"subtype\":\"compact_boundary\",\"uuid\":\"not-system\",\"message\":{\"role\":\"user\",\"content\":\"text\"}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"new\"}}"
+          ],
+          "after": [
+            "{\"type\":\"user\",\"subtype\":\"compact_boundary\",\"uuid\":\"not-system\",\"message\":{\"role\":\"user\",\"content\":\"text\"}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"new\"}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "boundary-null-before-marker",
+      "kind": "boundary",
+      "originalCase": {
+        "name": "boundary-null-before-marker",
+        "kind": "boundary",
+        "historySources": [
+          "null",
+          "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+          "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"new\"}}"
+        ]
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "cdcb7c14be098e53521f378ff41c663f5685462e70a44fe13654164c722cf5a5",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "index": 1
+          },
+          "error": null,
+          "view": [
+            "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"new\"}}"
+          ],
+          "viewSameArray": false,
+          "viewReferenceIndices": [
+            1,
+            2
+          ],
+          "viewMessageSame": [
+            true,
+            true
+          ],
+          "boundary": null,
+          "initial": [
+            "null",
+            "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"new\"}}"
+          ],
+          "after": [
+            "null",
+            "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"new\"}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "signature-same-model",
+      "kind": "signature",
+      "originalCase": {
+        "name": "signature-same-model",
+        "kind": "signature",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+          "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+        ],
+        "modelSource": "\"fixture-model\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "d8624899c2e9340e96f81da82547da36edb62f665f9a471f5ed5a3a4e8abf2e6",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": null,
+          "view": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+          ],
+          "viewSameArray": true,
+          "viewReferenceIndices": [
+            0,
+            1
+          ],
+          "viewMessageSame": [
+            true,
+            true
+          ],
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "signature-same-case-space-1m",
+      "kind": "signature",
+      "originalCase": {
+        "name": "signature-same-case-space-1m",
+        "kind": "signature",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\" Fixture-Model \",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+          "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+        ],
+        "modelSource": "\"FIXTURE-MODEL[1m]\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "5add1fc7970a1ea176d1df17f5d4a97889be29a444ddef4e76b7b5ad7556d82e",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": null,
+          "view": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\" Fixture-Model \",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+          ],
+          "viewSameArray": true,
+          "viewReferenceIndices": [
+            0,
+            1
+          ],
+          "viewMessageSame": [
+            true,
+            true
+          ],
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\" Fixture-Model \",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\" Fixture-Model \",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "signature-1m-disabled-still-normalized",
+      "kind": "signature",
+      "originalCase": {
+        "name": "signature-1m-disabled-still-normalized",
+        "kind": "signature",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"fixture-model[1m]\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+          "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+        ],
+        "modelSource": "\"fixture-model\"",
+        "env": {
+          "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1"
+        }
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "092eb0585ad6c6fb152fb5904391ba71cd4885fea3afff74165920e297e773c7",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": null,
+          "view": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"fixture-model[1m]\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+          ],
+          "viewSameArray": true,
+          "viewReferenceIndices": [
+            0,
+            1
+          ],
+          "viewMessageSame": [
+            true,
+            true
+          ],
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"fixture-model[1m]\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"fixture-model[1m]\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "signature-different-strips-all",
+      "kind": "signature",
+      "originalCase": {
+        "name": "signature-different-strips-all",
+        "kind": "signature",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"a\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"a\",\"model\":\"old-one\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+          "{\"type\":\"assistant\",\"uuid\":\"b\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"b\",\"model\":\"old-two\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+          "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+        ],
+        "modelSource": "\"deepseek-flash\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "643550e309fc8a366dfb144f01d8e6743beed684c8d11c05fcc8ae85d859037d",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": null,
+          "view": [
+            "{\"type\":\"assistant\",\"uuid\":\"a\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"a\",\"model\":\"old-one\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"b\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"b\",\"model\":\"old-two\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+          ],
+          "viewSameArray": false,
+          "viewReferenceIndices": [
+            -1,
+            -1,
+            2
+          ],
+          "viewMessageSame": [
+            false,
+            false,
+            true
+          ],
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"a\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"a\",\"model\":\"old-one\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"b\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"b\",\"model\":\"old-two\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"a\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"a\",\"model\":\"old-one\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"b\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"b\",\"model\":\"old-two\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "signature-thinking-only-empty",
+      "kind": "signature",
+      "originalCase": {
+        "name": "signature-thinking-only-empty",
+        "kind": "signature",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"s\"}]}}",
+          "{\"type\":\"assistant\",\"uuid\":\"sibling\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"same-id text\"}]}}"
+        ],
+        "modelSource": "\"deepseek-flash\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "d35e83e77da09135d2305d778fc0db8fbbf05126c00443b623eca7633e64e098",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": null,
+          "view": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"sibling\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"same-id text\"}]}}"
+          ],
+          "viewSameArray": false,
+          "viewReferenceIndices": [
+            -1,
+            1
+          ],
+          "viewMessageSame": [
+            false,
+            true
+          ],
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"s\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"sibling\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"same-id text\"}]}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"s\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"sibling\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"same-id text\"}]}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "signature-trailing-text-does-not-select",
+      "kind": "signature",
+      "originalCase": {
+        "name": "signature-trailing-text-does-not-select",
+        "kind": "signature",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"source\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+          "{\"type\":\"assistant\",\"uuid\":\"later\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"later\",\"model\":\"deepseek-flash\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"later\"}]}}"
+        ],
+        "modelSource": "\"fixture-model\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "2f1e2977c28c8c8af133c3c54960db45b625582cbd1b74ff0a5fc174fac14e2a",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": null,
+          "view": [
+            "{\"type\":\"assistant\",\"uuid\":\"source\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"later\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"later\",\"model\":\"deepseek-flash\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"later\"}]}}"
+          ],
+          "viewSameArray": true,
+          "viewReferenceIndices": [
+            0,
+            1
+          ],
+          "viewMessageSame": [
+            true,
+            true
+          ],
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"source\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"later\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"later\",\"model\":\"deepseek-flash\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"later\"}]}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"source\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"later\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"later\",\"model\":\"deepseek-flash\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"later\"}]}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "signature-trailing-synthetic-does-not-select",
+      "kind": "signature",
+      "originalCase": {
+        "name": "signature-trailing-synthetic-does-not-select",
+        "kind": "signature",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"source\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+          "{\"type\":\"assistant\",\"uuid\":\"synthetic\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"syn\",\"model\":\"<synthetic>\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+        ],
+        "modelSource": "\"fixture-model\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "28c16201d40f47622408d939d89b2b529028b65c844957f331c865c1f0c931ec",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": null,
+          "view": [
+            "{\"type\":\"assistant\",\"uuid\":\"source\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"synthetic\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"syn\",\"model\":\"<synthetic>\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "viewSameArray": true,
+          "viewReferenceIndices": [
+            0,
+            1
+          ],
+          "viewMessageSame": [
+            true,
+            true
+          ],
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"source\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"synthetic\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"syn\",\"model\":\"<synthetic>\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"source\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"synthetic\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"syn\",\"model\":\"<synthetic>\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "signature-last-protected-wins",
+      "kind": "signature",
+      "originalCase": {
+        "name": "signature-last-protected-wins",
+        "kind": "signature",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"old\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"old\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+          "{\"type\":\"assistant\",\"uuid\":\"last\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"last\",\"model\":\"deepseek-flash\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+        ],
+        "modelSource": "\"deepseek-flash\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "67f2a039d552ee3a539c11bd78b634fff8d1b53e1889c8dcf917765370886291",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": null,
+          "view": [
+            "{\"type\":\"assistant\",\"uuid\":\"old\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"old\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"last\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"last\",\"model\":\"deepseek-flash\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "viewSameArray": true,
+          "viewReferenceIndices": [
+            0,
+            1
+          ],
+          "viewMessageSame": [
+            true,
+            true
+          ],
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"old\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"old\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"last\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"last\",\"model\":\"deepseek-flash\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"old\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"old\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"assistant\",\"uuid\":\"last\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"last\",\"model\":\"deepseek-flash\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "signature-no-protected",
+      "kind": "signature",
+      "originalCase": {
+        "name": "signature-no-protected",
+        "kind": "signature",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"visible\"}]}}",
+          "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+        ],
+        "modelSource": "\"deepseek-flash\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "ddf66b0b4ead3278351b27502b5e9c1ec857e3a82f24f1e77e03e416b8e5a6c9",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": null,
+          "view": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+          ],
+          "viewSameArray": true,
+          "viewReferenceIndices": [
+            0,
+            1
+          ],
+          "viewMessageSame": [
+            true,
+            true
+          ],
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"visible\"}]}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"next\"}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "signature-actually-absent-source-model",
+      "kind": "signature",
+      "originalCase": {
+        "name": "signature-actually-absent-source-model",
+        "kind": "signature",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+        ],
+        "modelSource": "\"deepseek-flash\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "3c1e9b1282be75560ab37b1bbe71fb3500ec0b8ebd29f265bf8f27a114c6de4b",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": null,
+          "view": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "viewSameArray": true,
+          "viewReferenceIndices": [
+            0
+          ],
+          "viewMessageSame": [
+            true
+          ],
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "signature-malformed-content-string",
+      "kind": "signature",
+      "originalCase": {
+        "name": "signature-malformed-content-string",
+        "kind": "signature",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":\"raw-string\"}}"
+        ],
+        "modelSource": "\"deepseek-flash\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "756a537a968fa0d11d8982e2d48554b7fc975cfde92278343a5cf3cbda381e2b",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": {
+            "class": "TypeError",
+            "name": "TypeError",
+            "message": "msg.message.content.some is not a function. (In 'msg.message.content.some(isThinkingBlock)', 'msg.message.content.some' is undefined)",
+            "messageJSON": "\"msg.message.content.some is not a function. (In 'msg.message.content.some(isThinkingBlock)', 'msg.message.content.some' is undefined)\"",
+            "stack": "TypeError: msg.message.content.some is not a function. (In 'msg.message.content.some(isThinkingBlock)', 'msg.message.content.some' is undefined)\n    at <anonymous> (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/utils/messages.ts:5461:25)\n    at findLast (native:1:11)\n    at stripSignatureBlocksAfterModelChange (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/utils/messages.ts:5458:36)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/query-preflight-next/source-helper.fixture.ts:46:55\n    at processTicksAndRejections (native:7:39)"
+          },
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":\"raw-string\"}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":\"raw-string\"}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "signature-malformed-content-null",
+      "kind": "signature",
+      "originalCase": {
+        "name": "signature-malformed-content-null",
+        "kind": "signature",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":null}}"
+        ],
+        "modelSource": "\"deepseek-flash\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "acb63e764fe552a65132b76227fa9bf771fddc0b86844c5641df8b7c9e98268f",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": {
+            "class": "TypeError",
+            "name": "TypeError",
+            "message": "null is not an object (evaluating 'msg.message.content.some')",
+            "messageJSON": "\"null is not an object (evaluating 'msg.message.content.some')\"",
+            "stack": "TypeError: null is not an object (evaluating 'msg.message.content.some')\n    at <anonymous> (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/utils/messages.ts:5461:17)\n    at findLast (native:1:11)\n    at stripSignatureBlocksAfterModelChange (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/utils/messages.ts:5458:36)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/query-preflight-next/source-helper.fixture.ts:46:55\n    at processTicksAndRejections (native:7:39)"
+          },
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":null}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":null}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "signature-source-model-number",
+      "kind": "signature",
+      "originalCase": {
+        "name": "signature-source-model-number",
+        "kind": "signature",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":123,\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+        ],
+        "modelSource": "\"deepseek-flash\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "b9620f9aee9156803b9e225533efa10496f3bcf5913b0b6e0079336a435bca85",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": {
+            "class": "TypeError",
+            "name": "TypeError",
+            "message": "modelInput.trim is not a function. (In 'modelInput.trim()', 'modelInput.trim' is undefined)",
+            "messageJSON": "\"modelInput.trim is not a function. (In 'modelInput.trim()', 'modelInput.trim' is undefined)\"",
+            "stack": "TypeError: modelInput.trim is not a function. (In 'modelInput.trim()', 'modelInput.trim' is undefined)\n    at parseUserSpecifiedModel (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/utils/model/model.ts:567:40)\n    at normalize (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/utils/messages.ts:5468:5)\n    at stripSignatureBlocksAfterModelChange (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/utils/messages.ts:5471:7)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/query-preflight-next/source-helper.fixture.ts:46:55\n    at processTicksAndRejections (native:7:39)"
+          },
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":123,\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":123,\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "signature-current-model-null",
+      "kind": "signature",
+      "originalCase": {
+        "name": "signature-current-model-null",
+        "kind": "signature",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+        ],
+        "modelSource": "null"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "7fea1650fc3ac4f782a720854d132f79c622bc9c69e9a30c0d050d9ed4219ee2",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": {
+            "class": "TypeError",
+            "name": "TypeError",
+            "message": "null is not an object (evaluating 'modelInput.trim')",
+            "messageJSON": "\"null is not an object (evaluating 'modelInput.trim')\"",
+            "stack": "TypeError: null is not an object (evaluating 'modelInput.trim')\n    at parseUserSpecifiedModel (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/utils/model/model.ts:567:29)\n    at normalize (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/utils/messages.ts:5468:5)\n    at stripSignatureBlocksAfterModelChange (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/utils/messages.ts:5471:52)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/query-preflight-next/source-helper.fixture.ts:46:55\n    at processTicksAndRejections (native:7:39)"
+          },
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "signature-null-history-item",
+      "kind": "signature",
+      "originalCase": {
+        "name": "signature-null-history-item",
+        "kind": "signature",
+        "historySources": [
+          "null",
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+        ],
+        "modelSource": "\"deepseek-flash\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "f115433defed843e4bc6c514ba765784ef17444e78548c88706dbbf2674ca967",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": {
+            "class": "TypeError",
+            "name": "TypeError",
+            "message": "null is not an object (evaluating 'msg.type')",
+            "messageJSON": "\"null is not an object (evaluating 'msg.type')\"",
+            "stack": "TypeError: null is not an object (evaluating 'msg.type')\n    at <anonymous> (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/utils/messages.ts:5416:9)\n    at map (native:1:11)\n    at stripSignatureBlocks (/Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/src/utils/messages.ts:5415:27)\n    at /Users/nanmi/.codex/worktrees/d7f5/claude-code-haha/artifacts/go-parity/query-preflight-next/source-helper.fixture.ts:46:55\n    at processTicksAndRejections (native:7:39)"
+          },
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [
+            "null",
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "after": [
+            "null",
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"response\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "signature-configured-sonnet-alias",
+      "kind": "signature",
+      "originalCase": {
+        "name": "signature-configured-sonnet-alias",
+        "kind": "signature",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"sonnet\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+        ],
+        "modelSource": "\"fixture-model\"",
+        "env": {
+          "ANTHROPIC_DEFAULT_SONNET_MODEL": "fixture-model"
+        }
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "25e4adacb1b4d07ae94b1c61b218d9dd913b41d51e360954df738d6343fd53f7",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": null,
+          "view": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"sonnet\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "viewSameArray": true,
+          "viewReferenceIndices": [
+            0
+          ],
+          "viewMessageSame": [
+            true
+          ],
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"sonnet\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"sonnet\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "boundary-signature-token-order",
+      "kind": "boundary-signature-tokens",
+      "originalCase": {
+        "name": "boundary-signature-token-order",
+        "kind": "boundary-signature-tokens",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"old\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"old\",\"model\":\"old\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+          "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+          "{\"type\":\"assistant\",\"uuid\":\"new\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"new\",\"model\":\"old\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}],\"usage\":{\"input_tokens\":100,\"output_tokens\":0}}}",
+          "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"abcd\"}}"
+        ],
+        "modelSource": "\"deepseek-flash\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-03-18-064Z",
+      "sourceStdoutSha256": "c82a50cc36c9748d84667fe90b8ecc97d9024a637210b76c0ffabb425f3eb301",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "index": 1,
+            "count": {
+              "kind": "finite",
+              "raw": "103",
+              "value": 103
+            }
+          },
+          "error": null,
+          "view": [
+            "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+            "{\"type\":\"assistant\",\"uuid\":\"new\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"new\",\"model\":\"old\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"visible\"}],\"usage\":{\"input_tokens\":100,\"output_tokens\":0}}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"abcd\"}}"
+          ],
+          "viewSameArray": false,
+          "viewReferenceIndices": [
+            1,
+            -1,
+            3
+          ],
+          "viewMessageSame": [
+            true,
+            false,
+            true
+          ],
+          "boundary": [
+            "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+            "{\"type\":\"assistant\",\"uuid\":\"new\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"new\",\"model\":\"old\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}],\"usage\":{\"input_tokens\":100,\"output_tokens\":0}}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"abcd\"}}"
+          ],
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"old\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"old\",\"model\":\"old\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+            "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+            "{\"type\":\"assistant\",\"uuid\":\"new\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"new\",\"model\":\"old\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}],\"usage\":{\"input_tokens\":100,\"output_tokens\":0}}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"abcd\"}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"old\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"old\",\"model\":\"old\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}],\"usage\":{\"input_tokens\":1000,\"output_tokens\":100,\"cache_creation_input_tokens\":100,\"cache_read_input_tokens\":200}}}",
+            "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+            "{\"type\":\"assistant\",\"uuid\":\"new\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"new\",\"model\":\"old\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}],\"usage\":{\"input_tokens\":100,\"output_tokens\":0}}}",
+            "{\"type\":\"user\",\"uuid\":\"user\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"abcd\"}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "rough-negative-zero",
+      "kind": "rough-content",
+      "originalCase": {
+        "name": "rough-negative-zero",
+        "kind": "rough-content",
+        "contentSource": "-0"
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-05-33-823Z",
+      "sourceStdoutSha256": "945d4c0aa85711c157fd00961c935fab502ea48f1b5714dcd3e56ac54df77638",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": {
+            "count": {
+              "kind": "finite",
+              "raw": "0",
+              "value": 0
+            }
+          },
+          "error": null,
+          "view": null,
+          "viewSameArray": null,
+          "viewReferenceIndices": null,
+          "viewMessageSame": null,
+          "boundary": null,
+          "initial": [],
+          "after": [],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    },
+    {
+      "name": "signature-present-model-default-builder",
+      "kind": "signature",
+      "originalCase": {
+        "name": "signature-present-model-default-builder",
+        "kind": "signature",
+        "historySources": [
+          "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+        ],
+        "modelSource": "\"deepseek-flash\""
+      },
+      "run": "artifacts/go-parity/query-preflight-next/source-runs/2026-10-02T13-05-33-823Z",
+      "sourceStdoutSha256": "2c6149d381c8d3ba2399802721321c1eb0b32190d9a6d1c99ca41d08416f3dbc",
+      "outcome": [
+        {
+          "repeat": 0,
+          "output": null,
+          "error": null,
+          "view": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "viewSameArray": false,
+          "viewReferenceIndices": [
+            -1
+          ],
+          "viewMessageSame": [
+            false
+          ],
+          "boundary": null,
+          "initial": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "after": [
+            "{\"type\":\"assistant\",\"uuid\":\"assistant\",\"timestamp\":\"2020-01-01T00:00:01Z\",\"message\":{\"id\":\"r\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"bound\"},{\"type\":\"redacted_thinking\",\"data\":\"redacted\"},{\"type\":\"text\",\"text\":\"visible\"}]}}"
+          ],
+          "allocations": [],
+          "uuidCalls": 0
+        }
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [],
+        "absentReads": []
+      }
+    }
+  ]
+}

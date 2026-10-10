@@ -1,0 +1,1896 @@
+{
+  "scope": "actual private append observer export, typed state/receipts+literal files+physical completion counts; Source raw error stacks retained separately, no native stack equivalence claim",
+  "cases": [
+    {
+      "name": "metadata-bypass-duplicate",
+      "original": {
+        "profile": {
+          "name": "metadata-bypass-duplicate",
+          "pointer": "unknown",
+          "entry": {
+            "type": "summary",
+            "uuid": "old",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "summary": "original summary",
+            "future": 1
+          },
+          "actions": [
+            {
+              "op": "await"
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": true
+            },
+            "state": {
+              "pending": [],
+              "queued": [
+                "{\"type\":\"summary\",\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"summary\":\"original summary\",\"future\":1}"
+              ],
+              "tracked": 0,
+              "identity": true,
+              "cache": false,
+              "excluded": []
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": true,
+              "cache": false,
+              "excluded": []
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n{\"type\":\"summary\",\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"summary\":\"original summary\",\"future\":1}\n",
+        "counts": {
+          "open": 2,
+          "stat": 2,
+          "close": 2,
+          "readFile": 1,
+          "append": 1
+        }
+      },
+      "rawSHA": "022f6f417d7ae504a97e513370864cd9c7f647d0c7b0aeb482b3cdfc5678308a",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/metadata-bypass-duplicate-1-raw.json"
+    },
+    {
+      "name": "queue-cold-bypasses-dedup",
+      "original": {
+        "profile": {
+          "name": "queue-cold-bypasses-dedup",
+          "pointer": "unknown",
+          "entry": {
+            "type": "queue-operation",
+            "uuid": "old",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "operation": "enqueue",
+            "content": "original queued"
+          },
+          "actions": [
+            {
+              "op": "await"
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": true
+            },
+            "state": {
+              "pending": [],
+              "queued": [
+                "{\"type\":\"queue-operation\",\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"operation\":\"enqueue\",\"content\":\"original queued\"}"
+              ],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ],
+              "excluded": []
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ],
+              "excluded": []
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n{\"type\":\"queue-operation\",\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"operation\":\"enqueue\",\"content\":\"original queued\"}\n",
+        "counts": {
+          "open": 2,
+          "stat": 2,
+          "close": 2,
+          "readFile": 2,
+          "append": 1
+        }
+      },
+      "rawSHA": "2b16970fff8d05e9c75a65526e9d6455910b539866b00fa2c16f9bc02b3a4c1d",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/queue-cold-bypasses-dedup-1-raw.json"
+    },
+    {
+      "name": "main-new-cold",
+      "original": {
+        "profile": {
+          "name": "main-new-cold",
+          "pointer": "unknown",
+          "entry": {
+            "type": "user",
+            "uuid": "new",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "parentUuid": null,
+            "message": {
+              "role": "user",
+              "content": "original new"
+            },
+            "timestamp": "original outer time",
+            "future": {
+              "keep": true
+            }
+          },
+          "actions": [
+            {
+              "op": "await"
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": true
+            },
+            "state": {
+              "pending": [],
+              "queued": [
+                "{\"type\":\"user\",\"uuid\":\"new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"parentUuid\":null,\"message\":{\"role\":\"user\",\"content\":\"original new\"},\"timestamp\":\"original outer time\",\"future\":{\"keep\":true}}"
+              ],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ],
+              "excluded": []
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ],
+              "excluded": []
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n{\"type\":\"user\",\"uuid\":\"new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"parentUuid\":null,\"message\":{\"role\":\"user\",\"content\":\"original new\"},\"timestamp\":\"original outer time\",\"future\":{\"keep\":true}}\n",
+        "counts": {
+          "open": 2,
+          "stat": 2,
+          "close": 2,
+          "readFile": 2,
+          "append": 1
+        }
+      },
+      "rawSHA": "e9538676d2d675eb79a2434ec200cfc14a62830d4f3b4dc0e7aaa9fe50c3029c",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/main-new-cold-1-raw.json"
+    },
+    {
+      "name": "main-existing-uuid",
+      "original": {
+        "profile": {
+          "name": "main-existing-uuid",
+          "pointer": "unknown",
+          "entry": {
+            "type": "user",
+            "uuid": "old",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "parentUuid": null,
+            "message": {
+              "role": "user",
+              "content": "original new"
+            },
+            "timestamp": "original outer time",
+            "future": {
+              "keep": true
+            }
+          },
+          "actions": [
+            {
+              "op": "await"
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": true
+            },
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": false,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ],
+              "excluded": []
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": false,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ],
+              "excluded": []
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n",
+        "counts": {
+          "open": 0,
+          "stat": 0,
+          "close": 0,
+          "readFile": 2,
+          "append": 0
+        }
+      },
+      "rawSHA": "ff7f1d5639d9f04fc01f2a85bd34f171c9eb818d5cdab246e08b962dbbcbfa47",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/main-existing-uuid-1-raw.json"
+    },
+    {
+      "name": "unset-path-buffers-live-entry",
+      "original": {
+        "profile": {
+          "name": "unset-path-buffers-live-entry",
+          "pointer": "unset",
+          "entry": {
+            "type": "user",
+            "uuid": "new",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "parentUuid": null,
+            "message": {
+              "role": "user",
+              "content": "original new"
+            },
+            "timestamp": "original outer time",
+            "future": {
+              "keep": true
+            }
+          },
+          "actions": [
+            {
+              "op": "await"
+            },
+            {
+              "op": "mutate",
+              "field": "future",
+              "value": {
+                "retained": "live"
+              }
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": true
+            },
+            "state": {
+              "pending": [
+                "{\"type\":\"user\",\"uuid\":\"new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"parentUuid\":null,\"message\":{\"role\":\"user\",\"content\":\"original new\"},\"timestamp\":\"original outer time\",\"future\":{\"keep\":true}}"
+              ],
+              "queued": [],
+              "tracked": 0,
+              "identity": false,
+              "cache": false,
+              "excluded": []
+            }
+          },
+          {
+            "op": "mutate",
+            "field": "future",
+            "value": {
+              "retained": "live"
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [
+                "{\"type\":\"user\",\"uuid\":\"new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"parentUuid\":null,\"message\":{\"role\":\"user\",\"content\":\"original new\"},\"timestamp\":\"original outer time\",\"future\":{\"retained\":\"live\"}}"
+              ],
+              "queued": [],
+              "tracked": 0,
+              "identity": false,
+              "cache": false,
+              "excluded": []
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n",
+        "counts": {
+          "open": 0,
+          "stat": 0,
+          "close": 0,
+          "readFile": 1,
+          "append": 0
+        }
+      },
+      "rawSHA": "738f1834aff18e1500526eec472c72b8d28b16401e6b28658ce886d1d6d6f906",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/unset-path-buffers-live-entry-1-raw.json"
+    },
+    {
+      "name": "known-identity-enqueue",
+      "original": {
+        "profile": {
+          "name": "known-identity-enqueue",
+          "pointer": "known",
+          "entry": {
+            "type": "user",
+            "uuid": "new",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "parentUuid": null,
+            "message": {
+              "role": "user",
+              "content": "original new"
+            },
+            "timestamp": "original outer time",
+            "future": {
+              "keep": true
+            }
+          },
+          "actions": [
+            {
+              "op": "await"
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": true
+            },
+            "state": {
+              "pending": [],
+              "queued": [
+                "{\"type\":\"user\",\"uuid\":\"new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"parentUuid\":null,\"message\":{\"role\":\"user\",\"content\":\"original new\"},\"timestamp\":\"original outer time\",\"future\":{\"keep\":true}}"
+              ],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ],
+              "excluded": []
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ],
+              "excluded": []
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n{\"type\":\"user\",\"uuid\":\"new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"parentUuid\":null,\"message\":{\"role\":\"user\",\"content\":\"original new\"},\"timestamp\":\"original outer time\",\"future\":{\"keep\":true}}\n",
+        "counts": {
+          "open": 1,
+          "stat": 1,
+          "close": 1,
+          "readFile": 2,
+          "append": 1
+        }
+      },
+      "rawSHA": "e741b95b4138f40f23910e1684ea5afec114e32ae309adb4c5000063d1646762",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/known-identity-enqueue-1-raw.json"
+    },
+    {
+      "name": "missing-target-discards-adds-uuid",
+      "original": {
+        "profile": {
+          "name": "missing-target-discards-adds-uuid",
+          "pointer": "unknown",
+          "entry": {
+            "type": "user",
+            "uuid": "new",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "parentUuid": null,
+            "message": {
+              "role": "user",
+              "content": "original new"
+            },
+            "timestamp": "original outer time",
+            "future": {
+              "keep": true
+            }
+          },
+          "actions": [
+            {
+              "op": "await"
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": null
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": true
+            },
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": false,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ],
+              "excluded": [
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": false,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ],
+              "excluded": [
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ]
+            }
+          }
+        ],
+        "finalBytes": null,
+        "counts": {
+          "open": 1,
+          "stat": 0,
+          "close": 0,
+          "readFile": 0,
+          "append": 0
+        }
+      },
+      "rawSHA": "fcfd4dc98c12b005ebf6d634fcc2977c5badf312b08576edff0db3047ad7ac79",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/missing-target-discards-adds-uuid-1-raw.json"
+    },
+    {
+      "name": "open-held-live-outer",
+      "original": {
+        "profile": {
+          "name": "open-held-live-outer",
+          "pointer": "unknown",
+          "hold": "open",
+          "entry": {
+            "type": "user",
+            "uuid": "new",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "parentUuid": null,
+            "message": {
+              "role": "user",
+              "content": "original new"
+            },
+            "timestamp": "original outer time",
+            "future": {
+              "keep": true
+            }
+          },
+          "actions": [
+            {
+              "op": "held"
+            },
+            {
+              "op": "mutate",
+              "field": "timestamp",
+              "value": "changed during open"
+            },
+            {
+              "op": "release"
+            },
+            {
+              "op": "await"
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "held",
+            "held": true,
+            "settled": false,
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 1,
+              "identity": false,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ],
+              "excluded": []
+            }
+          },
+          {
+            "op": "mutate",
+            "field": "timestamp",
+            "value": "changed during open"
+          },
+          {
+            "op": "release"
+          },
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": true
+            },
+            "state": {
+              "pending": [],
+              "queued": [
+                "{\"type\":\"user\",\"uuid\":\"new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"parentUuid\":null,\"message\":{\"role\":\"user\",\"content\":\"original new\"},\"timestamp\":\"changed during open\",\"future\":{\"keep\":true}}"
+              ],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ],
+              "excluded": []
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ],
+              "excluded": []
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n{\"type\":\"user\",\"uuid\":\"new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"parentUuid\":null,\"message\":{\"role\":\"user\",\"content\":\"original new\"},\"timestamp\":\"changed during open\",\"future\":{\"keep\":true}}\n",
+        "counts": {
+          "open": 2,
+          "stat": 2,
+          "close": 2,
+          "readFile": 2,
+          "append": 1
+        }
+      },
+      "rawSHA": "67f76d4e94a78a82ead8b1b0fd86ce98f1629f8badbc51f9ab2a93cb6468bb85",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/open-held-live-outer-1-raw.json"
+    },
+    {
+      "name": "stat-held-close-before-queue",
+      "original": {
+        "profile": {
+          "name": "stat-held-close-before-queue",
+          "pointer": "unknown",
+          "hold": "stat",
+          "entry": {
+            "type": "user",
+            "uuid": "new",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "parentUuid": null,
+            "message": {
+              "role": "user",
+              "content": "original new"
+            },
+            "timestamp": "original outer time",
+            "future": {
+              "keep": true
+            }
+          },
+          "actions": [
+            {
+              "op": "held"
+            },
+            {
+              "op": "mutate",
+              "field": "timestamp",
+              "value": "changed during stat"
+            },
+            {
+              "op": "release"
+            },
+            {
+              "op": "await"
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "held",
+            "held": true,
+            "settled": false,
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 1,
+              "identity": false,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ],
+              "excluded": []
+            }
+          },
+          {
+            "op": "mutate",
+            "field": "timestamp",
+            "value": "changed during stat"
+          },
+          {
+            "op": "release"
+          },
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": true
+            },
+            "state": {
+              "pending": [],
+              "queued": [
+                "{\"type\":\"user\",\"uuid\":\"new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"parentUuid\":null,\"message\":{\"role\":\"user\",\"content\":\"original new\"},\"timestamp\":\"changed during stat\",\"future\":{\"keep\":true}}"
+              ],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ],
+              "excluded": []
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ],
+              "excluded": []
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n{\"type\":\"user\",\"uuid\":\"new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"parentUuid\":null,\"message\":{\"role\":\"user\",\"content\":\"original new\"},\"timestamp\":\"changed during stat\",\"future\":{\"keep\":true}}\n",
+        "counts": {
+          "open": 2,
+          "stat": 2,
+          "close": 2,
+          "readFile": 2,
+          "append": 1
+        }
+      },
+      "rawSHA": "0701f920ed0a7a518b84c36df6cf50d3cebb51a2105159df9ee0c6c1c2715fdb",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/stat-held-close-before-queue-1-raw.json"
+    },
+    {
+      "name": "close-held-identity-visible",
+      "original": {
+        "profile": {
+          "name": "close-held-identity-visible",
+          "pointer": "unknown",
+          "hold": "close",
+          "entry": {
+            "type": "user",
+            "uuid": "new",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "parentUuid": null,
+            "message": {
+              "role": "user",
+              "content": "original new"
+            },
+            "timestamp": "original outer time",
+            "future": {
+              "keep": true
+            }
+          },
+          "actions": [
+            {
+              "op": "held"
+            },
+            {
+              "op": "mutate",
+              "field": "timestamp",
+              "value": "changed during close"
+            },
+            {
+              "op": "release"
+            },
+            {
+              "op": "await"
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "held",
+            "held": true,
+            "settled": false,
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 1,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ],
+              "excluded": []
+            }
+          },
+          {
+            "op": "mutate",
+            "field": "timestamp",
+            "value": "changed during close"
+          },
+          {
+            "op": "release"
+          },
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": true
+            },
+            "state": {
+              "pending": [],
+              "queued": [
+                "{\"type\":\"user\",\"uuid\":\"new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"parentUuid\":null,\"message\":{\"role\":\"user\",\"content\":\"original new\"},\"timestamp\":\"changed during close\",\"future\":{\"keep\":true}}"
+              ],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ],
+              "excluded": []
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ],
+              "excluded": []
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n{\"type\":\"user\",\"uuid\":\"new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"parentUuid\":null,\"message\":{\"role\":\"user\",\"content\":\"original new\"},\"timestamp\":\"changed during close\",\"future\":{\"keep\":true}}\n",
+        "counts": {
+          "open": 2,
+          "stat": 2,
+          "close": 2,
+          "readFile": 2,
+          "append": 1
+        }
+      },
+      "rawSHA": "98ace16ccb142844816badf16bfb03b76169ce009d36960685b2f4e4be30a27f",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/close-held-identity-visible-1-raw.json"
+    },
+    {
+      "name": "stat-failure-clean-finally",
+      "original": {
+        "profile": {
+          "name": "stat-failure-clean-finally",
+          "pointer": "unknown",
+          "fault": "stat",
+          "entry": {
+            "type": "user",
+            "uuid": "new",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "parentUuid": null,
+            "message": {
+              "role": "user",
+              "content": "original new"
+            },
+            "timestamp": "original outer time",
+            "future": {
+              "keep": true
+            }
+          },
+          "actions": [
+            {
+              "op": "await"
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": false,
+              "message": "fixture append completion failure: stat",
+              "code": "EIO"
+            },
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": false,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ],
+              "excluded": []
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": false,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ],
+              "excluded": []
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n",
+        "counts": {
+          "open": 1,
+          "stat": 1,
+          "close": 1,
+          "readFile": 2,
+          "append": 0
+        }
+      },
+      "rawSHA": "19e4378a86f892c867b733af7b44af09a88d3c8c810db84119e80a919f3ea28f",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/stat-failure-clean-finally-1-raw.json"
+    },
+    {
+      "name": "stat-close-priority",
+      "original": {
+        "profile": {
+          "name": "stat-close-priority",
+          "pointer": "unknown",
+          "fault": "stat-close",
+          "entry": {
+            "type": "user",
+            "uuid": "new",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "parentUuid": null,
+            "message": {
+              "role": "user",
+              "content": "original new"
+            },
+            "timestamp": "original outer time",
+            "future": {
+              "keep": true
+            }
+          },
+          "actions": [
+            {
+              "op": "await"
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": false,
+              "message": "fixture append completion failure: close",
+              "code": "EBADF"
+            },
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": false,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ],
+              "excluded": []
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": false,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ],
+              "excluded": []
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n",
+        "counts": {
+          "open": 1,
+          "stat": 1,
+          "close": 1,
+          "readFile": 2,
+          "append": 0
+        }
+      },
+      "rawSHA": "9e79fe690ed224a35201c5a05b31acce3e100bf34a8207d9cf6ff02f5de69aee",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/stat-close-priority-1-raw.json"
+    },
+    {
+      "name": "close-failure-identity-retained",
+      "original": {
+        "profile": {
+          "name": "close-failure-identity-retained",
+          "pointer": "unknown",
+          "fault": "close",
+          "entry": {
+            "type": "user",
+            "uuid": "new",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "parentUuid": null,
+            "message": {
+              "role": "user",
+              "content": "original new"
+            },
+            "timestamp": "original outer time",
+            "future": {
+              "keep": true
+            }
+          },
+          "actions": [
+            {
+              "op": "await"
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": false,
+              "message": "fixture append completion failure: close",
+              "code": "EBADF"
+            },
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ],
+              "excluded": []
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ],
+              "excluded": []
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n",
+        "counts": {
+          "open": 1,
+          "stat": 1,
+          "close": 1,
+          "readFile": 2,
+          "append": 0
+        }
+      },
+      "rawSHA": "0de50f41d827eb94711e49fe27ff50f10d5c7d245bf231ca8a7334334b11406a",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/close-failure-identity-retained-1-raw.json"
+    },
+    {
+      "name": "open-failure-no-enqueue",
+      "original": {
+        "profile": {
+          "name": "open-failure-no-enqueue",
+          "pointer": "unknown",
+          "fault": "open",
+          "entry": {
+            "type": "user",
+            "uuid": "new",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "parentUuid": null,
+            "message": {
+              "role": "user",
+              "content": "original new"
+            },
+            "timestamp": "original outer time",
+            "future": {
+              "keep": true
+            }
+          },
+          "actions": [
+            {
+              "op": "await"
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": false,
+              "message": "fixture append completion failure: open",
+              "code": "EIO"
+            },
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": false,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ],
+              "excluded": []
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": false,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ],
+              "excluded": []
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n",
+        "counts": {
+          "open": 1,
+          "stat": 0,
+          "close": 0,
+          "readFile": 2,
+          "append": 0
+        }
+      },
+      "rawSHA": "24f5e71a120592a9490bc916c306eb5b3ea5656b273216759edfefe7ea2e2079",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/open-failure-no-enqueue-1-raw.json"
+    },
+    {
+      "name": "natural-drain-100ms",
+      "original": {
+        "profile": {
+          "name": "natural-drain-100ms",
+          "pointer": "unknown",
+          "entry": {
+            "type": "user",
+            "uuid": "new",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "parentUuid": null,
+            "message": {
+              "role": "user",
+              "content": "original new"
+            },
+            "timestamp": "original outer time",
+            "future": {
+              "keep": true
+            }
+          },
+          "actions": [
+            {
+              "op": "await"
+            },
+            {
+              "op": "natural"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": true
+            },
+            "state": {
+              "pending": [],
+              "queued": [
+                "{\"type\":\"user\",\"uuid\":\"new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"parentUuid\":null,\"message\":{\"role\":\"user\",\"content\":\"original new\"},\"timestamp\":\"original outer time\",\"future\":{\"keep\":true}}"
+              ],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ],
+              "excluded": []
+            }
+          },
+          {
+            "op": "natural",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ],
+              "excluded": []
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n{\"type\":\"user\",\"uuid\":\"new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"parentUuid\":null,\"message\":{\"role\":\"user\",\"content\":\"original new\"},\"timestamp\":\"original outer time\",\"future\":{\"keep\":true}}\n",
+        "counts": {
+          "open": 2,
+          "stat": 2,
+          "close": 2,
+          "readFile": 2,
+          "append": 1
+        }
+      },
+      "rawSHA": "c428bad716440019eaf66629fe37f233d5b5fde5c1770f3b94d747eeed018512",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/natural-drain-100ms-1-raw.json"
+    },
+    {
+      "name": "close-held-changed-uuid",
+      "original": {
+        "profile": {
+          "name": "close-held-changed-uuid",
+          "pointer": "unknown",
+          "hold": "close",
+          "entry": {
+            "type": "user",
+            "uuid": "new",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "parentUuid": null,
+            "message": {
+              "role": "user",
+              "content": "original new"
+            },
+            "timestamp": "original outer time",
+            "future": {
+              "keep": true
+            }
+          },
+          "actions": [
+            {
+              "op": "held"
+            },
+            {
+              "op": "mutate",
+              "field": "uuid",
+              "value": "swapped"
+            },
+            {
+              "op": "release"
+            },
+            {
+              "op": "await"
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "held",
+            "held": true,
+            "settled": false,
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 1,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ],
+              "excluded": []
+            }
+          },
+          {
+            "op": "mutate",
+            "field": "uuid",
+            "value": "swapped"
+          },
+          {
+            "op": "release"
+          },
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": true
+            },
+            "state": {
+              "pending": [],
+              "queued": [
+                "{\"type\":\"user\",\"uuid\":\"swapped\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"parentUuid\":null,\"message\":{\"role\":\"user\",\"content\":\"original new\"},\"timestamp\":\"original outer time\",\"future\":{\"keep\":true}}"
+              ],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"swapped\""
+                }
+              ],
+              "excluded": []
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"swapped\""
+                }
+              ],
+              "excluded": []
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n{\"type\":\"user\",\"uuid\":\"swapped\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"parentUuid\":null,\"message\":{\"role\":\"user\",\"content\":\"original new\"},\"timestamp\":\"original outer time\",\"future\":{\"keep\":true}}\n",
+        "counts": {
+          "open": 2,
+          "stat": 2,
+          "close": 2,
+          "readFile": 2,
+          "append": 1
+        }
+      },
+      "rawSHA": "30e8e9b5417c8b5787cc831600ded4c5168e81bc49bf37bdac19d96a3df61faa",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/close-held-changed-uuid-1-raw.json"
+    },
+    {
+      "name": "disabled-message-excludes",
+      "original": {
+        "profile": {
+          "name": "disabled-message-excludes",
+          "pointer": "unknown",
+          "disabled": true,
+          "entry": {
+            "type": "user",
+            "uuid": "new",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "parentUuid": null,
+            "message": {
+              "role": "user",
+              "content": "original new"
+            },
+            "timestamp": "original outer time",
+            "future": {
+              "keep": true
+            }
+          },
+          "actions": [
+            {
+              "op": "await"
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": true
+            },
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": false,
+              "cache": false,
+              "excluded": [
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": false,
+              "cache": false,
+              "excluded": [
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ]
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n",
+        "counts": {
+          "open": 0,
+          "stat": 0,
+          "close": 0,
+          "readFile": 1,
+          "append": 0
+        }
+      },
+      "rawSHA": "2ea27b9541839ccbe3d4d9b8ee99d7129d0e08295dd2c63b3df91e554d71d734",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/disabled-message-excludes-1-raw.json"
+    },
+    {
+      "name": "disabled-metadata-no-uuid",
+      "original": {
+        "profile": {
+          "name": "disabled-metadata-no-uuid",
+          "pointer": "unknown",
+          "disabled": true,
+          "entry": {
+            "type": "summary",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "summary": "original disabled"
+          },
+          "actions": [
+            {
+              "op": "await"
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": true
+            },
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": false,
+              "cache": false,
+              "excluded": []
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": false,
+              "cache": false,
+              "excluded": []
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n",
+        "counts": {
+          "open": 0,
+          "stat": 0,
+          "close": 0,
+          "readFile": 1,
+          "append": 0
+        }
+      },
+      "rawSHA": "e6602303f875717954167f832c454782fe97aef17bef3ba3869ef02082dbcd73",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/disabled-metadata-no-uuid-1-raw.json"
+    },
+    {
+      "name": "missing-uuid-adds-undefined",
+      "original": {
+        "profile": {
+          "name": "missing-uuid-adds-undefined",
+          "pointer": "unknown",
+          "entry": {
+            "type": "user",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "message": {
+              "role": "user",
+              "content": "original missing UUID"
+            }
+          },
+          "actions": [
+            {
+              "op": "await"
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": true
+            },
+            "state": {
+              "pending": [],
+              "queued": [
+                "{\"type\":\"user\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"message\":{\"role\":\"user\",\"content\":\"original missing UUID\"}}"
+              ],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "undefined"
+                }
+              ],
+              "excluded": []
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": true,
+              "cache": true,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "undefined"
+                }
+              ],
+              "excluded": []
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n{\"type\":\"user\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"message\":{\"role\":\"user\",\"content\":\"original missing UUID\"}}\n",
+        "counts": {
+          "open": 2,
+          "stat": 2,
+          "close": 2,
+          "readFile": 2,
+          "append": 1
+        }
+      },
+      "rawSHA": "476cedb5618d0414a5fd073c55d67935641ad1fb8bc7b8e84944ddb8bcf7aa7f",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/missing-uuid-adds-undefined-1-raw.json"
+    },
+    {
+      "name": "known-metadata-fulfilled-await",
+      "original": {
+        "profile": {
+          "name": "known-metadata-fulfilled-await",
+          "pointer": "known",
+          "entry": {
+            "type": "summary",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "summary": "immediate original"
+          },
+          "actions": [
+            {
+              "op": "immediate"
+            },
+            {
+              "op": "await"
+            },
+            {
+              "op": "flush"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "immediate",
+            "settled": false,
+            "state": {
+              "pending": [],
+              "queued": [
+                "{\"type\":\"summary\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"summary\":\"immediate original\"}"
+              ],
+              "tracked": 1,
+              "identity": true,
+              "cache": false,
+              "excluded": []
+            }
+          },
+          {
+            "op": "await",
+            "outcome": {
+              "resolved": true
+            },
+            "state": {
+              "pending": [],
+              "queued": [
+                "{\"type\":\"summary\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"summary\":\"immediate original\"}"
+              ],
+              "tracked": 0,
+              "identity": true,
+              "cache": false,
+              "excluded": []
+            }
+          },
+          {
+            "op": "flush",
+            "state": {
+              "pending": [],
+              "queued": [],
+              "tracked": 0,
+              "identity": true,
+              "cache": false,
+              "excluded": []
+            }
+          }
+        ],
+        "finalBytes": "{\"type\":\"user\",\"uuid\":\"old\",\"parentUuid\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"role\":\"user\",\"content\":\"original old\"}}\n{\"type\":\"summary\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"summary\":\"immediate original\"}\n",
+        "counts": {
+          "open": 1,
+          "stat": 1,
+          "close": 1,
+          "readFile": 1,
+          "append": 1
+        }
+      },
+      "rawSHA": "6aa9eae138ceebe1ac9581974eb3f6adf0f6f3e2fb295ad93dd2c53d2c7e0c77",
+      "raw": "artifacts/go-parity/transcript-append-owner-next/source/runs/2026-10-02T21-41-46.273Z/known-metadata-fulfilled-await-1-raw.json"
+    }
+  ]
+}

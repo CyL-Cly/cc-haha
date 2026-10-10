@@ -1,0 +1,123 @@
+{
+  "observations": [
+    {
+      "scenario": {
+        "name": "model-field-0",
+        "content": "{}"
+      },
+      "observation": {
+        "settingsSource": "{}",
+        "errorsSource": "[]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "model-field-1",
+        "content": "{\"availableModels\":[],\"modelOverrides\":{}}"
+      },
+      "observation": {
+        "settingsSource": "{\"availableModels\":[],\"modelOverrides\":{}}",
+        "errorsSource": "[]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "model-field-2",
+        "content": "{\"modelOverrides\":{\"2\":\"b\",\"claude-sonnet-4-6\":\"ds\",\"__proto__\":\"ignore\",\"\\ud800\":\"\\udfff\"},\"model\":\"sonnet\",\"availableModels\":[\"\",\"sonnet\",\"DS\",\"\\ud800\"],\"future\":1}"
+      },
+      "observation": {
+        "settingsSource": "{\"model\":\"sonnet\",\"availableModels\":[\"\",\"sonnet\",\"DS\",\"\\ud800\"],\"modelOverrides\":{\"2\":\"b\",\"claude-sonnet-4-6\":\"ds\",\"\\ud800\":\"\\udfff\"},\"future\":1}",
+        "errorsSource": "[]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "model-field-3",
+        "content": "{\"availableModels\":null}"
+      },
+      "observation": {
+        "settingsSource": null,
+        "errorsSource": "[{\"file\":\"fixture\",\"path\":\"availableModels\",\"message\":\"Expected array, but received null\",\"invalidValue\":\"null\"}]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "model-field-4",
+        "content": "{\"availableModels\":{}}"
+      },
+      "observation": {
+        "settingsSource": null,
+        "errorsSource": "[{\"file\":\"fixture\",\"path\":\"availableModels\",\"message\":\"Expected array, but received object\",\"invalidValue\":\"object\"}]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "model-field-5",
+        "content": "{\"availableModels\":[1,null,false,{},[]]}"
+      },
+      "observation": {
+        "settingsSource": null,
+        "errorsSource": "[{\"file\":\"fixture\",\"path\":\"availableModels.0\",\"message\":\"Expected string, but received number\",\"invalidValue\":\"number\"},{\"file\":\"fixture\",\"path\":\"availableModels.1\",\"message\":\"Expected string, but received null\",\"invalidValue\":\"null\"},{\"file\":\"fixture\",\"path\":\"availableModels.2\",\"message\":\"Expected string, but received boolean\",\"invalidValue\":\"boolean\"},{\"file\":\"fixture\",\"path\":\"availableModels.3\",\"message\":\"Expected string, but received object\",\"invalidValue\":\"object\"},{\"file\":\"fixture\",\"path\":\"availableModels.4\",\"message\":\"Expected string, but received array\",\"invalidValue\":\"array\"}]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "model-field-6",
+        "content": "{\"modelOverrides\":null}"
+      },
+      "observation": {
+        "settingsSource": null,
+        "errorsSource": "[{\"file\":\"fixture\",\"path\":\"modelOverrides\",\"message\":\"Expected record, but received null\",\"invalidValue\":\"null\"}]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "model-field-7",
+        "content": "{\"modelOverrides\":[]}"
+      },
+      "observation": {
+        "settingsSource": null,
+        "errorsSource": "[{\"file\":\"fixture\",\"path\":\"modelOverrides\",\"message\":\"Expected record, but received array\",\"invalidValue\":\"array\"}]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "model-field-8",
+        "content": "{\"modelOverrides\":{\"2\":false,\"\\ud800\":3,\"a.b\":null,\"__proto__\":3}}"
+      },
+      "observation": {
+        "settingsSource": null,
+        "errorsSource": "[{\"file\":\"fixture\",\"path\":\"modelOverrides.2\",\"message\":\"Expected string, but received boolean\",\"invalidValue\":\"boolean\"},{\"file\":\"fixture\",\"path\":\"modelOverrides.\\ud800\",\"message\":\"Expected string, but received number\",\"invalidValue\":\"number\"},{\"file\":\"fixture\",\"path\":\"modelOverrides.a.b\",\"message\":\"Expected string, but received null\",\"invalidValue\":\"null\"}]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "model-field-9",
+        "content": "{\"model\":null,\"modelOverrides\":{\"bad\":3},\"availableModels\":[false],\"respectGitignore\":\"false\",\"outputStyle\":3}"
+      },
+      "observation": {
+        "settingsSource": null,
+        "errorsSource": "[{\"file\":\"fixture\",\"path\":\"respectGitignore\",\"message\":\"Expected boolean, but received string\",\"invalidValue\":\"string\",\"suggestion\":\"Use true or false without quotes. Example: \\\"includeGitInstructions\\\": true\"},{\"file\":\"fixture\",\"path\":\"model\",\"message\":\"Expected string, but received null\",\"invalidValue\":\"null\"},{\"file\":\"fixture\",\"path\":\"availableModels.0\",\"message\":\"Expected string, but received boolean\",\"invalidValue\":\"boolean\"},{\"file\":\"fixture\",\"path\":\"modelOverrides.bad\",\"message\":\"Expected string, but received number\",\"invalidValue\":\"number\"},{\"file\":\"fixture\",\"path\":\"outputStyle\",\"message\":\"Expected string, but received number\",\"invalidValue\":\"number\"}]"
+      }
+    },
+    {
+      "scenario": {
+        "name": "model-field-10",
+        "content": "{\"availableModels\":[\"sonnet\"],\"effortLevel\":\"bogus\",\"modelOverrides\":{\"sonnet\":\"\"},\"future\":{\"a\":1}}"
+      },
+      "observation": {
+        "settingsSource": "{\"availableModels\":[\"sonnet\"],\"modelOverrides\":{\"sonnet\":\"\"},\"future\":{\"a\":1}}",
+        "errorsSource": "[]"
+      }
+    }
+  ],
+  "sourceOnly": {
+    "consumer": "src/utils/settings/types.ts actual SettingsSchema + formatZodError modelOverrides/availableModels",
+    "runtime": "v24.3.0",
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [],
+      "absentReads": []
+    }
+  }
+}

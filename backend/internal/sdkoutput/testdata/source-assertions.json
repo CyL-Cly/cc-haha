@@ -1,0 +1,4247 @@
+{
+  "results": [
+    {
+      "name": "progress-capacity-first-undefined-skips-delete",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "first-undefined",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-0",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-0\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-1",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-1\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-2",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-2\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-3",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-3\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-4",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-4\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-5",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-5\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-6",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-6\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-7",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-7\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-8",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-8\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-9",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-9\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-10",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-10\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-11",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-11\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-12",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-12\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-13",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-13\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-14",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-14\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-15",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-15\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-16",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-16\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-17",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-17\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-18",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-18\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-19",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-19\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-20",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-20\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-21",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-21\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-22",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-22\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-23",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-23\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-24",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-24\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-25",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-25\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-26",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-26\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-27",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-27\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-28",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-28\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-29",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-29\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-30",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-30\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-31",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-31\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-32",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-32\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-33",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-33\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-34",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-34\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-35",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-35\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-36",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-36\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-37",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-37\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-38",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-38\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-39",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-39\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-40",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-40\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-41",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-41\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-42",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-42\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-43",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-43\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-44",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-44\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-45",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-45\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-46",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-46\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-47",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-47\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-48",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-48\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-49",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-49\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-50",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-50\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-51",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-51\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-52",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-52\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-53",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-53\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-54",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-54\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-55",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-55\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-56",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-56\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-57",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-57\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-58",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-58\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-59",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-59\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-60",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-60\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-61",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-61\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-62",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-62\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-63",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-63\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-64",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-64\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-65",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-65\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-66",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-66\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-67",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-67\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-68",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-68\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-69",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-69\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-70",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-70\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-71",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-71\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-72",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-72\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-73",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-73\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-74",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-74\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-75",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-75\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-76",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-76\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-77",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-77\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-78",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-78\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-79",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-79\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-80",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-80\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-81",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-81\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-82",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-82\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-83",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-83\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-84",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-84\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-85",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-85\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-86",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-86\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-87",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-87\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-88",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-88\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-89",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-89\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-90",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-90\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-91",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-91\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-92",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-92\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-93",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-93\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-94",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-94\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-95",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-95\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-96",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-96\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-97",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-97\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "fill-98",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-capacity-98\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "overflow",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"original-tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"undefined-first-overflow\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original-progress\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "undefined-still-tracked",
+          "values": []
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 35000
+        },
+        {
+          "kind": "now",
+          "value": 45000
+        }
+      ]
+    },
+    {
+      "name": "assistant-text",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"hello\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"hello\"}],\"context_management\":null},\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "assistant-empty-text",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": []
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"\"}],\"context_management\":null},\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "assistant-placeholder",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": []
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"(no content)\"}],\"context_management\":null},\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "assistant-interrupt-tool",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": []
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"[Request interrupted by user for tool use]\"}],\"context_management\":null},\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "assistant-interrupt-user",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"[Request interrupted by user]\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"[Request interrupted by user]\"}],\"context_management\":null},\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "assistant-bom-text",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": []
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"\ufeff \\n\"}],\"context_management\":null},\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "assistant-nel-text",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"\u0085\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"\u0085\"}],\"context_management\":null},\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "assistant-empty",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": []
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": []
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "assistant-thinking",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"inner\",\"signature\":\"sig\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"inner\",\"signature\":\"sig\"}],\"context_management\":null},\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "assistant-redacted",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"redacted_thinking\",\"data\":\"opaque\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"redacted_thinking\",\"data\":\"opaque\"}],\"context_management\":null},\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "assistant-tool",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"tool_use\",\"id\":\"t\",\"name\":\"Read\",\"input\":{\"file_path\":\"original\"}}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"tool_use\",\"id\":\"t\",\"name\":\"Read\",\"input\":{\"file_path\":\"original\"}}],\"context_management\":null},\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "assistant-server-tool",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"server_tool_use\",\"id\":\"s\",\"name\":\"web_search\",\"input\":{}}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"server_tool_use\",\"id\":\"s\",\"name\":\"web_search\",\"input\":{}}],\"context_management\":null},\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "assistant-future",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"future\",\"x\":1}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"future\",\"x\":1}],\"context_management\":null},\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"rate_limit\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "assistant-split",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"first\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-000000000000\",\"error\":\"rate_limit\"}",
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"second\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-000000000001\",\"error\":\"rate_limit\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"first\"}],\"context_management\":null},\"uuid\":\"12345678-1234-4234-8234-000000000000\",\"error\":\"rate_limit\"}",
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"second\"}],\"context_management\":null},\"uuid\":\"12345678-1234-4234-8234-000000000001\",\"error\":\"rate_limit\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "user-string",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"user\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"isSynthetic\":true,\"tool_use_result\":{\"content\":{\"raw\":1},\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}}}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"user\"}]},\"toolUseResult\":{\"raw\":1},\"mcpMeta\":{\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}},\"imagePasteIds\":[11,12],\"isMeta\":true,\"origin\":{\"kind\":\"human\"},\"permissionMode\":\"default\",\"futureEnvelope\":\"not carried on array blocks\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "user-empty-string",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"isSynthetic\":true,\"tool_use_result\":{\"content\":{\"raw\":1},\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}}}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"\"}]},\"toolUseResult\":{\"raw\":1},\"mcpMeta\":{\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}},\"imagePasteIds\":[11,12],\"isMeta\":true,\"origin\":{\"kind\":\"human\"},\"permissionMode\":\"default\",\"futureEnvelope\":\"not carried on array blocks\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "user-lone-string",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"\\ud800\ud83d\udc31\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"isSynthetic\":true,\"tool_use_result\":{\"content\":{\"raw\":1},\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}}}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"\\ud800\ud83d\udc31\"}]},\"toolUseResult\":{\"raw\":1},\"mcpMeta\":{\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}},\"imagePasteIds\":[11,12],\"isMeta\":true,\"origin\":{\"kind\":\"human\"},\"permissionMode\":\"default\",\"futureEnvelope\":\"not carried on array blocks\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "user-empty",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": []
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": []
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "user-text",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"one\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"isSynthetic\":true,\"tool_use_result\":{\"content\":{\"raw\":1},\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}}}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"one\"}]},\"isMeta\":true,\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"toolUseResult\":{\"raw\":1},\"mcpMeta\":{\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}},\"origin\":{\"kind\":\"human\"}}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        }
+      ]
+    },
+    {
+      "name": "user-blocks",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"a\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-000000000000\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"isSynthetic\":true,\"tool_use_result\":{\"content\":{\"raw\":1},\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}}}",
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"ok\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-000000000001\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"isSynthetic\":true,\"tool_use_result\":{\"content\":{\"raw\":1},\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}}}",
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"image\",\"source\":{\"type\":\"base64\",\"media_type\":\"image/png\",\"data\":\"offline\"}}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-000000000002\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"isSynthetic\":true,\"tool_use_result\":{\"content\":{\"raw\":1},\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}}}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"a\"}]},\"isMeta\":true,\"uuid\":\"12345678-1234-4234-8234-000000000000\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"toolUseResult\":{\"raw\":1},\"mcpMeta\":{\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}},\"origin\":{\"kind\":\"human\"}}",
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"ok\"}]},\"isMeta\":true,\"uuid\":\"12345678-1234-4234-8234-000000000001\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"toolUseResult\":{\"raw\":1},\"mcpMeta\":{\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}},\"origin\":{\"kind\":\"human\"}}",
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"image\",\"source\":{\"type\":\"base64\",\"media_type\":\"image/png\",\"data\":\"offline\"}}]},\"isMeta\":true,\"uuid\":\"12345678-1234-4234-8234-000000000002\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"toolUseResult\":{\"raw\":1},\"mcpMeta\":{\"_meta\":{\"x\":\"y\"},\"structuredContent\":{\"z\":2}},\"imagePasteIds\":[11],\"origin\":{\"kind\":\"human\"}}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000003"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000004"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000005"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000006"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-undefined",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-false-only",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"isMeta\":false,\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-false-false",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"isSynthetic\":false}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"isMeta\":false,\"isVisibleInTranscriptOnly\":false,\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-visible",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"isSynthetic\":true}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"isVisibleInTranscriptOnly\":true,\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-null-visible",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"isSynthetic\":false}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"isMeta\":null,\"isVisibleInTranscriptOnly\":false,\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-mcp-null",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"tool_use_result\":null}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"toolUseResult\":null,\"mcpMeta\":null}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-mcp-content-overwrite",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"tool_use_result\":{\"content\":\"own override\",\"_meta\":{\"x\":1}}}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"toolUseResult\":\"original\",\"mcpMeta\":{\"content\":\"own override\",\"_meta\":{\"x\":1}}}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-mcp-string",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"tool_use_result\":{\"0\":\"a\",\"1\":\"\\ud800\",\"content\":true}}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"toolUseResult\":true,\"mcpMeta\":\"a\\ud800\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-mcp-array",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"tool_use_result\":{\"0\":\"m\",\"1\":\"n\",\"content\":{\"x\":1}}}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"toolUseResult\":{\"x\":1},\"mcpMeta\":[\"m\",\"n\"]}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        }
+      ]
+    },
+    {
+      "name": "user-meta-mcp-boolean",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"tool_use_result\":{\"content\":7}}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"toolUseResult\":7,\"mcpMeta\":true}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        }
+      ]
+    },
+    {
+      "name": "user-metadata-null",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"isMeta\":false}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "user-missing-time",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"isMeta\":false,\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "time",
+          "value": "2023-11-14T22:13:20.000Z"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        },
+        {
+          "kind": "time",
+          "value": "2023-11-14T22:13:20.000Z"
+        }
+      ]
+    },
+    {
+      "name": "user-null-time",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"isMeta\":false,\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "time",
+          "value": "2023-11-14T22:13:20.000Z"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        },
+        {
+          "kind": "time",
+          "value": "2023-11-14T22:13:20.000Z"
+        }
+      ]
+    },
+    {
+      "name": "user-zero-time",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":0}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"isMeta\":false,\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":0}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        }
+      ]
+    },
+    {
+      "name": "factory-user-plain",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"factory user\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"factory user\"}]},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "time",
+          "value": "2023-11-14T22:13:20.000Z"
+        }
+      ]
+    },
+    {
+      "name": "factory-user-empty",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"(no content)\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"(no content)\"}]},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "time",
+          "value": "2023-11-14T22:13:20.000Z"
+        }
+      ]
+    },
+    {
+      "name": "factory-user-array",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"a\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"00000000-0000-4000-8000-000000000000\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"image\",\"source\":{\"type\":\"url\",\"url\":\"data:offline\"}}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"a\"}]},\"uuid\":\"00000000-0000-4000-8000-000000000000\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"image\",\"source\":{\"type\":\"url\",\"url\":\"data:offline\"}}]},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"imagePasteIds\":[null]}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "time",
+          "value": "2023-11-14T22:13:20.000Z"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000003"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000004"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000005"
+        }
+      ]
+    },
+    {
+      "name": "factory-user-timestamp",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"explicit\",\"timestamp\":\"fixed\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"uuid\":\"explicit\",\"timestamp\":\"fixed\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "factory-user-all-fields",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"id\",\"content\":[]}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"isSynthetic\":true,\"tool_use_result\":{\"2\":\"index\",\"content\":\"overwritten\"}}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"id\",\"content\":[]}]},\"isMeta\":false,\"isVisibleInTranscriptOnly\":true,\"isVirtual\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":false,\"mcpMeta\":{\"2\":\"index\",\"content\":\"overwritten\"},\"origin\":{\"kind\":\"channel\",\"server\":\"offline\"}}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "time",
+          "value": "2023-11-14T22:13:20.000Z"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000003"
+        }
+      ]
+    },
+    {
+      "name": "factory-assistant-plain",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"id\":\"00000000-0000-4000-8000-000000000002\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"factory assistant\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"00000000-0000-4000-8000-000000000001\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"00000000-0000-4000-8000-000000000002\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"factory assistant\"}],\"context_management\":null},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"isApiErrorMessage\":false}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "time",
+          "value": "2023-11-14T22:13:20.000Z"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        }
+      ]
+    },
+    {
+      "name": "factory-assistant-empty",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": []
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"00000000-0000-4000-8000-000000000002\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"(no content)\"}],\"context_management\":null},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"isApiErrorMessage\":false}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "time",
+          "value": "2023-11-14T22:13:20.000Z"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        }
+      ]
+    },
+    {
+      "name": "factory-assistant-array",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"id\":\"00000000-0000-4000-8000-000000000002\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"thinking\",\"thinking\":\"a\",\"signature\":\"s\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"00000000-0000-4000-8000-000000000000\"}",
+            "{\"type\":\"assistant\",\"message\":{\"id\":\"00000000-0000-4000-8000-000000000002\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"b\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"00000000-0000-4000-8000-000000000001\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"00000000-0000-4000-8000-000000000002\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"thinking\",\"thinking\":\"a\",\"signature\":\"s\"}],\"context_management\":null},\"isVirtual\":true,\"uuid\":\"00000000-0000-4000-8000-000000000000\",\"isApiErrorMessage\":false}",
+            "{\"type\":\"assistant\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"00000000-0000-4000-8000-000000000002\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"b\"}],\"context_management\":null},\"isVirtual\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"isApiErrorMessage\":false}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "time",
+          "value": "2023-11-14T22:13:20.000Z"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        }
+      ]
+    },
+    {
+      "name": "factory-assistant-usage",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"id\":\"00000000-0000-4000-8000-000000000002\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":4,\"output_tokens\":5,\"future\":null},\"content\":[{\"type\":\"text\",\"text\":\"a\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"00000000-0000-4000-8000-000000000001\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"00000000-0000-4000-8000-000000000002\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":4,\"output_tokens\":5,\"future\":null},\"content\":[{\"type\":\"text\",\"text\":\"a\"}],\"context_management\":null},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"isApiErrorMessage\":false}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "time",
+          "value": "2023-11-14T22:13:20.000Z"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        }
+      ]
+    },
+    {
+      "name": "factory-error",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"id\":\"00000000-0000-4000-8000-000000000002\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"bad\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"error\":\"authentication_failed\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "time",
+          "value": "2023-11-14T22:13:20.000Z"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        }
+      ]
+    },
+    {
+      "name": "agent_progress-assistant",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"nested\"}],\"context_management\":null},\"parent_tool_use_id\":\"parent\",\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"progress\",\"uuid\":\"progress\",\"parentToolUseID\":\"parent\",\"data\":{\"type\":\"agent_progress\",\"message\":{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"nested\"}]}}}}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "agent_progress-user",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"nested\"}]},\"parent_tool_use_id\":\"parent\",\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"progress\",\"uuid\":\"progress\",\"parentToolUseID\":\"parent\",\"data\":{\"type\":\"agent_progress\",\"message\":{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"nested\"}]}}}}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        }
+      ]
+    },
+    {
+      "name": "agent_progress-system",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": []
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"progress\",\"uuid\":\"progress\",\"parentToolUseID\":\"parent\",\"data\":{\"type\":\"agent_progress\",\"message\":{\"type\":\"system\",\"subtype\":\"info\",\"uuid\":\"sys\"}}}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "skill_progress-assistant",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"nested\"}],\"context_management\":null},\"parent_tool_use_id\":\"parent\",\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"progress\",\"uuid\":\"progress\",\"parentToolUseID\":\"parent\",\"data\":{\"type\":\"skill_progress\",\"message\":{\"type\":\"assistant\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"nested\"}]}}}}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "skill_progress-user",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"nested\"}]},\"parent_tool_use_id\":\"parent\",\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"progress\",\"uuid\":\"progress\",\"parentToolUseID\":\"parent\",\"data\":{\"type\":\"skill_progress\",\"message\":{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"nested\"}]}}}}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        }
+      ]
+    },
+    {
+      "name": "skill_progress-system",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": []
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"progress\",\"uuid\":\"progress\",\"parentToolUseID\":\"parent\",\"data\":{\"type\":\"skill_progress\",\"message\":{\"type\":\"system\",\"subtype\":\"info\",\"uuid\":\"sys\"}}}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "silent-attachment",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": []
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"attachment\",\"uuid\":\"silent\",\"attachment\":{\"type\":\"future\"}}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "silent-system",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": []
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"system\",\"uuid\":\"silent\",\"attachment\":{\"type\":\"future\"}}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "silent-unknown",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": []
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "silent-tombstone",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": []
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "chain-across-mixed",
+      "observations": [
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"one\"}],\"context_management\":null},\"uuid\":\"12345678-1234-4234-8234-000000000000\"}",
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"two\"}],\"context_management\":null},\"uuid\":\"12345678-1234-4234-8234-000000000001\"}",
+            "{\"type\":\"system\",\"subtype\":\"info\"}",
+            "{\"type\":\"user\",\"uuid\":\"12345678-1234-4234-8234-000000000000\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next\"}]}}",
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"image\",\"source\":{\"type\":\"base64\",\"data\":\"offline\"}}]},\"uuid\":\"12345678-1234-4234-8234-000000000000\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"imagePasteIds\":[0]}",
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"image\",\"source\":{\"type\":\"base64\",\"data\":\"more\"}}]},\"uuid\":\"12345678-1234-4234-8234-000000000001\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"imagePasteIds\":[null]}",
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"text\"}]},\"uuid\":\"12345678-1234-4234-8234-000000000002\",\"timestamp\":\"2025-01-02T03:04:05Z\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000003"
+        }
+      ]
+    },
+    {
+      "name": "derived-utf16-prefix",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"a\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678901234567890123\\ud83d000000000000\"}",
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"b\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678901234567890123\\ud83d000000000001\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"a\"}],\"context_management\":null},\"uuid\":\"12345678901234567890123\\ud83d000000000000\"}",
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"b\"}],\"context_management\":null},\"uuid\":\"12345678901234567890123\\ud83d000000000001\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "unknown-api-order-number-utf16",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"2\":\"ordered numeric key\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"utf\\ud800\"}],\"usage\":{\"input_tokens\":1,\"future\":null},\"stop_reason\":null,\"future\\ud800\":{\"big\":10000000000000000000},\"context_management\":false},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"2\":\"ordered numeric key\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"utf\\ud800\"}],\"usage\":{\"input_tokens\":1,\"future\":null},\"stop_reason\":null,\"future\\ud800\":{\"big\":10000000000000000000},\"context_management\":false},\"uuid\":\"12345678-1234-4234-8234-123456789abc\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "assistant-context-missing",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"a\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"a\"}],\"context_management\":null},\"uuid\":\"12345678-1234-4234-8234-123456789abc\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "assistant-context-null",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"a\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"a\"}],\"context_management\":null},\"uuid\":\"12345678-1234-4234-8234-123456789abc\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "assistant-context-object",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"a\"}],\"context_management\":{\"future\":true}},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\"}"
+          ]
+        },
+        {
+          "op": "many",
+          "out": "n",
+          "values": [
+            "{\"type\":\"assistant\",\"timestamp\":\"2025-01-02T03:04:05Z\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"a\"}],\"context_management\":{\"future\":true}},\"uuid\":\"12345678-1234-4234-8234-123456789abc\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "assistant-shallow-time",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "old",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"early\"}],\"usage\":{\"input_tokens\":5,\"output_tokens\":0},\"stop_reason\":null,\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"old\"}"
+          ]
+        },
+        {
+          "op": "observe",
+          "out": "old",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"late block\"}],\"usage\":{\"input_tokens\":5,\"output_tokens\":0},\"stop_reason\":null,\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"old\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "late",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"late block\"}],\"usage\":{\"input_tokens\":5,\"output_tokens\":9},\"stop_reason\":\"end_turn\",\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-123456789abc\",\"error\":\"new\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "progress-throttle-disabled",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s0",
+          "values": []
+        },
+        {
+          "op": "sdk",
+          "out": "s1",
+          "values": []
+        },
+        {
+          "op": "sdk",
+          "out": "s2",
+          "values": []
+        },
+        {
+          "op": "sdk",
+          "out": "s3",
+          "values": []
+        },
+        {
+          "op": "sdk",
+          "out": "s4",
+          "values": []
+        },
+        {
+          "op": "sdk",
+          "out": "s5",
+          "values": []
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "progress-throttle-remote",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s0",
+          "values": []
+        },
+        {
+          "op": "sdk",
+          "out": "s1",
+          "values": []
+        },
+        {
+          "op": "sdk",
+          "out": "s2",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool2\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"throttle-remote\",\"elapsed_time_seconds\":2,\"task_id\":\"task\",\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p2\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "s3",
+          "values": []
+        },
+        {
+          "op": "sdk",
+          "out": "s4",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool4\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"throttle-remote\",\"elapsed_time_seconds\":4,\"task_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p4\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "s5",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool5\",\"tool_name\":\"PowerShell\",\"parent_tool_use_id\":\"throttle-remote\",\"elapsed_time_seconds\":5,\"task_id\":\"task\",\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p5\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "now",
+          "value": 0
+        },
+        {
+          "kind": "now",
+          "value": 29999
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 40000
+        },
+        {
+          "kind": "now",
+          "value": 60000
+        },
+        {
+          "kind": "now",
+          "value": 90000
+        }
+      ]
+    },
+    {
+      "name": "progress-throttle-container",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s0",
+          "values": []
+        },
+        {
+          "op": "sdk",
+          "out": "s1",
+          "values": []
+        },
+        {
+          "op": "sdk",
+          "out": "s2",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool2\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"throttle-container\",\"elapsed_time_seconds\":2,\"task_id\":\"task\",\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p2\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "s3",
+          "values": []
+        },
+        {
+          "op": "sdk",
+          "out": "s4",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool4\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"throttle-container\",\"elapsed_time_seconds\":4,\"task_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p4\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "s5",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool5\",\"tool_name\":\"PowerShell\",\"parent_tool_use_id\":\"throttle-container\",\"elapsed_time_seconds\":5,\"task_id\":\"task\",\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p5\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "now",
+          "value": 0
+        },
+        {
+          "kind": "now",
+          "value": 29999
+        },
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 40000
+        },
+        {
+          "kind": "now",
+          "value": 60000
+        },
+        {
+          "kind": "now",
+          "value": 90000
+        }
+      ]
+    },
+    {
+      "name": "progress-map-101-eviction",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "e0",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-0\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e1",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-1\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e2",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-2\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e3",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-3\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e4",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-4\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e5",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-5\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e6",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-6\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e7",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-7\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e8",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-8\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e9",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-9\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e10",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-10\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e11",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-11\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e12",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-12\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e13",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-13\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e14",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-14\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e15",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-15\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e16",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-16\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e17",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-17\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e18",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-18\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e19",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-19\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e20",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-20\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e21",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-21\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e22",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-22\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e23",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-23\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e24",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-24\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e25",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-25\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e26",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-26\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e27",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-27\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e28",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-28\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e29",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-29\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e30",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-30\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e31",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-31\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e32",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-32\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e33",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-33\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e34",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-34\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e35",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-35\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e36",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-36\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e37",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-37\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e38",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-38\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e39",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-39\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e40",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-40\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e41",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-41\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e42",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-42\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e43",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-43\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e44",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-44\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e45",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-45\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e46",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-46\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e47",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-47\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e48",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-48\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e49",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-49\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e50",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-50\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e51",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-51\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e52",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-52\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e53",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-53\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e54",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-54\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e55",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-55\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e56",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-56\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e57",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-57\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e58",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-58\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e59",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-59\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e60",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-60\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e61",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-61\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e62",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-62\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e63",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-63\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e64",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-64\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e65",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-65\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e66",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-66\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e67",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-67\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e68",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-68\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e69",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-69\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e70",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-70\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e71",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-71\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e72",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-72\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e73",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-73\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e74",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-74\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e75",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-75\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e76",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-76\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e77",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-77\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e78",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-78\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e79",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-79\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e80",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-80\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e81",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-81\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e82",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-82\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e83",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-83\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e84",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-84\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e85",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-85\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e86",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-86\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e87",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-87\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e88",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-88\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e89",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-89\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e90",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-90\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e91",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-91\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e92",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-92\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e93",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-93\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e94",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-94\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e95",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-95\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e96",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-96\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e97",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-97\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e98",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-98\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e99",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-99\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "e100",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"tool\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"eviction-100\",\"elapsed_time_seconds\":1,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "again0",
+          "values": []
+        },
+        {
+          "op": "sdk",
+          "out": "suppress100",
+          "values": []
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        },
+        {
+          "kind": "now",
+          "value": 100000
+        }
+      ]
+    },
+    {
+      "name": "assistant-escaped-sentinel",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": []
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "generator-assistant-resume",
+      "observations": [
+        {
+          "op": "sdk-controlled",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"first\"}],\"usage\":{\"input_tokens\":1,\"output_tokens\":0},\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-000000000000\",\"error\":\"before\"}",
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"changed at first yield\"}],\"usage\":{\"input_tokens\":1,\"output_tokens\":0},\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"second-original-session\",\"uuid\":\"12345678-1234-4234-8234-000000000001\",\"error\":\"before\"}",
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"third\"}],\"usage\":{\"input_tokens\":1,\"output_tokens\":0},\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"second-original-session\",\"uuid\":\"12345678-1234-4234-8234-000000000002\",\"error\":\"before\"}"
+          ]
+        },
+        {
+          "op": "observe",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"first\"}],\"usage\":{\"input_tokens\":1,\"output_tokens\":0},\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-000000000000\",\"error\":\"before\"}",
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"changed at first yield\"}],\"usage\":{\"input_tokens\":1,\"output_tokens\":0},\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"second-original-session\",\"uuid\":\"12345678-1234-4234-8234-000000000001\",\"error\":\"before\"}",
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"third\"}],\"usage\":{\"input_tokens\":1,\"output_tokens\":0},\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"second-original-session\",\"uuid\":\"12345678-1234-4234-8234-000000000002\",\"error\":\"before\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "generator-assistant-stop",
+      "observations": [
+        {
+          "op": "sdk-controlled",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"first\"}],\"usage\":{\"input_tokens\":1,\"output_tokens\":0},\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-000000000000\",\"error\":\"before\"}"
+          ]
+        },
+        {
+          "op": "observe",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"first\"}],\"usage\":{\"input_tokens\":1,\"output_tokens\":0},\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-000000000000\",\"error\":\"before\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "generator-user-stop-still-eager-factory",
+      "observations": [
+        {
+          "op": "sdk-controlled",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"first\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-000000000000\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000001"
+        },
+        {
+          "kind": "time",
+          "value": "2023-11-14T22:13:20.000Z"
+        },
+        {
+          "kind": "uuid",
+          "value": "00000000-0000-4000-8000-000000000002"
+        },
+        {
+          "kind": "time",
+          "value": "2023-11-14T22:13:20.000Z"
+        }
+      ]
+    },
+    {
+      "name": "generator-agent-parent-per-yield",
+      "observations": [
+        {
+          "op": "sdk-controlled",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"first\"}],\"usage\":{\"input_tokens\":1,\"output_tokens\":0},\"context_management\":null},\"parent_tool_use_id\":\"parent-before\",\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"12345678-1234-4234-8234-000000000000\",\"error\":\"before\"}",
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"second\"}],\"usage\":{\"input_tokens\":1,\"output_tokens\":0},\"context_management\":null},\"parent_tool_use_id\":\"parent-after\",\"session_id\":\"session-after\",\"uuid\":\"12345678-1234-4234-8234-000000000001\",\"error\":\"before\"}",
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"third\"}],\"usage\":{\"input_tokens\":1,\"output_tokens\":0},\"context_management\":null},\"parent_tool_use_id\":\"parent-after\",\"session_id\":\"session-after\",\"uuid\":\"12345678-1234-4234-8234-000000000002\",\"error\":\"before\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "progress-map-missing",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "first",
+          "values": []
+        },
+        {
+          "op": "sdk",
+          "out": "suppressed",
+          "values": []
+        },
+        {
+          "op": "sdk",
+          "out": "later",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"t\",\"tool_name\":\"Bash\",\"elapsed_time_seconds\":2,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30001
+        },
+        {
+          "kind": "now",
+          "value": 60000
+        }
+      ]
+    },
+    {
+      "name": "progress-map-null",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "first",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"t\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":null,\"elapsed_time_seconds\":2,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "suppressed",
+          "values": []
+        },
+        {
+          "op": "sdk",
+          "out": "later",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"t\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":null,\"elapsed_time_seconds\":2,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30001
+        },
+        {
+          "kind": "now",
+          "value": 60000
+        }
+      ]
+    },
+    {
+      "name": "progress-map-empty",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "first",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"t\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"\",\"elapsed_time_seconds\":2,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "suppressed",
+          "values": []
+        },
+        {
+          "op": "sdk",
+          "out": "later",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"t\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"\",\"elapsed_time_seconds\":2,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30001
+        },
+        {
+          "kind": "now",
+          "value": 60000
+        }
+      ]
+    },
+    {
+      "name": "progress-map-lone",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "first",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"t\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"\\ud800\",\"elapsed_time_seconds\":2,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        },
+        {
+          "op": "sdk",
+          "out": "suppressed",
+          "values": []
+        },
+        {
+          "op": "sdk",
+          "out": "later",
+          "values": [
+            "{\"type\":\"tool_progress\",\"tool_use_id\":\"t\",\"tool_name\":\"Bash\",\"parent_tool_use_id\":\"\\ud800\",\"elapsed_time_seconds\":2,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"p\"}"
+          ]
+        }
+      ],
+      "allocations": [
+        {
+          "kind": "now",
+          "value": 30000
+        },
+        {
+          "kind": "now",
+          "value": 30001
+        },
+        {
+          "kind": "now",
+          "value": 60000
+        }
+      ]
+    },
+    {
+      "name": "assistant-trailing-js-whitespace",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"visible\u00a0\ufeff\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "assistant-same-length-different-sentinel",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"not content)\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "sdk-session-raw-utf16",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"assistant\",\"message\":{\"content\":[{\"type\":\"text\",\"text\":\"hello\"}],\"context_management\":null},\"parent_tool_use_id\":null,\"session_id\":\"\\ud800sid\\udc00\",\"uuid\":\"original\"}"
+          ]
+        }
+      ],
+      "allocations": []
+    },
+    {
+      "name": "user-mcp-spread-raw-utf16",
+      "observations": [
+        {
+          "op": "sdk",
+          "out": "s",
+          "values": [
+            "{\"type\":\"user\",\"message\":{\"content\":[{\"type\":\"text\",\"text\":\"u\"}]},\"parent_tool_use_id\":null,\"session_id\":\"11111111-1111-4111-8111-111111111111\",\"uuid\":\"original\",\"tool_use_result\":{\"0\":\"\\ud800\",\"1\":\"\\ud83d\",\"2\":\"\\ude00\",\"3\":\"\\udc00\"}}"
+          ]
+        }
+      ],
+      "allocations": []
+    }
+  ],
+  "capabilities": {
+    "blocked": [],
+    "secureReads": [],
+    "absentReads": []
+  },
+  "productionImportReached": true
+}

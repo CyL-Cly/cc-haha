@@ -1,0 +1,314 @@
+[
+  {
+    "input": {
+      "profile": "assistant-live-getters",
+      "message": {
+        "type": "assistant",
+        "uuid": "12345678-1234-4234-8234-123456789abc",
+        "message": {
+          "id": "raw-message",
+          "role": "assistant",
+          "model": "fixture-model",
+          "content": [
+            {
+              "type": "text",
+              "text": "original first block"
+            },
+            {
+              "type": "text",
+              "text": ""
+            }
+          ],
+          "usage": {
+            "input_tokens": 3,
+            "output_tokens": 4
+          }
+        }
+      }
+    },
+    "source": {
+      "firstAtYield": {
+        "value": {
+          "type": "assistant",
+          "message": {
+            "id": "raw-message",
+            "role": "assistant",
+            "model": "fixture-model",
+            "content": [
+              {
+                "type": "text",
+                "text": "original first block"
+              }
+            ],
+            "usage": {
+              "input_tokens": 3,
+              "output_tokens": 4
+            },
+            "context_management": null
+          },
+          "parent_tool_use_id": null,
+          "session_id": "00000000-0000-4000-0000-000000000022",
+          "uuid": "12345678-1234-4234-8234-000000000000"
+        },
+        "done": false
+      },
+      "firstLater": {
+        "value": {
+          "type": "assistant",
+          "message": {
+            "id": "raw-message",
+            "role": "assistant",
+            "model": "fixture-model",
+            "content": [
+              {
+                "type": "text",
+                "text": "mutated first block"
+              }
+            ],
+            "usage": {
+              "input_tokens": 3,
+              "output_tokens": 4
+            },
+            "context_management": null
+          },
+          "parent_tool_use_id": null,
+          "session_id": "00000000-0000-4000-0000-000000000022",
+          "uuid": "12345678-1234-4234-8234-000000000000"
+        },
+        "done": false
+      },
+      "second": {
+        "value": {
+          "type": "assistant",
+          "message": {
+            "id": "raw-message",
+            "role": "assistant",
+            "model": "fixture-model",
+            "content": [
+              {
+                "type": "text",
+                "text": "newly nonempty second block"
+              }
+            ],
+            "usage": {
+              "input_tokens": 3,
+              "output_tokens": 4
+            },
+            "context_management": null
+          },
+          "parent_tool_use_id": null,
+          "session_id": "00000000-0000-4000-0000-000000000033",
+          "uuid": "12345678-1234-4234-8234-000000000001"
+        },
+        "done": false
+      },
+      "done": {
+        "done": true
+      }
+    },
+    "sourceRawSHA256": "9ddf85c2bdb9c6381c7d98ccac2c3d49bc4a56472f2bf076ac5c5c0fe44c64e1"
+  },
+  {
+    "input": {
+      "profile": "progress-live-parent",
+      "message": {
+        "type": "progress",
+        "parentToolUseID": "old-parent",
+        "data": {
+          "type": "agent_progress",
+          "message": {
+            "type": "assistant",
+            "uuid": "12345678-1234-4234-8234-123456789abc",
+            "message": {
+              "id": "raw-message",
+              "role": "assistant",
+              "model": "fixture-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "original first block"
+                },
+                {
+                  "type": "text",
+                  "text": ""
+                }
+              ],
+              "usage": {
+                "input_tokens": 3,
+                "output_tokens": 4
+              }
+            }
+          }
+        }
+      }
+    },
+    "source": {
+      "firstAtYield": {
+        "value": {
+          "type": "assistant",
+          "message": {
+            "id": "raw-message",
+            "role": "assistant",
+            "model": "fixture-model",
+            "content": [
+              {
+                "type": "text",
+                "text": "original first block"
+              }
+            ],
+            "usage": {
+              "input_tokens": 3,
+              "output_tokens": 4
+            },
+            "context_management": null
+          },
+          "parent_tool_use_id": "old-parent",
+          "session_id": "00000000-0000-4000-0000-000000000022",
+          "uuid": "12345678-1234-4234-8234-000000000000"
+        },
+        "done": false
+      },
+      "firstLater": {
+        "value": {
+          "type": "assistant",
+          "message": {
+            "id": "raw-message",
+            "role": "assistant",
+            "model": "fixture-model",
+            "content": [
+              {
+                "type": "text",
+                "text": "mutated first block"
+              }
+            ],
+            "usage": {
+              "input_tokens": 3,
+              "output_tokens": 4
+            },
+            "context_management": null
+          },
+          "parent_tool_use_id": "old-parent",
+          "session_id": "00000000-0000-4000-0000-000000000022",
+          "uuid": "12345678-1234-4234-8234-000000000000"
+        },
+        "done": false
+      },
+      "second": {
+        "value": {
+          "type": "assistant",
+          "message": {
+            "id": "raw-message",
+            "role": "assistant",
+            "model": "fixture-model",
+            "content": [
+              {
+                "type": "text",
+                "text": "newly nonempty second block"
+              }
+            ],
+            "usage": {
+              "input_tokens": 3,
+              "output_tokens": 4
+            },
+            "context_management": null
+          },
+          "parent_tool_use_id": "new-parent",
+          "session_id": "00000000-0000-4000-0000-000000000033",
+          "uuid": "12345678-1234-4234-8234-000000000001"
+        },
+        "done": false
+      },
+      "done": {
+        "done": true
+      }
+    },
+    "sourceRawSHA256": "b02cc8d8dae5b4f38f71ce8ebcb2e739a3906fe9b77be9147ee339fac65ca305"
+  },
+  {
+    "input": {
+      "profile": "return-before-second",
+      "message": {
+        "type": "assistant",
+        "uuid": "12345678-1234-4234-8234-123456789abc",
+        "message": {
+          "id": "raw-message",
+          "role": "assistant",
+          "model": "fixture-model",
+          "content": [
+            {
+              "type": "text",
+              "text": "original first block"
+            },
+            {
+              "type": "text",
+              "text": ""
+            }
+          ],
+          "usage": {
+            "input_tokens": 3,
+            "output_tokens": 4
+          }
+        }
+      }
+    },
+    "source": {
+      "firstAtYield": {
+        "value": {
+          "type": "assistant",
+          "message": {
+            "id": "raw-message",
+            "role": "assistant",
+            "model": "fixture-model",
+            "content": [
+              {
+                "type": "text",
+                "text": "original first block"
+              }
+            ],
+            "usage": {
+              "input_tokens": 3,
+              "output_tokens": 4
+            },
+            "context_management": null
+          },
+          "parent_tool_use_id": null,
+          "session_id": "00000000-0000-4000-0000-000000000022",
+          "uuid": "12345678-1234-4234-8234-000000000000"
+        },
+        "done": false
+      },
+      "firstLater": {
+        "value": {
+          "type": "assistant",
+          "message": {
+            "id": "raw-message",
+            "role": "assistant",
+            "model": "fixture-model",
+            "content": [
+              {
+                "type": "text",
+                "text": "mutated first block"
+              }
+            ],
+            "usage": {
+              "input_tokens": 3,
+              "output_tokens": 4
+            },
+            "context_management": null
+          },
+          "parent_tool_use_id": null,
+          "session_id": "00000000-0000-4000-0000-000000000022",
+          "uuid": "12345678-1234-4234-8234-000000000000"
+        },
+        "done": false
+      },
+      "second": {
+        "done": true
+      },
+      "done": {
+        "done": true
+      }
+    },
+    "sourceRawSHA256": "d012e65bd54402ddbbc4727bace10995d50a76531b475cff6ee212f2c242e589"
+  }
+]

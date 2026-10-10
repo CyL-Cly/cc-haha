@@ -1,0 +1,606 @@
+{
+  "observations": [
+    {
+      "scenario": {
+        "name": "no-assistant",
+        "history": []
+      },
+      "observation": false
+    },
+    {
+      "scenario": {
+        "name": "user-usage",
+        "history": [
+          {
+            "type": "user",
+            "message": {
+              "usage": {
+                "input_tokens": 200000,
+                "output_tokens": 1
+              }
+            }
+          }
+        ]
+      },
+      "observation": false
+    },
+    {
+      "scenario": {
+        "name": "below",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "input_tokens": 199998,
+                "output_tokens": 1
+              }
+            }
+          }
+        ]
+      },
+      "observation": false
+    },
+    {
+      "scenario": {
+        "name": "exact",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "input_tokens": 199999,
+                "output_tokens": 1
+              }
+            }
+          }
+        ]
+      },
+      "observation": false
+    },
+    {
+      "scenario": {
+        "name": "above",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "input_tokens": 200000,
+                "output_tokens": 1
+              }
+            }
+          }
+        ]
+      },
+      "observation": true
+    },
+    {
+      "scenario": {
+        "name": "cache-counts",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "input_tokens": 1,
+                "output_tokens": 1,
+                "cache_creation_input_tokens": 100000,
+                "cache_read_input_tokens": 100000
+              }
+            }
+          }
+        ]
+      },
+      "observation": true
+    },
+    {
+      "scenario": {
+        "name": "missing-output",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "input_tokens": 200001
+              }
+            }
+          }
+        ]
+      },
+      "observation": false
+    },
+    {
+      "scenario": {
+        "name": "negative",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "input_tokens": 200001,
+                "output_tokens": -1
+              }
+            }
+          }
+        ]
+      },
+      "observation": false
+    },
+    {
+      "scenario": {
+        "name": "string-input",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "input_tokens": "200001",
+                "output_tokens": 1
+              }
+            }
+          }
+        ]
+      },
+      "observation": false
+    },
+    {
+      "scenario": {
+        "name": "cache-null-invalid",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "input_tokens": 200000,
+                "output_tokens": 1,
+                "cache_read_input_tokens": null
+              }
+            }
+          }
+        ]
+      },
+      "observation": false
+    },
+    {
+      "scenario": {
+        "name": "cache-negative-invalid",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "input_tokens": 200000,
+                "output_tokens": 1,
+                "cache_creation_input_tokens": -1
+              }
+            }
+          }
+        ]
+      },
+      "observation": false
+    },
+    {
+      "scenario": {
+        "name": "output-only-valid",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "input_tokens": 0,
+                "output_tokens": 200001
+              }
+            }
+          }
+        ]
+      },
+      "observation": true
+    },
+    {
+      "scenario": {
+        "name": "fraction-above",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "input_tokens": 199999.5,
+                "output_tokens": 0.6
+              }
+            }
+          }
+        ]
+      },
+      "observation": true
+    },
+    {
+      "scenario": {
+        "name": "null-usage",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": null
+            }
+          }
+        ]
+      },
+      "observation": false
+    },
+    {
+      "scenario": {
+        "name": "false-usage",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": false
+            }
+          }
+        ]
+      },
+      "observation": false
+    },
+    {
+      "scenario": {
+        "name": "scalar-usage",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": 200001
+            }
+          }
+        ]
+      },
+      "observation": false
+    },
+    {
+      "scenario": {
+        "name": "missing-usage",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "observation": false
+    },
+    {
+      "scenario": {
+        "name": "synthetic-model",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "<synthetic>",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "input_tokens": 200000,
+                "output_tokens": 1
+              }
+            }
+          }
+        ]
+      },
+      "observation": false
+    },
+    {
+      "scenario": {
+        "name": "synthetic-text",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "No response requested."
+                }
+              ],
+              "usage": {
+                "input_tokens": 200000,
+                "output_tokens": 1
+              }
+            }
+          }
+        ]
+      },
+      "observation": false
+    },
+    {
+      "scenario": {
+        "name": "latest-zero-no-fallback",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "input_tokens": 200000,
+                "output_tokens": 1
+              }
+            }
+          },
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "input_tokens": 0,
+                "output_tokens": 0
+              }
+            }
+          }
+        ]
+      },
+      "observation": false
+    },
+    {
+      "scenario": {
+        "name": "latest-missing-no-fallback",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "input_tokens": 200000,
+                "output_tokens": 1
+              }
+            }
+          },
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "observation": false
+    },
+    {
+      "scenario": {
+        "name": "user-after-latest-assistant",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "input_tokens": 200000,
+                "output_tokens": 1
+              }
+            }
+          },
+          {
+            "type": "user",
+            "message": {
+              "content": "user",
+              "role": "user"
+            }
+          }
+        ]
+      },
+      "observation": true
+    },
+    {
+      "scenario": {
+        "name": "old-invalid-new-valid",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "input_tokens": "bad",
+                "output_tokens": 1
+              }
+            }
+          },
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "input_tokens": 200000,
+                "output_tokens": 1
+              }
+            }
+          }
+        ]
+      },
+      "observation": true
+    },
+    {
+      "scenario": {
+        "name": "cache-huge-invalid-missing-input",
+        "history": [
+          {
+            "type": "assistant",
+            "message": {
+              "model": "actual-model",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "actual"
+                }
+              ],
+              "usage": {
+                "output_tokens": 1,
+                "cache_read_input_tokens": 200001
+              }
+            }
+          }
+        ]
+      },
+      "observation": false
+    }
+  ],
+  "sourceOnly": {
+    "consumer": "src/utils/tokens.ts doesMostRecentAssistantMessageExceed200k",
+    "capabilities": {
+      "blocked": [],
+      "secureReads": [],
+      "absentReads": []
+    },
+    "runtime": "v24.3.0"
+  }
+}

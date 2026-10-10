@@ -1,0 +1,73 @@
+{
+  "apiKey": "fake-owner-phase-key-no-quota",
+  "body": {
+    "model": "fixture-model",
+    "max_tokens": 16,
+    "messages": [
+      {
+        "role": "user",
+        "content": "observe original owner timer phase"
+      }
+    ]
+  },
+  "response": {
+    "id": "owner-phase-message",
+    "type": "message",
+    "role": "assistant",
+    "model": "fixture-model",
+    "content": [
+      {
+        "type": "text",
+        "text": "ok"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "usage": {
+      "input_tokens": 1,
+      "output_tokens": 1
+    }
+  },
+  "profiles": [
+    {
+      "name": "full-headers-body-held",
+      "timeout": 200,
+      "releaseDelay": 450,
+      "headers": "complete",
+      "bodyRelease": "after-fetch-finally-clear",
+      "callerAbortDuringHold": false
+    },
+    {
+      "name": "partial-headers-held",
+      "timeout": 200,
+      "releaseDelay": 450,
+      "headers": "partial",
+      "bodyRelease": "never",
+      "callerAbortDuringHold": false
+    },
+    {
+      "name": "no-headers-held",
+      "timeout": 200,
+      "releaseDelay": 450,
+      "headers": "none",
+      "bodyRelease": "never",
+      "callerAbortDuringHold": false
+    },
+    {
+      "name": "original-caller-abort-held-no-headers",
+      "timeout": 200,
+      "releaseDelay": 450,
+      "headers": "none",
+      "bodyRelease": "never",
+      "callerAbortDuringHold": true
+    },
+    {
+      "name": "no-headers-release-before-deadline",
+      "timeout": 200,
+      "releaseDelay": 50,
+      "headers": "none",
+      "bodyRelease": "never",
+      "callerAbortDuringHold": false
+    }
+  ]
+}

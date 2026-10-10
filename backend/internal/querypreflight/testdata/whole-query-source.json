@@ -1,0 +1,717 @@
+[
+  {
+    "name": "below-with-late-prefix",
+    "input": {
+      "historySources": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "systemSources": [
+        "\"private fixture system\""
+      ],
+      "model": "deepseek-flash",
+      "maxOutputTokens": 32000,
+      "deviceID": "fixture-retry-device",
+      "sessionID": "00000000-0000-4000-8000-000000000000",
+      "name": "below-with-late-prefix",
+      "mode": "normal",
+      "home": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-9qlyu7",
+      "userContextSource": "{\"currentDate\":\"2023-11-14\",\"2\":\"original numeric entry\",\"memory\":\"request-local original context\"}",
+      "systemContextSource": "{\"2\":\"second\",\"1\":\"first\",\"tail\":\"original system context\"}",
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://127.0.0.1:62544",
+        "ANTHROPIC_API_KEY": "offline-original-env-key",
+        "API_TIMEOUT_MS": "3000",
+        "CLAUDE_CODE_MAX_RETRIES": "2",
+        "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
+        "NODE_EXTRA_CA_CERTS": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-9qlyu7/original-ca.pem",
+        "DISABLE_COMPACT": "1",
+        "CLAUDE_CODE_BLOCKING_LIMIT_OVERRIDE": "5"
+      },
+      "runtime": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "version": "v24.3.0"
+      }
+    },
+    "expected": {
+      "toolContextHistory": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "modelHistory": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "originalAfter": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "blocked": null,
+      "warningBefore": false,
+      "modelVisibleSystemText": "private fixture system\n\n1: first\n2: second\ntail: original system context",
+      "allocations": []
+    }
+  },
+  {
+    "name": "equal-with-unallocated-prefix",
+    "input": {
+      "historySources": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "systemSources": [
+        "\"private fixture system\""
+      ],
+      "model": "deepseek-flash",
+      "maxOutputTokens": 32000,
+      "deviceID": "fixture-retry-device",
+      "sessionID": "00000000-0000-4000-8000-000000000000",
+      "name": "equal-with-unallocated-prefix",
+      "mode": "normal",
+      "home": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-k6Nj9I",
+      "userContextSource": "{\"currentDate\":\"2023-11-14\",\"2\":\"original numeric entry\",\"memory\":\"request-local original context\"}",
+      "systemContextSource": "{\"2\":\"second\",\"1\":\"first\",\"tail\":\"original system context\"}",
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://127.0.0.1:62555",
+        "ANTHROPIC_API_KEY": "offline-original-env-key",
+        "API_TIMEOUT_MS": "3000",
+        "CLAUDE_CODE_MAX_RETRIES": "2",
+        "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
+        "NODE_EXTRA_CA_CERTS": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-k6Nj9I/original-ca.pem",
+        "DISABLE_COMPACT": "1",
+        "CLAUDE_CODE_BLOCKING_LIMIT_OVERRIDE": "4"
+      },
+      "runtime": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "version": "v24.3.0"
+      }
+    },
+    "expected": {
+      "toolContextHistory": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "modelHistory": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "originalAfter": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "blocked": "{\"type\":\"assistant\",\"uuid\":\"probe-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"probe-id-3\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"Prompt is too long\"}],\"context_management\":null},\"error\":\"invalid_request\",\"businessErrorCode\":\"prompt_too_long\",\"isApiErrorMessage\":true}",
+      "warningBefore": false,
+      "modelVisibleSystemText": null,
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "probe-id-2"
+        },
+        {
+          "kind": "date",
+          "value": "2023-11-14T22:13:20.000Z"
+        },
+        {
+          "kind": "uuid",
+          "value": "probe-id-3"
+        }
+      ]
+    }
+  },
+  {
+    "name": "above-with-unallocated-prefix",
+    "input": {
+      "historySources": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "systemSources": [
+        "\"private fixture system\""
+      ],
+      "model": "deepseek-flash",
+      "maxOutputTokens": 32000,
+      "deviceID": "fixture-retry-device",
+      "sessionID": "00000000-0000-4000-8000-000000000000",
+      "name": "above-with-unallocated-prefix",
+      "mode": "normal",
+      "home": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-USnm2l",
+      "userContextSource": "{\"currentDate\":\"2023-11-14\",\"2\":\"original numeric entry\",\"memory\":\"request-local original context\"}",
+      "systemContextSource": "{\"2\":\"second\",\"1\":\"first\",\"tail\":\"original system context\"}",
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://127.0.0.1:62560",
+        "ANTHROPIC_API_KEY": "offline-original-env-key",
+        "API_TIMEOUT_MS": "3000",
+        "CLAUDE_CODE_MAX_RETRIES": "2",
+        "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
+        "NODE_EXTRA_CA_CERTS": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-USnm2l/original-ca.pem",
+        "DISABLE_COMPACT": "1",
+        "CLAUDE_CODE_BLOCKING_LIMIT_OVERRIDE": "3"
+      },
+      "runtime": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "version": "v24.3.0"
+      }
+    },
+    "expected": {
+      "toolContextHistory": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "modelHistory": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "originalAfter": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "blocked": "{\"type\":\"assistant\",\"uuid\":\"probe-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"probe-id-3\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"Prompt is too long\"}],\"context_management\":null},\"error\":\"invalid_request\",\"businessErrorCode\":\"prompt_too_long\",\"isApiErrorMessage\":true}",
+      "warningBefore": false,
+      "modelVisibleSystemText": null,
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "probe-id-2"
+        },
+        {
+          "kind": "date",
+          "value": "2023-11-14T22:13:20.000Z"
+        },
+        {
+          "kind": "uuid",
+          "value": "probe-id-3"
+        }
+      ]
+    }
+  },
+  {
+    "name": "stop-on-blocking-assistant",
+    "input": {
+      "historySources": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "systemSources": [
+        "\"private fixture system\""
+      ],
+      "model": "deepseek-flash",
+      "maxOutputTokens": 32000,
+      "deviceID": "fixture-retry-device",
+      "sessionID": "00000000-0000-4000-8000-000000000000",
+      "name": "stop-on-blocking-assistant",
+      "mode": "stop-terminal",
+      "home": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-vPcQiO",
+      "userContextSource": "{\"currentDate\":\"2023-11-14\",\"2\":\"original numeric entry\",\"memory\":\"request-local original context\"}",
+      "systemContextSource": "{\"2\":\"second\",\"1\":\"first\",\"tail\":\"original system context\"}",
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://127.0.0.1:62564",
+        "ANTHROPIC_API_KEY": "offline-original-env-key",
+        "API_TIMEOUT_MS": "3000",
+        "CLAUDE_CODE_MAX_RETRIES": "2",
+        "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
+        "NODE_EXTRA_CA_CERTS": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-vPcQiO/original-ca.pem",
+        "DISABLE_COMPACT": "1",
+        "CLAUDE_CODE_BLOCKING_LIMIT_OVERRIDE": "4"
+      },
+      "runtime": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "version": "v24.3.0"
+      }
+    },
+    "expected": {
+      "toolContextHistory": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "modelHistory": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "originalAfter": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "blocked": "{\"type\":\"assistant\",\"uuid\":\"probe-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"probe-id-3\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"Prompt is too long\"}],\"context_management\":null},\"error\":\"invalid_request\",\"businessErrorCode\":\"prompt_too_long\",\"isApiErrorMessage\":true}",
+      "warningBefore": false,
+      "modelVisibleSystemText": null,
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "probe-id-2"
+        },
+        {
+          "kind": "date",
+          "value": "2023-11-14T22:13:20.000Z"
+        },
+        {
+          "kind": "uuid",
+          "value": "probe-id-3"
+        }
+      ]
+    }
+  },
+  {
+    "name": "abort-before-still-blocks",
+    "input": {
+      "historySources": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "systemSources": [
+        "\"private fixture system\""
+      ],
+      "model": "deepseek-flash",
+      "maxOutputTokens": 32000,
+      "deviceID": "fixture-retry-device",
+      "sessionID": "00000000-0000-4000-8000-000000000000",
+      "name": "abort-before-still-blocks",
+      "mode": "abort-before",
+      "abortReason": "user",
+      "home": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-0kvKTI",
+      "userContextSource": "{\"currentDate\":\"2023-11-14\",\"2\":\"original numeric entry\",\"memory\":\"request-local original context\"}",
+      "systemContextSource": "{\"2\":\"second\",\"1\":\"first\",\"tail\":\"original system context\"}",
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://127.0.0.1:62568",
+        "ANTHROPIC_API_KEY": "offline-original-env-key",
+        "API_TIMEOUT_MS": "3000",
+        "CLAUDE_CODE_MAX_RETRIES": "2",
+        "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
+        "NODE_EXTRA_CA_CERTS": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-0kvKTI/original-ca.pem",
+        "DISABLE_COMPACT": "1",
+        "CLAUDE_CODE_BLOCKING_LIMIT_OVERRIDE": "4"
+      },
+      "runtime": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "version": "v24.3.0"
+      }
+    },
+    "expected": {
+      "toolContextHistory": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "modelHistory": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "originalAfter": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "blocked": "{\"type\":\"assistant\",\"uuid\":\"probe-id-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"probe-id-3\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"Prompt is too long\"}],\"context_management\":null},\"error\":\"invalid_request\",\"businessErrorCode\":\"prompt_too_long\",\"isApiErrorMessage\":true}",
+      "warningBefore": false,
+      "modelVisibleSystemText": null,
+      "allocations": [
+        {
+          "kind": "uuid",
+          "value": "probe-id-2"
+        },
+        {
+          "kind": "date",
+          "value": "2023-11-14T22:13:20.000Z"
+        },
+        {
+          "kind": "uuid",
+          "value": "probe-id-3"
+        }
+      ]
+    }
+  },
+  {
+    "name": "default-auto-low-with-late-prefix",
+    "input": {
+      "historySources": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "systemSources": [
+        "\"private fixture system\""
+      ],
+      "model": "deepseek-flash",
+      "maxOutputTokens": 32000,
+      "deviceID": "fixture-retry-device",
+      "sessionID": "00000000-0000-4000-8000-000000000000",
+      "name": "default-auto-low-with-late-prefix",
+      "mode": "normal",
+      "home": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-Atxx0P",
+      "userContextSource": "{\"currentDate\":\"2023-11-14\",\"2\":\"original numeric entry\",\"memory\":\"request-local original context\"}",
+      "systemContextSource": "{\"2\":\"second\",\"1\":\"first\",\"tail\":\"original system context\"}",
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://127.0.0.1:62570",
+        "ANTHROPIC_API_KEY": "offline-original-env-key",
+        "API_TIMEOUT_MS": "3000",
+        "CLAUDE_CODE_MAX_RETRIES": "2",
+        "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
+        "NODE_EXTRA_CA_CERTS": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-Atxx0P/original-ca.pem"
+      },
+      "runtime": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "version": "v24.3.0"
+      }
+    },
+    "expected": {
+      "toolContextHistory": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "modelHistory": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "originalAfter": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "blocked": null,
+      "warningBefore": false,
+      "modelVisibleSystemText": "private fixture system\n\n1: first\n2: second\ntail: original system context",
+      "allocations": []
+    }
+  },
+  {
+    "name": "last-compact-inclusive-drops-large-earlier-usage",
+    "input": {
+      "historySources": [
+        "{\"type\":\"assistant\",\"uuid\":\"discarded\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"id\":\"discarded-response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"deepseek-flash\",\"content\":[{\"type\":\"text\",\"text\":\"discarded original\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":300000,\"output_tokens\":10}}}",
+        "{\"type\":\"system\",\"uuid\":\"first\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"discarded between markers\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+        "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "systemSources": [
+        "\"private fixture system\""
+      ],
+      "model": "deepseek-flash",
+      "maxOutputTokens": 32000,
+      "deviceID": "fixture-retry-device",
+      "sessionID": "00000000-0000-4000-8000-000000000000",
+      "name": "last-compact-inclusive-drops-large-earlier-usage",
+      "mode": "normal",
+      "home": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-HoqIH0",
+      "userContextSource": "{\"currentDate\":\"2023-11-14\",\"2\":\"original numeric entry\",\"memory\":\"request-local original context\"}",
+      "systemContextSource": "{\"2\":\"second\",\"1\":\"first\",\"tail\":\"original system context\"}",
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://127.0.0.1:63289",
+        "ANTHROPIC_API_KEY": "offline-original-env-key",
+        "API_TIMEOUT_MS": "3000",
+        "CLAUDE_CODE_MAX_RETRIES": "2",
+        "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
+        "NODE_EXTRA_CA_CERTS": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-HoqIH0/original-ca.pem"
+      },
+      "runtime": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "version": "v24.3.0"
+      }
+    },
+    "expected": {
+      "toolContextHistory": [
+        "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "modelHistory": [
+        "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "originalAfter": [
+        "{\"type\":\"assistant\",\"uuid\":\"discarded\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"id\":\"discarded-response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"deepseek-flash\",\"content\":[{\"type\":\"text\",\"text\":\"discarded original\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":300000,\"output_tokens\":10}}}",
+        "{\"type\":\"system\",\"uuid\":\"first\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"discarded between markers\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+        "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}",
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "blocked": null,
+      "warningBefore": false,
+      "modelVisibleSystemText": "private fixture system\n\n1: first\n2: second\ntail: original system context",
+      "allocations": []
+    }
+  },
+  {
+    "name": "compact-marker-last-keeps-marker-until-prepare",
+    "input": {
+      "historySources": [
+        "{\"type\":\"assistant\",\"uuid\":\"discarded\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"id\":\"discarded-response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"deepseek-flash\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"original-bound-signature\"},{\"type\":\"redacted_thinking\",\"data\":\"original-redacted\"},{\"type\":\"text\",\"text\":\"visible original text\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":300000,\"output_tokens\":10}}}",
+        "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}"
+      ],
+      "systemSources": [
+        "\"private fixture system\""
+      ],
+      "model": "deepseek-flash",
+      "maxOutputTokens": 32000,
+      "deviceID": "fixture-retry-device",
+      "sessionID": "00000000-0000-4000-8000-000000000000",
+      "name": "compact-marker-last-keeps-marker-until-prepare",
+      "mode": "normal",
+      "home": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-ti5L2h",
+      "userContextSource": "{\"currentDate\":\"2023-11-14\",\"2\":\"original numeric entry\",\"memory\":\"request-local original context\"}",
+      "systemContextSource": "{\"2\":\"second\",\"1\":\"first\",\"tail\":\"original system context\"}",
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://127.0.0.1:63299",
+        "ANTHROPIC_API_KEY": "offline-original-env-key",
+        "API_TIMEOUT_MS": "3000",
+        "CLAUDE_CODE_MAX_RETRIES": "2",
+        "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
+        "NODE_EXTRA_CA_CERTS": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-ti5L2h/original-ca.pem"
+      },
+      "runtime": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "version": "v24.3.0"
+      }
+    },
+    "expected": {
+      "toolContextHistory": [
+        "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}"
+      ],
+      "modelHistory": [
+        "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}"
+      ],
+      "originalAfter": [
+        "{\"type\":\"assistant\",\"uuid\":\"discarded\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"id\":\"discarded-response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"deepseek-flash\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"original-bound-signature\"},{\"type\":\"redacted_thinking\",\"data\":\"original-redacted\"},{\"type\":\"text\",\"text\":\"visible original text\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":300000,\"output_tokens\":10}}}",
+        "{\"type\":\"system\",\"uuid\":\"last\",\"subtype\":\"compact_boundary\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"compactMetadata\":{\"trigger\":\"manual\"}}"
+      ],
+      "blocked": null,
+      "warningBefore": false,
+      "modelVisibleSystemText": "private fixture system\n\n1: first\n2: second\ntail: original system context",
+      "allocations": []
+    }
+  },
+  {
+    "name": "changed-model-strips-protected-request-keeps-tool-context",
+    "input": {
+      "historySources": [
+        "{\"type\":\"assistant\",\"uuid\":\"old\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"id\":\"old-response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"old-provider\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"original-bound-signature\"},{\"type\":\"redacted_thinking\",\"data\":\"original-redacted\"},{\"type\":\"text\",\"text\":\"visible original text\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null}}",
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "systemSources": [
+        "\"private fixture system\""
+      ],
+      "model": "deepseek-flash",
+      "maxOutputTokens": 32000,
+      "deviceID": "fixture-retry-device",
+      "sessionID": "00000000-0000-4000-8000-000000000000",
+      "name": "changed-model-strips-protected-request-keeps-tool-context",
+      "mode": "normal",
+      "home": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-zHO1gs",
+      "userContextSource": "{\"currentDate\":\"2023-11-14\",\"2\":\"original numeric entry\",\"memory\":\"request-local original context\"}",
+      "systemContextSource": "{\"2\":\"second\",\"1\":\"first\",\"tail\":\"original system context\"}",
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://127.0.0.1:63310",
+        "ANTHROPIC_API_KEY": "offline-original-env-key",
+        "API_TIMEOUT_MS": "3000",
+        "CLAUDE_CODE_MAX_RETRIES": "2",
+        "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
+        "NODE_EXTRA_CA_CERTS": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-zHO1gs/original-ca.pem"
+      },
+      "runtime": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "version": "v24.3.0"
+      }
+    },
+    "expected": {
+      "toolContextHistory": [
+        "{\"type\":\"assistant\",\"uuid\":\"old\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"id\":\"old-response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"old-provider\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"original-bound-signature\"},{\"type\":\"redacted_thinking\",\"data\":\"original-redacted\"},{\"type\":\"text\",\"text\":\"visible original text\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null}}",
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "modelHistory": [
+        "{\"type\":\"assistant\",\"uuid\":\"old\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"id\":\"old-response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"old-provider\",\"content\":[{\"type\":\"text\",\"text\":\"visible original text\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null}}",
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "originalAfter": [
+        "{\"type\":\"assistant\",\"uuid\":\"old\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"id\":\"old-response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"old-provider\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"original-bound-signature\"},{\"type\":\"redacted_thinking\",\"data\":\"original-redacted\"},{\"type\":\"text\",\"text\":\"visible original text\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null}}",
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "blocked": null,
+      "warningBefore": false,
+      "modelVisibleSystemText": "private fixture system\n\n1: first\n2: second\ntail: original system context",
+      "allocations": []
+    }
+  },
+  {
+    "name": "same-model-normalized-keeps-protected",
+    "input": {
+      "historySources": [
+        "{\"type\":\"assistant\",\"uuid\":\"same\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"id\":\"same-response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\" DeepSeek-Flash \",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"original-bound-signature\"},{\"type\":\"redacted_thinking\",\"data\":\"original-redacted\"},{\"type\":\"text\",\"text\":\"visible original text\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null}}",
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "systemSources": [
+        "\"private fixture system\""
+      ],
+      "model": "deepseek-flash",
+      "maxOutputTokens": 32000,
+      "deviceID": "fixture-retry-device",
+      "sessionID": "00000000-0000-4000-8000-000000000000",
+      "name": "same-model-normalized-keeps-protected",
+      "mode": "normal",
+      "home": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-wH7oLI",
+      "userContextSource": "{\"currentDate\":\"2023-11-14\",\"2\":\"original numeric entry\",\"memory\":\"request-local original context\"}",
+      "systemContextSource": "{\"2\":\"second\",\"1\":\"first\",\"tail\":\"original system context\"}",
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://127.0.0.1:63320",
+        "ANTHROPIC_API_KEY": "offline-original-env-key",
+        "API_TIMEOUT_MS": "3000",
+        "CLAUDE_CODE_MAX_RETRIES": "2",
+        "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
+        "NODE_EXTRA_CA_CERTS": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-wH7oLI/original-ca.pem"
+      },
+      "runtime": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "version": "v24.3.0"
+      }
+    },
+    "expected": {
+      "toolContextHistory": [
+        "{\"type\":\"assistant\",\"uuid\":\"same\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"id\":\"same-response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\" DeepSeek-Flash \",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"original-bound-signature\"},{\"type\":\"redacted_thinking\",\"data\":\"original-redacted\"},{\"type\":\"text\",\"text\":\"visible original text\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null}}",
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "modelHistory": [
+        "{\"type\":\"assistant\",\"uuid\":\"same\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"id\":\"same-response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\" DeepSeek-Flash \",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"original-bound-signature\"},{\"type\":\"redacted_thinking\",\"data\":\"original-redacted\"},{\"type\":\"text\",\"text\":\"visible original text\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null}}",
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "originalAfter": [
+        "{\"type\":\"assistant\",\"uuid\":\"same\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"id\":\"same-response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\" DeepSeek-Flash \",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"original-bound-signature\"},{\"type\":\"redacted_thinking\",\"data\":\"original-redacted\"},{\"type\":\"text\",\"text\":\"visible original text\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null}}",
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "blocked": null,
+      "warningBefore": false,
+      "modelVisibleSystemText": "private fixture system\n\n1: first\n2: second\ntail: original system context",
+      "allocations": []
+    }
+  },
+  {
+    "name": "thinking-only-projection-empty-retains-original",
+    "input": {
+      "historySources": [
+        "{\"type\":\"assistant\",\"uuid\":\"only\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"id\":\"only-response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"old-provider\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"original\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null}}",
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "systemSources": [
+        "\"private fixture system\""
+      ],
+      "model": "deepseek-flash",
+      "maxOutputTokens": 32000,
+      "deviceID": "fixture-retry-device",
+      "sessionID": "00000000-0000-4000-8000-000000000000",
+      "name": "thinking-only-projection-empty-retains-original",
+      "mode": "normal",
+      "home": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-S7c6jA",
+      "userContextSource": "{\"currentDate\":\"2023-11-14\",\"2\":\"original numeric entry\",\"memory\":\"request-local original context\"}",
+      "systemContextSource": "{\"2\":\"second\",\"1\":\"first\",\"tail\":\"original system context\"}",
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://127.0.0.1:63329",
+        "ANTHROPIC_API_KEY": "offline-original-env-key",
+        "API_TIMEOUT_MS": "3000",
+        "CLAUDE_CODE_MAX_RETRIES": "2",
+        "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
+        "NODE_EXTRA_CA_CERTS": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-S7c6jA/original-ca.pem"
+      },
+      "runtime": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "version": "v24.3.0"
+      }
+    },
+    "expected": {
+      "toolContextHistory": [
+        "{\"type\":\"assistant\",\"uuid\":\"only\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"id\":\"only-response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"old-provider\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"original\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null}}",
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "modelHistory": [
+        "{\"type\":\"assistant\",\"uuid\":\"only\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"id\":\"only-response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"old-provider\",\"content\":[],\"stop_reason\":\"end_turn\",\"stop_sequence\":null}}",
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "originalAfter": [
+        "{\"type\":\"assistant\",\"uuid\":\"only\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"message\":{\"id\":\"only-response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"old-provider\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"secret\",\"signature\":\"original\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null}}",
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "blocked": null,
+      "warningBefore": false,
+      "modelVisibleSystemText": "private fixture system\n\n1: first\n2: second\ntail: original system context",
+      "allocations": []
+    }
+  },
+  {
+    "name": "abort-before-below-still-prefix-and-prepare",
+    "input": {
+      "historySources": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "systemSources": [
+        "\"private fixture system\""
+      ],
+      "model": "deepseek-flash",
+      "maxOutputTokens": 32000,
+      "deviceID": "fixture-retry-device",
+      "sessionID": "00000000-0000-4000-8000-000000000000",
+      "name": "abort-before-below-still-prefix-and-prepare",
+      "mode": "abort-before",
+      "abortReason": "user",
+      "home": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-YnHJRU",
+      "userContextSource": "{\"currentDate\":\"2023-11-14\",\"2\":\"original numeric entry\",\"memory\":\"request-local original context\"}",
+      "systemContextSource": "{\"2\":\"second\",\"1\":\"first\",\"tail\":\"original system context\"}",
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://127.0.0.1:49318",
+        "ANTHROPIC_API_KEY": "offline-original-env-key",
+        "API_TIMEOUT_MS": "3000",
+        "CLAUDE_CODE_MAX_RETRIES": "2",
+        "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
+        "NODE_EXTRA_CA_CERTS": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-YnHJRU/original-ca.pem",
+        "DISABLE_COMPACT": "1",
+        "CLAUDE_CODE_BLOCKING_LIMIT_OVERRIDE": "5"
+      },
+      "runtime": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "version": "v24.3.0"
+      }
+    },
+    "expected": {
+      "toolContextHistory": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "modelHistory": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "originalAfter": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "blocked": null,
+      "warningBefore": false,
+      "modelVisibleSystemText": null,
+      "allocations": []
+    }
+  },
+  {
+    "name": "suppressed-warning-clears-before-default-auto",
+    "input": {
+      "historySources": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "systemSources": [
+        "\"private fixture system\""
+      ],
+      "model": "deepseek-flash",
+      "maxOutputTokens": 32000,
+      "deviceID": "fixture-retry-device",
+      "sessionID": "00000000-0000-4000-8000-000000000000",
+      "name": "suppressed-warning-clears-before-default-auto",
+      "mode": "normal",
+      "suppressWarning": true,
+      "home": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-H30Njm",
+      "userContextSource": "{\"currentDate\":\"2023-11-14\",\"2\":\"original numeric entry\",\"memory\":\"request-local original context\"}",
+      "systemContextSource": "{\"2\":\"second\",\"1\":\"first\",\"tail\":\"original system context\"}",
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://127.0.0.1:49323",
+        "ANTHROPIC_API_KEY": "offline-original-env-key",
+        "API_TIMEOUT_MS": "3000",
+        "CLAUDE_CODE_MAX_RETRIES": "2",
+        "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
+        "NODE_EXTRA_CA_CERTS": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/query-blocking-original-H30Njm/original-ca.pem"
+      },
+      "runtime": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "version": "v24.3.0"
+      }
+    },
+    "expected": {
+      "toolContextHistory": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "modelHistory": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "originalAfter": [
+        "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123456789abcdef\"},\"uuid\":\"original-user\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+      ],
+      "blocked": null,
+      "warningBefore": true,
+      "modelVisibleSystemText": "private fixture system\n\n1: first\n2: second\ntail: original system context",
+      "allocations": []
+    }
+  }
+]

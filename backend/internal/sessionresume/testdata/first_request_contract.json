@@ -1,0 +1,1572 @@
+[
+  {
+    "input": {
+      "entries": [
+        {
+          "type": "system",
+          "subtype": "compact_boundary",
+          "uuid": "c",
+          "timestamp": "2025-01-01T00:00:00Z"
+        },
+        {
+          "parentUuid": "c",
+          "type": "user",
+          "message": {
+            "role": "user",
+            "content": "summary"
+          },
+          "uuid": "u",
+          "timestamp": "2025-01-01T00:00:00Z",
+          "sessionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+          "isCompactSummary": true
+        },
+        {
+          "parentUuid": "u",
+          "type": "assistant",
+          "message": {
+            "id": "a",
+            "model": "fixture-model",
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "new answer"
+              }
+            ],
+            "stop_reason": null,
+            "usage": {
+              "input_tokens": 0,
+              "output_tokens": 0
+            }
+          },
+          "uuid": "a",
+          "timestamp": "2025-01-01T00:00:01Z",
+          "sessionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        }
+      ]
+    },
+    "source": {
+      "observation": {
+        "resultSource": "{\"messages\":[{\"type\":\"system\",\"subtype\":\"compact_boundary\",\"uuid\":\"c\",\"timestamp\":\"2025-01-01T00:00:00Z\"},{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"summary\"},\"uuid\":\"u\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\",\"isCompactSummary\":true},{\"type\":\"assistant\",\"message\":{\"id\":\"a\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new answer\"}],\"stop_reason\":null,\"usage\":{\"input_tokens\":0,\"output_tokens\":0}},\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}],\"turnInterruptionState\":{\"kind\":\"none\"},\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+        "generation": [
+          {
+            "kind": "uuid",
+            "value": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "time",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "historyBefore": [
+          "{\"type\":\"system\",\"subtype\":\"compact_boundary\",\"uuid\":\"c\",\"timestamp\":\"2025-01-01T00:00:00Z\"}",
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"summary\"},\"uuid\":\"u\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\",\"isCompactSummary\":true}",
+          "{\"type\":\"assistant\",\"message\":{\"id\":\"a\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new answer\"}],\"stop_reason\":null,\"usage\":{\"input_tokens\":0,\"output_tokens\":0}},\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"next original prompt\\ud800\"},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "requests": [
+          {
+            "path": "/v1/messages?beta=true",
+            "method": "POST",
+            "headers": [
+              [
+                "accept",
+                "application/json"
+              ],
+              [
+                "anthropic-dangerous-direct-browser-access",
+                "true"
+              ],
+              [
+                "anthropic-version",
+                "2023-06-01"
+              ],
+              [
+                "content-type",
+                "application/json"
+              ],
+              [
+                "user-agent",
+                "claude-cli/2.1.281 (external, cli)"
+              ],
+              [
+                "x-api-key",
+                "offline-fixture-key"
+              ],
+              [
+                "x-app",
+                "cli"
+              ],
+              [
+                "x-claude-code-session-id",
+                "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+              ],
+              [
+                "x-stainless-arch",
+                "arm64"
+              ],
+              [
+                "x-stainless-lang",
+                "js"
+              ],
+              [
+                "x-stainless-os",
+                "MacOS"
+              ],
+              [
+                "x-stainless-package-version",
+                "0.80.0"
+              ],
+              [
+                "x-stainless-retry-count",
+                "0"
+              ],
+              [
+                "x-stainless-runtime",
+                "node"
+              ],
+              [
+                "x-stainless-runtime-version",
+                "v24.3.0"
+              ],
+              [
+                "x-stainless-timeout",
+                "600"
+              ]
+            ],
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"summary\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new answer\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.a0c; cc_entrypoint=unknown; cch=6a093;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+          }
+        ]
+      },
+      "sourceOnly": {
+        "capabilities": {
+          "blocked": [],
+          "secureReads": [
+            "read"
+          ],
+          "absentReads": [
+            {
+              "operation": "lstatSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "lstatSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "openSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "readdirSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+            }
+          ]
+        },
+        "prefetchAllocations": [
+          [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001"
+            },
+            {
+              "kind": "time",
+              "value": "2023-11-14T22:13:20.000Z"
+            }
+          ]
+        ],
+        "yields": [
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_start\",\"message\":{\"id\":\"response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"usage\":{\"input_tokens\":0,\"output_tokens\":0}}},\"ttftMs\":0}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\"},\"usage\":{\"output_tokens\":0}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_stop\"},\"decodeMs\":0}"
+        ],
+        "runtime": {
+          "platform": "darwin",
+          "arch": "arm64",
+          "version": "v24.3.0"
+        }
+      }
+    },
+    "scope": "Release TRANSCRIPT_CLASSIFIER enabled; internal features off. Real reader/reducer/requestcontext/provider. QueryEngine/print/hooks/restore not exercised; raw diagnostic/transport/stream lifecycle remains separately visible."
+  },
+  {
+    "input": {
+      "entries": [
+        {
+          "parentUuid": null,
+          "type": "user",
+          "message": {
+            "role": "user",
+            "content": "01234567 original question"
+          },
+          "uuid": "u",
+          "timestamp": "2025-01-01T00:00:00Z",
+          "sessionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        },
+        {
+          "parentUuid": "u",
+          "type": "assistant",
+          "message": {
+            "id": "a",
+            "model": "fixture-model",
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "original answer"
+              }
+            ],
+            "stop_reason": null,
+            "usage": {
+              "input_tokens": 0,
+              "output_tokens": 0
+            }
+          },
+          "uuid": "a",
+          "timestamp": "2025-01-01T00:00:01Z",
+          "sessionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        }
+      ]
+    },
+    "source": {
+      "observation": {
+        "resultSource": "{\"messages\":[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"01234567 original question\"},\"uuid\":\"u\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"},{\"type\":\"assistant\",\"message\":{\"id\":\"a\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original answer\"}],\"stop_reason\":null,\"usage\":{\"input_tokens\":0,\"output_tokens\":0}},\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}],\"turnInterruptionState\":{\"kind\":\"none\"},\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+        "generation": [
+          {
+            "kind": "uuid",
+            "value": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "time",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "historyBefore": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"01234567 original question\"},\"uuid\":\"u\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+          "{\"type\":\"assistant\",\"message\":{\"id\":\"a\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original answer\"}],\"stop_reason\":null,\"usage\":{\"input_tokens\":0,\"output_tokens\":0}},\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"next original prompt\\ud800\"},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "requests": [
+          {
+            "path": "/v1/messages?beta=true",
+            "method": "POST",
+            "headers": [
+              [
+                "accept",
+                "application/json"
+              ],
+              [
+                "anthropic-dangerous-direct-browser-access",
+                "true"
+              ],
+              [
+                "anthropic-version",
+                "2023-06-01"
+              ],
+              [
+                "content-type",
+                "application/json"
+              ],
+              [
+                "user-agent",
+                "claude-cli/2.1.281 (external, cli)"
+              ],
+              [
+                "x-api-key",
+                "offline-fixture-key"
+              ],
+              [
+                "x-app",
+                "cli"
+              ],
+              [
+                "x-claude-code-session-id",
+                "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+              ],
+              [
+                "x-stainless-arch",
+                "arm64"
+              ],
+              [
+                "x-stainless-lang",
+                "js"
+              ],
+              [
+                "x-stainless-os",
+                "MacOS"
+              ],
+              [
+                "x-stainless-package-version",
+                "0.80.0"
+              ],
+              [
+                "x-stainless-retry-count",
+                "0"
+              ],
+              [
+                "x-stainless-runtime",
+                "node"
+              ],
+              [
+                "x-stainless-runtime-version",
+                "v24.3.0"
+              ],
+              [
+                "x-stainless-timeout",
+                "600"
+              ]
+            ],
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"01234567 original question\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original answer\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.1b6; cc_entrypoint=unknown; cch=25470;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+          }
+        ]
+      },
+      "sourceOnly": {
+        "capabilities": {
+          "blocked": [],
+          "secureReads": [
+            "read"
+          ],
+          "absentReads": [
+            {
+              "operation": "lstatSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "lstatSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "openSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "readdirSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+            }
+          ]
+        },
+        "prefetchAllocations": [
+          [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001"
+            },
+            {
+              "kind": "time",
+              "value": "2023-11-14T22:13:20.000Z"
+            }
+          ]
+        ],
+        "yields": [
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_start\",\"message\":{\"id\":\"response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"usage\":{\"input_tokens\":0,\"output_tokens\":0}}},\"ttftMs\":0}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\"},\"usage\":{\"output_tokens\":0}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_stop\"},\"decodeMs\":0}"
+        ],
+        "runtime": {
+          "platform": "darwin",
+          "arch": "arm64",
+          "version": "v24.3.0"
+        }
+      }
+    },
+    "scope": "Release TRANSCRIPT_CLASSIFIER enabled; internal features off. Real reader/reducer/requestcontext/provider. QueryEngine/print/hooks/restore not exercised; raw diagnostic/transport/stream lifecycle remains separately visible."
+  },
+  {
+    "input": {
+      "entries": [
+        {
+          "parentUuid": null,
+          "type": "user",
+          "message": {
+            "role": "user",
+            "content": "original interrupted"
+          },
+          "uuid": "u",
+          "timestamp": "2025-01-01T00:00:00Z",
+          "sessionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        }
+      ]
+    },
+    "source": {
+      "observation": {
+        "resultSource": "{\"messages\":[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original interrupted\"},\"uuid\":\"u\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"},{\"type\":\"assistant\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"00000000-0000-4000-8000-000000000002\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"No response requested.\"}],\"context_management\":null},\"isApiErrorMessage\":false}],\"turnInterruptionState\":{\"kind\":\"interrupted_prompt\",\"message\":{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original interrupted\"},\"uuid\":\"u\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}},\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+        "generation": [
+          {
+            "kind": "uuid",
+            "value": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "time",
+            "value": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "kind": "uuid",
+            "value": "00000000-0000-4000-8000-000000000002"
+          },
+          {
+            "kind": "uuid",
+            "value": "00000000-0000-4000-8000-000000000003"
+          },
+          {
+            "kind": "time",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "historyBefore": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original interrupted\"},\"uuid\":\"u\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+          "{\"type\":\"assistant\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"00000000-0000-4000-8000-000000000002\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"No response requested.\"}],\"context_management\":null},\"isApiErrorMessage\":false}",
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"next original prompt\\ud800\"},\"uuid\":\"00000000-0000-4000-8000-000000000003\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "requests": [
+          {
+            "path": "/v1/messages?beta=true",
+            "method": "POST",
+            "headers": [
+              [
+                "accept",
+                "application/json"
+              ],
+              [
+                "anthropic-dangerous-direct-browser-access",
+                "true"
+              ],
+              [
+                "anthropic-version",
+                "2023-06-01"
+              ],
+              [
+                "content-type",
+                "application/json"
+              ],
+              [
+                "user-agent",
+                "claude-cli/2.1.281 (external, cli)"
+              ],
+              [
+                "x-api-key",
+                "offline-fixture-key"
+              ],
+              [
+                "x-app",
+                "cli"
+              ],
+              [
+                "x-claude-code-session-id",
+                "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+              ],
+              [
+                "x-stainless-arch",
+                "arm64"
+              ],
+              [
+                "x-stainless-lang",
+                "js"
+              ],
+              [
+                "x-stainless-os",
+                "MacOS"
+              ],
+              [
+                "x-stainless-package-version",
+                "0.80.0"
+              ],
+              [
+                "x-stainless-retry-count",
+                "0"
+              ],
+              [
+                "x-stainless-runtime",
+                "node"
+              ],
+              [
+                "x-stainless-runtime-version",
+                "v24.3.0"
+              ],
+              [
+                "x-stainless-timeout",
+                "600"
+              ]
+            ],
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"original interrupted\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"No response requested.\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.eab; cc_entrypoint=unknown; cch=14149;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+          }
+        ]
+      },
+      "sourceOnly": {
+        "capabilities": {
+          "blocked": [],
+          "secureReads": [
+            "read"
+          ],
+          "absentReads": [
+            {
+              "operation": "lstatSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "lstatSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "openSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "readdirSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+            }
+          ]
+        },
+        "prefetchAllocations": [
+          [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001"
+            },
+            {
+              "kind": "time",
+              "value": "2023-11-14T22:13:20.000Z"
+            },
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002"
+            },
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000003"
+            },
+            {
+              "kind": "time",
+              "value": "2023-11-14T22:13:20.000Z"
+            }
+          ]
+        ],
+        "yields": [
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_start\",\"message\":{\"id\":\"response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"usage\":{\"input_tokens\":0,\"output_tokens\":0}}},\"ttftMs\":0}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\"},\"usage\":{\"output_tokens\":0}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_stop\"},\"decodeMs\":0}"
+        ],
+        "runtime": {
+          "platform": "darwin",
+          "arch": "arm64",
+          "version": "v24.3.0"
+        }
+      }
+    },
+    "scope": "Release TRANSCRIPT_CLASSIFIER enabled; internal features off. Real reader/reducer/requestcontext/provider. QueryEngine/print/hooks/restore not exercised; raw diagnostic/transport/stream lifecycle remains separately visible."
+  },
+  {
+    "input": {
+      "entries": [
+        {
+          "parentUuid": null,
+          "type": "user",
+          "message": {
+            "role": "user",
+            "content": "0123\ud80067 tail"
+          },
+          "uuid": "u",
+          "timestamp": "2025-01-01T00:00:00Z",
+          "sessionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+          "future": {
+            "z": 1,
+            "a": 3
+          },
+          "permissionMode": "unknown"
+        },
+        {
+          "parentUuid": "u",
+          "type": "assistant",
+          "message": {
+            "id": "a",
+            "model": "fixture-model",
+            "role": "assistant",
+            "content": [
+              {
+                "future": {
+                  "z": 1,
+                  "a": "\udc00"
+                },
+                "type": "text",
+                "text": "original answer"
+              }
+            ],
+            "stop_reason": null,
+            "usage": {
+              "input_tokens": 0,
+              "output_tokens": 0
+            }
+          },
+          "uuid": "a",
+          "timestamp": "2025-01-01T00:00:01Z",
+          "sessionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        }
+      ]
+    },
+    "source": {
+      "observation": {
+        "resultSource": "{\"messages\":[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123\\ud80067 tail\"},\"uuid\":\"u\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\",\"future\":{\"z\":1,\"a\":3}},{\"type\":\"assistant\",\"message\":{\"id\":\"a\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"future\":{\"z\":1,\"a\":\"\\udc00\"},\"type\":\"text\",\"text\":\"original answer\"}],\"stop_reason\":null,\"usage\":{\"input_tokens\":0,\"output_tokens\":0}},\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}],\"turnInterruptionState\":{\"kind\":\"none\"},\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+        "generation": [
+          {
+            "kind": "uuid",
+            "value": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "time",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "historyBefore": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"0123\\ud80067 tail\"},\"uuid\":\"u\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\",\"future\":{\"z\":1,\"a\":3}}",
+          "{\"type\":\"assistant\",\"message\":{\"id\":\"a\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"future\":{\"z\":1,\"a\":\"\\udc00\"},\"type\":\"text\",\"text\":\"original answer\"}],\"stop_reason\":null,\"usage\":{\"input_tokens\":0,\"output_tokens\":0}},\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"next original prompt\\ud800\"},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "requests": [
+          {
+            "path": "/v1/messages?beta=true",
+            "method": "POST",
+            "headers": [
+              [
+                "accept",
+                "application/json"
+              ],
+              [
+                "anthropic-dangerous-direct-browser-access",
+                "true"
+              ],
+              [
+                "anthropic-version",
+                "2023-06-01"
+              ],
+              [
+                "content-type",
+                "application/json"
+              ],
+              [
+                "user-agent",
+                "claude-cli/2.1.281 (external, cli)"
+              ],
+              [
+                "x-api-key",
+                "offline-fixture-key"
+              ],
+              [
+                "x-app",
+                "cli"
+              ],
+              [
+                "x-claude-code-session-id",
+                "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+              ],
+              [
+                "x-stainless-arch",
+                "arm64"
+              ],
+              [
+                "x-stainless-lang",
+                "js"
+              ],
+              [
+                "x-stainless-os",
+                "MacOS"
+              ],
+              [
+                "x-stainless-package-version",
+                "0.80.0"
+              ],
+              [
+                "x-stainless-retry-count",
+                "0"
+              ],
+              [
+                "x-stainless-runtime",
+                "node"
+              ],
+              [
+                "x-stainless-runtime-version",
+                "v24.3.0"
+              ],
+              [
+                "x-stainless-timeout",
+                "600"
+              ]
+            ],
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"0123\\ud80067 tail\"},{\"role\":\"assistant\",\"content\":[{\"future\":{\"z\":1,\"a\":\"\\udc00\"},\"type\":\"text\",\"text\":\"original answer\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.584; cc_entrypoint=unknown; cch=52265;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+          }
+        ]
+      },
+      "sourceOnly": {
+        "capabilities": {
+          "blocked": [],
+          "secureReads": [
+            "read"
+          ],
+          "absentReads": [
+            {
+              "operation": "lstatSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "lstatSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "openSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "readdirSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+            }
+          ]
+        },
+        "prefetchAllocations": [
+          [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001"
+            },
+            {
+              "kind": "time",
+              "value": "2023-11-14T22:13:20.000Z"
+            }
+          ]
+        ],
+        "yields": [
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_start\",\"message\":{\"id\":\"response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"usage\":{\"input_tokens\":0,\"output_tokens\":0}}},\"ttftMs\":0}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\"},\"usage\":{\"output_tokens\":0}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_stop\"},\"decodeMs\":0}"
+        ],
+        "runtime": {
+          "platform": "darwin",
+          "arch": "arm64",
+          "version": "v24.3.0"
+        }
+      }
+    },
+    "scope": "Release TRANSCRIPT_CLASSIFIER enabled; internal features off. Real reader/reducer/requestcontext/provider. QueryEngine/print/hooks/restore not exercised; raw diagnostic/transport/stream lifecycle remains separately visible."
+  },
+  {
+    "input": {
+      "entries": [
+        {
+          "parentUuid": null,
+          "type": "user",
+          "message": {
+            "role": "user",
+            "content": "original tool"
+          },
+          "uuid": "u",
+          "timestamp": "2025-01-01T00:00:00Z",
+          "sessionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        },
+        {
+          "parentUuid": "u",
+          "type": "assistant",
+          "message": {
+            "id": "a",
+            "model": "fixture-model",
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "t",
+                "name": "UnknownTool",
+                "input": {
+                  "z": 1,
+                  "a": "\ud800"
+                }
+              }
+            ],
+            "stop_reason": null,
+            "usage": {
+              "input_tokens": 0,
+              "output_tokens": 0
+            }
+          },
+          "uuid": "a",
+          "timestamp": "2025-01-01T00:00:01Z",
+          "sessionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        },
+        {
+          "parentUuid": "a",
+          "type": "user",
+          "message": {
+            "role": "user",
+            "content": [
+              {
+                "type": "tool_result",
+                "tool_use_id": "t",
+                "content": "persisted read"
+              }
+            ]
+          },
+          "uuid": "r",
+          "timestamp": "2025-01-01T00:00:00Z",
+          "sessionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        }
+      ]
+    },
+    "source": {
+      "observation": {
+        "resultSource": "{\"messages\":[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original tool\"},\"uuid\":\"u\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"},{\"type\":\"assistant\",\"message\":{\"id\":\"a\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"tool_use\",\"id\":\"t\",\"name\":\"UnknownTool\",\"input\":{\"z\":1,\"a\":\"\\ud800\"}}],\"stop_reason\":null,\"usage\":{\"input_tokens\":0,\"output_tokens\":0}},\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"},{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"persisted read\"}]},\"uuid\":\"r\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"},{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Continue from where you left off.\"}]},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"},{\"type\":\"assistant\",\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"00000000-0000-4000-8000-000000000003\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"No response requested.\"}],\"context_management\":null},\"isApiErrorMessage\":false}],\"turnInterruptionState\":{\"kind\":\"interrupted_prompt\",\"message\":{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Continue from where you left off.\"}]},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}},\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+        "generation": [
+          {
+            "kind": "uuid",
+            "value": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "time",
+            "value": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "kind": "uuid",
+            "value": "00000000-0000-4000-8000-000000000002"
+          },
+          {
+            "kind": "time",
+            "value": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "kind": "uuid",
+            "value": "00000000-0000-4000-8000-000000000003"
+          },
+          {
+            "kind": "uuid",
+            "value": "00000000-0000-4000-8000-000000000004"
+          },
+          {
+            "kind": "time",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "historyBefore": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original tool\"},\"uuid\":\"u\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+          "{\"type\":\"assistant\",\"message\":{\"id\":\"a\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"tool_use\",\"id\":\"t\",\"name\":\"UnknownTool\",\"input\":{\"z\":1,\"a\":\"\\ud800\"}}],\"stop_reason\":null,\"usage\":{\"input_tokens\":0,\"output_tokens\":0}},\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"persisted read\"}]},\"uuid\":\"r\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Continue from where you left off.\"}]},\"isMeta\":true,\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}",
+          "{\"type\":\"assistant\",\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"00000000-0000-4000-8000-000000000003\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"No response requested.\"}],\"context_management\":null},\"isApiErrorMessage\":false}",
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"next original prompt\\ud800\"},\"uuid\":\"00000000-0000-4000-8000-000000000004\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "requests": [
+          {
+            "path": "/v1/messages?beta=true",
+            "method": "POST",
+            "headers": [
+              [
+                "accept",
+                "application/json"
+              ],
+              [
+                "anthropic-dangerous-direct-browser-access",
+                "true"
+              ],
+              [
+                "anthropic-version",
+                "2023-06-01"
+              ],
+              [
+                "content-type",
+                "application/json"
+              ],
+              [
+                "user-agent",
+                "claude-cli/2.1.281 (external, cli)"
+              ],
+              [
+                "x-api-key",
+                "offline-fixture-key"
+              ],
+              [
+                "x-app",
+                "cli"
+              ],
+              [
+                "x-claude-code-session-id",
+                "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+              ],
+              [
+                "x-stainless-arch",
+                "arm64"
+              ],
+              [
+                "x-stainless-lang",
+                "js"
+              ],
+              [
+                "x-stainless-os",
+                "MacOS"
+              ],
+              [
+                "x-stainless-package-version",
+                "0.80.0"
+              ],
+              [
+                "x-stainless-retry-count",
+                "0"
+              ],
+              [
+                "x-stainless-runtime",
+                "node"
+              ],
+              [
+                "x-stainless-runtime-version",
+                "v24.3.0"
+              ],
+              [
+                "x-stainless-timeout",
+                "600"
+              ]
+            ],
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"original tool\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"tool_use\",\"id\":\"t\",\"name\":\"UnknownTool\",\"input\":{\"z\":1,\"a\":\"\\ud800\"}}]},{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"persisted read\"},{\"type\":\"text\",\"text\":\"Continue from where you left off.\"}]},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"No response requested.\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.eab; cc_entrypoint=unknown; cch=4575d;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+          }
+        ]
+      },
+      "sourceOnly": {
+        "capabilities": {
+          "blocked": [],
+          "secureReads": [
+            "read"
+          ],
+          "absentReads": [
+            {
+              "operation": "lstatSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "lstatSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "openSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "readdirSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+            }
+          ]
+        },
+        "prefetchAllocations": [
+          [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001"
+            },
+            {
+              "kind": "time",
+              "value": "2023-11-14T22:13:20.000Z"
+            },
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002"
+            },
+            {
+              "kind": "time",
+              "value": "2023-11-14T22:13:20.000Z"
+            },
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000003"
+            },
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000004"
+            },
+            {
+              "kind": "time",
+              "value": "2023-11-14T22:13:20.000Z"
+            }
+          ]
+        ],
+        "yields": [
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_start\",\"message\":{\"id\":\"response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"usage\":{\"input_tokens\":0,\"output_tokens\":0}}},\"ttftMs\":0}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\"},\"usage\":{\"output_tokens\":0}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_stop\"},\"decodeMs\":0}"
+        ],
+        "runtime": {
+          "platform": "darwin",
+          "arch": "arm64",
+          "version": "v24.3.0"
+        }
+      }
+    },
+    "scope": "Release TRANSCRIPT_CLASSIFIER enabled; internal features off. Real reader/reducer/requestcontext/provider. QueryEngine/print/hooks/restore not exercised; raw diagnostic/transport/stream lifecycle remains separately visible."
+  },
+  {
+    "input": {
+      "entries": [
+        {
+          "parentUuid": null,
+          "type": "user",
+          "message": {
+            "role": "user",
+            "content": "auto original"
+          },
+          "uuid": "u",
+          "timestamp": "2025-01-01T00:00:00Z",
+          "sessionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+          "permissionMode": "auto"
+        },
+        {
+          "parentUuid": "u",
+          "type": "assistant",
+          "message": {
+            "id": "a",
+            "model": "fixture-model",
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "original answer"
+              }
+            ],
+            "stop_reason": null,
+            "usage": {
+              "input_tokens": 0,
+              "output_tokens": 0
+            }
+          },
+          "uuid": "a",
+          "timestamp": "2025-01-01T00:00:01Z",
+          "sessionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        }
+      ]
+    },
+    "source": {
+      "observation": {
+        "resultSource": "{\"messages\":[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"auto original\"},\"uuid\":\"u\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\",\"permissionMode\":\"auto\"},{\"type\":\"assistant\",\"message\":{\"id\":\"a\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original answer\"}],\"stop_reason\":null,\"usage\":{\"input_tokens\":0,\"output_tokens\":0}},\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}],\"turnInterruptionState\":{\"kind\":\"none\"},\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+        "generation": [
+          {
+            "kind": "uuid",
+            "value": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "time",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "historyBefore": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"auto original\"},\"uuid\":\"u\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\",\"permissionMode\":\"auto\"}",
+          "{\"type\":\"assistant\",\"message\":{\"id\":\"a\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original answer\"}],\"stop_reason\":null,\"usage\":{\"input_tokens\":0,\"output_tokens\":0}},\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"next original prompt\\ud800\"},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "requests": [
+          {
+            "path": "/v1/messages?beta=true",
+            "method": "POST",
+            "headers": [
+              [
+                "accept",
+                "application/json"
+              ],
+              [
+                "anthropic-dangerous-direct-browser-access",
+                "true"
+              ],
+              [
+                "anthropic-version",
+                "2023-06-01"
+              ],
+              [
+                "content-type",
+                "application/json"
+              ],
+              [
+                "user-agent",
+                "claude-cli/2.1.281 (external, cli)"
+              ],
+              [
+                "x-api-key",
+                "offline-fixture-key"
+              ],
+              [
+                "x-app",
+                "cli"
+              ],
+              [
+                "x-claude-code-session-id",
+                "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+              ],
+              [
+                "x-stainless-arch",
+                "arm64"
+              ],
+              [
+                "x-stainless-lang",
+                "js"
+              ],
+              [
+                "x-stainless-os",
+                "MacOS"
+              ],
+              [
+                "x-stainless-package-version",
+                "0.80.0"
+              ],
+              [
+                "x-stainless-retry-count",
+                "0"
+              ],
+              [
+                "x-stainless-runtime",
+                "node"
+              ],
+              [
+                "x-stainless-runtime-version",
+                "v24.3.0"
+              ],
+              [
+                "x-stainless-timeout",
+                "600"
+              ]
+            ],
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"auto original\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original answer\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.e33; cc_entrypoint=unknown; cch=15826;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+          }
+        ]
+      },
+      "sourceOnly": {
+        "capabilities": {
+          "blocked": [],
+          "secureReads": [
+            "read"
+          ],
+          "absentReads": [
+            {
+              "operation": "lstatSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "lstatSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "openSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "readdirSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+            }
+          ]
+        },
+        "prefetchAllocations": [
+          [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001"
+            },
+            {
+              "kind": "time",
+              "value": "2023-11-14T22:13:20.000Z"
+            }
+          ]
+        ],
+        "yields": [
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_start\",\"message\":{\"id\":\"response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"usage\":{\"input_tokens\":0,\"output_tokens\":0}}},\"ttftMs\":0}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\"},\"usage\":{\"output_tokens\":0}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_stop\"},\"decodeMs\":0}"
+        ],
+        "runtime": {
+          "platform": "darwin",
+          "arch": "arm64",
+          "version": "v24.3.0"
+        }
+      }
+    },
+    "scope": "Release TRANSCRIPT_CLASSIFIER enabled; internal features off. Real reader/reducer/requestcontext/provider. QueryEngine/print/hooks/restore not exercised; raw diagnostic/transport/stream lifecycle remains separately visible."
+  },
+  {
+    "input": {
+      "entries": [
+        {
+          "parentUuid": null,
+          "type": "user",
+          "message": {
+            "role": "user",
+            "content": "bubble original"
+          },
+          "uuid": "u",
+          "timestamp": "2025-01-01T00:00:00Z",
+          "sessionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+          "permissionMode": "bubble"
+        },
+        {
+          "parentUuid": "u",
+          "type": "assistant",
+          "message": {
+            "id": "a",
+            "model": "fixture-model",
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "original answer"
+              }
+            ],
+            "stop_reason": null,
+            "usage": {
+              "input_tokens": 0,
+              "output_tokens": 0
+            }
+          },
+          "uuid": "a",
+          "timestamp": "2025-01-01T00:00:01Z",
+          "sessionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        }
+      ]
+    },
+    "source": {
+      "observation": {
+        "resultSource": "{\"messages\":[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"bubble original\"},\"uuid\":\"u\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"},{\"type\":\"assistant\",\"message\":{\"id\":\"a\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original answer\"}],\"stop_reason\":null,\"usage\":{\"input_tokens\":0,\"output_tokens\":0}},\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}],\"turnInterruptionState\":{\"kind\":\"none\"},\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+        "generation": [
+          {
+            "kind": "uuid",
+            "value": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "time",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "historyBefore": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"bubble original\"},\"uuid\":\"u\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+          "{\"type\":\"assistant\",\"message\":{\"id\":\"a\",\"model\":\"fixture-model\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original answer\"}],\"stop_reason\":null,\"usage\":{\"input_tokens\":0,\"output_tokens\":0}},\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"next original prompt\\ud800\"},\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "requests": [
+          {
+            "path": "/v1/messages?beta=true",
+            "method": "POST",
+            "headers": [
+              [
+                "accept",
+                "application/json"
+              ],
+              [
+                "anthropic-dangerous-direct-browser-access",
+                "true"
+              ],
+              [
+                "anthropic-version",
+                "2023-06-01"
+              ],
+              [
+                "content-type",
+                "application/json"
+              ],
+              [
+                "user-agent",
+                "claude-cli/2.1.281 (external, cli)"
+              ],
+              [
+                "x-api-key",
+                "offline-fixture-key"
+              ],
+              [
+                "x-app",
+                "cli"
+              ],
+              [
+                "x-claude-code-session-id",
+                "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+              ],
+              [
+                "x-stainless-arch",
+                "arm64"
+              ],
+              [
+                "x-stainless-lang",
+                "js"
+              ],
+              [
+                "x-stainless-os",
+                "MacOS"
+              ],
+              [
+                "x-stainless-package-version",
+                "0.80.0"
+              ],
+              [
+                "x-stainless-retry-count",
+                "0"
+              ],
+              [
+                "x-stainless-runtime",
+                "node"
+              ],
+              [
+                "x-stainless-runtime-version",
+                "v24.3.0"
+              ],
+              [
+                "x-stainless-timeout",
+                "600"
+              ]
+            ],
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"bubble original\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original answer\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.3db; cc_entrypoint=unknown; cch=802b1;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+          }
+        ]
+      },
+      "sourceOnly": {
+        "capabilities": {
+          "blocked": [],
+          "secureReads": [
+            "read"
+          ],
+          "absentReads": [
+            {
+              "operation": "lstatSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "lstatSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "openSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "readdirSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+            }
+          ]
+        },
+        "prefetchAllocations": [
+          [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001"
+            },
+            {
+              "kind": "time",
+              "value": "2023-11-14T22:13:20.000Z"
+            }
+          ]
+        ],
+        "yields": [
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_start\",\"message\":{\"id\":\"response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"usage\":{\"input_tokens\":0,\"output_tokens\":0}}},\"ttftMs\":0}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\"},\"usage\":{\"output_tokens\":0}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_stop\"},\"decodeMs\":0}"
+        ],
+        "runtime": {
+          "platform": "darwin",
+          "arch": "arm64",
+          "version": "v24.3.0"
+        }
+      }
+    },
+    "scope": "Release TRANSCRIPT_CLASSIFIER enabled; internal features off. Real reader/reducer/requestcontext/provider. QueryEngine/print/hooks/restore not exercised; raw diagnostic/transport/stream lifecycle remains separately visible."
+  },
+  {
+    "input": {
+      "entries": [
+        {
+          "parentUuid": null,
+          "type": "user",
+          "message": {
+            "role": "user",
+            "content": "original tool"
+          },
+          "uuid": "u",
+          "timestamp": "2025-01-01T00:00:00Z",
+          "sessionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        },
+        {
+          "parentUuid": "u",
+          "type": "assistant",
+          "message": {
+            "id": "a",
+            "model": "fixture-model",
+            "role": "assistant",
+            "content": [
+              {
+                "type": "tool_use",
+                "id": "t",
+                "name": "UnknownTool",
+                "input": {
+                  "z": 1,
+                  "a": "\ud800"
+                }
+              }
+            ],
+            "stop_reason": null,
+            "usage": {
+              "input_tokens": 0,
+              "output_tokens": 0
+            }
+          },
+          "uuid": "a",
+          "timestamp": "2025-01-01T00:00:01Z",
+          "sessionId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        }
+      ]
+    },
+    "source": {
+      "observation": {
+        "resultSource": "{\"messages\":[{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original tool\"},\"uuid\":\"u\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"},{\"type\":\"assistant\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"00000000-0000-4000-8000-000000000002\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"No response requested.\"}],\"context_management\":null},\"isApiErrorMessage\":false}],\"turnInterruptionState\":{\"kind\":\"interrupted_prompt\",\"message\":{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original tool\"},\"uuid\":\"u\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}},\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+        "generation": [
+          {
+            "kind": "uuid",
+            "value": "00000000-0000-4000-8000-000000000001"
+          },
+          {
+            "kind": "time",
+            "value": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "kind": "uuid",
+            "value": "00000000-0000-4000-8000-000000000002"
+          },
+          {
+            "kind": "uuid",
+            "value": "00000000-0000-4000-8000-000000000003"
+          },
+          {
+            "kind": "time",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ],
+        "historyBefore": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original tool\"},\"uuid\":\"u\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"sessionId\":\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\"}",
+          "{\"type\":\"assistant\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"00000000-0000-4000-8000-000000000002\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"No response requested.\"}],\"context_management\":null},\"isApiErrorMessage\":false}",
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"next original prompt\\ud800\"},\"uuid\":\"00000000-0000-4000-8000-000000000003\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "requests": [
+          {
+            "path": "/v1/messages?beta=true",
+            "method": "POST",
+            "headers": [
+              [
+                "accept",
+                "application/json"
+              ],
+              [
+                "anthropic-dangerous-direct-browser-access",
+                "true"
+              ],
+              [
+                "anthropic-version",
+                "2023-06-01"
+              ],
+              [
+                "content-type",
+                "application/json"
+              ],
+              [
+                "user-agent",
+                "claude-cli/2.1.281 (external, cli)"
+              ],
+              [
+                "x-api-key",
+                "offline-fixture-key"
+              ],
+              [
+                "x-app",
+                "cli"
+              ],
+              [
+                "x-claude-code-session-id",
+                "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+              ],
+              [
+                "x-stainless-arch",
+                "arm64"
+              ],
+              [
+                "x-stainless-lang",
+                "js"
+              ],
+              [
+                "x-stainless-os",
+                "MacOS"
+              ],
+              [
+                "x-stainless-package-version",
+                "0.80.0"
+              ],
+              [
+                "x-stainless-retry-count",
+                "0"
+              ],
+              [
+                "x-stainless-runtime",
+                "node"
+              ],
+              [
+                "x-stainless-runtime-version",
+                "v24.3.0"
+              ],
+              [
+                "x-stainless-timeout",
+                "600"
+              ]
+            ],
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"original tool\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"No response requested.\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.eab; cc_entrypoint=unknown; cch=f421a;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+          }
+        ]
+      },
+      "sourceOnly": {
+        "capabilities": {
+          "blocked": [],
+          "secureReads": [
+            "read"
+          ],
+          "absentReads": [
+            {
+              "operation": "lstatSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "lstatSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "openSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+            },
+            {
+              "operation": "readdirSync",
+              "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+            }
+          ]
+        },
+        "prefetchAllocations": [
+          [
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000001"
+            },
+            {
+              "kind": "time",
+              "value": "2023-11-14T22:13:20.000Z"
+            },
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000002"
+            },
+            {
+              "kind": "uuid",
+              "value": "00000000-0000-4000-8000-000000000003"
+            },
+            {
+              "kind": "time",
+              "value": "2023-11-14T22:13:20.000Z"
+            }
+          ]
+        ],
+        "yields": [
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_start\",\"message\":{\"id\":\"response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"usage\":{\"input_tokens\":0,\"output_tokens\":0}}},\"ttftMs\":0}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\"},\"usage\":{\"output_tokens\":0}}}",
+          "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_stop\"},\"decodeMs\":0}"
+        ],
+        "runtime": {
+          "platform": "darwin",
+          "arch": "arm64",
+          "version": "v24.3.0"
+        }
+      }
+    },
+    "scope": "Release TRANSCRIPT_CLASSIFIER enabled; internal features off. Real reader/reducer/requestcontext/provider. QueryEngine/print/hooks/restore not exercised; raw diagnostic/transport/stream lifecycle remains separately visible."
+  }
+]

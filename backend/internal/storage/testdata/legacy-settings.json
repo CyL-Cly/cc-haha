@@ -1,0 +1,7 @@
+{
+  "env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1", "LEGACY_OTHER_ENV": "keep" },
+  "desktopTerminal": { "shell": "system", "unknownFutureSetting": { "keep": true } },
+  "unknownFuturePreference": { "array": [null, false, { "nested": "中文 😀 <&>" }], "loneSurrogate": "\ud800" },
+  "largeInteger": 9007199254740993123456789,
+  "futureDecimal": 1.234567890123456789e+100
+}

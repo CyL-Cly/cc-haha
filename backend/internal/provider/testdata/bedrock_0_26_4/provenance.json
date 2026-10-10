@@ -1,0 +1,30 @@
+{
+  "role": "read-only differential oracle; never imported by production Go",
+  "repository_tag": "sdk-v0.80.0",
+  "package": "@anthropic-ai/bedrock-sdk",
+  "version": "0.26.4",
+  "old_project_lock": "absent; reviewed added freeze boundary",
+  "files": [
+    {
+      "source": "https://raw.githubusercontent.com/anthropics/anthropic-sdk-typescript/sdk-v0.80.0/packages/bedrock-sdk/src/client.ts",
+      "sha256": "fbfc8d40b86d6d4ac0b6bc640d21300935148cc82c7cbaa348eb95571c8e8ba8",
+      "path": "artifacts/go-migration-integration/bedrock-sdk-0.80-source/client.ts"
+    },
+    {
+      "source": "https://raw.githubusercontent.com/anthropics/anthropic-sdk-typescript/sdk-v0.80.0/packages/bedrock-sdk/src/core/auth.ts",
+      "sha256": "7bede97815f7246832d4acf7eb672378398cb0d4b9e3d0a6bca5a8ef11ef05fd",
+      "path": "artifacts/go-migration-integration/bedrock-sdk-0.80-source/auth.ts"
+    },
+    {
+      "source": "https://raw.githubusercontent.com/anthropics/anthropic-sdk-typescript/sdk-v0.80.0/packages/bedrock-sdk/src/core/streaming.ts",
+      "sha256": "7276f2150c2514bc220d8e4ec3dd0ece24f41c270fd2e2748455c58d774aab4e",
+      "path": "artifacts/go-migration-integration/bedrock-sdk-0.80-source/streaming.ts"
+    },
+    {
+      "source": "https://raw.githubusercontent.com/anthropics/anthropic-sdk-typescript/sdk-v0.80.0/packages/bedrock-sdk/package.json",
+      "sha256": "948384d97982dd2111c6d342a28c0dd99a5bb8f14ad66e61455f32af23dd583b",
+      "path": "artifacts/go-migration-integration/bedrock-sdk-0.80-source/package.json"
+    }
+  ],
+  "license_sha256": "8bf96984ff8bcfae7e48cae76a529e8a25317ba9e02abf7fd3cc64fdf95657a6"
+}

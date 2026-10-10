@@ -1,0 +1,2008 @@
+{
+  "domain": "actual cache/Set states and bytes; Source logPresent observation remains unported caller selection",
+  "cases": [
+    {
+      "name": "primitive-add-delete-order",
+      "original": {
+        "profile": {
+          "name": "primitive-add-delete-order",
+          "steps": [
+            {
+              "op": "load",
+              "slot": "a",
+              "probe": {
+                "raw": "\"old\""
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "\"new\""
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "\"old\""
+              }
+            },
+            {
+              "op": "has",
+              "slot": "a",
+              "value": {
+                "raw": "\"new\""
+              }
+            },
+            {
+              "op": "delete",
+              "slot": "a",
+              "value": {
+                "raw": "\"old\""
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "\"old\""
+              }
+            },
+            {
+              "op": "snapshot",
+              "slot": "a"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "load",
+            "promise": 1,
+            "found": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "has",
+            "found": true
+          },
+          {
+            "op": "delete",
+            "deleted": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "snapshot",
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"new\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ]
+            }
+          }
+        ],
+        "finalBytes": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+      },
+      "sourceRaw": "artifacts/go-parity/transcript-uuid-mutable-set-next/source/runs/2026-10-02T21-16-56.240Z/primitive-add-delete-order-1-raw.json",
+      "sourceRawSHA": "23023d5723eac5819976f340a8276771627446c725fe78bc8ccf17246a3b5370"
+    },
+    {
+      "name": "undefined-null-zero",
+      "original": {
+        "profile": {
+          "name": "undefined-null-zero",
+          "steps": [
+            {
+              "op": "load",
+              "slot": "a",
+              "probe": {
+                "raw": "\"old\""
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "missing": true
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "null"
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "-0"
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "0"
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "false"
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "true"
+              }
+            },
+            {
+              "op": "delete",
+              "slot": "a",
+              "value": {
+                "missing": true
+              }
+            },
+            {
+              "op": "has",
+              "slot": "a",
+              "value": {
+                "raw": "null"
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "missing": true
+              }
+            },
+            {
+              "op": "snapshot",
+              "slot": "a"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "load",
+            "promise": 1,
+            "found": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "undefined"
+                },
+                {
+                  "type": "object",
+                  "raw": "null"
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "undefined"
+                },
+                {
+                  "type": "object",
+                  "raw": "null"
+                },
+                {
+                  "type": "number",
+                  "raw": "0"
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "undefined"
+                },
+                {
+                  "type": "object",
+                  "raw": "null"
+                },
+                {
+                  "type": "number",
+                  "raw": "0"
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "undefined"
+                },
+                {
+                  "type": "object",
+                  "raw": "null"
+                },
+                {
+                  "type": "number",
+                  "raw": "0"
+                },
+                {
+                  "type": "boolean",
+                  "raw": "false"
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "undefined"
+                },
+                {
+                  "type": "object",
+                  "raw": "null"
+                },
+                {
+                  "type": "number",
+                  "raw": "0"
+                },
+                {
+                  "type": "boolean",
+                  "raw": "false"
+                },
+                {
+                  "type": "boolean",
+                  "raw": "true"
+                }
+              ]
+            }
+          },
+          {
+            "op": "delete",
+            "deleted": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "object",
+                  "raw": "null"
+                },
+                {
+                  "type": "number",
+                  "raw": "0"
+                },
+                {
+                  "type": "boolean",
+                  "raw": "false"
+                },
+                {
+                  "type": "boolean",
+                  "raw": "true"
+                }
+              ]
+            }
+          },
+          {
+            "op": "has",
+            "found": true
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "object",
+                  "raw": "null"
+                },
+                {
+                  "type": "number",
+                  "raw": "0"
+                },
+                {
+                  "type": "boolean",
+                  "raw": "false"
+                },
+                {
+                  "type": "boolean",
+                  "raw": "true"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            }
+          },
+          {
+            "op": "snapshot",
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "object",
+                  "raw": "null"
+                },
+                {
+                  "type": "number",
+                  "raw": "0"
+                },
+                {
+                  "type": "boolean",
+                  "raw": "false"
+                },
+                {
+                  "type": "boolean",
+                  "raw": "true"
+                },
+                {
+                  "type": "undefined"
+                }
+              ]
+            }
+          }
+        ],
+        "finalBytes": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+      },
+      "sourceRaw": "artifacts/go-parity/transcript-uuid-mutable-set-next/source/runs/2026-10-02T21-16-56.240Z/undefined-null-zero-1-raw.json",
+      "sourceRawSHA": "fe742107e6cd1d9351c4775312fba6b5dba6cb4557b8bc6fcd552ea5f704e5a3"
+    },
+    {
+      "name": "rounded-overflow-number",
+      "original": {
+        "profile": {
+          "name": "rounded-overflow-number",
+          "steps": [
+            {
+              "op": "load",
+              "slot": "a",
+              "probe": {
+                "raw": "\"old\""
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "9007199254740992"
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "9007199254740993"
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "1e999"
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "-1e999"
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "1.0"
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "1e0"
+              }
+            },
+            {
+              "op": "has",
+              "slot": "a",
+              "value": {
+                "raw": "9007199254740993"
+              }
+            },
+            {
+              "op": "delete",
+              "slot": "a",
+              "value": {
+                "raw": "1"
+              }
+            },
+            {
+              "op": "snapshot",
+              "slot": "a"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "load",
+            "promise": 1,
+            "found": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "number",
+                  "raw": "9007199254740992"
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "number",
+                  "raw": "9007199254740992"
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "number",
+                  "raw": "9007199254740992"
+                },
+                {
+                  "type": "number",
+                  "raw": "null",
+                  "number": "Infinity"
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "number",
+                  "raw": "9007199254740992"
+                },
+                {
+                  "type": "number",
+                  "raw": "null",
+                  "number": "Infinity"
+                },
+                {
+                  "type": "number",
+                  "raw": "null",
+                  "number": "-Infinity"
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "number",
+                  "raw": "9007199254740992"
+                },
+                {
+                  "type": "number",
+                  "raw": "null",
+                  "number": "Infinity"
+                },
+                {
+                  "type": "number",
+                  "raw": "null",
+                  "number": "-Infinity"
+                },
+                {
+                  "type": "number",
+                  "raw": "1"
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "number",
+                  "raw": "9007199254740992"
+                },
+                {
+                  "type": "number",
+                  "raw": "null",
+                  "number": "Infinity"
+                },
+                {
+                  "type": "number",
+                  "raw": "null",
+                  "number": "-Infinity"
+                },
+                {
+                  "type": "number",
+                  "raw": "1"
+                }
+              ]
+            }
+          },
+          {
+            "op": "has",
+            "found": true
+          },
+          {
+            "op": "delete",
+            "deleted": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "number",
+                  "raw": "9007199254740992"
+                },
+                {
+                  "type": "number",
+                  "raw": "null",
+                  "number": "Infinity"
+                },
+                {
+                  "type": "number",
+                  "raw": "null",
+                  "number": "-Infinity"
+                }
+              ]
+            }
+          },
+          {
+            "op": "snapshot",
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "number",
+                  "raw": "9007199254740992"
+                },
+                {
+                  "type": "number",
+                  "raw": "null",
+                  "number": "Infinity"
+                },
+                {
+                  "type": "number",
+                  "raw": "null",
+                  "number": "-Infinity"
+                }
+              ]
+            }
+          }
+        ],
+        "finalBytes": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+      },
+      "sourceRaw": "artifacts/go-parity/transcript-uuid-mutable-set-next/source/runs/2026-10-02T21-16-56.240Z/rounded-overflow-number-1-raw.json",
+      "sourceRawSHA": "867e4ee48ea0b2ced5dfa839bc101756a93efde977a3f70414a2300820190bbe"
+    },
+    {
+      "name": "utf16-and-escaped-string",
+      "original": {
+        "profile": {
+          "name": "utf16-and-escaped-string",
+          "steps": [
+            {
+              "op": "load",
+              "slot": "a",
+              "probe": {
+                "raw": "\"old\""
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "\"\\ud800\""
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "\"\\udc00\""
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "\"a\""
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "\"\\u0061\""
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "\"\""
+              }
+            },
+            {
+              "op": "delete",
+              "slot": "a",
+              "value": {
+                "raw": "\"\\ud800\""
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "\"\\ud800\""
+              }
+            },
+            {
+              "op": "snapshot",
+              "slot": "a"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "load",
+            "promise": 1,
+            "found": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"\\ud800\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"\\ud800\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"\\udc00\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"\\ud800\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"\\udc00\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"a\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"\\ud800\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"\\udc00\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"a\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"\\ud800\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"\\udc00\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"a\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "delete",
+            "deleted": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"\\udc00\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"a\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"\\udc00\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"a\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"\\ud800\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "snapshot",
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"\\udc00\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"a\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"\\ud800\""
+                }
+              ]
+            }
+          }
+        ],
+        "finalBytes": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+      },
+      "sourceRaw": "artifacts/go-parity/transcript-uuid-mutable-set-next/source/runs/2026-10-02T21-16-56.240Z/utf16-and-escaped-string-1-raw.json",
+      "sourceRawSHA": "d84df8621ef490f77056e31d96234d0c19e2065a8b955b2049431eba8650093f"
+    },
+    {
+      "name": "delete-absent-clear-same-set",
+      "original": {
+        "profile": {
+          "name": "delete-absent-clear-same-set",
+          "steps": [
+            {
+              "op": "load",
+              "slot": "a",
+              "probe": {
+                "raw": "\"old\""
+              }
+            },
+            {
+              "op": "delete",
+              "slot": "a",
+              "value": {
+                "raw": "\"absent\""
+              }
+            },
+            {
+              "op": "snapshot",
+              "slot": "a"
+            },
+            {
+              "op": "clear-set",
+              "slot": "a"
+            },
+            {
+              "op": "load",
+              "slot": "b",
+              "probe": {
+                "raw": "\"old\""
+              }
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "\"after-clear\""
+              }
+            },
+            {
+              "op": "snapshot",
+              "slot": "b"
+            },
+            {
+              "op": "snapshot",
+              "slot": "a"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "load",
+            "promise": 1,
+            "found": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "delete",
+            "deleted": false,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "snapshot",
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "clear-set",
+            "snapshot": {
+              "set": 1,
+              "keys": []
+            }
+          },
+          {
+            "op": "load",
+            "promise": 1,
+            "found": false,
+            "snapshot": {
+              "set": 1,
+              "keys": []
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"after-clear\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "snapshot",
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"after-clear\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "snapshot",
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"after-clear\""
+                }
+              ]
+            }
+          }
+        ],
+        "finalBytes": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+      },
+      "sourceRaw": "artifacts/go-parity/transcript-uuid-mutable-set-next/source/runs/2026-10-02T21-16-56.240Z/delete-absent-clear-same-set-1-raw.json",
+      "sourceRawSHA": "642cb2438df58c2ee00a8118749391d84ab5f4f6463de6b01c2c5224e8cea2e3"
+    },
+    {
+      "name": "prime-absent-all-branches",
+      "original": {
+        "profile": {
+          "name": "prime-absent-all-branches",
+          "steps": [
+            {
+              "op": "prime"
+            },
+            {
+              "op": "load",
+              "slot": "a",
+              "probe": {
+                "raw": "\"branch-old\""
+              }
+            },
+            {
+              "op": "snapshot",
+              "slot": "a"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"branch-old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:21.000Z\"}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "prime",
+            "cache": {
+              "present": true,
+              "promise": 1,
+              "settled": true,
+              "snapshot": {
+                "set": 1,
+                "keys": [
+                  {
+                    "type": "string",
+                    "raw": "\"old\""
+                  },
+                  {
+                    "type": "string",
+                    "raw": "\"branch-old\""
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "op": "load",
+            "promise": 1,
+            "found": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"branch-old\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "snapshot",
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"branch-old\""
+                }
+              ]
+            }
+          }
+        ],
+        "finalBytes": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"branch-old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:21.000Z\"}\n"
+      },
+      "sourceRaw": "artifacts/go-parity/transcript-uuid-mutable-set-next/source/runs/2026-10-02T21-16-56.240Z/prime-absent-all-branches-1-raw.json",
+      "sourceRawSHA": "b06140303bb829a5fa5d3d62412bdad5d3fdbf8936b03256d8ba97d4c051fd74"
+    },
+    {
+      "name": "prime-existing-not-overwritten",
+      "original": {
+        "profile": {
+          "name": "prime-existing-not-overwritten",
+          "steps": [
+            {
+              "op": "load",
+              "slot": "a",
+              "probe": {
+                "raw": "\"old\""
+              }
+            },
+            {
+              "op": "rewrite",
+              "bytes": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"disk-new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+            },
+            {
+              "op": "prime"
+            },
+            {
+              "op": "load",
+              "slot": "b",
+              "probe": {
+                "raw": "\"old\""
+              }
+            },
+            {
+              "op": "has",
+              "slot": "b",
+              "value": {
+                "raw": "\"disk-new\""
+              }
+            },
+            {
+              "op": "snapshot",
+              "slot": "a"
+            },
+            {
+              "op": "clear-cache"
+            },
+            {
+              "op": "load",
+              "slot": "c",
+              "probe": {
+                "raw": "\"disk-new\""
+              }
+            },
+            {
+              "op": "snapshot",
+              "slot": "c"
+            },
+            {
+              "op": "snapshot",
+              "slot": "a"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "load",
+            "promise": 1,
+            "found": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "rewrite",
+            "cache": {
+              "present": true,
+              "promise": 1,
+              "settled": true,
+              "snapshot": {
+                "set": 1,
+                "keys": [
+                  {
+                    "type": "string",
+                    "raw": "\"old\""
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "op": "prime",
+            "cache": {
+              "present": true,
+              "promise": 1,
+              "settled": true,
+              "snapshot": {
+                "set": 1,
+                "keys": [
+                  {
+                    "type": "string",
+                    "raw": "\"old\""
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "op": "load",
+            "promise": 1,
+            "found": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "has",
+            "found": false
+          },
+          {
+            "op": "snapshot",
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "clear-cache",
+            "cache": {
+              "present": false
+            }
+          },
+          {
+            "op": "load",
+            "promise": 2,
+            "found": true,
+            "snapshot": {
+              "set": 2,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"disk-new\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "snapshot",
+            "snapshot": {
+              "set": 2,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"disk-new\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "snapshot",
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ]
+            }
+          }
+        ],
+        "finalBytes": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"disk-new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+      },
+      "sourceRaw": "artifacts/go-parity/transcript-uuid-mutable-set-next/source/runs/2026-10-02T21-16-56.240Z/prime-existing-not-overwritten-1-raw.json",
+      "sourceRawSHA": "0e8397e98396e19687b0a3c936eeeb8d7dc429251bc745d640801796d638ca68"
+    },
+    {
+      "name": "empty-prime-does-not-cache",
+      "original": {
+        "profile": {
+          "name": "empty-prime-does-not-cache",
+          "steps": [
+            {
+              "op": "prime"
+            },
+            {
+              "op": "cache"
+            },
+            {
+              "op": "load",
+              "slot": "a",
+              "probe": {
+                "raw": "\"old\""
+              }
+            },
+            {
+              "op": "snapshot",
+              "slot": "a"
+            },
+            {
+              "op": "prime"
+            },
+            {
+              "op": "cache"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": ""
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "prime",
+            "cache": {
+              "present": false
+            }
+          },
+          {
+            "op": "cache",
+            "cache": {
+              "present": false
+            }
+          },
+          {
+            "op": "load",
+            "promise": 1,
+            "found": false,
+            "snapshot": {
+              "set": 1,
+              "keys": []
+            }
+          },
+          {
+            "op": "snapshot",
+            "snapshot": {
+              "set": 1,
+              "keys": []
+            }
+          },
+          {
+            "op": "prime",
+            "cache": {
+              "present": true,
+              "promise": 1,
+              "settled": true,
+              "snapshot": {
+                "set": 1,
+                "keys": []
+              }
+            }
+          },
+          {
+            "op": "cache",
+            "cache": {
+              "present": true,
+              "promise": 1,
+              "settled": true,
+              "snapshot": {
+                "set": 1,
+                "keys": []
+              }
+            }
+          }
+        ],
+        "finalBytes": ""
+      },
+      "sourceRaw": "artifacts/go-parity/transcript-uuid-mutable-set-next/source/runs/2026-10-02T21-16-56.240Z/empty-prime-does-not-cache-1-raw.json",
+      "sourceRawSHA": "2e44c861f15c3a71e50b13408577e877196a19626d5bb2e5501519c4d9477f66"
+    },
+    {
+      "name": "all-sidechain-primes-before-null-log",
+      "original": {
+        "profile": {
+          "name": "all-sidechain-primes-before-null-log",
+          "steps": [
+            {
+              "op": "prime"
+            },
+            {
+              "op": "load",
+              "slot": "a",
+              "probe": {
+                "raw": "\"side\""
+              }
+            },
+            {
+              "op": "snapshot",
+              "slot": "a"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"side\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"isSidechain\":true}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "prime",
+            "cache": {
+              "present": true,
+              "promise": 1,
+              "settled": true,
+              "snapshot": {
+                "set": 1,
+                "keys": [
+                  {
+                    "type": "string",
+                    "raw": "\"side\""
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "op": "load",
+            "promise": 1,
+            "found": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"side\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "snapshot",
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"side\""
+                }
+              ]
+            }
+          }
+        ],
+        "finalBytes": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"side\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"isSidechain\":true}\n"
+      },
+      "sourceRaw": "artifacts/go-parity/transcript-uuid-mutable-set-next/source/runs/2026-10-02T21-16-56.240Z/all-sidechain-primes-before-null-log-1-raw.json",
+      "sourceRawSHA": "a8cd7f013be858efffae1e21ac920fd8178d6289cfc4b79b4de449564cd352de"
+    },
+    {
+      "name": "pending-prime-preserves-promise",
+      "original": {
+        "profile": {
+          "name": "pending-prime-preserves-promise",
+          "hold": true,
+          "steps": [
+            {
+              "op": "begin-load",
+              "slot": "a",
+              "probe": {
+                "raw": "\"old\""
+              }
+            },
+            {
+              "op": "held"
+            },
+            {
+              "op": "rewrite",
+              "bytes": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"disk-new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+            },
+            {
+              "op": "prime"
+            },
+            {
+              "op": "cache"
+            },
+            {
+              "op": "release"
+            },
+            {
+              "op": "await-load",
+              "slot": "a"
+            },
+            {
+              "op": "snapshot",
+              "slot": "a"
+            },
+            {
+              "op": "has",
+              "slot": "a",
+              "value": {
+                "raw": "\"disk-new\""
+              }
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "begin-load",
+            "promise": 1
+          },
+          {
+            "op": "held",
+            "held": true,
+            "cache": {
+              "present": true,
+              "promise": 1,
+              "settled": false
+            }
+          },
+          {
+            "op": "rewrite",
+            "cache": {
+              "present": true,
+              "promise": 1,
+              "settled": false
+            }
+          },
+          {
+            "op": "prime",
+            "cache": {
+              "present": true,
+              "promise": 1,
+              "settled": false
+            }
+          },
+          {
+            "op": "cache",
+            "cache": {
+              "present": true,
+              "promise": 1,
+              "settled": false
+            }
+          },
+          {
+            "op": "release",
+            "held": true
+          },
+          {
+            "op": "await-load",
+            "found": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "snapshot",
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "has",
+            "found": false
+          }
+        ],
+        "finalBytes": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"disk-new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+      },
+      "sourceRaw": "artifacts/go-parity/transcript-uuid-mutable-set-next/source/runs/2026-10-02T21-16-56.240Z/pending-prime-preserves-promise-1-raw.json",
+      "sourceRawSHA": "ec343b783c99b8ff20c5d4ec3b9c80f9b87ce82f71842a4569ee284a75369290"
+    },
+    {
+      "name": "clear-pending-keeps-old-set",
+      "original": {
+        "profile": {
+          "name": "clear-pending-keeps-old-set",
+          "hold": true,
+          "steps": [
+            {
+              "op": "begin-load",
+              "slot": "a",
+              "probe": {
+                "raw": "\"old\""
+              }
+            },
+            {
+              "op": "held"
+            },
+            {
+              "op": "clear-cache"
+            },
+            {
+              "op": "rewrite",
+              "bytes": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"disk-new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+            },
+            {
+              "op": "load",
+              "slot": "b",
+              "probe": {
+                "raw": "\"disk-new\""
+              }
+            },
+            {
+              "op": "release"
+            },
+            {
+              "op": "await-load",
+              "slot": "a"
+            },
+            {
+              "op": "add",
+              "slot": "a",
+              "value": {
+                "raw": "\"old-held-added\""
+              }
+            },
+            {
+              "op": "snapshot",
+              "slot": "b"
+            },
+            {
+              "op": "snapshot",
+              "slot": "a"
+            }
+          ]
+        },
+        "sid": "11111111-1111-4111-8111-111111111111",
+        "content": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"old\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+      },
+      "expected": {
+        "rows": [
+          {
+            "op": "begin-load",
+            "promise": 1
+          },
+          {
+            "op": "held",
+            "held": true,
+            "cache": {
+              "present": true,
+              "promise": 1,
+              "settled": false
+            }
+          },
+          {
+            "op": "clear-cache",
+            "cache": {
+              "present": false
+            }
+          },
+          {
+            "op": "rewrite",
+            "cache": {
+              "present": false
+            }
+          },
+          {
+            "op": "load",
+            "promise": 2,
+            "found": true,
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"disk-new\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "release",
+            "held": true
+          },
+          {
+            "op": "await-load",
+            "found": true,
+            "snapshot": {
+              "set": 2,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "add",
+            "same": true,
+            "snapshot": {
+              "set": 2,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"old-held-added\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "snapshot",
+            "snapshot": {
+              "set": 1,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"disk-new\""
+                }
+              ]
+            }
+          },
+          {
+            "op": "snapshot",
+            "snapshot": {
+              "set": 2,
+              "keys": [
+                {
+                  "type": "string",
+                  "raw": "\"old\""
+                },
+                {
+                  "type": "string",
+                  "raw": "\"old-held-added\""
+                }
+              ]
+            }
+          }
+        ],
+        "finalBytes": "{\"parentUuid\":null,\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"original text\"},\"uuid\":\"disk-new\",\"sessionId\":\"11111111-1111-4111-8111-111111111111\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}\n"
+      },
+      "sourceRaw": "artifacts/go-parity/transcript-uuid-mutable-set-next/source/runs/2026-10-02T21-16-56.240Z/clear-pending-keeps-old-set-1-raw.json",
+      "sourceRawSHA": "db0ad0f4d8320f5a76908754c7d00774a974379f93d7cb92213d317cbdd930f4"
+    }
+  ]
+}

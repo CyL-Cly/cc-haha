@@ -1,0 +1,4274 @@
+{
+  "definitions": [
+    {
+      "id": "feishu",
+      "pluginId": "office-feishu@haha-connectors",
+      "packageName": "@larksuite/cli",
+      "version": "1.0.95",
+      "homepage": "https://github.com/larksuite/cli",
+      "credentialMode": "shared",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ]
+    },
+    {
+      "id": "dingtalk",
+      "pluginId": "office-dingtalk@haha-connectors",
+      "packageName": "dingtalk-workspace-cli",
+      "version": "1.0.61",
+      "homepage": "https://gitee.com/DingTalk-Real-AI/dingtalk-workspace-cli",
+      "credentialMode": "isolated",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ]
+    },
+    {
+      "id": "wecom",
+      "pluginId": "office-wecom@haha-connectors",
+      "packageName": "@wecom/cli",
+      "version": "1.2.1",
+      "homepage": "https://github.com/WecomTeam/wecom-cli",
+      "credentialMode": "shared",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64"
+      ]
+    },
+    {
+      "id": "tencent-docs",
+      "pluginId": "office-tencent-docs@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "腾讯文档",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://developer.cloud.tencent.com.cn/mcp/server/11803",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "腾讯文档",
+      "description": "读取和整理在线文档、表格与协作资料。",
+      "category": "office",
+      "capabilities": [
+        "读取和整理在线文档、表格与协作资料。"
+      ],
+      "example": "查找腾讯文档中与项目计划相关的资料。",
+      "requirements": "需要腾讯文档 MCP 访问令牌；仅可访问账号已有权限的文档。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "jinshuju",
+      "pluginId": "office-jinshuju@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "金数据",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://open.jinshuju.net/mcp/oauth/",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "金数据",
+      "description": "查询表单与收集的数据，辅助统计和整理。",
+      "category": "productivity",
+      "capabilities": [
+        "查询表单与收集的数据，辅助统计和整理。"
+      ],
+      "example": "查看金数据中最近收集的问卷结果并整理摘要。",
+      "requirements": "需要金数据账号，通过浏览器授权表单与数据访问权限。"
+    },
+    {
+      "id": "pkulaw",
+      "pluginId": "office-pkulaw@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "北大法宝",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://mcp.pkulaw.com/docs",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "北大法宝",
+      "description": "检索法律法规，追溯法律条文和原始出处。",
+      "category": "legal",
+      "capabilities": [
+        "检索法律法规，追溯法律条文和原始出处。"
+      ],
+      "example": "检索与劳动合同试用期相关的法律条文并注明出处。",
+      "requirements": "需要北大法宝 MCP access token 及相应资料权限；检索结果需核对现行有效性。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "datayes",
+      "pluginId": "office-datayes@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "通联数据",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://mcp.datayes.com/#/manual",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "通联数据",
+      "description": "查询股票行情与金融市场数据，辅助研究。",
+      "category": "finance",
+      "capabilities": [
+        "查询股票行情与金融市场数据，辅助研究。"
+      ],
+      "example": "查询我指定股票的历史行情并整理数据来源。",
+      "requirements": "需要通联数据 MCP Token；数据范围受账号权限和额度限制，企业账户需按服务商要求核验。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "tencent-search",
+      "pluginId": "office-tencent-search@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "腾讯云智能搜索",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://developer.cloud.tencent.com/mcp/server/11764",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "腾讯云智能搜索",
+      "description": "检索网络资料，为研究提供可追溯信息。",
+      "category": "search",
+      "capabilities": [
+        "检索网络资料，为研究提供可追溯信息。"
+      ],
+      "example": "搜索国内低空经济产业发展资料，并整理官方来源。",
+      "requirements": "需要开通腾讯云 WSA 服务并获取 API Key，调用按账号额度与计费规则执行。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "amap",
+      "pluginId": "office-amap@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "高德地图",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://developer.amap.com/api/mcp-server/gettingstarted",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "高德地图",
+      "description": "搜索地点、规划路线，查询天气与出行信息。",
+      "category": "maps",
+      "capabilities": [
+        "搜索地点、规划路线，查询天气与出行信息。"
+      ],
+      "example": "帮我规划从杭州东站到西湖的公共交通路线。",
+      "requirements": "需要高德开放平台 Web 服务 API Key；地图服务按账号权限和配额提供。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "baidu-maps",
+      "pluginId": "office-baidu-maps@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "百度地图",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://lbsyun.baidu.com/docs/ai?title=mcpserver%2Fquickstart",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "百度地图",
+      "description": "地址解析、周边检索与路线规划。",
+      "category": "maps",
+      "capabilities": [
+        "地址解析、周边检索与路线规划。"
+      ],
+      "example": "查询上海虹桥站附近的酒店和交通方式。",
+      "requirements": "需要百度地图开放平台服务器端 AK 及对应服务权限。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "tencent-maps",
+      "pluginId": "office-tencent-maps@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "腾讯地图",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://lbs.qq.com/service/MCPServer/MCPServerGuide/userGuide",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "腾讯地图",
+      "description": "查询位置、距离和路线，辅助出行安排。",
+      "category": "maps",
+      "capabilities": [
+        "查询位置、距离和路线，辅助出行安排。"
+      ],
+      "example": "比较广州南站到广州塔的公共交通与驾车路线。",
+      "requirements": "需要腾讯位置服务 Key，并开通 WebServiceAPI 权限与配额。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "zhipu-search",
+      "pluginId": "office-zhipu-search@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "智谱联网搜索",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://docs.bigmodel.cn/cn/coding-plan/mcp/search-mcp-server",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "智谱联网搜索",
+      "description": "检索中文网页、新闻与实时信息，保留来源。",
+      "category": "search",
+      "capabilities": [
+        "检索中文网页、新闻与实时信息，保留来源。"
+      ],
+      "example": "搜索近期国内新能源汽车政策，并列出原始来源。",
+      "requirements": "需要 GLM Coding Plan 套餐 API Key；团队套餐密钥与平台通用密钥不通用。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "notion",
+      "pluginId": "office-notion@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Notion",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://developers.notion.com/guides/mcp/get-started-with-mcp",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Notion",
+      "description": "搜索工作区资料，整理页面与项目知识。",
+      "category": "office",
+      "capabilities": [
+        "搜索工作区资料，整理页面与项目知识。"
+      ],
+      "example": "查找 Notion 中最近的项目周报并总结进展。",
+      "requirements": "需要 Notion 账号，浏览器授权后仅能访问该账号允许的工作区内容。"
+    },
+    {
+      "id": "linear",
+      "pluginId": "office-linear@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Linear",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://linear.app/docs/mcp",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Linear",
+      "description": "查询问题、项目与迭代，跟进团队任务。",
+      "category": "productivity",
+      "capabilities": [
+        "查询问题、项目与迭代，跟进团队任务。"
+      ],
+      "example": "列出 Linear 中分配给我的未完成问题。",
+      "requirements": "需要 Linear 工作区账号及相应项目访问权限，通过浏览器授权。"
+    },
+    {
+      "id": "github",
+      "pluginId": "office-github@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "GitHub",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://github.com/github/github-mcp-server/blob/main/docs/host-integration.md",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "GitHub",
+      "description": "检索仓库代码、Issue 和 Pull Request。",
+      "category": "development",
+      "capabilities": [
+        "检索仓库代码、Issue 和 Pull Request。"
+      ],
+      "example": "查看我的 GitHub 仓库中等待评审的 Pull Request。",
+      "requirements": "需要 GitHub Personal Access Token；按所需仓库与操作授予权限，组织策略仍然适用。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "context7",
+      "pluginId": "office-context7@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Context7",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://github.com/upstash/context7/blob/master/server.json",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Context7",
+      "description": "查阅软件库的最新文档与用法示例。",
+      "category": "development",
+      "capabilities": [
+        "查阅软件库的最新文档与用法示例。"
+      ],
+      "example": "查找 React useEffect 的官方文档和清理函数示例。",
+      "requirements": "使用官方匿名访问额度；不保证无限调用，额度不足时服务会返回限制。"
+    },
+    {
+      "id": "sentry",
+      "pluginId": "office-sentry@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Sentry",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://mcp.sentry.dev/",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Sentry",
+      "description": "查看异常、追踪问题与应用运行信息。",
+      "category": "development",
+      "capabilities": [
+        "查看异常、追踪问题与应用运行信息。"
+      ],
+      "example": "总结 Sentry 中最近一天新出现的错误。",
+      "requirements": "需要 Sentry 账号及组织、项目权限，通过浏览器授权。"
+    },
+    {
+      "id": "tavily",
+      "pluginId": "office-tavily@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Tavily",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://docs.tavily.com/documentation/mcp",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Tavily",
+      "description": "搜索网页、提取内容，支持资料研究。",
+      "category": "search",
+      "capabilities": [
+        "搜索网页、提取内容，支持资料研究。"
+      ],
+      "example": "研究开源向量数据库的主要差异，并给出来源。",
+      "requirements": "需要 Tavily API Key，调用按该账号订阅与额度计费。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "exa",
+      "pluginId": "office-exa@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Exa",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://exa.ai/docs/reference/exa-mcp",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Exa",
+      "description": "搜索网页与代码资料，发现相关信息。",
+      "category": "search",
+      "capabilities": [
+        "搜索网页与代码资料，发现相关信息。"
+      ],
+      "example": "寻找关于分布式系统可观测性的技术文章。",
+      "requirements": "使用官方基础匿名访问额度；可用工具和次数由服务商决定。"
+    },
+    {
+      "id": "supabase",
+      "pluginId": "office-supabase@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Supabase",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://supabase.com/docs/guides/ai-tools/mcp",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Supabase",
+      "description": "查看项目、数据库结构和开发资料。",
+      "category": "data",
+      "capabilities": [
+        "查看项目、数据库结构和开发资料。"
+      ],
+      "example": "查看 Supabase 项目的数据表结构，不修改数据。",
+      "requirements": "需要 Supabase 账号及目标组织、项目权限；数据库写操作仍需明确任务授权。"
+    },
+    {
+      "id": "huggingface",
+      "pluginId": "office-huggingface@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Hugging Face",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://github.com/huggingface/hf-mcp-server",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Hugging Face",
+      "description": "发现模型、数据集与机器学习研究资源。",
+      "category": "data",
+      "capabilities": [
+        "发现模型、数据集与机器学习研究资源。"
+      ],
+      "example": "寻找适合中文文本分类的公开模型与数据集。",
+      "requirements": "需要 Hugging Face 访问令牌；检索建议仅授予 read 权限，计算任务可能另行收费。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "canva",
+      "pluginId": "office-canva@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Canva",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://www.canva.dev/docs/mcp/",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Canva",
+      "description": "搜索和整理设计素材，协作处理设计内容。",
+      "category": "design",
+      "capabilities": [
+        "搜索和整理设计素材，协作处理设计内容。"
+      ],
+      "example": "查找 Canva 中最近的品牌设计素材。",
+      "requirements": "每位用户使用自己的 Canva 账号授权；部分能力受订阅和团队权限限制。"
+    },
+    {
+      "id": "figma",
+      "pluginId": "office-figma@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Figma",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://developers.figma.com/docs/figma-mcp-server/remote-server-installation/",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Figma",
+      "description": "读取设计上下文，理解组件与界面结构。",
+      "category": "design",
+      "capabilities": [
+        "读取设计上下文，理解组件与界面结构。"
+      ],
+      "example": "分析我提供的 Figma 设计链接中的组件结构。",
+      "requirements": "需要 Figma 账号授权；设计访问权限、席位和套餐决定可用工具及次数。"
+    },
+    {
+      "id": "stripe",
+      "pluginId": "office-stripe@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Stripe",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://docs.stripe.com/mcp",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Stripe",
+      "description": "查询客户、账单和支付业务资料。",
+      "category": "finance",
+      "capabilities": [
+        "查询客户、账单和支付业务资料。"
+      ],
+      "example": "查看 Stripe 中最近的账单概况，不创建支付或退款。",
+      "requirements": "需要 Stripe 账号授权。该官方服务为预览版；付款、退款等写操作需要明确任务授权。"
+    },
+    {
+      "id": "qingflow",
+      "pluginId": "office-qingflow@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "轻流",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://help-center.qingflow.com/docs/product-guides/qingflow-ai/atgqmmsnnnvogbo3/",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "轻流",
+      "description": "查询轻流工作区应用与业务数据，辅助流程协作。",
+      "category": "productivity",
+      "capabilities": [
+        "查询轻流工作区应用与业务数据，辅助流程协作。"
+      ],
+      "example": "查看轻流工作区中我有权限的应用，并整理待处理事项。",
+      "requirements": "需要轻流账号，通过浏览器授权；可访问范围继承工作区和应用权限，具体能力受套餐限制。"
+    },
+    {
+      "id": "qcc",
+      "pluginId": "office-qcc@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "企查查",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://agent.qcc.com/guide",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "企查查",
+      "description": "检索企业主体信息，核验工商登记与关联资料。",
+      "category": "data",
+      "capabilities": [
+        "检索企业主体信息，核验工商登记与关联资料。"
+      ],
+      "example": "查询我指定企业的工商登记信息，并列出来源。",
+      "requirements": "需要企查查 Agent 平台 API Key；本连接器仅接入企业基础信息服务，其他专题需另行接入，查询受账号权限与积分限制。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "xmind",
+      "pluginId": "office-xmind@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Xmind",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://xmind.cn/user-guide/xmind-mcp",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Xmind",
+      "description": "读取与整理在线思维导图，辅助规划和知识归纳。",
+      "category": "design",
+      "capabilities": [
+        "读取与整理在线思维导图，辅助规划和知识归纳。"
+      ],
+      "example": "列出 Xmind 最近打开的在线思维导图，读取我选择的导图并总结。",
+      "requirements": "需要 Xmind 国内版账号，通过浏览器授权；仅访问已授权团队的在线导图，编辑能力受账号套餐限制。"
+    },
+    {
+      "id": "kuaicha",
+      "pluginId": "office-kuaicha@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "同花顺快查",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://open.kuaicha365.com/mcp/",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "同花顺快查",
+      "description": "检索企业工商、经营和风险资料，辅助主体核验。",
+      "category": "data",
+      "capabilities": [
+        "检索企业工商、经营和风险资料，辅助主体核验。"
+      ],
+      "example": "查询我指定企业的工商登记与经营异常信息，并区分已查到和缺失的数据。",
+      "requirements": "需要快查开放平台 API Key；服务仅限大陆 IP 访问，查询受账号额度与权限限制。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "qveris",
+      "pluginId": "office-qveris@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "QVeris",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://qveris.cn/hosted-mcp",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "QVeris",
+      "description": "发现和查阅可调用的数据工具，辅助信息研究。",
+      "category": "search",
+      "capabilities": [
+        "发现和查阅可调用的数据工具，辅助信息研究。"
+      ],
+      "example": "查找 QVeris 中适合企业资料检索的工具，并说明所需参数和费用条件，暂不执行。",
+      "requirements": "需要 QVeris API Key；工具范围与调用费用由服务商决定，更换密钥后需重新建立连接。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "listinggood",
+      "pluginId": "office-listinggood@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "ListingGood",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://listinggood.cn/connect",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "ListingGood",
+      "description": "分析亚马逊商品文案，辅助合规检查和内容优化。",
+      "category": "productivity",
+      "capabilities": [
+        "分析亚马逊商品文案，辅助合规检查和内容优化。"
+      ],
+      "example": "检查我提供的亚马逊商品文案，给出合规与可读性改进建议。",
+      "requirements": "需要 ListingGood 国内站 API Key；国内站与海外站密钥不通用，付费工具按账号额度执行。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "bazhuayu",
+      "pluginId": "office-bazhuayu@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "八爪鱼",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://www.bazhuayu.com/docs/zh/mcp/guides/clients",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "八爪鱼",
+      "description": "查找采集模板、查看云任务状态与已采集数据。",
+      "category": "data",
+      "capabilities": [
+        "查找采集模板、查看云任务状态与已采集数据。"
+      ],
+      "example": "列出八爪鱼数据中心支持的平台，不创建或启动采集任务。",
+      "requirements": "需要八爪鱼账户中心 API Key；仅支持云端采集能力，运行任务可能消耗余额，部分模板需指定套餐。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "variflight",
+      "pluginId": "office-variflight@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "飞常准",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://app.variflight.com/html/mcp/",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "飞常准",
+      "description": "查询航班动态、机场信息与航旅行程。",
+      "category": "maps",
+      "capabilities": [
+        "查询航班动态、机场信息与航旅行程。"
+      ],
+      "example": "查询我指定航班的计划时间与当前动态，并注明查询时间。",
+      "requirements": "需要在飞常准 MCP 开放平台登录并生成 MCP Key；个人行程须有相应账号权限，数据与调用额度按服务商规定提供。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "jufa",
+      "pluginId": "office-jufa@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "聚法案例",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://www.jufaai.com/agent",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "聚法案例",
+      "description": "检索司法案例，辅助类案研究与裁判观点整理。",
+      "category": "legal",
+      "capabilities": [
+        "检索司法案例，辅助类案研究与裁判观点整理。"
+      ],
+      "example": "检索建设工程合同纠纷案例，整理案号、法院及裁判观点并注明出处。",
+      "requirements": "需要聚法智能体数据平台 API Key；本连接器接入案例研究服务，法规等其他专题需另行接入，数据受套餐与调用额度限制。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "sorftime",
+      "pluginId": "office-sorftime@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Sorftime",
+      "collection": "services",
+      "region": "china",
+      "homepage": "https://www.sorftime.com/zh-CN/mcp/Codex",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Sorftime",
+      "description": "查询跨境电商市场、商品与关键词数据。",
+      "category": "data",
+      "capabilities": [
+        "查询跨境电商市场、商品与关键词数据。"
+      ],
+      "example": "查询我指定商品的市场趋势并注明站点、时间范围与数据来源。",
+      "requirements": "需要开通 Sorftime MCP 服务并获取 Account-SK；平台、站点及查询次数受所购服务与额度限制。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "intercom",
+      "pluginId": "office-intercom@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Intercom",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://developers.intercom.com/docs/guides/mcp",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Intercom",
+      "description": "检索客户对话、联系人和帮助中心资料。",
+      "category": "office",
+      "capabilities": [
+        "检索客户对话、联系人和帮助中心资料。"
+      ],
+      "example": "查找最近客户反馈中的常见问题并汇总。",
+      "requirements": "目前仅支持美国托管工作区；需要具有联系人、对话和文章权限的访问令牌。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "neon",
+      "pluginId": "office-neon@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Neon",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://neon.com/docs/ai/neon-mcp-server",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Neon",
+      "description": "查看数据库项目、分支与开发数据结构。",
+      "category": "data",
+      "capabilities": [
+        "查看数据库项目、分支与开发数据结构。"
+      ],
+      "example": "查看 Neon 开发项目的数据库结构，不修改数据。",
+      "requirements": "需要 Neon API Key 和项目权限；官方建议优先用于开发和测试数据库。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "cloudflare",
+      "pluginId": "office-cloudflare@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Cloudflare",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://developers.cloudflare.com/agents/model-context-protocol/cloudflare/servers-for-cloudflare/",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Cloudflare",
+      "description": "查询和管理网站、网络及云开发资源。",
+      "category": "development",
+      "capabilities": [
+        "查询和管理网站、网络及云开发资源。"
+      ],
+      "example": "查看我的 Cloudflare 资源并汇总当前配置。",
+      "requirements": "需要用户或账户 API Token；按所需资源授予权限，部署和配置变更需明确任务授权。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "firecrawl",
+      "pluginId": "office-firecrawl@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Firecrawl",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://github.com/firecrawl/firecrawl-mcp-server",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Firecrawl",
+      "description": "搜索网页、提取页面并整理研究资料。",
+      "category": "search",
+      "capabilities": [
+        "搜索网页、提取页面并整理研究资料。"
+      ],
+      "example": "搜索关于浏览器自动化的技术资料并保留来源。",
+      "requirements": "需要 Firecrawl API Key；调用按账户额度计费，密钥通过安全请求头发送。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "clickup",
+      "pluginId": "office-clickup@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "ClickUp",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://developer.clickup.com/docs/connect-an-ai-assistant-to-clickups-mcp-server-1",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "ClickUp",
+      "description": "查找项目、任务和团队工作资料。",
+      "category": "productivity",
+      "capabilities": [
+        "查找项目、任务和团队工作资料。"
+      ],
+      "example": "列出 ClickUp 中分配给我的未完成任务。",
+      "requirements": "需要 ClickUp 账号及工作区权限，通过浏览器授权；服务仍为公开测试版。"
+    },
+    {
+      "id": "miro",
+      "pluginId": "office-miro@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Miro",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://developers.miro.com/docs/miro-mcp-server-frequently-asked-questions",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Miro",
+      "description": "查阅协作白板，整理设计与讨论内容。",
+      "category": "design",
+      "capabilities": [
+        "查阅协作白板，整理设计与讨论内容。"
+      ],
+      "example": "总结我指定 Miro 白板中的主要想法和待办。",
+      "requirements": "需要 Miro 账号和白板访问权限，组织管理员可能需要启用 MCP。"
+    },
+    {
+      "id": "postman",
+      "pluginId": "office-postman@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Postman",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://learning.postman.com/docs/reference/postman-api/postman-mcp-server/postman-mcp-remote-server",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Postman",
+      "description": "查询 API 工作区、集合与开发资料。",
+      "category": "development",
+      "capabilities": [
+        "查询 API 工作区、集合与开发资料。"
+      ],
+      "example": "查找 Postman 工作区中与用户登录相关的 API。",
+      "requirements": "使用美国区域 Postman 账号浏览器授权；此条目采用精简工具集，欧盟区域需单独 API Key 配置。"
+    },
+    {
+      "id": "render",
+      "pluginId": "office-render@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Render",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://render.com/docs/mcp-server",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Render",
+      "description": "查看部署服务、数据库、运行日志与指标。",
+      "category": "development",
+      "capabilities": [
+        "查看部署服务、数据库、运行日志与指标。"
+      ],
+      "example": "查看 Render 服务最近的运行日志并总结异常。",
+      "requirements": "需要 Render API Key；先指定工作区。密钥可访问本人所属工作区，部署等写操作需明确任务授权。",
+      "setupFields": [
+        {
+          "key": "apiKey",
+          "label": "API Key / Token",
+          "secret": true
+        }
+      ]
+    },
+    {
+      "id": "airtable",
+      "pluginId": "office-airtable@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Airtable",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://support.airtable.com/articles/9897799762-using-the-airtable-mcp-server",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Airtable",
+      "description": "查询数据表、记录与团队协作资料。",
+      "category": "data",
+      "capabilities": [
+        "查询数据表、记录与团队协作资料。"
+      ],
+      "example": "查看 Airtable 中最近更新的项目记录。",
+      "requirements": "通过浏览器授权目标工作区或数据表；企业管理员可能限制客户端访问。"
+    },
+    {
+      "id": "atlassian",
+      "pluginId": "office-atlassian@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Atlassian",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://atlassian.github.io/atlassian-mcp-server/",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Atlassian",
+      "description": "检索 Jira、Confluence 与项目协作资料。",
+      "category": "productivity",
+      "capabilities": [
+        "检索 Jira、Confluence 与项目协作资料。"
+      ],
+      "example": "汇总 Jira 中分配给我的问题并关联 Confluence 资料。",
+      "requirements": "需要 Atlassian Cloud 账号及产品权限，通过浏览器授权；部分产品和操作需要管理员启用。"
+    },
+    {
+      "id": "webflow",
+      "pluginId": "office-webflow@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Webflow",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://developers.webflow.com/mcp/reference/getting-started",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Webflow",
+      "description": "读取网站结构、CMS 内容与设计资料。",
+      "category": "design",
+      "capabilities": [
+        "读取网站结构、CMS 内容与设计资料。"
+      ],
+      "example": "查看我的 Webflow 网站中的 CMS 集合和字段。",
+      "requirements": "需要至少一个可访问站点的 Webflow 账号；浏览器授权自动安装 MCP Bridge App，设计器操作需桥接应用连接。"
+    },
+    {
+      "id": "todoist",
+      "pluginId": "office-todoist@haha-connectors",
+      "version": "1.0.0",
+      "packageName": "Todoist",
+      "collection": "services",
+      "region": "global",
+      "homepage": "https://developer.todoist.com/api/v1/",
+      "credentialMode": "isolated",
+      "transport": "mcp",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ],
+      "displayName": "Todoist",
+      "description": "查看待办、项目和个人任务安排。",
+      "category": "productivity",
+      "capabilities": [
+        "查看待办、项目和个人任务安排。"
+      ],
+      "example": "列出 Todoist 中今天到期和已经逾期的任务。",
+      "requirements": "需要 Todoist 账号，通过浏览器授权任务和项目访问权限。"
+    },
+    {
+      "id": "hyperframes",
+      "displayName": "HyperFrames",
+      "description": "用 HTML 和动画代码制作视频、字幕与产品演示。",
+      "category": "design",
+      "capabilities": [
+        "用 HTML 和动画代码制作视频、字幕与产品演示。"
+      ],
+      "example": "用 HyperFrames 为产品制作一段 20 秒的介绍视频。",
+      "requirements": "安装固定版本的 5 项完整技能与参考资料，不安装渲染器。实际渲染需要 Node.js 22+、HyperFrames CLI 与 FFmpeg；语音和在线素材服务可能需要单独配置及付费。",
+      "collection": "tools",
+      "region": "global",
+      "transport": "skills",
+      "credentialMode": "isolated",
+      "pluginId": "office-hyperframes@haha-connectors",
+      "packageName": "HyperFrames",
+      "version": "0.4.0",
+      "homepage": "https://github.com/heygen-com/hyperframes/tree/60780774bb1896373947fb3e3197117501f53a22",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ]
+    },
+    {
+      "id": "obsidian",
+      "displayName": "Obsidian 工具包",
+      "description": "编辑 Markdown 笔记、Canvas 画布与 Bases 数据视图。",
+      "category": "productivity",
+      "capabilities": [
+        "编辑 Markdown 笔记、Canvas 画布与 Bases 数据视图。"
+      ],
+      "example": "把这些项目笔记整理为 Obsidian Canvas 关系图。",
+      "requirements": "本地文件编辑无需云端账号。CLI 操作需要安装并运行 Obsidian；网页内容提取等可选功能需要相应 CLI。本安装仅提供技能文件。",
+      "collection": "tools",
+      "region": "global",
+      "transport": "skills",
+      "credentialMode": "isolated",
+      "pluginId": "office-obsidian@haha-connectors",
+      "packageName": "Obsidian 工具包",
+      "version": "1.0.1",
+      "homepage": "https://github.com/kepano/obsidian-skills/tree/8ccef29ae8624eccc734e77ced4a6e54baf5d83a",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ]
+    },
+    {
+      "id": "drawio",
+      "displayName": "draw.io 图表",
+      "description": "生成可编辑的架构图、流程图和关系图。",
+      "category": "design",
+      "capabilities": [
+        "生成可编辑的架构图、流程图和关系图。"
+      ],
+      "example": "把这段系统说明整理成可编辑的 draw.io 架构图。",
+      "requirements": "可直接编写 .drawio XML 文件；Mermaid 转换、自动布局及图片导出需要 draw.io 桌面版 CLI。安装技能不会安装桌面应用。",
+      "collection": "tools",
+      "region": "global",
+      "transport": "skills",
+      "credentialMode": "isolated",
+      "pluginId": "office-drawio@haha-connectors",
+      "packageName": "draw.io 图表",
+      "version": "1.1.0",
+      "homepage": "https://github.com/jgraph/drawio-mcp/tree/14b318b19cc37b159f841227b9d11fbd18ce18ea",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ]
+    },
+    {
+      "id": "frontend-design",
+      "displayName": "前端界面设计",
+      "description": "为网页和应用编写具有清晰视觉层次的前端界面。",
+      "category": "design",
+      "capabilities": [
+        "为网页和应用编写具有清晰视觉层次的前端界面。"
+      ],
+      "example": "为我的知识管理应用设计并实现首页。",
+      "requirements": "安装 Anthropic 的前端设计技能。预览与构建需要目标项目的前端依赖和运行环境；本技能不提供托管或图片生成服务。",
+      "collection": "tools",
+      "region": "global",
+      "transport": "skills",
+      "credentialMode": "isolated",
+      "pluginId": "office-frontend-design@haha-connectors",
+      "packageName": "前端界面设计",
+      "version": "1.0.0",
+      "homepage": "https://github.com/anthropics/skills/tree/34040c9c568585f6929bedeaad110ad08f079624",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ]
+    },
+    {
+      "id": "canvas-design",
+      "displayName": "海报与视觉画布",
+      "description": "创作海报、静态视觉作品与 PDF 画布，附带字体。",
+      "category": "design",
+      "capabilities": [
+        "创作海报、静态视觉作品与 PDF 画布，附带字体。"
+      ],
+      "example": "设计一张科技活动海报，并导出为 PDF。",
+      "requirements": "安装完整设计技能、字体及对应许可。生成图像或 PDF 需要 Python 和相应绘图依赖；不会自动安装这些运行库。",
+      "collection": "tools",
+      "region": "global",
+      "transport": "skills",
+      "credentialMode": "isolated",
+      "pluginId": "office-canvas-design@haha-connectors",
+      "packageName": "海报与视觉画布",
+      "version": "1.0.0",
+      "homepage": "https://github.com/anthropics/skills/tree/34040c9c568585f6929bedeaad110ad08f079624",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ]
+    },
+    {
+      "id": "algorithmic-art",
+      "displayName": "生成式艺术",
+      "description": "用 p5.js 创建可调参数的算法艺术与交互画面。",
+      "category": "design",
+      "capabilities": [
+        "用 p5.js 创建可调参数的算法艺术与交互画面。"
+      ],
+      "example": "制作一个可调整颜色与密度的流场艺术页面。",
+      "requirements": "包含示例模板和参考代码。预览需要浏览器及 p5.js 资源；安装不执行脚本，也不调用生成模型。",
+      "collection": "tools",
+      "region": "global",
+      "transport": "skills",
+      "credentialMode": "isolated",
+      "pluginId": "office-algorithmic-art@haha-connectors",
+      "packageName": "生成式艺术",
+      "version": "1.0.0",
+      "homepage": "https://github.com/anthropics/skills/tree/34040c9c568585f6929bedeaad110ad08f079624",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ]
+    },
+    {
+      "id": "webapp-testing",
+      "displayName": "网页测试工具包",
+      "description": "使用 Playwright 检查本地网页、交互行为与截图。",
+      "category": "development",
+      "capabilities": [
+        "使用 Playwright 检查本地网页、交互行为与截图。"
+      ],
+      "example": "检查本地应用的登录表单校验和页面布局。",
+      "requirements": "包含测试技能、Python 辅助脚本及示例。实际运行需要 Python、Playwright 和浏览器，以及待测应用；安装不会自动下载浏览器。",
+      "collection": "tools",
+      "region": "global",
+      "transport": "skills",
+      "credentialMode": "isolated",
+      "pluginId": "office-webapp-testing@haha-connectors",
+      "packageName": "网页测试工具包",
+      "version": "1.0.0",
+      "homepage": "https://github.com/anthropics/skills/tree/34040c9c568585f6929bedeaad110ad08f079624",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ]
+    },
+    {
+      "id": "mcp-builder",
+      "displayName": "MCP 开发工具包",
+      "description": "构建与评估 MCP 服务，提供 TypeScript 和 Python 参考。",
+      "category": "development",
+      "capabilities": [
+        "构建与评估 MCP 服务，提供 TypeScript 和 Python 参考。"
+      ],
+      "example": "为我们的内部知识库设计一个 MCP 服务。",
+      "requirements": "包含协议设计参考和评估脚本。开发需 Node.js 或 Python 及 MCP SDK；模型评估、第三方 API 使用需用户自行配置凭据，可能产生费用。",
+      "collection": "tools",
+      "region": "global",
+      "transport": "skills",
+      "credentialMode": "isolated",
+      "pluginId": "office-mcp-builder@haha-connectors",
+      "packageName": "MCP 开发工具包",
+      "version": "1.0.0",
+      "homepage": "https://github.com/anthropics/skills/tree/34040c9c568585f6929bedeaad110ad08f079624",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ]
+    },
+    {
+      "id": "remotion",
+      "displayName": "Remotion",
+      "description": "用 React 制作程序化视频，涵盖动画、音频、字幕和渲染。",
+      "category": "design",
+      "capabilities": [
+        "用 React 制作程序化视频，涵盖动画、音频、字幕和渲染。"
+      ],
+      "example": "用 Remotion 制作一段带字幕和配乐的 20 秒产品介绍视频。",
+      "requirements": "安装 Remotion 官方的 12 项技能及参考资料，不安装 Remotion 运行库或渲染器。创建和渲染视频需要目标项目依赖、Node.js 与浏览器；Remotion 运行库适用单独的许可条款。",
+      "collection": "tools",
+      "region": "global",
+      "transport": "skills",
+      "credentialMode": "isolated",
+      "pluginId": "office-remotion@haha-connectors",
+      "packageName": "Remotion",
+      "version": "4.0.529",
+      "homepage": "https://github.com/remotion-dev/codex-plugin/tree/0e97f3ec3f52692460f3a57d0e3babcfc86f64d5",
+      "platforms": [
+        "darwin-arm64",
+        "darwin-x64",
+        "win32-x64",
+        "win32-arm64"
+      ]
+    }
+  ],
+  "remote": [
+    {
+      "id": "tencent-docs",
+      "pluginId": "office-tencent-docs@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://docs.qq.com/openapi/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "Authorization"
+      }
+    },
+    {
+      "id": "jinshuju",
+      "pluginId": "office-jinshuju@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://jinshuju.net/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "pkulaw",
+      "pluginId": "office-pkulaw@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://apim-gateway.pkulaw.com/mcp-law-search-service",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "Authorization",
+        "prefix": "Bearer "
+      }
+    },
+    {
+      "id": "datayes",
+      "pluginId": "office-datayes@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://dataapi-mcp-server.datayes.com/stock-mkt/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "Authorization",
+        "prefix": "Bearer "
+      }
+    },
+    {
+      "id": "tencent-search",
+      "pluginId": "office-tencent-search@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://api.wsa.cloud.tencent.com/Mcp",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "Authorization",
+        "prefix": "Bearer "
+      }
+    },
+    {
+      "id": "amap",
+      "pluginId": "office-amap@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.amap.com/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "query",
+        "name": "key"
+      }
+    },
+    {
+      "id": "baidu-maps",
+      "pluginId": "office-baidu-maps@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.map.baidu.com/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "query",
+        "name": "ak"
+      }
+    },
+    {
+      "id": "tencent-maps",
+      "pluginId": "office-tencent-maps@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.map.qq.com/mcp?format=0",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "query",
+        "name": "key"
+      }
+    },
+    {
+      "id": "zhipu-search",
+      "pluginId": "office-zhipu-search@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://open.bigmodel.cn/api/mcp/web_search_prime/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "Authorization",
+        "prefix": "Bearer "
+      }
+    },
+    {
+      "id": "notion",
+      "pluginId": "office-notion@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.notion.com/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "linear",
+      "pluginId": "office-linear@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.linear.app/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "github",
+      "pluginId": "office-github@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://api.githubcopilot.com/mcp/",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "Authorization",
+        "prefix": "Bearer "
+      }
+    },
+    {
+      "id": "context7",
+      "pluginId": "office-context7@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.context7.com/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "none"
+      }
+    },
+    {
+      "id": "sentry",
+      "pluginId": "office-sentry@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.sentry.dev/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "tavily",
+      "pluginId": "office-tavily@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.tavily.com/mcp/",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "query",
+        "name": "tavilyApiKey"
+      }
+    },
+    {
+      "id": "exa",
+      "pluginId": "office-exa@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.exa.ai/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "none"
+      }
+    },
+    {
+      "id": "supabase",
+      "pluginId": "office-supabase@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.supabase.com/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "huggingface",
+      "pluginId": "office-huggingface@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://huggingface.co/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "Authorization",
+        "prefix": "Bearer "
+      }
+    },
+    {
+      "id": "canva",
+      "pluginId": "office-canva@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.canva.com/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "figma",
+      "pluginId": "office-figma@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.figma.com/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "stripe",
+      "pluginId": "office-stripe@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.stripe.com",
+      "transport": "http",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "qingflow",
+      "pluginId": "office-qingflow@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.qingflow.com/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "qcc",
+      "pluginId": "office-qcc@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://agent.qcc.com/mcp/company/stream",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "Authorization",
+        "prefix": "Bearer "
+      }
+    },
+    {
+      "id": "xmind",
+      "pluginId": "office-xmind@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://app.xmind.cn/api/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "kuaicha",
+      "pluginId": "office-kuaicha@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://bizveris.kuaicha365.com/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "open-authorization",
+        "prefix": "Bearer "
+      }
+    },
+    {
+      "id": "qveris",
+      "pluginId": "office-qveris@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.qveris.cn/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "Authorization",
+        "prefix": "Bearer "
+      }
+    },
+    {
+      "id": "listinggood",
+      "pluginId": "office-listinggood@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://listinggood.cn/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "Authorization",
+        "prefix": "Bearer "
+      }
+    },
+    {
+      "id": "bazhuayu",
+      "pluginId": "office-bazhuayu@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.bazhuayu.com",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "x-api-key"
+      }
+    },
+    {
+      "id": "variflight",
+      "pluginId": "office-variflight@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://c-gw.variflight.com/chat_message/mcp/api",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "Authorization",
+        "prefix": "Bearer "
+      }
+    },
+    {
+      "id": "jufa",
+      "pluginId": "office-jufa@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://www.jufaai.com/mcp/case",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "Authorization",
+        "prefix": "Bearer "
+      }
+    },
+    {
+      "id": "sorftime",
+      "pluginId": "office-sorftime@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.sorftime.com/",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "Authorization",
+        "prefix": "Bearer "
+      }
+    },
+    {
+      "id": "intercom",
+      "pluginId": "office-intercom@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.intercom.com/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "Authorization",
+        "prefix": "Bearer "
+      }
+    },
+    {
+      "id": "neon",
+      "pluginId": "office-neon@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.neon.tech/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "Authorization",
+        "prefix": "Bearer "
+      }
+    },
+    {
+      "id": "cloudflare",
+      "pluginId": "office-cloudflare@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.cloudflare.com/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "Authorization",
+        "prefix": "Bearer "
+      }
+    },
+    {
+      "id": "firecrawl",
+      "pluginId": "office-firecrawl@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.firecrawl.dev/v2/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "Authorization",
+        "prefix": "Bearer "
+      }
+    },
+    {
+      "id": "clickup",
+      "pluginId": "office-clickup@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.clickup.com/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "miro",
+      "pluginId": "office-miro@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.miro.com",
+      "transport": "http",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "postman",
+      "pluginId": "office-postman@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.postman.com/minimal",
+      "transport": "http",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "render",
+      "pluginId": "office-render@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.render.com/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "api-key",
+        "in": "header",
+        "name": "Authorization",
+        "prefix": "Bearer "
+      }
+    },
+    {
+      "id": "airtable",
+      "pluginId": "office-airtable@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.airtable.com/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "atlassian",
+      "pluginId": "office-atlassian@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.atlassian.com/v2/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "webflow",
+      "pluginId": "office-webflow@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://mcp.webflow.com/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "oauth"
+      }
+    },
+    {
+      "id": "todoist",
+      "pluginId": "office-todoist@haha-connectors",
+      "version": "1.0.0",
+      "endpoint": "https://ai.todoist.net/mcp",
+      "transport": "http",
+      "auth": {
+        "type": "oauth"
+      }
+    }
+  ],
+  "skills": [
+    {
+      "id": "hyperframes",
+      "version": "0.4.0",
+      "repository": "heygen-com/hyperframes",
+      "commit": "60780774bb1896373947fb3e3197117501f53a22",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "source": "LICENSE",
+          "target": "LICENSE",
+          "integrity": "sha256-4259155fb06f127687ee7b0a8a3682d45132db0f2da26cbc0b7a2d1e796436b8"
+        },
+        {
+          "source": "skills/gsap/SKILL.md",
+          "target": "skills/gsap/SKILL.md",
+          "integrity": "sha256-730476ba02cc56c8a59b3e4a897801923f463289cd386bccb56d01833be4441f"
+        },
+        {
+          "source": "skills/gsap/references/effects.md",
+          "target": "skills/gsap/references/effects.md",
+          "integrity": "sha256-e4a3e157c746963d341d7fb9a5a721ff5952b51a52a1d79843a749a8de8b6693"
+        },
+        {
+          "source": "skills/gsap/scripts/extract-audio-data.py",
+          "target": "skills/gsap/scripts/extract-audio-data.py",
+          "integrity": "sha256-7709b60d42730fc93a348c205ab565158d240b70051d109fcc844b215d56fa4f"
+        },
+        {
+          "source": "skills/hyperframes-cli/SKILL.md",
+          "target": "skills/hyperframes-cli/SKILL.md",
+          "integrity": "sha256-e4c9c24005ed5da37d0a58dad313c95ef07a0547c7c664825a4c7ea0f7416fab"
+        },
+        {
+          "source": "skills/hyperframes-registry/SKILL.md",
+          "target": "skills/hyperframes-registry/SKILL.md",
+          "integrity": "sha256-0248bfb9968d53ea8f9e4b5f7f5a8eb9e72f21108022580f7eba2fba7e26b234"
+        },
+        {
+          "source": "skills/hyperframes-registry/examples/add-block.md",
+          "target": "skills/hyperframes-registry/examples/add-block.md",
+          "integrity": "sha256-0e3353755c4ef55e53570d1266a4a43b2c5aef9bbe41276430e38cfa6580b83a"
+        },
+        {
+          "source": "skills/hyperframes-registry/examples/add-component.md",
+          "target": "skills/hyperframes-registry/examples/add-component.md",
+          "integrity": "sha256-d06992d31eec617a91f5c34630c9274c52dd07898bd24f10a869d0d1cab5af29"
+        },
+        {
+          "source": "skills/hyperframes-registry/references/demo-html-pattern.md",
+          "target": "skills/hyperframes-registry/references/demo-html-pattern.md",
+          "integrity": "sha256-dfc50cd33eff2c2be75437786fc3e851ab0085f7d453fb35b3380ecf9a6e9f04"
+        },
+        {
+          "source": "skills/hyperframes-registry/references/discovery.md",
+          "target": "skills/hyperframes-registry/references/discovery.md",
+          "integrity": "sha256-fdc924e4b9103d66880317e75bdc54e842713460ed64a7fd74d891b4b64097d5"
+        },
+        {
+          "source": "skills/hyperframes-registry/references/install-locations.md",
+          "target": "skills/hyperframes-registry/references/install-locations.md",
+          "integrity": "sha256-83793e7d6aeea9a751755e4bd23ea48182ff9af082287b98a1192343d2571dd1"
+        },
+        {
+          "source": "skills/hyperframes-registry/references/wiring-blocks.md",
+          "target": "skills/hyperframes-registry/references/wiring-blocks.md",
+          "integrity": "sha256-c2045d3f31772d211bb92668264402a5c21d208870fa64398481212a645c9eb9"
+        },
+        {
+          "source": "skills/hyperframes-registry/references/wiring-components.md",
+          "target": "skills/hyperframes-registry/references/wiring-components.md",
+          "integrity": "sha256-fbde46726debef9d61286ae54b3b2491e0df51e87416c1b059106bb076a346ce"
+        },
+        {
+          "source": "skills/hyperframes/SKILL.md",
+          "target": "skills/hyperframes/SKILL.md",
+          "integrity": "sha256-c6331e984e08b31269bd7725fdc86f1c267409391c1270ac32ee76c6986f10b1"
+        },
+        {
+          "source": "skills/hyperframes/data-in-motion.md",
+          "target": "skills/hyperframes/data-in-motion.md",
+          "integrity": "sha256-22084b4460a8f815d923b972a908f937c1e573bbbc7a865f6f2979ec2ae7ff15"
+        },
+        {
+          "source": "skills/hyperframes/house-style.md",
+          "target": "skills/hyperframes/house-style.md",
+          "integrity": "sha256-e0719895b369d7ee5203850250e605b3a1c15dbe43a367dd54e396f2b439f838"
+        },
+        {
+          "source": "skills/hyperframes/palettes/bold-energetic.md",
+          "target": "skills/hyperframes/palettes/bold-energetic.md",
+          "integrity": "sha256-17bc6b7889302151b4e5c84c0c6a33df676647078011d9decb2b68810e3baa7f"
+        },
+        {
+          "source": "skills/hyperframes/palettes/clean-corporate.md",
+          "target": "skills/hyperframes/palettes/clean-corporate.md",
+          "integrity": "sha256-d0c8c86838abb77985609629afe600d0ca365eccd835820f309959e8a85cba9d"
+        },
+        {
+          "source": "skills/hyperframes/palettes/dark-premium.md",
+          "target": "skills/hyperframes/palettes/dark-premium.md",
+          "integrity": "sha256-abfecbf7e8dca3b674376590a0467aac3e13b2135022ae4ec519c4b27c2303b1"
+        },
+        {
+          "source": "skills/hyperframes/palettes/jewel-rich.md",
+          "target": "skills/hyperframes/palettes/jewel-rich.md",
+          "integrity": "sha256-17c8f7506469f66bca4e27ef78c19f0bcbf250f88fe840e3043816b7041c4fc5"
+        },
+        {
+          "source": "skills/hyperframes/palettes/monochrome.md",
+          "target": "skills/hyperframes/palettes/monochrome.md",
+          "integrity": "sha256-fe8586f6d70707098859063bdef34d68084f02cf7d5aaa436d4c9915a7ae3748"
+        },
+        {
+          "source": "skills/hyperframes/palettes/nature-earth.md",
+          "target": "skills/hyperframes/palettes/nature-earth.md",
+          "integrity": "sha256-9710549b17487787fef3c7cb459cfd6e4ac28c1593bf471fcf55a3b4e546beed"
+        },
+        {
+          "source": "skills/hyperframes/palettes/neon-electric.md",
+          "target": "skills/hyperframes/palettes/neon-electric.md",
+          "integrity": "sha256-35225bf8d2cd37223e88e0bc59b0a96bc8adeda7225389b3df97b675cfd33dfb"
+        },
+        {
+          "source": "skills/hyperframes/palettes/pastel-soft.md",
+          "target": "skills/hyperframes/palettes/pastel-soft.md",
+          "integrity": "sha256-ed4e25bb5f4953c002e55a53320249621437e03b5a11d43e3c1bd32c869b6d95"
+        },
+        {
+          "source": "skills/hyperframes/palettes/warm-editorial.md",
+          "target": "skills/hyperframes/palettes/warm-editorial.md",
+          "integrity": "sha256-c467ee3cc0bbf4b2bedccc8106e18293b8a06dbac8f092b10300492da0e0559a"
+        },
+        {
+          "source": "skills/hyperframes/patterns.md",
+          "target": "skills/hyperframes/patterns.md",
+          "integrity": "sha256-9a31458068668a168ee3f4180e06fb2d5768afe1f84b8878f5c56c72e4ab7253"
+        },
+        {
+          "source": "skills/hyperframes/references/audio-reactive.md",
+          "target": "skills/hyperframes/references/audio-reactive.md",
+          "integrity": "sha256-f0d83c24fa40d42a74f972ccf3b5254d7706cb063d16b8b41f87dc668a418f49"
+        },
+        {
+          "source": "skills/hyperframes/references/captions.md",
+          "target": "skills/hyperframes/references/captions.md",
+          "integrity": "sha256-9e35e0d8618e392906a0c542571af9f070350a17007c8449c69ff31384f3b195"
+        },
+        {
+          "source": "skills/hyperframes/references/css-patterns.md",
+          "target": "skills/hyperframes/references/css-patterns.md",
+          "integrity": "sha256-39c4af128cdd3ed9d1be652a88c3e4d01cb0daf744dfde3db7197014cd1a38d8"
+        },
+        {
+          "source": "skills/hyperframes/references/dynamic-techniques.md",
+          "target": "skills/hyperframes/references/dynamic-techniques.md",
+          "integrity": "sha256-f48f666acb270daf2ac57fede5efc96ff3f168fa4f41db611de0310452e6d7e3"
+        },
+        {
+          "source": "skills/hyperframes/references/motion-principles.md",
+          "target": "skills/hyperframes/references/motion-principles.md",
+          "integrity": "sha256-68f4ba410addc4c07347025ed688029d69cf71c37cc2c5da4788600ccd5d756c"
+        },
+        {
+          "source": "skills/hyperframes/references/transcript-guide.md",
+          "target": "skills/hyperframes/references/transcript-guide.md",
+          "integrity": "sha256-e52bf99b88d5d75cb715376edc67dc86e824d54ede65815b1aa6f7582a1b166c"
+        },
+        {
+          "source": "skills/hyperframes/references/transitions.md",
+          "target": "skills/hyperframes/references/transitions.md",
+          "integrity": "sha256-302fab350697e210a763ba7e3b2acbde9aadac37bd49cb9814a12e60983294ce"
+        },
+        {
+          "source": "skills/hyperframes/references/transitions/catalog.md",
+          "target": "skills/hyperframes/references/transitions/catalog.md",
+          "integrity": "sha256-557b5b30be7b68f95d8481209b1a2f0a0e1df23f65de9b08f86697d0e6159a54"
+        },
+        {
+          "source": "skills/hyperframes/references/transitions/css-3d.md",
+          "target": "skills/hyperframes/references/transitions/css-3d.md",
+          "integrity": "sha256-e1c3888dd0a2d4b36d25200c1e5ef9038649ae63953865e4b2c4c40fb028d7dd"
+        },
+        {
+          "source": "skills/hyperframes/references/transitions/css-blur.md",
+          "target": "skills/hyperframes/references/transitions/css-blur.md",
+          "integrity": "sha256-fd3eef889a517e1dd985ca816f36f1abfb43420a4b664d4fcc453554cdf561f9"
+        },
+        {
+          "source": "skills/hyperframes/references/transitions/css-cover.md",
+          "target": "skills/hyperframes/references/transitions/css-cover.md",
+          "integrity": "sha256-ba4e5926791c9e6a0a069e20afc91324acb018903f43b4b3f2866d9654f5b7eb"
+        },
+        {
+          "source": "skills/hyperframes/references/transitions/css-destruction.md",
+          "target": "skills/hyperframes/references/transitions/css-destruction.md",
+          "integrity": "sha256-7cce7bbd9ebc64176c9ff4fe40ec97273c9c171524d89f853c0651e713949361"
+        },
+        {
+          "source": "skills/hyperframes/references/transitions/css-dissolve.md",
+          "target": "skills/hyperframes/references/transitions/css-dissolve.md",
+          "integrity": "sha256-47c11ca0a715675c2788aa4a162a652b5dc5f1773b058ea93e9907af56a4eb7c"
+        },
+        {
+          "source": "skills/hyperframes/references/transitions/css-distortion.md",
+          "target": "skills/hyperframes/references/transitions/css-distortion.md",
+          "integrity": "sha256-7140650692926959bd5459ca5c478a9b4f137cc76fb92b9138e3b0d353677c06"
+        },
+        {
+          "source": "skills/hyperframes/references/transitions/css-grid.md",
+          "target": "skills/hyperframes/references/transitions/css-grid.md",
+          "integrity": "sha256-c62b17058aa7ba42d34df29436b6b4233e47ff2b72f2c7ce0963c75bdec45144"
+        },
+        {
+          "source": "skills/hyperframes/references/transitions/css-light.md",
+          "target": "skills/hyperframes/references/transitions/css-light.md",
+          "integrity": "sha256-53f0422d3f6dd2584a30501f84e4f09c9b515f605d51ed264a2061567dda15db"
+        },
+        {
+          "source": "skills/hyperframes/references/transitions/css-mechanical.md",
+          "target": "skills/hyperframes/references/transitions/css-mechanical.md",
+          "integrity": "sha256-4fed48fa659a4b215a996beeea619d244e6c893700178b1f969c17f2ee0a8612"
+        },
+        {
+          "source": "skills/hyperframes/references/transitions/css-other.md",
+          "target": "skills/hyperframes/references/transitions/css-other.md",
+          "integrity": "sha256-2156e4fcc3b42cba9e0d9e268944269057fb48ff15fc1983e3ff9386fa2a8cf8"
+        },
+        {
+          "source": "skills/hyperframes/references/transitions/css-push.md",
+          "target": "skills/hyperframes/references/transitions/css-push.md",
+          "integrity": "sha256-d526a9612483472de4d865ae27061c98842a5155973dd0cec37fac4998dc1b97"
+        },
+        {
+          "source": "skills/hyperframes/references/transitions/css-radial.md",
+          "target": "skills/hyperframes/references/transitions/css-radial.md",
+          "integrity": "sha256-5d8f20de439e3f2c8d45df11c8acbe31dc1b9342e2d54bbe66b451cf81ca0a1b"
+        },
+        {
+          "source": "skills/hyperframes/references/transitions/css-scale.md",
+          "target": "skills/hyperframes/references/transitions/css-scale.md",
+          "integrity": "sha256-3c0cb33d6c844a7265379225f3241d8964afcc908ee757a1ebfb1700a5320ea7"
+        },
+        {
+          "source": "skills/hyperframes/references/tts.md",
+          "target": "skills/hyperframes/references/tts.md",
+          "integrity": "sha256-bb593a862f5599eca6b36ac22b0b76f66fb1fff251e5c5b1865e341681cfcd8a"
+        },
+        {
+          "source": "skills/hyperframes/references/typography.md",
+          "target": "skills/hyperframes/references/typography.md",
+          "integrity": "sha256-d0ef1c5666a5b7a5f2af0c5701d17e63017eafc07499830c6616ccdcb21befc8"
+        },
+        {
+          "source": "skills/hyperframes/scripts/animation-map.mjs",
+          "target": "skills/hyperframes/scripts/animation-map.mjs",
+          "integrity": "sha256-6840bf5c08b8b1eab234dec3e19fe6988abdb53d2ad98560f8da05f4c6cca74f"
+        },
+        {
+          "source": "skills/hyperframes/scripts/contrast-report.mjs",
+          "target": "skills/hyperframes/scripts/contrast-report.mjs",
+          "integrity": "sha256-84c9cdec6242845c625af041d8fe94d48fdde89b77ea32ec241af99deda03ad1"
+        },
+        {
+          "source": "skills/hyperframes/visual-styles.md",
+          "target": "skills/hyperframes/visual-styles.md",
+          "integrity": "sha256-d173663b4342d830e46c5cc14a1ffafe6dbc6daca0702b0a451db3ce914693cc"
+        },
+        {
+          "source": "skills/website-to-hyperframes/SKILL.md",
+          "target": "skills/website-to-hyperframes/SKILL.md",
+          "integrity": "sha256-61ec0a7309f0459d789fb3bc3ec254a52c64e838357d321b594cbde5a8514a12"
+        },
+        {
+          "source": "skills/website-to-hyperframes/references/step-1-capture.md",
+          "target": "skills/website-to-hyperframes/references/step-1-capture.md",
+          "integrity": "sha256-c5581dd136656d6f0767525d505f9789a846b798506373b72bb3eb32678b051f"
+        },
+        {
+          "source": "skills/website-to-hyperframes/references/step-2-design.md",
+          "target": "skills/website-to-hyperframes/references/step-2-design.md",
+          "integrity": "sha256-94a6a207ddf99583d357f01559ac7337a7199d05bf63aa7373aaaea3f6170ab1"
+        },
+        {
+          "source": "skills/website-to-hyperframes/references/step-3-script.md",
+          "target": "skills/website-to-hyperframes/references/step-3-script.md",
+          "integrity": "sha256-55cb26d748c68d7136de98d4ca1db74205908a134200f5f061f87afbde6c4496"
+        },
+        {
+          "source": "skills/website-to-hyperframes/references/step-4-storyboard.md",
+          "target": "skills/website-to-hyperframes/references/step-4-storyboard.md",
+          "integrity": "sha256-415a9552cc17bdae408e9862ab226d49b71cb4402ab90abc5f71c8526d60061d"
+        },
+        {
+          "source": "skills/website-to-hyperframes/references/step-5-vo.md",
+          "target": "skills/website-to-hyperframes/references/step-5-vo.md",
+          "integrity": "sha256-a04d32c4368d6d83e0fa7422bd365bfb15a874980772dde98c0e2ef838e48efb"
+        },
+        {
+          "source": "skills/website-to-hyperframes/references/step-6-build.md",
+          "target": "skills/website-to-hyperframes/references/step-6-build.md",
+          "integrity": "sha256-8bc833c3f002e1b74aaed8bd161e108fa0c68653b5ef51ad0748735d75e9a4a4"
+        },
+        {
+          "source": "skills/website-to-hyperframes/references/step-7-validate.md",
+          "target": "skills/website-to-hyperframes/references/step-7-validate.md",
+          "integrity": "sha256-2e4c7c83a01c6094a968153976be09e825289520954106a987e170253b2580de"
+        },
+        {
+          "source": "skills/website-to-hyperframes/references/techniques.md",
+          "target": "skills/website-to-hyperframes/references/techniques.md",
+          "integrity": "sha256-7bd2ace20c485e4a8108bc534c517df5cb9aad3dfc536fa850fdf7613548a7f2"
+        }
+      ]
+    },
+    {
+      "id": "obsidian",
+      "version": "1.0.1",
+      "repository": "kepano/obsidian-skills",
+      "commit": "8ccef29ae8624eccc734e77ced4a6e54baf5d83a",
+      "license": "MIT",
+      "files": [
+        {
+          "source": "LICENSE",
+          "target": "LICENSE",
+          "integrity": "sha256-64c64d48361edfe8610016441bf593256ea9b67f133b00f47c55aa29ee878567"
+        },
+        {
+          "source": "skills/defuddle/SKILL.md",
+          "target": "skills/defuddle/SKILL.md",
+          "integrity": "sha256-10673a4dc70a0a057612d443243ab7a5aa4abdd4a0fadc3f6eec5fd71ad5a971"
+        },
+        {
+          "source": "skills/json-canvas/SKILL.md",
+          "target": "skills/json-canvas/SKILL.md",
+          "integrity": "sha256-97d1ae0728955c4203922753d5656890e5e4dd371b8306ea11884f9b510f1b85"
+        },
+        {
+          "source": "skills/json-canvas/references/EXAMPLES.md",
+          "target": "skills/json-canvas/references/EXAMPLES.md",
+          "integrity": "sha256-f5ce15a4b74643122396265e8c37c828874a4005794de2aee7030662968768eb"
+        },
+        {
+          "source": "skills/knap/SKILL.md",
+          "target": "skills/knap/SKILL.md",
+          "integrity": "sha256-ef5666573358cd7d18e04195f3e7c473b88d3e3140c41ab59bbee01c81e9989f"
+        },
+        {
+          "source": "skills/obsidian-bases/SKILL.md",
+          "target": "skills/obsidian-bases/SKILL.md",
+          "integrity": "sha256-c0037f20926c7d8591cdd040365e4c0e4c0c4146386a506f28f241faee9a27d9"
+        },
+        {
+          "source": "skills/obsidian-bases/references/FUNCTIONS_REFERENCE.md",
+          "target": "skills/obsidian-bases/references/FUNCTIONS_REFERENCE.md",
+          "integrity": "sha256-208fd63aead9bca1975626fea52605e6ab9434dc0529d923feb36b18b8877d3b"
+        },
+        {
+          "source": "skills/obsidian-cli/SKILL.md",
+          "target": "skills/obsidian-cli/SKILL.md",
+          "integrity": "sha256-b54257cdc0e5d04488b35b0c797bfe427b24359f0848d3c73924dcacf8da6358"
+        },
+        {
+          "source": "skills/obsidian-markdown/SKILL.md",
+          "target": "skills/obsidian-markdown/SKILL.md",
+          "integrity": "sha256-7ad72e1f0a9081ed325e76b6402ad5de50a00e63e2341fd403a92f147234a007"
+        },
+        {
+          "source": "skills/obsidian-markdown/references/CALLOUTS.md",
+          "target": "skills/obsidian-markdown/references/CALLOUTS.md",
+          "integrity": "sha256-9912ec2e3f8711f65b8ceb82cc19cbffc5e6f8ccf2ab627e18926c522c383d8b"
+        },
+        {
+          "source": "skills/obsidian-markdown/references/EMBEDS.md",
+          "target": "skills/obsidian-markdown/references/EMBEDS.md",
+          "integrity": "sha256-63b6205507e28fb58cf200bc348a2b139e50ae739743e2e6316732148973cb7a"
+        },
+        {
+          "source": "skills/obsidian-markdown/references/PROPERTIES.md",
+          "target": "skills/obsidian-markdown/references/PROPERTIES.md",
+          "integrity": "sha256-392953b5838c3ab3df135b5a914f100ae7b95e4501b6a2e5c8dc63da3ac7558b"
+        }
+      ]
+    },
+    {
+      "id": "drawio",
+      "version": "1.1.0",
+      "repository": "jgraph/drawio-mcp",
+      "commit": "14b318b19cc37b159f841227b9d11fbd18ce18ea",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "source": "LICENSE",
+          "target": "LICENSE",
+          "integrity": "sha256-006e61a1b8c97620d75ceacc283de7a363d78da7da9a5b92203324c40feb7232"
+        },
+        {
+          "source": "plugins/claude-code/skills/drawio/SKILL.md",
+          "target": "skills/drawio/SKILL.md",
+          "integrity": "sha256-4db0d9428e855b602b5afd161929dc6e35cb28678d830cfafd939f0a71bba5f5"
+        }
+      ]
+    },
+    {
+      "id": "frontend-design",
+      "version": "1.0.0",
+      "repository": "anthropics/skills",
+      "commit": "34040c9c568585f6929bedeaad110ad08f079624",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "source": "skills/frontend-design/LICENSE.txt",
+          "target": "skills/frontend-design/LICENSE.txt",
+          "integrity": "sha256-0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+        },
+        {
+          "source": "skills/frontend-design/SKILL.md",
+          "target": "skills/frontend-design/SKILL.md",
+          "integrity": "sha256-d91970639e9f5c37682ac7ab60094d35f1c7c1f38d731bd56396563aee10c1d3"
+        }
+      ]
+    },
+    {
+      "id": "canvas-design",
+      "version": "1.0.0",
+      "repository": "anthropics/skills",
+      "commit": "34040c9c568585f6929bedeaad110ad08f079624",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "source": "skills/canvas-design/LICENSE.txt",
+          "target": "skills/canvas-design/LICENSE.txt",
+          "integrity": "sha256-bc6b3af2f331cbc7fb0da1344efb2cbe5877a31498b4d70dbc7000f3405a1362"
+        },
+        {
+          "source": "skills/canvas-design/SKILL.md",
+          "target": "skills/canvas-design/SKILL.md",
+          "integrity": "sha256-a1f288079624402f30682753c1d43920b6664785698d21d3e7aa197450a6448b"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/ArsenalSC-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/ArsenalSC-OFL.txt",
+          "integrity": "sha256-8ddd61b18ba2c0d0dbe4a691cf5f1a0673f473d02fa0546e67ee88c006aeff6e"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/ArsenalSC-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/ArsenalSC-Regular.ttf",
+          "integrity": "sha256-65e6f89df58f68fd905b3add34a79dd6106aa3b3044df0dad9676fff53d504b9"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/BigShoulders-Bold.ttf",
+          "target": "skills/canvas-design/canvas-fonts/BigShoulders-Bold.ttf",
+          "integrity": "sha256-b43bcd198b9fdf717dd42aa61a34dba32e01aceaeae659d689afd0ca52c37ea2"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/BigShoulders-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/BigShoulders-OFL.txt",
+          "integrity": "sha256-fbc746aabf0eb1847dfd92e2efc4596d79fa897d60b8e64062a22f585508fb3f"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/BigShoulders-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/BigShoulders-Regular.ttf",
+          "integrity": "sha256-18a879fc71978a4447150705caf880a9da3860083c259fd29e6dc03057b6842a"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Boldonse-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/Boldonse-OFL.txt",
+          "integrity": "sha256-45cc82ab4032273c0924025ffcf8f0665a68e1a5955e3f7247e5daf1deeb1326"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Boldonse-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/Boldonse-Regular.ttf",
+          "integrity": "sha256-cc2e540604565c0f90a7d8d46194a2f42fc9c45512cd2e39bf03b50eb68c35a4"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/BricolageGrotesque-Bold.ttf",
+          "target": "skills/canvas-design/canvas-fonts/BricolageGrotesque-Bold.ttf",
+          "integrity": "sha256-a737b146fe0d77ffe8a86e3cd16700dd431d3b1e420d4fd80e142cd68a1cb50d"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/BricolageGrotesque-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/BricolageGrotesque-OFL.txt",
+          "integrity": "sha256-0e4f4eb8534bc66a76aca13dd19c1f9731b2008866b29ccff182b764649df9b4"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/BricolageGrotesque-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/BricolageGrotesque-Regular.ttf",
+          "integrity": "sha256-972a6d098c9867ae131d0ea99e221e63976b11a19d4b931c2c7ace525674e4f6"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/CrimsonPro-Bold.ttf",
+          "target": "skills/canvas-design/canvas-fonts/CrimsonPro-Bold.ttf",
+          "integrity": "sha256-48f191e38355c8db100eb3ce157c20f9302a3b9a37b44a660f77ecfce3986609"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/CrimsonPro-Italic.ttf",
+          "target": "skills/canvas-design/canvas-fonts/CrimsonPro-Italic.ttf",
+          "integrity": "sha256-52318db3526b644e6efa60be0b3ca5a50e40fbe8bd026c261e0aa206f0772267"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/CrimsonPro-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/CrimsonPro-OFL.txt",
+          "integrity": "sha256-35680d14547b6748b6f362a052a46d22764ce5eccf96e18b74f567bb2ee58114"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/CrimsonPro-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/CrimsonPro-Regular.ttf",
+          "integrity": "sha256-48fad08cb1917a7b2f2c6fe5135d6c07743a6663cf7631ec4481108aaf081422"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/DMMono-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/DMMono-OFL.txt",
+          "integrity": "sha256-bfe7842fcb88323e2981e24710c25202677385a8c75fb6a87217b275a0247ae3"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/DMMono-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/DMMono-Regular.ttf",
+          "integrity": "sha256-f98ada968dc3b6b2c08d3f5caaf266977df0bfe0929372b93df5a06cf2ace450"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/EricaOne-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/EricaOne-OFL.txt",
+          "integrity": "sha256-e0de629968b52255548d5fafcf30b24ff9edae0eda362380755a75816404d0fa"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/EricaOne-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/EricaOne-Regular.ttf",
+          "integrity": "sha256-db1d89e80e33a8a01beaaac7a85df582857d24a43f1e181461aa7ff5d701476a"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/GeistMono-Bold.ttf",
+          "target": "skills/canvas-design/canvas-fonts/GeistMono-Bold.ttf",
+          "integrity": "sha256-75c0828d5c1ee44b9ef9f4df577bf41595ec362e2ea3f1e558590c9e92c7949d"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/GeistMono-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/GeistMono-OFL.txt",
+          "integrity": "sha256-6a873c900f584109b13ae0aaf81d6e3cf0a68751a216b03f7b6c68d547057bb4"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/GeistMono-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/GeistMono-Regular.ttf",
+          "integrity": "sha256-a55c1b51cda4afeab9e471e7947b85a20f7c8831d7e6b1470c1b7fbdc0f0f15e"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Gloock-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/Gloock-OFL.txt",
+          "integrity": "sha256-c0a3f3125ac491ef3d1f09f401be4834c646562f647e44f2bcbc49f0466c656d"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Gloock-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/Gloock-Regular.ttf",
+          "integrity": "sha256-e86b4ce66dbd3f1f83eee8db99ec96e0da1128c3f53df0e9b3b7472025dfe960"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/IBMPlexMono-Bold.ttf",
+          "target": "skills/canvas-design/canvas-fonts/IBMPlexMono-Bold.ttf",
+          "integrity": "sha256-dbd2a2fb024579438d6400a84e57579bfd2dbe67c306c8fd9fde92a61e4f2eea"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/IBMPlexMono-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/IBMPlexMono-OFL.txt",
+          "integrity": "sha256-5294ce778857e1eb02e830b6ab06435537d38f43055327e73d03a2d4d57d5123"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/IBMPlexMono-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/IBMPlexMono-Regular.ttf",
+          "integrity": "sha256-ab08018ccd276b79fb2c636bb95b9c543598f9d50505fe92506fcb4dae7810cd"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/IBMPlexSerif-Bold.ttf",
+          "target": "skills/canvas-design/canvas-fonts/IBMPlexSerif-Bold.ttf",
+          "integrity": "sha256-b8d294e9b5c5a0940f167c3ced0f7ef2e3f57082ca3ff096ef30e86e26c1c159"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/IBMPlexSerif-BoldItalic.ttf",
+          "target": "skills/canvas-design/canvas-fonts/IBMPlexSerif-BoldItalic.ttf",
+          "integrity": "sha256-da64b75f4284f53e7b5c71fa190a35b8bf3494fe19f1804c81c3a53340bca570"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/IBMPlexSerif-Italic.ttf",
+          "target": "skills/canvas-design/canvas-fonts/IBMPlexSerif-Italic.ttf",
+          "integrity": "sha256-b11f1048745e715a55c9d837b3f10226ca3d78867b7db7251ddad8f98dcf0f38"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/IBMPlexSerif-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/IBMPlexSerif-Regular.ttf",
+          "integrity": "sha256-77cd233a2af8dc6b1022faea3bb3b01f3c75af68bcf530cb6aeb15982ff3dbb7"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/InstrumentSans-Bold.ttf",
+          "target": "skills/canvas-design/canvas-fonts/InstrumentSans-Bold.ttf",
+          "integrity": "sha256-444f85bf1c4b0e1ce1ca624f6be54bcd832207714ccaf4ea99ee531341683bdf"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/InstrumentSans-BoldItalic.ttf",
+          "target": "skills/canvas-design/canvas-fonts/InstrumentSans-BoldItalic.ttf",
+          "integrity": "sha256-3762f6cef95d6039489ad5ba5787d4c30f17a1ad01e9ac3c816ed69692722a68"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/InstrumentSans-Italic.ttf",
+          "target": "skills/canvas-design/canvas-fonts/InstrumentSans-Italic.ttf",
+          "integrity": "sha256-78e85858e371b2cb4e18f617c10f0f937c0e12a0887ffee98555b24ed305b3a7"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/InstrumentSans-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/InstrumentSans-OFL.txt",
+          "integrity": "sha256-bf4dc6d13a8cccd4807133c77a1ee9619a16b92cb23322258725ab6731c2f6e5"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/InstrumentSans-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/InstrumentSans-Regular.ttf",
+          "integrity": "sha256-a22cb26e48fd79bcb01bf2fc92d36785474dce36d9c544ab0a8868c2657c4a87"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/InstrumentSerif-Italic.ttf",
+          "target": "skills/canvas-design/canvas-fonts/InstrumentSerif-Italic.ttf",
+          "integrity": "sha256-9c86e4d5a47b50224a2463a9eca8535835257c8e85c470c2c6b454b1af6f046e"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/InstrumentSerif-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/InstrumentSerif-Regular.ttf",
+          "integrity": "sha256-56ac3be03ac3ba283196b3e77850ab2ffcf56cfb6fd3212c5620109a972f8c99"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Italiana-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/Italiana-OFL.txt",
+          "integrity": "sha256-8373b11312ace78c4cec2e8f9f6aa9f2330601107dac7bcf899c6f2dbd40c5a5"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Italiana-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/Italiana-Regular.ttf",
+          "integrity": "sha256-15c4dd6ab8cf4a29ba8826f65edcbe2f6c266c557d34d081f25072dfd5605fd2"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/JetBrainsMono-Bold.ttf",
+          "target": "skills/canvas-design/canvas-fonts/JetBrainsMono-Bold.ttf",
+          "integrity": "sha256-a2349098b9e45419e7bf0e2958d6c4937a049dded37387b08be725be4c7615f3"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/JetBrainsMono-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/JetBrainsMono-OFL.txt",
+          "integrity": "sha256-a76abf002c49097d146e86740a3105a5d00450b1592e820a1109a8c5680cd697"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/JetBrainsMono-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/JetBrainsMono-Regular.ttf",
+          "integrity": "sha256-b6b1ff4ddefe36d7f2a6174e1d001cab374e594519ee9049af028d577b64c5f5"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Jura-Light.ttf",
+          "target": "skills/canvas-design/canvas-fonts/Jura-Light.ttf",
+          "integrity": "sha256-c891a381df056b2c4dfe85841e911bf45da0890fa21a7b2692cbe5ea1f505e1e"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Jura-Medium.ttf",
+          "target": "skills/canvas-design/canvas-fonts/Jura-Medium.ttf",
+          "integrity": "sha256-c72965cb732a92872643819fd1734128238583cc36b116313859137a51d3368a"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Jura-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/Jura-OFL.txt",
+          "integrity": "sha256-eaf9bdb675f6d87e5feb88199ab3ea581d3bd2082f426e384fa9c394576d7260"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/LibreBaskerville-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/LibreBaskerville-OFL.txt",
+          "integrity": "sha256-55959eef5b0c3b2e3c1c7631b8ff0f9447d75de20f29cfa7db5bcfb026763343"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/LibreBaskerville-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/LibreBaskerville-Regular.ttf",
+          "integrity": "sha256-2101302538d9e88adb679031c04623e4578b5745e89566284fd2c508d79acae0"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Lora-Bold.ttf",
+          "target": "skills/canvas-design/canvas-fonts/Lora-Bold.ttf",
+          "integrity": "sha256-7d74015e950c2fb66519c7295b8155621d22200ae2ca2a4c6b43ce3c490cac87"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Lora-BoldItalic.ttf",
+          "target": "skills/canvas-design/canvas-fonts/Lora-BoldItalic.ttf",
+          "integrity": "sha256-152f87e71f5ddb60d5c57ecd9132807c947e65c42977193c9164e7c5a6690081"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Lora-Italic.ttf",
+          "target": "skills/canvas-design/canvas-fonts/Lora-Italic.ttf",
+          "integrity": "sha256-be627e595184e8afe521f08da0607eee613f1997d423bc8dadc5798995581377"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Lora-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/Lora-OFL.txt",
+          "integrity": "sha256-62e37a82d3f1ef2a70712885fa8b3144b65fd144d8e748d6196b690a354d792c"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Lora-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/Lora-Regular.ttf",
+          "integrity": "sha256-7ed00e7c9cdf16ab7e2fd2361fe45d4f0b61263cd60aae398b27b7ee08108827"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/NationalPark-Bold.ttf",
+          "target": "skills/canvas-design/canvas-fonts/NationalPark-Bold.ttf",
+          "integrity": "sha256-69ac4c301c4a7233c6e602d12a92c54d7967b575f4449951c45ce773f7acff53"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/NationalPark-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/NationalPark-OFL.txt",
+          "integrity": "sha256-81c6c71d83b5b45d7344f96df12bb4a2477a5b092a9144757ee1d0f50f855175"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/NationalPark-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/NationalPark-Regular.ttf",
+          "integrity": "sha256-a477338b7e18308d476650dfe31235ef86a883572665e56ffb5fb80f82009b58"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/NothingYouCouldDo-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/NothingYouCouldDo-OFL.txt",
+          "integrity": "sha256-7c2a6970584ddad04919816163746f83b378078015899b18468b40f05e9ce128"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/NothingYouCouldDo-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/NothingYouCouldDo-Regular.ttf",
+          "integrity": "sha256-d866f985896d3280f4fce72db7e17302c24a0c1fdb0699b6b5ed3af14f944d57"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Outfit-Bold.ttf",
+          "target": "skills/canvas-design/canvas-fonts/Outfit-Bold.ttf",
+          "integrity": "sha256-6654b93d21301ec61887d3cedd6c11d9df1b1dfb63f9cf45ac7995f6e2235ab1"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Outfit-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/Outfit-OFL.txt",
+          "integrity": "sha256-1945b62cd76da9a3051a1660dde72afaa64ffc2666d30e7a78356d651653ba2f"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Outfit-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/Outfit-Regular.ttf",
+          "integrity": "sha256-f24945365147c9e783e91d8649959b59be6b00c9ee4ecd2f6b33afbb2dd871fe"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/PixelifySans-Medium.ttf",
+          "target": "skills/canvas-design/canvas-fonts/PixelifySans-Medium.ttf",
+          "integrity": "sha256-38397504f71c122b03d234ea6f55118e3d5bdbddffd82bedddbd7755d3b3be82"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/PixelifySans-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/PixelifySans-OFL.txt",
+          "integrity": "sha256-7f54d1d9f1ae1ba9f2722f978145f90324fea34ca3c2304b3a29cfa96ac6037e"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/PoiretOne-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/PoiretOne-OFL.txt",
+          "integrity": "sha256-2eaf541f7eb8b512e4c757a5212060abf5b6edfef230e9d7640bf736b315c33a"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/PoiretOne-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/PoiretOne-Regular.ttf",
+          "integrity": "sha256-9cf265b139648b36b6c0afdfeb0bf27f7e66db9a16094bc40f644d8da05bc318"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/RedHatMono-Bold.ttf",
+          "target": "skills/canvas-design/canvas-fonts/RedHatMono-Bold.ttf",
+          "integrity": "sha256-7ef48353f4be5ddb90f000f6fad48f2b62b3e8c27d9818d8d45ff46c201065e0"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/RedHatMono-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/RedHatMono-OFL.txt",
+          "integrity": "sha256-435fbfb7e66988b2a06686a4cb966faec733f35d8fe100a1601573c27f3e0bb8"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/RedHatMono-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/RedHatMono-Regular.ttf",
+          "integrity": "sha256-452fe826871b37539f5212b20c87cf30f82f58dd2741f1c96edd1dcbdc0db6b4"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Silkscreen-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/Silkscreen-OFL.txt",
+          "integrity": "sha256-6b849745119bbe85ec01fd080c9cd50234da9f52ac6e48b55d1a424a0c4d7ca9"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Silkscreen-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/Silkscreen-Regular.ttf",
+          "integrity": "sha256-49567408600809e25147e9225ac4f37f410e2df45a750696c45027531fb65f1b"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/SmoochSans-Medium.ttf",
+          "target": "skills/canvas-design/canvas-fonts/SmoochSans-Medium.ttf",
+          "integrity": "sha256-dd76e6e77cce82f827a8654cd906e9ce58f3aaf78adda63c4a7f655b8ecb41f0"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/SmoochSans-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/SmoochSans-OFL.txt",
+          "integrity": "sha256-74c9c4eb88e891483e1b7bc54780b452cbf4f4df66d4e71881d7569aa2130749"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Tektur-Medium.ttf",
+          "target": "skills/canvas-design/canvas-fonts/Tektur-Medium.ttf",
+          "integrity": "sha256-52bbe8c9b057b3d2da4eeace31a524b1ea26a1375ae34319cf6900ccc57a4c82"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Tektur-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/Tektur-OFL.txt",
+          "integrity": "sha256-3f1466cb5438f31782eeb6e895f3a655bc4d090e24263e331f555357d1cb734e"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/Tektur-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/Tektur-Regular.ttf",
+          "integrity": "sha256-162e1b36c4718c5b051b36c971ad7e50d341944f35618f480422ebbe72988f98"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/WorkSans-Bold.ttf",
+          "target": "skills/canvas-design/canvas-fonts/WorkSans-Bold.ttf",
+          "integrity": "sha256-240d125fc9f8561363dc1ea3f513501253bd70942f41468f48f0b0cafb0c82e2"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/WorkSans-BoldItalic.ttf",
+          "target": "skills/canvas-design/canvas-fonts/WorkSans-BoldItalic.ttf",
+          "integrity": "sha256-a5b2cad813df0aaa7d16621f2e93b5117c25e9bc788bc9a3ad218e9d6348ce34"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/WorkSans-Italic.ttf",
+          "target": "skills/canvas-design/canvas-fonts/WorkSans-Italic.ttf",
+          "integrity": "sha256-6b7f7002e0b0c8b261fe878658ef5551e3e59d9f6b609b04efb90dde1e2c1ada"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/WorkSans-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/WorkSans-OFL.txt",
+          "integrity": "sha256-ace8c22a3326318b54e67c3691857929634205533f454a70ef5a3473ddb2e2ba"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/WorkSans-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/WorkSans-Regular.ttf",
+          "integrity": "sha256-e67985a843df0d3cdee51a3d0f329eb1774a344ad9ff0c9ab923751f1577e2a4"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/YoungSerif-OFL.txt",
+          "target": "skills/canvas-design/canvas-fonts/YoungSerif-OFL.txt",
+          "integrity": "sha256-cdcb8039606b40a027a6d24586ec62d5fe29c701343d82a048c829cb28a3dd28"
+        },
+        {
+          "source": "skills/canvas-design/canvas-fonts/YoungSerif-Regular.ttf",
+          "target": "skills/canvas-design/canvas-fonts/YoungSerif-Regular.ttf",
+          "integrity": "sha256-f8dc08f77abad753a00670af70756a8ace938e5c3f0b770f4f4c2071c4bd8fc6"
+        }
+      ]
+    },
+    {
+      "id": "algorithmic-art",
+      "version": "1.0.0",
+      "repository": "anthropics/skills",
+      "commit": "34040c9c568585f6929bedeaad110ad08f079624",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "source": "skills/algorithmic-art/LICENSE.txt",
+          "target": "skills/algorithmic-art/LICENSE.txt",
+          "integrity": "sha256-bc6b3af2f331cbc7fb0da1344efb2cbe5877a31498b4d70dbc7000f3405a1362"
+        },
+        {
+          "source": "skills/algorithmic-art/SKILL.md",
+          "target": "skills/algorithmic-art/SKILL.md",
+          "integrity": "sha256-3bc4092c09804853186524c826bc0621b940bb6122c05b84496dff95388e6eef"
+        },
+        {
+          "source": "skills/algorithmic-art/templates/generator_template.js",
+          "target": "skills/algorithmic-art/templates/generator_template.js",
+          "integrity": "sha256-9ee0f1da52ef8f7bbfde1917123654880890d43f2d388642d71eab6dd78f94c4"
+        },
+        {
+          "source": "skills/algorithmic-art/templates/viewer.html",
+          "target": "skills/algorithmic-art/templates/viewer.html",
+          "integrity": "sha256-86c79d7ce97d2599ebe4bd9b97fdeb7295c9d3ed61ceeb513cbe1b2bb5d1ce29"
+        }
+      ]
+    },
+    {
+      "id": "webapp-testing",
+      "version": "1.0.0",
+      "repository": "anthropics/skills",
+      "commit": "34040c9c568585f6929bedeaad110ad08f079624",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "source": "skills/webapp-testing/LICENSE.txt",
+          "target": "skills/webapp-testing/LICENSE.txt",
+          "integrity": "sha256-bc6b3af2f331cbc7fb0da1344efb2cbe5877a31498b4d70dbc7000f3405a1362"
+        },
+        {
+          "source": "skills/webapp-testing/SKILL.md",
+          "target": "skills/webapp-testing/SKILL.md",
+          "integrity": "sha256-51b7349e77ec63b7744a6f63647e7566a0b4d2e301121cc10e8c2113af6556a2"
+        },
+        {
+          "source": "skills/webapp-testing/examples/console_logging.py",
+          "target": "skills/webapp-testing/examples/console_logging.py",
+          "integrity": "sha256-ea46877289acb82da7e7ce59d0bc37c8977cd57e2a006d0c88d7a1c625bf95da"
+        },
+        {
+          "source": "skills/webapp-testing/examples/element_discovery.py",
+          "target": "skills/webapp-testing/examples/element_discovery.py",
+          "integrity": "sha256-d63c89604a22f8845d724e95dda45db49b1bf57c25ce0a83afbb7b8da3d402f0"
+        },
+        {
+          "source": "skills/webapp-testing/examples/static_html_automation.py",
+          "target": "skills/webapp-testing/examples/static_html_automation.py",
+          "integrity": "sha256-9d533aafb875ee3ab8b8ebf8f5b9003ac8d999da3d09b285cce252e623140064"
+        },
+        {
+          "source": "skills/webapp-testing/scripts/with_server.py",
+          "target": "skills/webapp-testing/scripts/with_server.py",
+          "integrity": "sha256-b0dcf4918935b795f4eda9821579b9902119235ff4447f687a30286e7d0925fd"
+        }
+      ]
+    },
+    {
+      "id": "mcp-builder",
+      "version": "1.0.0",
+      "repository": "anthropics/skills",
+      "commit": "34040c9c568585f6929bedeaad110ad08f079624",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "source": "skills/mcp-builder/LICENSE.txt",
+          "target": "skills/mcp-builder/LICENSE.txt",
+          "integrity": "sha256-bc6b3af2f331cbc7fb0da1344efb2cbe5877a31498b4d70dbc7000f3405a1362"
+        },
+        {
+          "source": "skills/mcp-builder/SKILL.md",
+          "target": "skills/mcp-builder/SKILL.md",
+          "integrity": "sha256-0f4592dcb53cf2b5d6b7febee6b4152018b565551a1c29e3c612f57b218ab295"
+        },
+        {
+          "source": "skills/mcp-builder/reference/evaluation.md",
+          "target": "skills/mcp-builder/reference/evaluation.md",
+          "integrity": "sha256-8c99479f8a2d22a636c38e274537aac3610879e26f34e0709825077c4576f427"
+        },
+        {
+          "source": "skills/mcp-builder/reference/mcp_best_practices.md",
+          "target": "skills/mcp-builder/reference/mcp_best_practices.md",
+          "integrity": "sha256-80fb4369a349447cf18ecdd7494fe7938b6065377e9f08c077cec411093a3007"
+        },
+        {
+          "source": "skills/mcp-builder/reference/node_mcp_server.md",
+          "target": "skills/mcp-builder/reference/node_mcp_server.md",
+          "integrity": "sha256-c3ba35a4f599dd53be9c6555ae72c19a7bf412cd5426576c2c08d42755482c66"
+        },
+        {
+          "source": "skills/mcp-builder/reference/python_mcp_server.md",
+          "target": "skills/mcp-builder/reference/python_mcp_server.md",
+          "integrity": "sha256-2da52f77e675191014ca2e146a4b95aa04d0ca7dd7e2b100322df15ade685e80"
+        },
+        {
+          "source": "skills/mcp-builder/scripts/connections.py",
+          "target": "skills/mcp-builder/scripts/connections.py",
+          "integrity": "sha256-9403668a2041568772082a8b334122c1f88daf0541fb393af4522d0094a47a6e"
+        },
+        {
+          "source": "skills/mcp-builder/scripts/evaluation.py",
+          "target": "skills/mcp-builder/scripts/evaluation.py",
+          "integrity": "sha256-49ed1d17cdce5da101b210197740713f49b935c29d4f339542a14b132658e6f7"
+        },
+        {
+          "source": "skills/mcp-builder/scripts/example_evaluation.xml",
+          "target": "skills/mcp-builder/scripts/example_evaluation.xml",
+          "integrity": "sha256-9272b348ddcc4b06ba562367ccd0770e018158c0068ac5116d5e34aaeff8777a"
+        },
+        {
+          "source": "skills/mcp-builder/scripts/requirements.txt",
+          "target": "skills/mcp-builder/scripts/requirements.txt",
+          "integrity": "sha256-d5d7558b2368ecea9dfeed7d1fbc71ee9e0750bebd1282faa527d528a344c3c7"
+        }
+      ]
+    },
+    {
+      "id": "remotion",
+      "version": "4.0.529",
+      "repository": "remotion-dev/codex-plugin",
+      "commit": "0e97f3ec3f52692460f3a57d0e3babcfc86f64d5",
+      "license": "MIT",
+      "files": [
+        {
+          "source": "LICENSE",
+          "target": "LICENSE",
+          "integrity": "sha256-1df205bece1fe707f818658a104844aba9a783e43f716642f5bf1286c18263c0"
+        },
+        {
+          "source": "skills/remotion-best-practices/SKILL.md",
+          "target": "skills/remotion-best-practices/SKILL.md",
+          "integrity": "sha256-415ead96489b546e6519a8d4a9f37e986877878f58d6903e6dedfdc5e11b0b4e"
+        },
+        {
+          "source": "skills/remotion-best-practices/agents/openai.yaml",
+          "target": "skills/remotion-best-practices/agents/openai.yaml",
+          "integrity": "sha256-752b402c013ba6f02bd827a7cc56d19e8facb159b52e2e3cecaf2d0229fdefb3"
+        },
+        {
+          "source": "skills/remotion-best-practices/assets/remotion-icon.svg",
+          "target": "skills/remotion-best-practices/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-captions/REFERENCE.md",
+          "target": "skills/remotion-best-practices/remotion-captions/REFERENCE.md",
+          "integrity": "sha256-fc6cd302143a1d18bb3c3fa82317a078f43eed88e51b4307ad8250eb5adafb03"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-captions/agents/openai.yaml",
+          "target": "skills/remotion-best-practices/remotion-captions/agents/openai.yaml",
+          "integrity": "sha256-3b39a48bd00251cf124e80090fe1b792b73020bee858c5d48b5629256cc5f045"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-captions/assets/remotion-icon.svg",
+          "target": "skills/remotion-best-practices/remotion-captions/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-captions/display-captions.md",
+          "target": "skills/remotion-best-practices/remotion-captions/display-captions.md",
+          "integrity": "sha256-32fabb20c5251c3bec5ca706312dd8668dd9e4e0dd42a1bcfd2f927b90b0c72e"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-captions/import-srt-captions.md",
+          "target": "skills/remotion-best-practices/remotion-captions/import-srt-captions.md",
+          "integrity": "sha256-cf5988aad6cba8192a81e5a030955ebf09e97473e0b5ce209e18973bf1a60633"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-captions/transcribe-captions.md",
+          "target": "skills/remotion-best-practices/remotion-captions/transcribe-captions.md",
+          "integrity": "sha256-ad1a62af35fe176b37ac4d98f796451ca66bcc9983207a9710ec3eca6e847738"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-create/REFERENCE.md",
+          "target": "skills/remotion-best-practices/remotion-create/REFERENCE.md",
+          "integrity": "sha256-31159cf747417f347fc8757e6884d1478e53de7c32bd146359f53be7c7645b8d"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-create/agents/openai.yaml",
+          "target": "skills/remotion-best-practices/remotion-create/agents/openai.yaml",
+          "integrity": "sha256-ff3b357b492da1791c672e18ae401a23c31bd1e6f1fa6f98c5efabbb3124bd9c"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-create/assets/remotion-icon.svg",
+          "target": "skills/remotion-best-practices/remotion-create/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-create/tailwind.md",
+          "target": "skills/remotion-best-practices/remotion-create/tailwind.md",
+          "integrity": "sha256-3ef07d3225d212af6a5076e62797a04d22d394434dcdbe2c050dab0d92806f36"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-create/video-layout.md",
+          "target": "skills/remotion-best-practices/remotion-create/video-layout.md",
+          "integrity": "sha256-7ad94c22e3ad87671292ebb9b22f234c544d6c7fed13f8cb112b84b0f7077d4c"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-docs/REFERENCE.md",
+          "target": "skills/remotion-best-practices/remotion-docs/REFERENCE.md",
+          "integrity": "sha256-eed9988117849dc25205b82851910d813f128e3af5ff81b927b24687ce279516"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-docs/agents/openai.yaml",
+          "target": "skills/remotion-best-practices/remotion-docs/agents/openai.yaml",
+          "integrity": "sha256-ab02cb3008e6fc0702d7a601bfdd2f332e1224fda3c37de0265c24311c00d456"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-docs/assets/remotion-icon.svg",
+          "target": "skills/remotion-best-practices/remotion-docs/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-interactivity/REFERENCE.md",
+          "target": "skills/remotion-best-practices/remotion-interactivity/REFERENCE.md",
+          "integrity": "sha256-a85005f0c0be88174286b7a0437f4718e215119e637cd47c3c2244a81831e4c0"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-interactivity/agents/openai.yaml",
+          "target": "skills/remotion-best-practices/remotion-interactivity/agents/openai.yaml",
+          "integrity": "sha256-84cd86b0b10e1f8b5be97bbd46677d5f618304303d922f1016ce0ea6a015d4b9"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-interactivity/assets/remotion-icon.svg",
+          "target": "skills/remotion-best-practices/remotion-interactivity/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/REFERENCE.md",
+          "target": "skills/remotion-best-practices/remotion-maps/REFERENCE.md",
+          "integrity": "sha256-5d1e32add914ab2a8bd63fe814eabd3969f4087cec8573e8805c30635402cc45"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/agents/openai.yaml",
+          "target": "skills/remotion-best-practices/remotion-maps/agents/openai.yaml",
+          "integrity": "sha256-9c6c75daec6eabd78cf6fbc7169be3f7dde934df1316e41df6658052056b29ee"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/assets/remotion-icon.svg",
+          "target": "skills/remotion-best-practices/remotion-maps/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/cesium/TECHNIQUE.md",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/cesium/TECHNIQUE.md",
+          "integrity": "sha256-09057e77b67dcda23eed8ddbf1b5bd44541a952f380913a00b3bfddaa39ab675"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/cesium/assets/cesium-path.json",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/cesium/assets/cesium-path.json",
+          "integrity": "sha256-329621928df19d115f93c472a0b7ddbd2463cad502a10722d3c23579a7441d44"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/cesium/assets/city-path.json",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/cesium/assets/city-path.json",
+          "integrity": "sha256-3bb420736d196f726b856420b319e21a8d7fc24bca7e626d67e8b00b0544e630"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/cesium/assets/flight-path.ts",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/cesium/assets/flight-path.ts",
+          "integrity": "sha256-fab65d2d9cc0c4ca56f8a1422494d178c0e57f92a048a4720358d236ced980f0"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/cesium/assets/sample-river.geojson",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/cesium/assets/sample-river.geojson",
+          "integrity": "sha256-2c9f6dd35ac4aed56580078046941235ed7e1a5d432a6549dbf7fea4e8d1e9be"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/cesium/references/3d-data-sources.md",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/cesium/references/3d-data-sources.md",
+          "integrity": "sha256-23ac1acc576d49d599b33c812dc697b264ebe28849088c04e9827cb47b95275f"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/cesium/references/3d-flyover-architecture.md",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/cesium/references/3d-flyover-architecture.md",
+          "integrity": "sha256-09e1891cec991a246eec60dbcf76c4ea84c52e0bee14321471197703395d0a91"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/cesium/references/3d-troubleshooting.md",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/cesium/references/3d-troubleshooting.md",
+          "integrity": "sha256-c803fe443f5bab1a50408f1f6aa6aded7913577eaefcb586b320c5a96c391bf2"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/cesium/scripts/prep-cesium-path.mjs",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/cesium/scripts/prep-cesium-path.mjs",
+          "integrity": "sha256-6dbb4d1ae3f5fef9f3f6eb23e2a6d58622750714bb847b088ff58a3533839463"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/mapbox/TECHNIQUE.md",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/mapbox/TECHNIQUE.md",
+          "integrity": "sha256-921ef62afc1057e66423a9fae11d3f849d4b3dcfbfa7e9970a281e0d12f37c22"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/mapbox/references/render-stability.md",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/mapbox/references/render-stability.md",
+          "integrity": "sha256-96650329df3a870743b6255123e93dba866a37eb1ab1d07c8275efff0d4dead9"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/maplibre/TECHNIQUE.md",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/maplibre/TECHNIQUE.md",
+          "integrity": "sha256-66b3573b7188a0c9f7df6b12f0c3b84f07b3684ae78c67863e97c3aa50cda3a1"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/maplibre/references/render-stability.md",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/maplibre/references/render-stability.md",
+          "integrity": "sha256-96650329df3a870743b6255123e93dba866a37eb1ab1d07c8275efff0d4dead9"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/TECHNIQUE.md",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/TECHNIQUE.md",
+          "integrity": "sha256-72896873e63d675caaab765941dbb8d668f2790090a63b94e165f254b77ef887"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/assets/MapTilerVectorElement.ts",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/assets/MapTilerVectorElement.ts",
+          "integrity": "sha256-c8137792824323b9db997a88c3b923e8072cf2886cd90c38d84fdbbaad8258ed"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/assets/sample-data/country-meta.json",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/assets/sample-data/country-meta.json",
+          "integrity": "sha256-470a76cc5a45e58e7e1702cd80f74fcacf9d6e8b1ef7b05011f69853a999ba7b"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/assets/sample-data/yarlung-flow.json",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/assets/sample-data/yarlung-flow.json",
+          "integrity": "sha256-73a99e77a2ce31cb3ac39be8fe4775d53ecf127a56137b587fca090067dfbb96"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/assets/tokens.ts",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/assets/tokens.ts",
+          "integrity": "sha256-29ae05eedb4988b5b8f2eb44d241b9c472533fb6ed05d4b33df3e71e0eabc71c"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/references/map-data-sources.md",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/references/map-data-sources.md",
+          "integrity": "sha256-b99680cbda8e7d70dc2cb1a8823f66247a21fc59d10c6dae0dd9ba24d2f15b80"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/references/map-explainer-architecture.md",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/references/map-explainer-architecture.md",
+          "integrity": "sha256-e09de8a4d00ea9a82b992918ec4d0302ee18979b73e6c777d584a9743092344f"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/references/map-geo-prep.md",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/references/map-geo-prep.md",
+          "integrity": "sha256-a97b1913f06195601889d4e090ad056db2fffb7b83918924c8cd92847b3829ef"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/references/render-stability.md",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/references/render-stability.md",
+          "integrity": "sha256-96650329df3a870743b6255123e93dba866a37eb1ab1d07c8275efff0d4dead9"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/scripts/prep-geo.mjs",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/maptiler/scripts/prep-geo.mjs",
+          "integrity": "sha256-8265f56bd7c27a7d1a5fa528a77bbe1b29c6acc0e6730233583ca53e2632d490"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-maps/techniques/static-map/TECHNIQUE.md",
+          "target": "skills/remotion-best-practices/remotion-maps/techniques/static-map/TECHNIQUE.md",
+          "integrity": "sha256-1d2b15f2e09cbb2b2ba0d5a6ec54ecf619b6696acced0b7bec7e010fbe1f1f03"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/3d.md",
+          "target": "skills/remotion-best-practices/remotion-markup/3d.md",
+          "integrity": "sha256-42cef6d68fb4a266ab495d35df0c60e03672b0d85c043f9b567f6aa7ff00dd0d"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/REFERENCE.md",
+          "target": "skills/remotion-best-practices/remotion-markup/REFERENCE.md",
+          "integrity": "sha256-845cc613849402f203df58117597ccebcf4938769287e2cc6369c4f02ec93be4"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/agents/openai.yaml",
+          "target": "skills/remotion-best-practices/remotion-markup/agents/openai.yaml",
+          "integrity": "sha256-79e440561b613adf930f61b9f2ececc3284dfd92d06c4c282b73b461ffd16cb6"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/assets/remotion-icon.svg",
+          "target": "skills/remotion-best-practices/remotion-markup/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/audio-visualization.md",
+          "target": "skills/remotion-best-practices/remotion-markup/audio-visualization.md",
+          "integrity": "sha256-0f4043de86639b6390e5ab888eaa66a24a10a8bd540f1443327cb88107eae1e9"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/audio.md",
+          "target": "skills/remotion-best-practices/remotion-markup/audio.md",
+          "integrity": "sha256-6659ea94112594e4307b6b40d8c237725691bb8f378e90b0f41123f7936cce45"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/calculate-metadata.md",
+          "target": "skills/remotion-best-practices/remotion-markup/calculate-metadata.md",
+          "integrity": "sha256-711743642a475970dcadddb71805939dd6ee8f348825818cc8897b6a01e1eef0"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/compositions.md",
+          "target": "skills/remotion-best-practices/remotion-markup/compositions.md",
+          "integrity": "sha256-bd0da9fb807fdaeee9f7b38b21683e068f3e937149a618971523f83ec277ef8e"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/connected-compositions.md",
+          "target": "skills/remotion-best-practices/remotion-markup/connected-compositions.md",
+          "integrity": "sha256-3718327482077d3ea06022e56983b95c95f7d469a65c5800e96535e1c7eef3d7"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/cropping.md",
+          "target": "skills/remotion-best-practices/remotion-markup/cropping.md",
+          "integrity": "sha256-66b470cb09d2a93939b08340a3503b6cb7aef6682c62c7ef478ca802994d622d"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/effects.md",
+          "target": "skills/remotion-best-practices/remotion-markup/effects.md",
+          "integrity": "sha256-4f8abd99e3a89668aa1b6521d2cbde8a9b3d25aa9cb4ca2b135b96fe4e70fae7"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/embedding-videos.md",
+          "target": "skills/remotion-best-practices/remotion-markup/embedding-videos.md",
+          "integrity": "sha256-5f9265aa46039a8e6f26f733a6f0bf8070f25c9458e8c657a85bbff432433cdf"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/ffmpeg.md",
+          "target": "skills/remotion-best-practices/remotion-markup/ffmpeg.md",
+          "integrity": "sha256-930d26b519b744e97f0c080608b55200b97ff15d6c366c6c5361bab56ff0e873"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/gifs.md",
+          "target": "skills/remotion-best-practices/remotion-markup/gifs.md",
+          "integrity": "sha256-91e17126f7f0d57efdbdbaf34e0c234f874bd6aa66ec7854b80f17b0e32c3b22"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/google-fonts.md",
+          "target": "skills/remotion-best-practices/remotion-markup/google-fonts.md",
+          "integrity": "sha256-fff29cf692ccab0cda263cd85255cf634dbb4d1d2d99e8372b01d9fedbd6cbfd"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/html-in-canvas.md",
+          "target": "skills/remotion-best-practices/remotion-markup/html-in-canvas.md",
+          "integrity": "sha256-d674ed1c1c16a657d8b8a58024e6eee625457b93eca0ef83666cc74d4531bba9"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/images.md",
+          "target": "skills/remotion-best-practices/remotion-markup/images.md",
+          "integrity": "sha256-3a82065698ad8d4818164882212215dfe4dc78f00145c87f47513a691550b72b"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/light-leaks.md",
+          "target": "skills/remotion-best-practices/remotion-markup/light-leaks.md",
+          "integrity": "sha256-892c90340921b5aff5499588aadd23cf9fa79758d345f6ea3acf02ae0258ea73"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/local-fonts.md",
+          "target": "skills/remotion-best-practices/remotion-markup/local-fonts.md",
+          "integrity": "sha256-fcad2a2e3a05419d4555c59a75454c4891455dbea91ad596c1095e2887d26a11"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/lottie.md",
+          "target": "skills/remotion-best-practices/remotion-markup/lottie.md",
+          "integrity": "sha256-666268c8151d91042162f9efe3f02fe8c62b4c45053614eb1a9325c169428826"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/measuring-dom-nodes.md",
+          "target": "skills/remotion-best-practices/remotion-markup/measuring-dom-nodes.md",
+          "integrity": "sha256-a677b976eaf1cbc3cdd29cf29a3fd546c557b9a31e6b1fd70e473fde7e828733"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/measuring-text.md",
+          "target": "skills/remotion-best-practices/remotion-markup/measuring-text.md",
+          "integrity": "sha256-4bed81d1ea818db3975f878152dc24ecbc17e163117dcab10761dc8690c33f0c"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/motion-blur.md",
+          "target": "skills/remotion-best-practices/remotion-markup/motion-blur.md",
+          "integrity": "sha256-4fc4b4710f5635dcbd12206a96a52f7620c8cb0e7c058b3af336b8aeac3a8289"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/multi-scene-video.md",
+          "target": "skills/remotion-best-practices/remotion-markup/multi-scene-video.md",
+          "integrity": "sha256-a00ecb7b961b1cfa702018e05faebc4655245b75e042138c9ab4b39da80e9b12"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/parameters.md",
+          "target": "skills/remotion-best-practices/remotion-markup/parameters.md",
+          "integrity": "sha256-b002ac9959105b2b91da5786bcb20aa6ff4c6632ed37074b32711f248867dff0"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/REFERENCE.md",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/REFERENCE.md",
+          "integrity": "sha256-5d1e32add914ab2a8bd63fe814eabd3969f4087cec8573e8805c30635402cc45"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/agents/openai.yaml",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/agents/openai.yaml",
+          "integrity": "sha256-9c6c75daec6eabd78cf6fbc7169be3f7dde934df1316e41df6658052056b29ee"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/assets/remotion-icon.svg",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/cesium/TECHNIQUE.md",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/cesium/TECHNIQUE.md",
+          "integrity": "sha256-09057e77b67dcda23eed8ddbf1b5bd44541a952f380913a00b3bfddaa39ab675"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/cesium/assets/cesium-path.json",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/cesium/assets/cesium-path.json",
+          "integrity": "sha256-329621928df19d115f93c472a0b7ddbd2463cad502a10722d3c23579a7441d44"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/cesium/assets/city-path.json",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/cesium/assets/city-path.json",
+          "integrity": "sha256-3bb420736d196f726b856420b319e21a8d7fc24bca7e626d67e8b00b0544e630"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/cesium/assets/flight-path.ts",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/cesium/assets/flight-path.ts",
+          "integrity": "sha256-fab65d2d9cc0c4ca56f8a1422494d178c0e57f92a048a4720358d236ced980f0"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/cesium/assets/sample-river.geojson",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/cesium/assets/sample-river.geojson",
+          "integrity": "sha256-2c9f6dd35ac4aed56580078046941235ed7e1a5d432a6549dbf7fea4e8d1e9be"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/cesium/references/3d-data-sources.md",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/cesium/references/3d-data-sources.md",
+          "integrity": "sha256-23ac1acc576d49d599b33c812dc697b264ebe28849088c04e9827cb47b95275f"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/cesium/references/3d-flyover-architecture.md",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/cesium/references/3d-flyover-architecture.md",
+          "integrity": "sha256-09e1891cec991a246eec60dbcf76c4ea84c52e0bee14321471197703395d0a91"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/cesium/references/3d-troubleshooting.md",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/cesium/references/3d-troubleshooting.md",
+          "integrity": "sha256-c803fe443f5bab1a50408f1f6aa6aded7913577eaefcb586b320c5a96c391bf2"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/cesium/scripts/prep-cesium-path.mjs",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/cesium/scripts/prep-cesium-path.mjs",
+          "integrity": "sha256-6dbb4d1ae3f5fef9f3f6eb23e2a6d58622750714bb847b088ff58a3533839463"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/mapbox/TECHNIQUE.md",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/mapbox/TECHNIQUE.md",
+          "integrity": "sha256-921ef62afc1057e66423a9fae11d3f849d4b3dcfbfa7e9970a281e0d12f37c22"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/mapbox/references/render-stability.md",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/mapbox/references/render-stability.md",
+          "integrity": "sha256-96650329df3a870743b6255123e93dba866a37eb1ab1d07c8275efff0d4dead9"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maplibre/TECHNIQUE.md",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maplibre/TECHNIQUE.md",
+          "integrity": "sha256-66b3573b7188a0c9f7df6b12f0c3b84f07b3684ae78c67863e97c3aa50cda3a1"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maplibre/references/render-stability.md",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maplibre/references/render-stability.md",
+          "integrity": "sha256-96650329df3a870743b6255123e93dba866a37eb1ab1d07c8275efff0d4dead9"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/TECHNIQUE.md",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/TECHNIQUE.md",
+          "integrity": "sha256-72896873e63d675caaab765941dbb8d668f2790090a63b94e165f254b77ef887"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/assets/MapTilerVectorElement.ts",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/assets/MapTilerVectorElement.ts",
+          "integrity": "sha256-c8137792824323b9db997a88c3b923e8072cf2886cd90c38d84fdbbaad8258ed"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/assets/sample-data/country-meta.json",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/assets/sample-data/country-meta.json",
+          "integrity": "sha256-470a76cc5a45e58e7e1702cd80f74fcacf9d6e8b1ef7b05011f69853a999ba7b"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/assets/sample-data/yarlung-flow.json",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/assets/sample-data/yarlung-flow.json",
+          "integrity": "sha256-73a99e77a2ce31cb3ac39be8fe4775d53ecf127a56137b587fca090067dfbb96"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/assets/tokens.ts",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/assets/tokens.ts",
+          "integrity": "sha256-29ae05eedb4988b5b8f2eb44d241b9c472533fb6ed05d4b33df3e71e0eabc71c"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/references/map-data-sources.md",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/references/map-data-sources.md",
+          "integrity": "sha256-b99680cbda8e7d70dc2cb1a8823f66247a21fc59d10c6dae0dd9ba24d2f15b80"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/references/map-explainer-architecture.md",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/references/map-explainer-architecture.md",
+          "integrity": "sha256-e09de8a4d00ea9a82b992918ec4d0302ee18979b73e6c777d584a9743092344f"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/references/map-geo-prep.md",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/references/map-geo-prep.md",
+          "integrity": "sha256-a97b1913f06195601889d4e090ad056db2fffb7b83918924c8cd92847b3829ef"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/references/render-stability.md",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/references/render-stability.md",
+          "integrity": "sha256-96650329df3a870743b6255123e93dba866a37eb1ab1d07c8275efff0d4dead9"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/scripts/prep-geo.mjs",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/maptiler/scripts/prep-geo.mjs",
+          "integrity": "sha256-8265f56bd7c27a7d1a5fa528a77bbe1b29c6acc0e6730233583ca53e2632d490"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/static-map/TECHNIQUE.md",
+          "target": "skills/remotion-best-practices/remotion-markup/remotion-maps/techniques/static-map/TECHNIQUE.md",
+          "integrity": "sha256-6fcb61a66084f4037a2fa0deb988500dd18e4ae7fa3c6923fb1142c1e521e9be"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/sequencing.md",
+          "target": "skills/remotion-best-practices/remotion-markup/sequencing.md",
+          "integrity": "sha256-64784498f40db7b32c032dc648282caf5a02082d4d7a6667d8b7a1465f341dc4"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/sfx.md",
+          "target": "skills/remotion-best-practices/remotion-markup/sfx.md",
+          "integrity": "sha256-5397a44c2d7678bf642d746b7edbf4f51e10c31ac99c8054da4a4a7d70365dcd"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/silence-detection.md",
+          "target": "skills/remotion-best-practices/remotion-markup/silence-detection.md",
+          "integrity": "sha256-ed95d46d078f3749b87ec3c6e25c1c5b0c8485fdcb41156d649266369748fdc2"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/text-highlights.md",
+          "target": "skills/remotion-best-practices/remotion-markup/text-highlights.md",
+          "integrity": "sha256-70773952286e1aec2ba02f2f54d2d776dad7799d87744df03b0c75637ebfb21f"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/timing.md",
+          "target": "skills/remotion-best-practices/remotion-markup/timing.md",
+          "integrity": "sha256-48047e758b96aea519916479ede62b832bf51f982924978e091c37f569ab4bac"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/transitions.md",
+          "target": "skills/remotion-best-practices/remotion-markup/transitions.md",
+          "integrity": "sha256-41d69d0b5c862bcada825a68413064837fd4fcd55f81ad59492931db982a08ad"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/video-editing.md",
+          "target": "skills/remotion-best-practices/remotion-markup/video-editing.md",
+          "integrity": "sha256-c43e1b419b0ea32c07b14ff6a17fb3bccb6acea7317de4051827ef0316f4262a"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-markup/voiceover.md",
+          "target": "skills/remotion-best-practices/remotion-markup/voiceover.md",
+          "integrity": "sha256-28350a793939b6170c535a219b2c4702378346ea8485540f980da5ccc5fa19fc"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-multimedia/REFERENCE.md",
+          "target": "skills/remotion-best-practices/remotion-multimedia/REFERENCE.md",
+          "integrity": "sha256-8d99ba3ceee50986b76b867d54eb2accdc8ca1f04626a089e5bc7030f1d67b6a"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-multimedia/agents/openai.yaml",
+          "target": "skills/remotion-best-practices/remotion-multimedia/agents/openai.yaml",
+          "integrity": "sha256-74e07a383bbf02808320ede199873d00a5fc976cb99d407056456b9abdfb0cb7"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-multimedia/assets/remotion-icon.svg",
+          "target": "skills/remotion-best-practices/remotion-multimedia/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-multimedia/get-audio-duration.md",
+          "target": "skills/remotion-best-practices/remotion-multimedia/get-audio-duration.md",
+          "integrity": "sha256-f4ec12e356144697b802a2d93240612aa09b60a76342154983a2cf41316f0bba"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-multimedia/get-video-dimensions.md",
+          "target": "skills/remotion-best-practices/remotion-multimedia/get-video-dimensions.md",
+          "integrity": "sha256-d330e701e4a494fdac7502be52f206f6dee11c43314d1b2f731e4120eed72dc5"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-multimedia/get-video-duration.md",
+          "target": "skills/remotion-best-practices/remotion-multimedia/get-video-duration.md",
+          "integrity": "sha256-6e3bec1b3f62e3ab1f16ad41cca7b14e6e3db5046e8282cd2389e05cff42c743"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-render/REFERENCE.md",
+          "target": "skills/remotion-best-practices/remotion-render/REFERENCE.md",
+          "integrity": "sha256-bac18f3e7d16c525bc7dedb87437c27edaad5842613a167e049b63ac98477fde"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-render/agents/openai.yaml",
+          "target": "skills/remotion-best-practices/remotion-render/agents/openai.yaml",
+          "integrity": "sha256-386699c32fdc63840ce7ff7412953831095dc4cdf60368648378c32895281290"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-render/assets/remotion-icon.svg",
+          "target": "skills/remotion-best-practices/remotion-render/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-render/transparent-videos.md",
+          "target": "skills/remotion-best-practices/remotion-render/transparent-videos.md",
+          "integrity": "sha256-394ccda476e084522d544471fee92d7c65672e2cbaf2201a785c3dd5c74f31a4"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-saas/REFERENCE.md",
+          "target": "skills/remotion-best-practices/remotion-saas/REFERENCE.md",
+          "integrity": "sha256-fa59ffaec0b68340cb656f9575d4b8f944cd2c8658745ce1ba36e1f668c3c6a4"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-saas/agents/openai.yaml",
+          "target": "skills/remotion-best-practices/remotion-saas/agents/openai.yaml",
+          "integrity": "sha256-66be5403b3d10194c99e886372bbc1f4bdb2994fe560278bc7a39b4fbe7753a2"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-saas/assets/remotion-icon.svg",
+          "target": "skills/remotion-best-practices/remotion-saas/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-saas/framework.md",
+          "target": "skills/remotion-best-practices/remotion-saas/framework.md",
+          "integrity": "sha256-5e35ca3306ac15ad1df189789642cefbc62c59f4929372ffc10a67165d7b04b5"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-saas/player.md",
+          "target": "skills/remotion-best-practices/remotion-saas/player.md",
+          "integrity": "sha256-cc2f2944f1158d6ff1ddfc421a6a790f99ae86f54bbe0f0b18ef8bc7485e1b05"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-saas/rendering.md",
+          "target": "skills/remotion-best-practices/remotion-saas/rendering.md",
+          "integrity": "sha256-b2f30b53e0191ef9e7f2da7360b36c0c5448ab5bdcf55575e1f7e55c5bbd257f"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-studio/REFERENCE.md",
+          "target": "skills/remotion-best-practices/remotion-studio/REFERENCE.md",
+          "integrity": "sha256-719b3440b6d6c127450506146f0c10d15ac501ef0cb04a14169bfed614ed20ed"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-studio/agents/openai.yaml",
+          "target": "skills/remotion-best-practices/remotion-studio/agents/openai.yaml",
+          "integrity": "sha256-43afba3c8088614ece62949e33a7c8350092e76436bad87ad41e1a1ccaebea5d"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-studio/assets/remotion-icon.svg",
+          "target": "skills/remotion-best-practices/remotion-studio/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-upgrade/REFERENCE.md",
+          "target": "skills/remotion-best-practices/remotion-upgrade/REFERENCE.md",
+          "integrity": "sha256-f2d42e69708c264a079b559d2c37e85ca8da042f3065d3e2066fe3e624922e5a"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-upgrade/agents/openai.yaml",
+          "target": "skills/remotion-best-practices/remotion-upgrade/agents/openai.yaml",
+          "integrity": "sha256-3f3bc995d3531cfb5a714fd8f951954e118909b749217cc8418a235326d003cb"
+        },
+        {
+          "source": "skills/remotion-best-practices/remotion-upgrade/assets/remotion-icon.svg",
+          "target": "skills/remotion-best-practices/remotion-upgrade/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-captions/SKILL.md",
+          "target": "skills/remotion-captions/SKILL.md",
+          "integrity": "sha256-fc6cd302143a1d18bb3c3fa82317a078f43eed88e51b4307ad8250eb5adafb03"
+        },
+        {
+          "source": "skills/remotion-captions/agents/openai.yaml",
+          "target": "skills/remotion-captions/agents/openai.yaml",
+          "integrity": "sha256-3b39a48bd00251cf124e80090fe1b792b73020bee858c5d48b5629256cc5f045"
+        },
+        {
+          "source": "skills/remotion-captions/assets/remotion-icon.svg",
+          "target": "skills/remotion-captions/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-captions/display-captions.md",
+          "target": "skills/remotion-captions/display-captions.md",
+          "integrity": "sha256-32fabb20c5251c3bec5ca706312dd8668dd9e4e0dd42a1bcfd2f927b90b0c72e"
+        },
+        {
+          "source": "skills/remotion-captions/import-srt-captions.md",
+          "target": "skills/remotion-captions/import-srt-captions.md",
+          "integrity": "sha256-cf5988aad6cba8192a81e5a030955ebf09e97473e0b5ce209e18973bf1a60633"
+        },
+        {
+          "source": "skills/remotion-captions/transcribe-captions.md",
+          "target": "skills/remotion-captions/transcribe-captions.md",
+          "integrity": "sha256-ad1a62af35fe176b37ac4d98f796451ca66bcc9983207a9710ec3eca6e847738"
+        },
+        {
+          "source": "skills/remotion-create/SKILL.md",
+          "target": "skills/remotion-create/SKILL.md",
+          "integrity": "sha256-16400ef9d32264ac486fc4dcc38bc1e820293d90fcbcef1bb12520cfd211f725"
+        },
+        {
+          "source": "skills/remotion-create/agents/openai.yaml",
+          "target": "skills/remotion-create/agents/openai.yaml",
+          "integrity": "sha256-ff3b357b492da1791c672e18ae401a23c31bd1e6f1fa6f98c5efabbb3124bd9c"
+        },
+        {
+          "source": "skills/remotion-create/assets/remotion-icon.svg",
+          "target": "skills/remotion-create/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-create/tailwind.md",
+          "target": "skills/remotion-create/tailwind.md",
+          "integrity": "sha256-3ef07d3225d212af6a5076e62797a04d22d394434dcdbe2c050dab0d92806f36"
+        },
+        {
+          "source": "skills/remotion-create/video-layout.md",
+          "target": "skills/remotion-create/video-layout.md",
+          "integrity": "sha256-7ad94c22e3ad87671292ebb9b22f234c544d6c7fed13f8cb112b84b0f7077d4c"
+        },
+        {
+          "source": "skills/remotion-docs/SKILL.md",
+          "target": "skills/remotion-docs/SKILL.md",
+          "integrity": "sha256-7a8b5d3b988f375d76aabbd335561310710e7cbc1251e87292ef2be20f587c5e"
+        },
+        {
+          "source": "skills/remotion-docs/agents/openai.yaml",
+          "target": "skills/remotion-docs/agents/openai.yaml",
+          "integrity": "sha256-ab02cb3008e6fc0702d7a601bfdd2f332e1224fda3c37de0265c24311c00d456"
+        },
+        {
+          "source": "skills/remotion-docs/assets/remotion-icon.svg",
+          "target": "skills/remotion-docs/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-interactivity/SKILL.md",
+          "target": "skills/remotion-interactivity/SKILL.md",
+          "integrity": "sha256-79d3e63572902185655d8ffaf0c43cea41b0007a9ff0afc587ff2f8cc00ed0e4"
+        },
+        {
+          "source": "skills/remotion-interactivity/agents/openai.yaml",
+          "target": "skills/remotion-interactivity/agents/openai.yaml",
+          "integrity": "sha256-84cd86b0b10e1f8b5be97bbd46677d5f618304303d922f1016ce0ea6a015d4b9"
+        },
+        {
+          "source": "skills/remotion-interactivity/assets/remotion-icon.svg",
+          "target": "skills/remotion-interactivity/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-maps/SKILL.md",
+          "target": "skills/remotion-maps/SKILL.md",
+          "integrity": "sha256-5d1e32add914ab2a8bd63fe814eabd3969f4087cec8573e8805c30635402cc45"
+        },
+        {
+          "source": "skills/remotion-maps/agents/openai.yaml",
+          "target": "skills/remotion-maps/agents/openai.yaml",
+          "integrity": "sha256-9c6c75daec6eabd78cf6fbc7169be3f7dde934df1316e41df6658052056b29ee"
+        },
+        {
+          "source": "skills/remotion-maps/assets/remotion-icon.svg",
+          "target": "skills/remotion-maps/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/cesium/TECHNIQUE.md",
+          "target": "skills/remotion-maps/techniques/cesium/TECHNIQUE.md",
+          "integrity": "sha256-09057e77b67dcda23eed8ddbf1b5bd44541a952f380913a00b3bfddaa39ab675"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/cesium/assets/cesium-path.json",
+          "target": "skills/remotion-maps/techniques/cesium/assets/cesium-path.json",
+          "integrity": "sha256-329621928df19d115f93c472a0b7ddbd2463cad502a10722d3c23579a7441d44"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/cesium/assets/city-path.json",
+          "target": "skills/remotion-maps/techniques/cesium/assets/city-path.json",
+          "integrity": "sha256-3bb420736d196f726b856420b319e21a8d7fc24bca7e626d67e8b00b0544e630"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/cesium/assets/flight-path.ts",
+          "target": "skills/remotion-maps/techniques/cesium/assets/flight-path.ts",
+          "integrity": "sha256-fab65d2d9cc0c4ca56f8a1422494d178c0e57f92a048a4720358d236ced980f0"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/cesium/assets/sample-river.geojson",
+          "target": "skills/remotion-maps/techniques/cesium/assets/sample-river.geojson",
+          "integrity": "sha256-2c9f6dd35ac4aed56580078046941235ed7e1a5d432a6549dbf7fea4e8d1e9be"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/cesium/references/3d-data-sources.md",
+          "target": "skills/remotion-maps/techniques/cesium/references/3d-data-sources.md",
+          "integrity": "sha256-23ac1acc576d49d599b33c812dc697b264ebe28849088c04e9827cb47b95275f"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/cesium/references/3d-flyover-architecture.md",
+          "target": "skills/remotion-maps/techniques/cesium/references/3d-flyover-architecture.md",
+          "integrity": "sha256-09e1891cec991a246eec60dbcf76c4ea84c52e0bee14321471197703395d0a91"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/cesium/references/3d-troubleshooting.md",
+          "target": "skills/remotion-maps/techniques/cesium/references/3d-troubleshooting.md",
+          "integrity": "sha256-c803fe443f5bab1a50408f1f6aa6aded7913577eaefcb586b320c5a96c391bf2"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/cesium/scripts/prep-cesium-path.mjs",
+          "target": "skills/remotion-maps/techniques/cesium/scripts/prep-cesium-path.mjs",
+          "integrity": "sha256-6dbb4d1ae3f5fef9f3f6eb23e2a6d58622750714bb847b088ff58a3533839463"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/mapbox/TECHNIQUE.md",
+          "target": "skills/remotion-maps/techniques/mapbox/TECHNIQUE.md",
+          "integrity": "sha256-921ef62afc1057e66423a9fae11d3f849d4b3dcfbfa7e9970a281e0d12f37c22"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/mapbox/references/render-stability.md",
+          "target": "skills/remotion-maps/techniques/mapbox/references/render-stability.md",
+          "integrity": "sha256-96650329df3a870743b6255123e93dba866a37eb1ab1d07c8275efff0d4dead9"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/maplibre/TECHNIQUE.md",
+          "target": "skills/remotion-maps/techniques/maplibre/TECHNIQUE.md",
+          "integrity": "sha256-66b3573b7188a0c9f7df6b12f0c3b84f07b3684ae78c67863e97c3aa50cda3a1"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/maplibre/references/render-stability.md",
+          "target": "skills/remotion-maps/techniques/maplibre/references/render-stability.md",
+          "integrity": "sha256-96650329df3a870743b6255123e93dba866a37eb1ab1d07c8275efff0d4dead9"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/maptiler/TECHNIQUE.md",
+          "target": "skills/remotion-maps/techniques/maptiler/TECHNIQUE.md",
+          "integrity": "sha256-72896873e63d675caaab765941dbb8d668f2790090a63b94e165f254b77ef887"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/maptiler/assets/MapTilerVectorElement.ts",
+          "target": "skills/remotion-maps/techniques/maptiler/assets/MapTilerVectorElement.ts",
+          "integrity": "sha256-c8137792824323b9db997a88c3b923e8072cf2886cd90c38d84fdbbaad8258ed"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/maptiler/assets/sample-data/country-meta.json",
+          "target": "skills/remotion-maps/techniques/maptiler/assets/sample-data/country-meta.json",
+          "integrity": "sha256-470a76cc5a45e58e7e1702cd80f74fcacf9d6e8b1ef7b05011f69853a999ba7b"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/maptiler/assets/sample-data/yarlung-flow.json",
+          "target": "skills/remotion-maps/techniques/maptiler/assets/sample-data/yarlung-flow.json",
+          "integrity": "sha256-73a99e77a2ce31cb3ac39be8fe4775d53ecf127a56137b587fca090067dfbb96"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/maptiler/assets/tokens.ts",
+          "target": "skills/remotion-maps/techniques/maptiler/assets/tokens.ts",
+          "integrity": "sha256-29ae05eedb4988b5b8f2eb44d241b9c472533fb6ed05d4b33df3e71e0eabc71c"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/maptiler/references/map-data-sources.md",
+          "target": "skills/remotion-maps/techniques/maptiler/references/map-data-sources.md",
+          "integrity": "sha256-b99680cbda8e7d70dc2cb1a8823f66247a21fc59d10c6dae0dd9ba24d2f15b80"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/maptiler/references/map-explainer-architecture.md",
+          "target": "skills/remotion-maps/techniques/maptiler/references/map-explainer-architecture.md",
+          "integrity": "sha256-e09de8a4d00ea9a82b992918ec4d0302ee18979b73e6c777d584a9743092344f"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/maptiler/references/map-geo-prep.md",
+          "target": "skills/remotion-maps/techniques/maptiler/references/map-geo-prep.md",
+          "integrity": "sha256-a97b1913f06195601889d4e090ad056db2fffb7b83918924c8cd92847b3829ef"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/maptiler/references/render-stability.md",
+          "target": "skills/remotion-maps/techniques/maptiler/references/render-stability.md",
+          "integrity": "sha256-96650329df3a870743b6255123e93dba866a37eb1ab1d07c8275efff0d4dead9"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/maptiler/scripts/prep-geo.mjs",
+          "target": "skills/remotion-maps/techniques/maptiler/scripts/prep-geo.mjs",
+          "integrity": "sha256-8265f56bd7c27a7d1a5fa528a77bbe1b29c6acc0e6730233583ca53e2632d490"
+        },
+        {
+          "source": "skills/remotion-maps/techniques/static-map/TECHNIQUE.md",
+          "target": "skills/remotion-maps/techniques/static-map/TECHNIQUE.md",
+          "integrity": "sha256-5c1dd66fe41a476fb54474f29388b2caea6d8f73c81c585a761dace5aa8d8647"
+        },
+        {
+          "source": "skills/remotion-markup/3d.md",
+          "target": "skills/remotion-markup/3d.md",
+          "integrity": "sha256-42cef6d68fb4a266ab495d35df0c60e03672b0d85c043f9b567f6aa7ff00dd0d"
+        },
+        {
+          "source": "skills/remotion-markup/SKILL.md",
+          "target": "skills/remotion-markup/SKILL.md",
+          "integrity": "sha256-956381575e9318427da0eca735baafcd8664c903186fc562c25c6ebef5a037c1"
+        },
+        {
+          "source": "skills/remotion-markup/agents/openai.yaml",
+          "target": "skills/remotion-markup/agents/openai.yaml",
+          "integrity": "sha256-79e440561b613adf930f61b9f2ececc3284dfd92d06c4c282b73b461ffd16cb6"
+        },
+        {
+          "source": "skills/remotion-markup/assets/remotion-icon.svg",
+          "target": "skills/remotion-markup/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-markup/audio-visualization.md",
+          "target": "skills/remotion-markup/audio-visualization.md",
+          "integrity": "sha256-0f4043de86639b6390e5ab888eaa66a24a10a8bd540f1443327cb88107eae1e9"
+        },
+        {
+          "source": "skills/remotion-markup/audio.md",
+          "target": "skills/remotion-markup/audio.md",
+          "integrity": "sha256-6659ea94112594e4307b6b40d8c237725691bb8f378e90b0f41123f7936cce45"
+        },
+        {
+          "source": "skills/remotion-markup/calculate-metadata.md",
+          "target": "skills/remotion-markup/calculate-metadata.md",
+          "integrity": "sha256-ca904cd19d65bd926a1fb07519eb769cc55deeffe74f7c3282d5e3fd16a0dcba"
+        },
+        {
+          "source": "skills/remotion-markup/compositions.md",
+          "target": "skills/remotion-markup/compositions.md",
+          "integrity": "sha256-bd0da9fb807fdaeee9f7b38b21683e068f3e937149a618971523f83ec277ef8e"
+        },
+        {
+          "source": "skills/remotion-markup/connected-compositions.md",
+          "target": "skills/remotion-markup/connected-compositions.md",
+          "integrity": "sha256-3718327482077d3ea06022e56983b95c95f7d469a65c5800e96535e1c7eef3d7"
+        },
+        {
+          "source": "skills/remotion-markup/cropping.md",
+          "target": "skills/remotion-markup/cropping.md",
+          "integrity": "sha256-98edcc2767e7087ba097b54f96f6b2f4a175f7374c5f47a383951950961598aa"
+        },
+        {
+          "source": "skills/remotion-markup/effects.md",
+          "target": "skills/remotion-markup/effects.md",
+          "integrity": "sha256-4f8abd99e3a89668aa1b6521d2cbde8a9b3d25aa9cb4ca2b135b96fe4e70fae7"
+        },
+        {
+          "source": "skills/remotion-markup/embedding-videos.md",
+          "target": "skills/remotion-markup/embedding-videos.md",
+          "integrity": "sha256-5f9265aa46039a8e6f26f733a6f0bf8070f25c9458e8c657a85bbff432433cdf"
+        },
+        {
+          "source": "skills/remotion-markup/ffmpeg.md",
+          "target": "skills/remotion-markup/ffmpeg.md",
+          "integrity": "sha256-930d26b519b744e97f0c080608b55200b97ff15d6c366c6c5361bab56ff0e873"
+        },
+        {
+          "source": "skills/remotion-markup/gifs.md",
+          "target": "skills/remotion-markup/gifs.md",
+          "integrity": "sha256-91e17126f7f0d57efdbdbaf34e0c234f874bd6aa66ec7854b80f17b0e32c3b22"
+        },
+        {
+          "source": "skills/remotion-markup/google-fonts.md",
+          "target": "skills/remotion-markup/google-fonts.md",
+          "integrity": "sha256-fff29cf692ccab0cda263cd85255cf634dbb4d1d2d99e8372b01d9fedbd6cbfd"
+        },
+        {
+          "source": "skills/remotion-markup/html-in-canvas.md",
+          "target": "skills/remotion-markup/html-in-canvas.md",
+          "integrity": "sha256-d674ed1c1c16a657d8b8a58024e6eee625457b93eca0ef83666cc74d4531bba9"
+        },
+        {
+          "source": "skills/remotion-markup/images.md",
+          "target": "skills/remotion-markup/images.md",
+          "integrity": "sha256-3a82065698ad8d4818164882212215dfe4dc78f00145c87f47513a691550b72b"
+        },
+        {
+          "source": "skills/remotion-markup/light-leaks.md",
+          "target": "skills/remotion-markup/light-leaks.md",
+          "integrity": "sha256-892c90340921b5aff5499588aadd23cf9fa79758d345f6ea3acf02ae0258ea73"
+        },
+        {
+          "source": "skills/remotion-markup/local-fonts.md",
+          "target": "skills/remotion-markup/local-fonts.md",
+          "integrity": "sha256-fcad2a2e3a05419d4555c59a75454c4891455dbea91ad596c1095e2887d26a11"
+        },
+        {
+          "source": "skills/remotion-markup/lottie.md",
+          "target": "skills/remotion-markup/lottie.md",
+          "integrity": "sha256-666268c8151d91042162f9efe3f02fe8c62b4c45053614eb1a9325c169428826"
+        },
+        {
+          "source": "skills/remotion-markup/measuring-dom-nodes.md",
+          "target": "skills/remotion-markup/measuring-dom-nodes.md",
+          "integrity": "sha256-a677b976eaf1cbc3cdd29cf29a3fd546c557b9a31e6b1fd70e473fde7e828733"
+        },
+        {
+          "source": "skills/remotion-markup/measuring-text.md",
+          "target": "skills/remotion-markup/measuring-text.md",
+          "integrity": "sha256-4bed81d1ea818db3975f878152dc24ecbc17e163117dcab10761dc8690c33f0c"
+        },
+        {
+          "source": "skills/remotion-markup/motion-blur.md",
+          "target": "skills/remotion-markup/motion-blur.md",
+          "integrity": "sha256-4fc4b4710f5635dcbd12206a96a52f7620c8cb0e7c058b3af336b8aeac3a8289"
+        },
+        {
+          "source": "skills/remotion-markup/multi-scene-video.md",
+          "target": "skills/remotion-markup/multi-scene-video.md",
+          "integrity": "sha256-a00ecb7b961b1cfa702018e05faebc4655245b75e042138c9ab4b39da80e9b12"
+        },
+        {
+          "source": "skills/remotion-markup/parameters.md",
+          "target": "skills/remotion-markup/parameters.md",
+          "integrity": "sha256-b002ac9959105b2b91da5786bcb20aa6ff4c6632ed37074b32711f248867dff0"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/REFERENCE.md",
+          "target": "skills/remotion-markup/remotion-maps/REFERENCE.md",
+          "integrity": "sha256-5d1e32add914ab2a8bd63fe814eabd3969f4087cec8573e8805c30635402cc45"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/agents/openai.yaml",
+          "target": "skills/remotion-markup/remotion-maps/agents/openai.yaml",
+          "integrity": "sha256-9c6c75daec6eabd78cf6fbc7169be3f7dde934df1316e41df6658052056b29ee"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/assets/remotion-icon.svg",
+          "target": "skills/remotion-markup/remotion-maps/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/cesium/TECHNIQUE.md",
+          "target": "skills/remotion-markup/remotion-maps/techniques/cesium/TECHNIQUE.md",
+          "integrity": "sha256-09057e77b67dcda23eed8ddbf1b5bd44541a952f380913a00b3bfddaa39ab675"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/cesium/assets/cesium-path.json",
+          "target": "skills/remotion-markup/remotion-maps/techniques/cesium/assets/cesium-path.json",
+          "integrity": "sha256-329621928df19d115f93c472a0b7ddbd2463cad502a10722d3c23579a7441d44"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/cesium/assets/city-path.json",
+          "target": "skills/remotion-markup/remotion-maps/techniques/cesium/assets/city-path.json",
+          "integrity": "sha256-3bb420736d196f726b856420b319e21a8d7fc24bca7e626d67e8b00b0544e630"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/cesium/assets/flight-path.ts",
+          "target": "skills/remotion-markup/remotion-maps/techniques/cesium/assets/flight-path.ts",
+          "integrity": "sha256-fab65d2d9cc0c4ca56f8a1422494d178c0e57f92a048a4720358d236ced980f0"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/cesium/assets/sample-river.geojson",
+          "target": "skills/remotion-markup/remotion-maps/techniques/cesium/assets/sample-river.geojson",
+          "integrity": "sha256-2c9f6dd35ac4aed56580078046941235ed7e1a5d432a6549dbf7fea4e8d1e9be"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/cesium/references/3d-data-sources.md",
+          "target": "skills/remotion-markup/remotion-maps/techniques/cesium/references/3d-data-sources.md",
+          "integrity": "sha256-23ac1acc576d49d599b33c812dc697b264ebe28849088c04e9827cb47b95275f"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/cesium/references/3d-flyover-architecture.md",
+          "target": "skills/remotion-markup/remotion-maps/techniques/cesium/references/3d-flyover-architecture.md",
+          "integrity": "sha256-09e1891cec991a246eec60dbcf76c4ea84c52e0bee14321471197703395d0a91"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/cesium/references/3d-troubleshooting.md",
+          "target": "skills/remotion-markup/remotion-maps/techniques/cesium/references/3d-troubleshooting.md",
+          "integrity": "sha256-c803fe443f5bab1a50408f1f6aa6aded7913577eaefcb586b320c5a96c391bf2"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/cesium/scripts/prep-cesium-path.mjs",
+          "target": "skills/remotion-markup/remotion-maps/techniques/cesium/scripts/prep-cesium-path.mjs",
+          "integrity": "sha256-6dbb4d1ae3f5fef9f3f6eb23e2a6d58622750714bb847b088ff58a3533839463"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/mapbox/TECHNIQUE.md",
+          "target": "skills/remotion-markup/remotion-maps/techniques/mapbox/TECHNIQUE.md",
+          "integrity": "sha256-921ef62afc1057e66423a9fae11d3f849d4b3dcfbfa7e9970a281e0d12f37c22"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/mapbox/references/render-stability.md",
+          "target": "skills/remotion-markup/remotion-maps/techniques/mapbox/references/render-stability.md",
+          "integrity": "sha256-96650329df3a870743b6255123e93dba866a37eb1ab1d07c8275efff0d4dead9"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/maplibre/TECHNIQUE.md",
+          "target": "skills/remotion-markup/remotion-maps/techniques/maplibre/TECHNIQUE.md",
+          "integrity": "sha256-66b3573b7188a0c9f7df6b12f0c3b84f07b3684ae78c67863e97c3aa50cda3a1"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/maplibre/references/render-stability.md",
+          "target": "skills/remotion-markup/remotion-maps/techniques/maplibre/references/render-stability.md",
+          "integrity": "sha256-96650329df3a870743b6255123e93dba866a37eb1ab1d07c8275efff0d4dead9"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/maptiler/TECHNIQUE.md",
+          "target": "skills/remotion-markup/remotion-maps/techniques/maptiler/TECHNIQUE.md",
+          "integrity": "sha256-72896873e63d675caaab765941dbb8d668f2790090a63b94e165f254b77ef887"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/maptiler/assets/MapTilerVectorElement.ts",
+          "target": "skills/remotion-markup/remotion-maps/techniques/maptiler/assets/MapTilerVectorElement.ts",
+          "integrity": "sha256-c8137792824323b9db997a88c3b923e8072cf2886cd90c38d84fdbbaad8258ed"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/maptiler/assets/sample-data/country-meta.json",
+          "target": "skills/remotion-markup/remotion-maps/techniques/maptiler/assets/sample-data/country-meta.json",
+          "integrity": "sha256-470a76cc5a45e58e7e1702cd80f74fcacf9d6e8b1ef7b05011f69853a999ba7b"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/maptiler/assets/sample-data/yarlung-flow.json",
+          "target": "skills/remotion-markup/remotion-maps/techniques/maptiler/assets/sample-data/yarlung-flow.json",
+          "integrity": "sha256-73a99e77a2ce31cb3ac39be8fe4775d53ecf127a56137b587fca090067dfbb96"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/maptiler/assets/tokens.ts",
+          "target": "skills/remotion-markup/remotion-maps/techniques/maptiler/assets/tokens.ts",
+          "integrity": "sha256-29ae05eedb4988b5b8f2eb44d241b9c472533fb6ed05d4b33df3e71e0eabc71c"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/maptiler/references/map-data-sources.md",
+          "target": "skills/remotion-markup/remotion-maps/techniques/maptiler/references/map-data-sources.md",
+          "integrity": "sha256-b99680cbda8e7d70dc2cb1a8823f66247a21fc59d10c6dae0dd9ba24d2f15b80"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/maptiler/references/map-explainer-architecture.md",
+          "target": "skills/remotion-markup/remotion-maps/techniques/maptiler/references/map-explainer-architecture.md",
+          "integrity": "sha256-e09de8a4d00ea9a82b992918ec4d0302ee18979b73e6c777d584a9743092344f"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/maptiler/references/map-geo-prep.md",
+          "target": "skills/remotion-markup/remotion-maps/techniques/maptiler/references/map-geo-prep.md",
+          "integrity": "sha256-a97b1913f06195601889d4e090ad056db2fffb7b83918924c8cd92847b3829ef"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/maptiler/references/render-stability.md",
+          "target": "skills/remotion-markup/remotion-maps/techniques/maptiler/references/render-stability.md",
+          "integrity": "sha256-96650329df3a870743b6255123e93dba866a37eb1ab1d07c8275efff0d4dead9"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/maptiler/scripts/prep-geo.mjs",
+          "target": "skills/remotion-markup/remotion-maps/techniques/maptiler/scripts/prep-geo.mjs",
+          "integrity": "sha256-8265f56bd7c27a7d1a5fa528a77bbe1b29c6acc0e6730233583ca53e2632d490"
+        },
+        {
+          "source": "skills/remotion-markup/remotion-maps/techniques/static-map/TECHNIQUE.md",
+          "target": "skills/remotion-markup/remotion-maps/techniques/static-map/TECHNIQUE.md",
+          "integrity": "sha256-28fe6e300d249cf85493132a23f6e5392bb5933ac99011b3ac4a3868f5f2cae9"
+        },
+        {
+          "source": "skills/remotion-markup/sequencing.md",
+          "target": "skills/remotion-markup/sequencing.md",
+          "integrity": "sha256-64784498f40db7b32c032dc648282caf5a02082d4d7a6667d8b7a1465f341dc4"
+        },
+        {
+          "source": "skills/remotion-markup/sfx.md",
+          "target": "skills/remotion-markup/sfx.md",
+          "integrity": "sha256-5397a44c2d7678bf642d746b7edbf4f51e10c31ac99c8054da4a4a7d70365dcd"
+        },
+        {
+          "source": "skills/remotion-markup/silence-detection.md",
+          "target": "skills/remotion-markup/silence-detection.md",
+          "integrity": "sha256-ed95d46d078f3749b87ec3c6e25c1c5b0c8485fdcb41156d649266369748fdc2"
+        },
+        {
+          "source": "skills/remotion-markup/text-highlights.md",
+          "target": "skills/remotion-markup/text-highlights.md",
+          "integrity": "sha256-6a3b7629b947e8657c42b73b1f53c91d9b1535af1bfed57e054981c51bb951cc"
+        },
+        {
+          "source": "skills/remotion-markup/timing.md",
+          "target": "skills/remotion-markup/timing.md",
+          "integrity": "sha256-48047e758b96aea519916479ede62b832bf51f982924978e091c37f569ab4bac"
+        },
+        {
+          "source": "skills/remotion-markup/transitions.md",
+          "target": "skills/remotion-markup/transitions.md",
+          "integrity": "sha256-41d69d0b5c862bcada825a68413064837fd4fcd55f81ad59492931db982a08ad"
+        },
+        {
+          "source": "skills/remotion-markup/video-editing.md",
+          "target": "skills/remotion-markup/video-editing.md",
+          "integrity": "sha256-c43e1b419b0ea32c07b14ff6a17fb3bccb6acea7317de4051827ef0316f4262a"
+        },
+        {
+          "source": "skills/remotion-markup/voiceover.md",
+          "target": "skills/remotion-markup/voiceover.md",
+          "integrity": "sha256-c5689cf3a106e115fc2e7e36c94ca0a193a8a1592a0817c6ee5b3e5b13ac55dc"
+        },
+        {
+          "source": "skills/remotion-multimedia/SKILL.md",
+          "target": "skills/remotion-multimedia/SKILL.md",
+          "integrity": "sha256-8d99ba3ceee50986b76b867d54eb2accdc8ca1f04626a089e5bc7030f1d67b6a"
+        },
+        {
+          "source": "skills/remotion-multimedia/agents/openai.yaml",
+          "target": "skills/remotion-multimedia/agents/openai.yaml",
+          "integrity": "sha256-74e07a383bbf02808320ede199873d00a5fc976cb99d407056456b9abdfb0cb7"
+        },
+        {
+          "source": "skills/remotion-multimedia/assets/remotion-icon.svg",
+          "target": "skills/remotion-multimedia/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-multimedia/get-audio-duration.md",
+          "target": "skills/remotion-multimedia/get-audio-duration.md",
+          "integrity": "sha256-f4ec12e356144697b802a2d93240612aa09b60a76342154983a2cf41316f0bba"
+        },
+        {
+          "source": "skills/remotion-multimedia/get-video-dimensions.md",
+          "target": "skills/remotion-multimedia/get-video-dimensions.md",
+          "integrity": "sha256-d330e701e4a494fdac7502be52f206f6dee11c43314d1b2f731e4120eed72dc5"
+        },
+        {
+          "source": "skills/remotion-multimedia/get-video-duration.md",
+          "target": "skills/remotion-multimedia/get-video-duration.md",
+          "integrity": "sha256-6e3bec1b3f62e3ab1f16ad41cca7b14e6e3db5046e8282cd2389e05cff42c743"
+        },
+        {
+          "source": "skills/remotion-render/SKILL.md",
+          "target": "skills/remotion-render/SKILL.md",
+          "integrity": "sha256-bac18f3e7d16c525bc7dedb87437c27edaad5842613a167e049b63ac98477fde"
+        },
+        {
+          "source": "skills/remotion-render/agents/openai.yaml",
+          "target": "skills/remotion-render/agents/openai.yaml",
+          "integrity": "sha256-386699c32fdc63840ce7ff7412953831095dc4cdf60368648378c32895281290"
+        },
+        {
+          "source": "skills/remotion-render/assets/remotion-icon.svg",
+          "target": "skills/remotion-render/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-render/transparent-videos.md",
+          "target": "skills/remotion-render/transparent-videos.md",
+          "integrity": "sha256-394ccda476e084522d544471fee92d7c65672e2cbaf2201a785c3dd5c74f31a4"
+        },
+        {
+          "source": "skills/remotion-saas/SKILL.md",
+          "target": "skills/remotion-saas/SKILL.md",
+          "integrity": "sha256-fa59ffaec0b68340cb656f9575d4b8f944cd2c8658745ce1ba36e1f668c3c6a4"
+        },
+        {
+          "source": "skills/remotion-saas/agents/openai.yaml",
+          "target": "skills/remotion-saas/agents/openai.yaml",
+          "integrity": "sha256-66be5403b3d10194c99e886372bbc1f4bdb2994fe560278bc7a39b4fbe7753a2"
+        },
+        {
+          "source": "skills/remotion-saas/assets/remotion-icon.svg",
+          "target": "skills/remotion-saas/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-saas/framework.md",
+          "target": "skills/remotion-saas/framework.md",
+          "integrity": "sha256-5e35ca3306ac15ad1df189789642cefbc62c59f4929372ffc10a67165d7b04b5"
+        },
+        {
+          "source": "skills/remotion-saas/player.md",
+          "target": "skills/remotion-saas/player.md",
+          "integrity": "sha256-cc2f2944f1158d6ff1ddfc421a6a790f99ae86f54bbe0f0b18ef8bc7485e1b05"
+        },
+        {
+          "source": "skills/remotion-saas/rendering.md",
+          "target": "skills/remotion-saas/rendering.md",
+          "integrity": "sha256-b2f30b53e0191ef9e7f2da7360b36c0c5448ab5bdcf55575e1f7e55c5bbd257f"
+        },
+        {
+          "source": "skills/remotion-studio/SKILL.md",
+          "target": "skills/remotion-studio/SKILL.md",
+          "integrity": "sha256-719b3440b6d6c127450506146f0c10d15ac501ef0cb04a14169bfed614ed20ed"
+        },
+        {
+          "source": "skills/remotion-studio/agents/openai.yaml",
+          "target": "skills/remotion-studio/agents/openai.yaml",
+          "integrity": "sha256-43afba3c8088614ece62949e33a7c8350092e76436bad87ad41e1a1ccaebea5d"
+        },
+        {
+          "source": "skills/remotion-studio/assets/remotion-icon.svg",
+          "target": "skills/remotion-studio/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        },
+        {
+          "source": "skills/remotion-upgrade/SKILL.md",
+          "target": "skills/remotion-upgrade/SKILL.md",
+          "integrity": "sha256-f2d42e69708c264a079b559d2c37e85ca8da042f3065d3e2066fe3e624922e5a"
+        },
+        {
+          "source": "skills/remotion-upgrade/agents/openai.yaml",
+          "target": "skills/remotion-upgrade/agents/openai.yaml",
+          "integrity": "sha256-3f3bc995d3531cfb5a714fd8f951954e118909b749217cc8418a235326d003cb"
+        },
+        {
+          "source": "skills/remotion-upgrade/assets/remotion-icon.svg",
+          "target": "skills/remotion-upgrade/assets/remotion-icon.svg",
+          "integrity": "sha256-5007669bd0555b0f4565b4e7176fa191310ab0039b2ed09d867a9270f5b0ce58"
+        }
+      ]
+    }
+  ]
+}

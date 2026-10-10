@@ -1,0 +1,11 @@
+# Caller cancellation through the existing commit buffer
+
+The four original held-HTTPS schedules in `stream-abort.test.ts` execute actual `queryModelWithStreaming`, the production original-environment client and pinned SDK 0.80.0. The response socket remains open until the selected original stream event causes real user cancellation. Completed and unfinished text survives; a pending local tool is dropped; committed server-side boundary envelopes remain visible without replay.
+
+Go receives only original history/system/model/environment/runtime and the original control event. It independently prepares and sends once through `modelyield` and shared `requestretry`; it never receives Source-prepared requests, expected envelopes, classified faults or tool results. Its existing stream-history Controller supplies both normal and abort completion; no second response buffer was introduced.
+
+Each positive schedule runs Source self-replay and independent Go. Comparison covers opaque complete yield/final bytes, UUID/Date and preparation counts, original history, actual requests and socket closure. Only allocated origin/HOME anchors vary. Automatic transport headers remain saved as raw metadata and are still pending final wire equality. The corpus has four positive profiles, twelve pre-business guard negatives and one nine-mutant test; these categories are distinct.
+
+The original four native regressions failed with missing visible text before Controller.Abort was integrated. Native tests additionally cover explicit consumer stop, arbitrary or wrapped-stop error identity, invalid action, empty abort and closed-controller reuse. No API-error assistant or finished tool is synthesized from cancellation. A signal wins over an incidental transport failure only after consumer ownership is respected.
+
+This finite model phase does not establish actual CLI/Server dispatch, outer preflight, active tools/hooks, stop-failure completion, SDK dynamic admission/results/writer/cache or full Harness/Benchmark parity. Original Source has only test-side observers and external private-home/capability guards; production Source remains unchanged. The corpus stores raw inputs/outputs, response wire, native coverage and physical connection counts under ignored artifacts. No live provider runs occur.

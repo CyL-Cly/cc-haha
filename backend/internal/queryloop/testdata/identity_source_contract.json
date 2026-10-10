@@ -1,0 +1,6873 @@
+{
+  "source": "Actual pinned Source findToolByName/runTools/runToolUse, production profile, self-replayed; query-loop-identity.test.ts",
+  "cases": [
+    {
+      "scenario": {
+        "name": "array-input",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": []
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"\\ud800\",\"id\":\"\\udfff\",\"input\":[]}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          null
+        ],
+        "calls": [],
+        "mapped": [],
+        "file": null,
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"content\":\"<tool_use_error>Error: No such tool available: \\ud800</tool_use_error>\",\"is_error\":true,\"tool_use_id\":\"\\udfff\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"Error: No such tool available: \\ud800\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"\\udfff\"]",
+          "[]"
+        ],
+        "backfills": 0,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "distinct-scalar-ids",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": []
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"FixtureWrite\",\"id\":\"\\ufffd\",\"input\":{\"file_path\":\"identity.txt\",\"content\":\"private\"}}",
+          "{\"type\":\"tool_use\",\"name\":\"FixtureWrite\",\"id\":\"\ud83d\ude00\",\"input\":{\"file_path\":\"identity.txt\",\"content\":\"private\"}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          "FixtureWrite",
+          "FixtureWrite"
+        ],
+        "calls": [
+          "\"\ufffd\"",
+          "\"\ud83d\ude00\""
+        ],
+        "mapped": [
+          "\"\ufffd\"",
+          "\"\ud83d\ude00\""
+        ],
+        "file": "[\"\\\"\ufffd\\\"\",\"\\\"\ud83d\ude00\\\"\"]",
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"\ufffd\",\"content\":\"written\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"written\",\"sourceToolAssistantUUID\":\"original-assistant\"}",
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"\ud83d\ude00\",\"content\":\"written\"}]},\"uuid\":\"identity-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"written\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"\ufffd\"]",
+          "[]",
+          "[\"\ud83d\ude00\"]",
+          "[]"
+        ],
+        "backfills": 2,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "escaped-ascii-id",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": []
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"FixtureWrite\",\"id\":\"a\\u0062\",\"input\":{\"file_path\":\"identity.txt\",\"content\":\"private\"}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          "FixtureWrite"
+        ],
+        "calls": [
+          "\"ab\""
+        ],
+        "mapped": [
+          "\"ab\""
+        ],
+        "file": "[\"\\\"ab\\\"\"]",
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"ab\",\"content\":\"written\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"written\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"ab\"]",
+          "[]"
+        ],
+        "backfills": 1,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "escaped-emoji-name-and-id",
+        "registry": {
+          "name": "\ud83d\ude00",
+          "aliases": []
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"\\ud83d\\ude00\",\"id\":\"\\ud83d\\ude00\",\"input\":{\"file_path\":\"identity.txt\",\"content\":\"private\"}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          "\ud83d\ude00"
+        ],
+        "calls": [
+          "\"\ud83d\ude00\""
+        ],
+        "mapped": [
+          "\"\ud83d\ude00\""
+        ],
+        "file": "[\"\\\"\ud83d\ude00\\\"\"]",
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"\ud83d\ude00\",\"content\":\"written\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"written\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"\ud83d\ude00\"]",
+          "[]"
+        ],
+        "backfills": 1,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "extra-field-is-not-marker",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": []
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"\\ud800\",\"id\":\"call\",\"input\":{\"__unparsedToolInput\":{\"raw\":\"x\",\"len\":1},\"future\":true}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          null
+        ],
+        "calls": [],
+        "mapped": [],
+        "file": null,
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"content\":\"<tool_use_error>Error: No such tool available: \\ud800</tool_use_error>\",\"is_error\":true,\"tool_use_id\":\"call\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"Error: No such tool available: \\ud800\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"call\"]",
+          "[]"
+        ],
+        "backfills": 0,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "later-lone-id-no-earlier-Go-effect",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": []
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"FixtureWrite\",\"id\":\"call\",\"input\":{\"file_path\":\"identity.txt\",\"content\":\"private\"}}",
+          "{\"type\":\"tool_use\",\"name\":\"FixtureWrite\",\"id\":\"\\ud800\",\"input\":{\"file_path\":\"identity.txt\",\"content\":\"private\"}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          "FixtureWrite",
+          "FixtureWrite"
+        ],
+        "calls": [
+          "\"call\"",
+          "\"\\ud800\""
+        ],
+        "mapped": [
+          "\"call\"",
+          "\"\\ud800\""
+        ],
+        "file": "[\"\\\"call\\\"\",\"\\\"\\\\ud800\\\"\"]",
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"call\",\"content\":\"written\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"written\",\"sourceToolAssistantUUID\":\"original-assistant\"}",
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"\\ud800\",\"content\":\"written\"}]},\"uuid\":\"identity-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"written\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"call\"]",
+          "[]",
+          "[\"\\ud800\"]",
+          "[]"
+        ],
+        "backfills": 2,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "literal-replacement-alias",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": [
+            "\ufffd"
+          ]
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"\ufffd\",\"id\":\"call\",\"input\":{\"file_path\":\"identity.txt\",\"content\":\"private\"}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          "FixtureWrite"
+        ],
+        "calls": [
+          "\"call\""
+        ],
+        "mapped": [
+          "\"call\""
+        ],
+        "file": "[\"\\\"call\\\"\"]",
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"call\",\"content\":\"written\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"written\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"call\"]",
+          "[]"
+        ],
+        "backfills": 1,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "literal-replacement-primary",
+        "registry": {
+          "name": "\ufffd",
+          "aliases": []
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"\\ufffd\",\"id\":\"\\ufffd\",\"input\":{\"file_path\":\"identity.txt\",\"content\":\"private\"}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          "\ufffd"
+        ],
+        "calls": [
+          "\"\ufffd\""
+        ],
+        "mapped": [
+          "\"\ufffd\""
+        ],
+        "file": "[\"\\\"\ufffd\\\"\"]",
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"\ufffd\",\"content\":\"written\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"written\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"\ufffd\"]",
+          "[]"
+        ],
+        "backfills": 1,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "lone-high-id",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": []
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"FixtureWrite\",\"id\":\"\\ud800\",\"input\":{\"file_path\":\"identity.txt\",\"content\":\"private\"}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          "FixtureWrite"
+        ],
+        "calls": [
+          "\"\\ud800\""
+        ],
+        "mapped": [
+          "\"\\ud800\""
+        ],
+        "file": "[\"\\\"\\\\ud800\\\"\"]",
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"\\ud800\",\"content\":\"written\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"written\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"\\ud800\"]",
+          "[]"
+        ],
+        "backfills": 1,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "lone-high-name-primary-replacement",
+        "registry": {
+          "name": "\ufffd",
+          "aliases": []
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"\\ud800\",\"id\":\"call\",\"input\":{\"file_path\":\"identity.txt\",\"content\":\"private\"}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          null
+        ],
+        "calls": [],
+        "mapped": [],
+        "file": null,
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"content\":\"<tool_use_error>Error: No such tool available: \\ud800</tool_use_error>\",\"is_error\":true,\"tool_use_id\":\"call\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"Error: No such tool available: \\ud800\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"call\"]",
+          "[]"
+        ],
+        "backfills": 0,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "lone-low-id",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": []
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"FixtureWrite\",\"id\":\"\\udfff\",\"input\":{\"file_path\":\"identity.txt\",\"content\":\"private\"}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          "FixtureWrite"
+        ],
+        "calls": [
+          "\"\\udfff\""
+        ],
+        "mapped": [
+          "\"\\udfff\""
+        ],
+        "file": "[\"\\\"\\\\udfff\\\"\"]",
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"\\udfff\",\"content\":\"written\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"written\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"\\udfff\"]",
+          "[]"
+        ],
+        "backfills": 1,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "lone-low-name-alias-replacement",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": [
+            "\ufffd"
+          ]
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"\\udfff\",\"id\":\"call\",\"input\":{\"file_path\":\"identity.txt\",\"content\":\"private\"}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          null
+        ],
+        "calls": [],
+        "mapped": [],
+        "file": null,
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"content\":\"<tool_use_error>Error: No such tool available: \\udfff</tool_use_error>\",\"is_error\":true,\"tool_use_id\":\"call\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"Error: No such tool available: \\udfff\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"call\"]",
+          "[]"
+        ],
+        "backfills": 0,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "marker-before-known-registry",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": []
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"FixtureWrite\",\"id\":\"\\ud800\",\"input\":{\"__unparsedToolInput\":{\"raw\":\"lone\\udfff\",\"len\":5}}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          "FixtureWrite"
+        ],
+        "calls": [],
+        "mapped": [],
+        "file": null,
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"\\ud800\",\"is_error\":true,\"content\":\"<tool_use_error>InputValidationError: FixtureWrite was called with input that could not be parsed as JSON.\\nYou sent (first 5 of 5 bytes): lone\\udfff\\nCommon causes: unescaped backslashes in file paths (use / or \\\\\\\\), unescaped control characters, or truncated output. Retry with valid JSON.</tool_use_error>\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"InputValidationError: JSON parse failed (5 bytes)\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"\\ud800\"]",
+          "[]"
+        ],
+        "backfills": 0,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "marker-before-unknown-and-cancel",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": []
+        },
+        "aborted": true,
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"\\ud800\",\"id\":\"\\udfff\",\"input\":{\"__unparsedToolInput\":{\"raw\":\"\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\\ud800\",\"len\":1e400,\"future\":true}}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          null
+        ],
+        "calls": [],
+        "mapped": [],
+        "file": null,
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"\\udfff\",\"is_error\":true,\"content\":\"<tool_use_error>InputValidationError: \\ud800 was called with input that could not be parsed as JSON.\\nYou sent (first 200 of Infinity bytes): \ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\\nCommon causes: unescaped backslashes in file paths (use / or \\\\\\\\), unescaped control characters, or truncated output. Retry with valid JSON.</tool_use_error>\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"InputValidationError: JSON parse failed (Infinity bytes)\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"\\udfff\"]",
+          "[]"
+        ],
+        "backfills": 0,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "null-marker",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": []
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"\\ud800\",\"id\":\"\\udfff\",\"input\":{\"__unparsedToolInput\":null}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          null
+        ],
+        "calls": [],
+        "mapped": [],
+        "file": null,
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"content\":\"<tool_use_error>Error: No such tool available: \\ud800</tool_use_error>\",\"is_error\":true,\"tool_use_id\":\"\\udfff\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"Error: No such tool available: \\ud800\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"\\udfff\"]",
+          "[]"
+        ],
+        "backfills": 0,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "numeric-marker-zero",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": []
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"\\ud800\",\"id\":\"\\udfff\",\"input\":{\"__unparsedToolInput\":{\"raw\":\"\",\"len\":0}}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          null
+        ],
+        "calls": [],
+        "mapped": [],
+        "file": null,
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"\\udfff\",\"is_error\":true,\"content\":\"<tool_use_error>InputValidationError: \\ud800 was called with input that could not be parsed as JSON.\\nYou sent (first 0 of 0 bytes): \\nCommon causes: unescaped backslashes in file paths (use / or \\\\\\\\), unescaped control characters, or truncated output. Retry with valid JSON.</tool_use_error>\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"InputValidationError: JSON parse failed (0 bytes)\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"\\udfff\"]",
+          "[]"
+        ],
+        "backfills": 0,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "unknown-before-known-cancel",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": [
+            "\ufffd"
+          ]
+        },
+        "aborted": true,
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"\\ud800\",\"id\":\"\\ud800\",\"input\":{\"file_path\":\"identity.txt\",\"content\":\"private\"}}",
+          "{\"type\":\"tool_use\",\"name\":\"\ufffd\",\"id\":\"\\udfff\",\"input\":{\"file_path\":\"identity.txt\",\"content\":\"private\"}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          null,
+          "FixtureWrite"
+        ],
+        "calls": [],
+        "mapped": [],
+        "file": null,
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"content\":\"<tool_use_error>Error: No such tool available: \\ud800</tool_use_error>\",\"is_error\":true,\"tool_use_id\":\"\\ud800\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"Error: No such tool available: \\ud800\",\"sourceToolAssistantUUID\":\"original-assistant\"}",
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"content\":\"The user doesn't want to take this action right now. STOP what you are doing and wait for the user to tell you how to proceed.\",\"is_error\":true,\"tool_use_id\":\"\\udfff\"}]},\"uuid\":\"identity-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"The user doesn't want to take this action right now. STOP what you are doing and wait for the user to tell you how to proceed.\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"\\ud800\"]",
+          "[]",
+          "[\"\\udfff\"]",
+          "[]"
+        ],
+        "backfills": 0,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "unknown-marker-key",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": []
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"\\ud800\",\"id\":\"\\udfff\",\"input\":{\"future\":{\"raw\":\"x\",\"len\":1}}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          null
+        ],
+        "calls": [],
+        "mapped": [],
+        "file": null,
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"content\":\"<tool_use_error>Error: No such tool available: \\ud800</tool_use_error>\",\"is_error\":true,\"tool_use_id\":\"\\udfff\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"Error: No such tool available: \\ud800\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"\\udfff\"]",
+          "[]"
+        ],
+        "backfills": 0,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "unknown-name-does-not-end-batch",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": [
+            "\ufffd"
+          ]
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"\\ud800\",\"id\":\"\\ud800\",\"input\":{\"file_path\":\"identity.txt\",\"content\":\"private\"}}",
+          "{\"type\":\"tool_use\",\"name\":\"\ufffd\",\"id\":\"\\udfff\",\"input\":{\"file_path\":\"identity.txt\",\"content\":\"private\"}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          null,
+          "FixtureWrite"
+        ],
+        "calls": [
+          "\"\\udfff\""
+        ],
+        "mapped": [
+          "\"\\udfff\""
+        ],
+        "file": "[\"\\\"\\\\udfff\\\"\"]",
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"content\":\"<tool_use_error>Error: No such tool available: \\ud800</tool_use_error>\",\"is_error\":true,\"tool_use_id\":\"\\ud800\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"Error: No such tool available: \\ud800\",\"sourceToolAssistantUUID\":\"original-assistant\"}",
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"\\udfff\",\"content\":\"written\"}]},\"uuid\":\"identity-2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"written\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"\\ud800\"]",
+          "[]",
+          "[\"\\udfff\"]",
+          "[]"
+        ],
+        "backfills": 1,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "unknown-primitive-input",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": []
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"\\ud800\",\"id\":\"\\udfff\",\"input\":null}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          null
+        ],
+        "calls": [],
+        "mapped": [],
+        "file": null,
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"content\":\"<tool_use_error>Error: No such tool available: \\ud800</tool_use_error>\",\"is_error\":true,\"tool_use_id\":\"\\udfff\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"Error: No such tool available: \\ud800\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"\\udfff\"]",
+          "[]"
+        ],
+        "backfills": 0,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "wrong-marker-len",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": []
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"\\ud800\",\"id\":\"\\udfff\",\"input\":{\"__unparsedToolInput\":{\"raw\":\"x\",\"len\":\"1\"}}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          null
+        ],
+        "calls": [],
+        "mapped": [],
+        "file": null,
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"content\":\"<tool_use_error>Error: No such tool available: \\ud800</tool_use_error>\",\"is_error\":true,\"tool_use_id\":\"\\udfff\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"Error: No such tool available: \\ud800\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"\\udfff\"]",
+          "[]"
+        ],
+        "backfills": 0,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    },
+    {
+      "scenario": {
+        "name": "wrong-marker-raw",
+        "registry": {
+          "name": "FixtureWrite",
+          "aliases": []
+        },
+        "usesSources": [
+          "{\"type\":\"tool_use\",\"name\":\"\\ud800\",\"id\":\"\\udfff\",\"input\":{\"__unparsedToolInput\":{\"raw\":false,\"len\":1}}}"
+        ],
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      },
+      "observation": {
+        "lookupNames": [
+          null
+        ],
+        "calls": [],
+        "mapped": [],
+        "file": null,
+        "unsupported": false
+      },
+      "sourceOnly": {
+        "feedbackSources": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"content\":\"<tool_use_error>Error: No such tool available: \\ud800</tool_use_error>\",\"is_error\":true,\"tool_use_id\":\"\\udfff\"}]},\"uuid\":\"identity-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"toolUseResult\":\"Error: No such tool available: \\ud800\",\"sourceToolAssistantUUID\":\"original-assistant\"}"
+        ],
+        "progress": [
+          "[\"\\udfff\"]",
+          "[]"
+        ],
+        "backfills": 0,
+        "deprecatedCatalog": [
+          {
+            "name": "Agent",
+            "aliases": [
+              "Task"
+            ]
+          },
+          {
+            "name": "TaskOutput",
+            "aliases": [
+              "AgentOutputTool",
+              "BashOutputTool"
+            ]
+          },
+          {
+            "name": "Bash",
+            "aliases": []
+          },
+          {
+            "name": "Glob",
+            "aliases": []
+          },
+          {
+            "name": "Grep",
+            "aliases": []
+          },
+          {
+            "name": "ExitPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "Read",
+            "aliases": []
+          },
+          {
+            "name": "Edit",
+            "aliases": []
+          },
+          {
+            "name": "Write",
+            "aliases": []
+          },
+          {
+            "name": "NotebookEdit",
+            "aliases": []
+          },
+          {
+            "name": "WebFetch",
+            "aliases": []
+          },
+          {
+            "name": "TodoWrite",
+            "aliases": []
+          },
+          {
+            "name": "WebSearch",
+            "aliases": []
+          },
+          {
+            "name": "TaskStop",
+            "aliases": [
+              "KillShell"
+            ]
+          },
+          {
+            "name": "AskUserQuestion",
+            "aliases": []
+          },
+          {
+            "name": "Skill",
+            "aliases": []
+          },
+          {
+            "name": "EnterPlanMode",
+            "aliases": []
+          },
+          {
+            "name": "EnterWorktree",
+            "aliases": []
+          },
+          {
+            "name": "ExitWorktree",
+            "aliases": []
+          },
+          {
+            "name": "SendMessage",
+            "aliases": []
+          },
+          {
+            "name": "ListSessions",
+            "aliases": []
+          },
+          {
+            "name": "ReadSession",
+            "aliases": []
+          },
+          {
+            "name": "CreateSession",
+            "aliases": []
+          },
+          {
+            "name": "SendSessionMessage",
+            "aliases": []
+          },
+          {
+            "name": "WaitSessions",
+            "aliases": []
+          },
+          {
+            "name": "Workflow",
+            "aliases": []
+          },
+          {
+            "name": "SendUserMessage",
+            "aliases": [
+              "Brief"
+            ]
+          },
+          {
+            "name": "ImageGen",
+            "aliases": []
+          },
+          {
+            "name": "ImageEdit",
+            "aliases": []
+          },
+          {
+            "name": "ListMcpResourcesTool",
+            "aliases": []
+          },
+          {
+            "name": "ReadMcpResourceTool",
+            "aliases": []
+          },
+          {
+            "name": "ToolSearch",
+            "aliases": []
+          }
+        ]
+      }
+    }
+  ]
+}

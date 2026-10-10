@@ -1,0 +1,1088 @@
+{
+  "source": "actual exported Source normalizers + pairing, Bun 1.3.14",
+  "cases": [
+    {
+      "input": {
+        "name": "duplicate-and-empty-names",
+        "kind": "projection",
+        "source": "{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}"
+      },
+      "expected": {
+        "name": "duplicate-and-empty-names",
+        "before": "{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}",
+        "after": "{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}",
+        "reordered": null,
+        "output": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nThe following skills were invoked in this session. Continue to follow these guidelines:\\n\\n### Skill: one\\nPath: /fixture/one\\n\\nbody\\n\\n---\\n\\n### Skill: two\\nPath: /fixture/two\\n\\nb\\n\\n---\\n\\n### Skill: one\\nPath: /new\\n\\nreplacement\\n\\n---\\n\\n### Skill: \\nPath: /skip\\n\\nskip\\n</system-reminder>\"},\"isMeta\":true,\"uuid\":\"skills-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "invoked-empty",
+        "kind": "projection",
+        "source": "{\"type\":\"invoked_skills\",\"skills\":[]}"
+      },
+      "expected": {
+        "name": "invoked-empty",
+        "before": "{\"type\":\"invoked_skills\",\"skills\":[]}",
+        "after": "{\"type\":\"invoked_skills\",\"skills\":[]}",
+        "reordered": null,
+        "output": [],
+        "error": null,
+        "trace": []
+      }
+    },
+    {
+      "input": {
+        "name": "invoked-missing-fields",
+        "kind": "projection",
+        "source": "{\"type\":\"invoked_skills\",\"skills\":[{}]}"
+      },
+      "expected": {
+        "name": "invoked-missing-fields",
+        "before": "{\"type\":\"invoked_skills\",\"skills\":[{}]}",
+        "after": "{\"type\":\"invoked_skills\",\"skills\":[{}]}",
+        "reordered": null,
+        "output": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nThe following skills were invoked in this session. Continue to follow these guidelines:\\n\\n### Skill: undefined\\nPath: undefined\\n\\nundefined\\n</system-reminder>\"},\"isMeta\":true,\"uuid\":\"skills-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "invoked-explicit-null-fields",
+        "kind": "projection",
+        "source": "{\"type\":\"invoked_skills\",\"skills\":[{\"name\":null,\"path\":null,\"content\":null}]}"
+      },
+      "expected": {
+        "name": "invoked-explicit-null-fields",
+        "before": "{\"type\":\"invoked_skills\",\"skills\":[{\"name\":null,\"path\":null,\"content\":null}]}",
+        "after": "{\"type\":\"invoked_skills\",\"skills\":[{\"name\":null,\"path\":null,\"content\":null}]}",
+        "reordered": null,
+        "output": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nThe following skills were invoked in this session. Continue to follow these guidelines:\\n\\n### Skill: null\\nPath: null\\n\\nnull\\n</system-reminder>\"},\"isMeta\":true,\"uuid\":\"skills-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "invoked-nonstrings",
+        "kind": "projection",
+        "source": "{\"type\":\"invoked_skills\",\"skills\":[{\"name\":[\"a\",null],\"path\":1,\"content\":true},{\"name\":{},\"path\":[\"x\"],\"content\":{}},{\"name\":0,\"path\":false,\"content\":[]}]}"
+      },
+      "expected": {
+        "name": "invoked-nonstrings",
+        "before": "{\"type\":\"invoked_skills\",\"skills\":[{\"name\":[\"a\",null],\"path\":1,\"content\":true},{\"name\":{},\"path\":[\"x\"],\"content\":{}},{\"name\":0,\"path\":false,\"content\":[]}]}",
+        "after": "{\"type\":\"invoked_skills\",\"skills\":[{\"name\":[\"a\",null],\"path\":1,\"content\":true},{\"name\":{},\"path\":[\"x\"],\"content\":{}},{\"name\":0,\"path\":false,\"content\":[]}]}",
+        "reordered": null,
+        "output": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nThe following skills were invoked in this session. Continue to follow these guidelines:\\n\\n### Skill: a,\\nPath: 1\\n\\ntrue\\n\\n---\\n\\n### Skill: [object Object]\\nPath: x\\n\\n[object Object]\\n\\n---\\n\\n### Skill: 0\\nPath: false\\n\\n\\n</system-reminder>\"},\"isMeta\":true,\"uuid\":\"skills-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "invoked-lone-utf16",
+        "kind": "projection",
+        "source": "{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"\\ud800\",\"path\":\"\\udc00\",\"content\":\"\\ud800\\udc00\"},{\"name\":\"\\udc00\",\"path\":\"\\ud800\",\"content\":\"\\ufffd\"}]}"
+      },
+      "expected": {
+        "name": "invoked-lone-utf16",
+        "before": "{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"\\ud800\",\"path\":\"\\udc00\",\"content\":\"𐀀\"},{\"name\":\"\\udc00\",\"path\":\"\\ud800\",\"content\":\"�\"}]}",
+        "after": "{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"\\ud800\",\"path\":\"\\udc00\",\"content\":\"𐀀\"},{\"name\":\"\\udc00\",\"path\":\"\\ud800\",\"content\":\"�\"}]}",
+        "reordered": null,
+        "output": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nThe following skills were invoked in this session. Continue to follow these guidelines:\\n\\n### Skill: \\ud800\\nPath: \\udc00\\n\\n𐀀\\n\\n---\\n\\n### Skill: \\udc00\\nPath: \\ud800\\n\\n�\\n</system-reminder>\"},\"isMeta\":true,\"uuid\":\"skills-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "invoked-null-elements",
+        "kind": "projection",
+        "source": "{\"type\":\"invoked_skills\",\"skills\":[null]}"
+      },
+      "expected": {
+        "name": "invoked-null-elements",
+        "before": "{\"type\":\"invoked_skills\",\"skills\":[null]}",
+        "after": "{\"type\":\"invoked_skills\",\"skills\":[null]}",
+        "reordered": null,
+        "output": null,
+        "error": {
+          "class": "TypeError",
+          "name": "TypeError",
+          "message": "null is not an object (evaluating 'skill.name')",
+          "messageJSON": "\"null is not an object (evaluating 'skill.name')\""
+        },
+        "trace": []
+      }
+    },
+    {
+      "input": {
+        "name": "invoked-null-skills",
+        "kind": "projection",
+        "source": "{\"type\":\"invoked_skills\",\"skills\":null}"
+      },
+      "expected": {
+        "name": "invoked-null-skills",
+        "before": "{\"type\":\"invoked_skills\",\"skills\":null}",
+        "after": "{\"type\":\"invoked_skills\",\"skills\":null}",
+        "reordered": null,
+        "output": null,
+        "error": {
+          "class": "TypeError",
+          "name": "TypeError",
+          "message": "null is not an object (evaluating 'attachment.skills.length')",
+          "messageJSON": "\"null is not an object (evaluating 'attachment.skills.length')\""
+        },
+        "trace": []
+      }
+    },
+    {
+      "input": {
+        "name": "invoked-string-skills",
+        "kind": "projection",
+        "source": "{\"type\":\"invoked_skills\",\"skills\":\"abc\"}"
+      },
+      "expected": {
+        "name": "invoked-string-skills",
+        "before": "{\"type\":\"invoked_skills\",\"skills\":\"abc\"}",
+        "after": "{\"type\":\"invoked_skills\",\"skills\":\"abc\"}",
+        "reordered": null,
+        "output": null,
+        "error": {
+          "class": "TypeError",
+          "name": "TypeError",
+          "message": "attachment.skills.map is not a function. (In 'attachment.skills.map((skill) => `### Skill: ${skill.name}\nPath: ${skill.path}\n\n${skill.content}`)', 'attachment.skills.map' is undefined)",
+          "messageJSON": "\"attachment.skills.map is not a function. (In 'attachment.skills.map((skill) => `### Skill: ${skill.name}\\nPath: ${skill.path}\\n\\n${skill.content}`)', 'attachment.skills.map' is undefined)\""
+        },
+        "trace": []
+      }
+    },
+    {
+      "input": {
+        "name": "invoked-shadowed-toString",
+        "kind": "projection",
+        "source": "{\"type\":\"invoked_skills\",\"skills\":[{\"name\":{\"toString\":null},\"path\":\"p\",\"content\":\"c\"}]}"
+      },
+      "expected": {
+        "name": "invoked-shadowed-toString",
+        "before": "{\"type\":\"invoked_skills\",\"skills\":[{\"name\":{\"toString\":null},\"path\":\"p\",\"content\":\"c\"}]}",
+        "after": "{\"type\":\"invoked_skills\",\"skills\":[{\"name\":{\"toString\":null},\"path\":\"p\",\"content\":\"c\"}]}",
+        "reordered": null,
+        "output": null,
+        "error": {
+          "class": "TypeError",
+          "name": "TypeError",
+          "message": "No default value",
+          "messageJSON": "\"No default value\""
+        },
+        "trace": []
+      }
+    },
+    {
+      "input": {
+        "name": "invoked-missing-skills",
+        "kind": "projection",
+        "source": "{\"type\":\"invoked_skills\"}"
+      },
+      "expected": {
+        "name": "invoked-missing-skills",
+        "before": "{\"type\":\"invoked_skills\"}",
+        "after": "{\"type\":\"invoked_skills\"}",
+        "reordered": null,
+        "output": null,
+        "error": {
+          "class": "TypeError",
+          "name": "TypeError",
+          "message": "undefined is not an object (evaluating 'attachment.skills.length')",
+          "messageJSON": "\"undefined is not an object (evaluating 'attachment.skills.length')\""
+        },
+        "trace": []
+      }
+    },
+    {
+      "input": {
+        "name": "listing-empty",
+        "kind": "projection",
+        "source": "{\"type\":\"skill_listing\",\"content\":\"\",\"skillCount\":77,\"isInitial\":false}"
+      },
+      "expected": {
+        "name": "listing-empty",
+        "before": "{\"type\":\"skill_listing\",\"content\":\"\",\"skillCount\":77,\"isInitial\":false}",
+        "after": "{\"type\":\"skill_listing\",\"content\":\"\",\"skillCount\":77,\"isInitial\":false}",
+        "reordered": null,
+        "output": [],
+        "error": null,
+        "trace": []
+      }
+    },
+    {
+      "input": {
+        "name": "listing-null",
+        "kind": "projection",
+        "source": "{\"type\":\"skill_listing\",\"content\":null,\"skillCount\":77,\"isInitial\":false}"
+      },
+      "expected": {
+        "name": "listing-null",
+        "before": "{\"type\":\"skill_listing\",\"content\":null,\"skillCount\":77,\"isInitial\":false}",
+        "after": "{\"type\":\"skill_listing\",\"content\":null,\"skillCount\":77,\"isInitial\":false}",
+        "reordered": null,
+        "output": [],
+        "error": null,
+        "trace": []
+      }
+    },
+    {
+      "input": {
+        "name": "listing-false",
+        "kind": "projection",
+        "source": "{\"type\":\"skill_listing\",\"content\":false,\"skillCount\":77,\"isInitial\":false}"
+      },
+      "expected": {
+        "name": "listing-false",
+        "before": "{\"type\":\"skill_listing\",\"content\":false,\"skillCount\":77,\"isInitial\":false}",
+        "after": "{\"type\":\"skill_listing\",\"content\":false,\"skillCount\":77,\"isInitial\":false}",
+        "reordered": null,
+        "output": [],
+        "error": null,
+        "trace": []
+      }
+    },
+    {
+      "input": {
+        "name": "listing-zero",
+        "kind": "projection",
+        "source": "{\"type\":\"skill_listing\",\"content\":0,\"skillCount\":77,\"isInitial\":false}"
+      },
+      "expected": {
+        "name": "listing-zero",
+        "before": "{\"type\":\"skill_listing\",\"content\":0,\"skillCount\":77,\"isInitial\":false}",
+        "after": "{\"type\":\"skill_listing\",\"content\":0,\"skillCount\":77,\"isInitial\":false}",
+        "reordered": null,
+        "output": [],
+        "error": null,
+        "trace": []
+      }
+    },
+    {
+      "input": {
+        "name": "listing-whitespace",
+        "kind": "projection",
+        "source": "{\"type\":\"skill_listing\",\"content\":\" \\n\\t\",\"skillCount\":77,\"isInitial\":false}"
+      },
+      "expected": {
+        "name": "listing-whitespace",
+        "before": "{\"type\":\"skill_listing\",\"content\":\" \\n\\t\",\"skillCount\":77,\"isInitial\":false}",
+        "after": "{\"type\":\"skill_listing\",\"content\":\" \\n\\t\",\"skillCount\":77,\"isInitial\":false}",
+        "reordered": null,
+        "output": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nThe following skills are available for use with the Skill tool:\\n\\n \\n\\t\\n</system-reminder>\"},\"isMeta\":true,\"uuid\":\"skills-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "listing-array",
+        "kind": "projection",
+        "source": "{\"type\":\"skill_listing\",\"content\":[\"a\",null,true],\"skillCount\":77,\"isInitial\":false}"
+      },
+      "expected": {
+        "name": "listing-array",
+        "before": "{\"type\":\"skill_listing\",\"content\":[\"a\",null,true],\"skillCount\":77,\"isInitial\":false}",
+        "after": "{\"type\":\"skill_listing\",\"content\":[\"a\",null,true],\"skillCount\":77,\"isInitial\":false}",
+        "reordered": null,
+        "output": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nThe following skills are available for use with the Skill tool:\\n\\na,,true\\n</system-reminder>\"},\"isMeta\":true,\"uuid\":\"skills-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "listing-object",
+        "kind": "projection",
+        "source": "{\"type\":\"skill_listing\",\"content\":{\"future\":true},\"skillCount\":77,\"isInitial\":false}"
+      },
+      "expected": {
+        "name": "listing-object",
+        "before": "{\"type\":\"skill_listing\",\"content\":{\"future\":true},\"skillCount\":77,\"isInitial\":false}",
+        "after": "{\"type\":\"skill_listing\",\"content\":{\"future\":true},\"skillCount\":77,\"isInitial\":false}",
+        "reordered": null,
+        "output": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nThe following skills are available for use with the Skill tool:\\n\\n[object Object]\\n</system-reminder>\"},\"isMeta\":true,\"uuid\":\"skills-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "listing-lone-utf16",
+        "kind": "projection",
+        "source": "{\"type\":\"skill_listing\",\"content\":\"high=\\ud800;low=\\udc00;replacement=\\ufffd\",\"skillCount\":77,\"isInitial\":false}"
+      },
+      "expected": {
+        "name": "listing-lone-utf16",
+        "before": "{\"type\":\"skill_listing\",\"content\":\"high=\\ud800;low=\\udc00;replacement=�\",\"skillCount\":77,\"isInitial\":false}",
+        "after": "{\"type\":\"skill_listing\",\"content\":\"high=\\ud800;low=\\udc00;replacement=�\",\"skillCount\":77,\"isInitial\":false}",
+        "reordered": null,
+        "output": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nThe following skills are available for use with the Skill tool:\\n\\nhigh=\\ud800;low=\\udc00;replacement=�\\n</system-reminder>\"},\"isMeta\":true,\"uuid\":\"skills-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "listing-shadowed-toString",
+        "kind": "projection",
+        "source": "{\"type\":\"skill_listing\",\"content\":{\"toString\":null},\"skillCount\":77,\"isInitial\":false}"
+      },
+      "expected": {
+        "name": "listing-shadowed-toString",
+        "before": "{\"type\":\"skill_listing\",\"content\":{\"toString\":null},\"skillCount\":77,\"isInitial\":false}",
+        "after": "{\"type\":\"skill_listing\",\"content\":{\"toString\":null},\"skillCount\":77,\"isInitial\":false}",
+        "reordered": null,
+        "output": null,
+        "error": {
+          "class": "TypeError",
+          "name": "TypeError",
+          "message": "No default value",
+          "messageJSON": "\"No default value\""
+        },
+        "trace": []
+      }
+    },
+    {
+      "input": {
+        "name": "listing-overflow",
+        "kind": "projection",
+        "source": "{\"type\":\"skill_listing\",\"content\":1e400}"
+      },
+      "expected": {
+        "name": "listing-overflow",
+        "before": "{\"type\":\"skill_listing\",\"content\":null}",
+        "after": "{\"type\":\"skill_listing\",\"content\":null}",
+        "reordered": null,
+        "output": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nThe following skills are available for use with the Skill tool:\\n\\nInfinity\\n</system-reminder>\"},\"isMeta\":true,\"uuid\":\"skills-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "attachments-before-users",
+        "kind": "history",
+        "source": "[{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]"
+      },
+      "expected": {
+        "name": "attachments-before-users",
+        "before": "[{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "after": "[{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "reordered": [
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}}",
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}",
+          "{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}}",
+          "{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}"
+        ],
+        "output": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills were invoked in this session. Continue to follow these guidelines:\\n\\n### Skill: one\\nPath: /fixture/one\\n\\nbody\\n\\n---\\n\\n### Skill: two\\nPath: /fixture/two\\n\\nb\\n\\n---\\n\\n### Skill: one\\nPath: /new\\n\\nreplacement\\n\\n---\\n\\n### Skill: \\nPath: /skip\\n\\nskip\\n</system-reminder>\"},{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills are available for use with the Skill tool:\\n\\nlisted\\n</system-reminder>\\n\"},{\"type\":\"text\",\"text\":\"first\\n\"},{\"type\":\"text\",\"text\":\"second\"}]},\"isMeta\":true,\"uuid\":\"u2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "kind": "uuid",
+            "value": "skills-id-2"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "attachments-between-users",
+        "kind": "history",
+        "source": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]"
+      },
+      "expected": {
+        "name": "attachments-between-users",
+        "before": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "after": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "reordered": [
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}}",
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}",
+          "{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}}",
+          "{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}"
+        ],
+        "output": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills were invoked in this session. Continue to follow these guidelines:\\n\\n### Skill: one\\nPath: /fixture/one\\n\\nbody\\n\\n---\\n\\n### Skill: two\\nPath: /fixture/two\\n\\nb\\n\\n---\\n\\n### Skill: one\\nPath: /new\\n\\nreplacement\\n\\n---\\n\\n### Skill: \\nPath: /skip\\n\\nskip\\n</system-reminder>\"},{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills are available for use with the Skill tool:\\n\\nlisted\\n</system-reminder>\\n\"},{\"type\":\"text\",\"text\":\"first\\n\"},{\"type\":\"text\",\"text\":\"second\"}]},\"isMeta\":true,\"uuid\":\"u2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "kind": "uuid",
+            "value": "skills-id-2"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "attachments-after-users",
+        "kind": "history",
+        "source": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}]"
+      },
+      "expected": {
+        "name": "attachments-after-users",
+        "before": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}]",
+        "after": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}]",
+        "reordered": [
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}}",
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}",
+          "{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}}",
+          "{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}"
+        ],
+        "output": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills were invoked in this session. Continue to follow these guidelines:\\n\\n### Skill: one\\nPath: /fixture/one\\n\\nbody\\n\\n---\\n\\n### Skill: two\\nPath: /fixture/two\\n\\nb\\n\\n---\\n\\n### Skill: one\\nPath: /new\\n\\nreplacement\\n\\n---\\n\\n### Skill: \\nPath: /skip\\n\\nskip\\n</system-reminder>\"},{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills are available for use with the Skill tool:\\n\\nlisted\\n</system-reminder>\\n\"},{\"type\":\"text\",\"text\":\"first\\n\"},{\"type\":\"text\",\"text\":\"second\"}]},\"isMeta\":true,\"uuid\":\"u2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "kind": "uuid",
+            "value": "skills-id-2"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "assistant-stops-bubble",
+        "kind": "history",
+        "source": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"assistant\",\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"message\":{\"id\":\"a\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"answer\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]"
+      },
+      "expected": {
+        "name": "assistant-stops-bubble",
+        "before": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"assistant\",\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"message\":{\"id\":\"a\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"answer\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "after": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"assistant\",\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"message\":{\"id\":\"a\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"answer\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "reordered": [
+          "{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}}",
+          "{\"type\":\"assistant\",\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"message\":{\"id\":\"a\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"answer\"}]}}",
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}}",
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}",
+          "{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}"
+        ],
+        "output": [
+          "{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}}",
+          "{\"type\":\"assistant\",\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"message\":{\"id\":\"a\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"answer\"}]}}",
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills were invoked in this session. Continue to follow these guidelines:\\n\\n### Skill: one\\nPath: /fixture/one\\n\\nbody\\n\\n---\\n\\n### Skill: two\\nPath: /fixture/two\\n\\nb\\n\\n---\\n\\n### Skill: one\\nPath: /new\\n\\nreplacement\\n\\n---\\n\\n### Skill: \\nPath: /skip\\n\\nskip\\n</system-reminder>\"},{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills are available for use with the Skill tool:\\n\\nlisted\\n</system-reminder>\\n\"},{\"type\":\"text\",\"text\":\"second\"}]},\"isMeta\":true,\"uuid\":\"u2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "kind": "uuid",
+            "value": "skills-id-2"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "virtual-assistant-stops-before-filter",
+        "kind": "history",
+        "source": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"assistant\",\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"message\":{\"id\":\"a\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"answer\"}]},\"isVirtual\":true},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]"
+      },
+      "expected": {
+        "name": "virtual-assistant-stops-before-filter",
+        "before": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"assistant\",\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"message\":{\"id\":\"a\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"answer\"}]},\"isVirtual\":true},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "after": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"assistant\",\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"message\":{\"id\":\"a\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"answer\"}]},\"isVirtual\":true},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "reordered": [
+          "{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}}",
+          "{\"type\":\"assistant\",\"uuid\":\"a\",\"timestamp\":\"2025-01-01T00:00:01Z\",\"message\":{\"id\":\"a\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"answer\"}]},\"isVirtual\":true}",
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}}",
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}",
+          "{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}"
+        ],
+        "output": [
+          "{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"first\"},{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills were invoked in this session. Continue to follow these guidelines:\\n\\n### Skill: one\\nPath: /fixture/one\\n\\nbody\\n\\n---\\n\\n### Skill: two\\nPath: /fixture/two\\n\\nb\\n\\n---\\n\\n### Skill: one\\nPath: /new\\n\\nreplacement\\n\\n---\\n\\n### Skill: \\nPath: /skip\\n\\nskip\\n</system-reminder>\"},{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills are available for use with the Skill tool:\\n\\nlisted\\n</system-reminder>\\n\"},{\"type\":\"text\",\"text\":\"second\"}]}}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "kind": "uuid",
+            "value": "skills-id-2"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "progress-does-not-stop",
+        "kind": "history",
+        "source": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"progress\",\"uuid\":\"p\"},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]"
+      },
+      "expected": {
+        "name": "progress-does-not-stop",
+        "before": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"progress\",\"uuid\":\"p\"},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "after": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"progress\",\"uuid\":\"p\"},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "reordered": [
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}}",
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}",
+          "{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}}",
+          "{\"type\":\"progress\",\"uuid\":\"p\"}",
+          "{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}"
+        ],
+        "output": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills were invoked in this session. Continue to follow these guidelines:\\n\\n### Skill: one\\nPath: /fixture/one\\n\\nbody\\n\\n---\\n\\n### Skill: two\\nPath: /fixture/two\\n\\nb\\n\\n---\\n\\n### Skill: one\\nPath: /new\\n\\nreplacement\\n\\n---\\n\\n### Skill: \\nPath: /skip\\n\\nskip\\n</system-reminder>\"},{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills are available for use with the Skill tool:\\n\\nlisted\\n</system-reminder>\\n\"},{\"type\":\"text\",\"text\":\"first\\n\"},{\"type\":\"text\",\"text\":\"second\"}]},\"isMeta\":true,\"uuid\":\"u2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "kind": "uuid",
+            "value": "skills-id-2"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "tool-result-string",
+        "kind": "history",
+        "source": "[{\"type\":\"user\",\"uuid\":\"tr\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"result\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]"
+      },
+      "expected": {
+        "name": "tool-result-string",
+        "before": "[{\"type\":\"user\",\"uuid\":\"tr\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"result\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "after": "[{\"type\":\"user\",\"uuid\":\"tr\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"result\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "reordered": [
+          "{\"type\":\"user\",\"uuid\":\"tr\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"result\"}]}}",
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}}",
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}",
+          "{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}"
+        ],
+        "output": [
+          "{\"type\":\"user\",\"uuid\":\"tr\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"second\"}]}}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "kind": "uuid",
+            "value": "skills-id-2"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "tool-result-array",
+        "kind": "history",
+        "source": "[{\"type\":\"user\",\"uuid\":\"tr\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":[{\"type\":\"text\",\"text\":\"result\"}]}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]"
+      },
+      "expected": {
+        "name": "tool-result-array",
+        "before": "[{\"type\":\"user\",\"uuid\":\"tr\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":[{\"type\":\"text\",\"text\":\"result\"}]}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "after": "[{\"type\":\"user\",\"uuid\":\"tr\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":[{\"type\":\"text\",\"text\":\"result\"}]}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "reordered": [
+          "{\"type\":\"user\",\"uuid\":\"tr\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":[{\"type\":\"text\",\"text\":\"result\"}]}]}}",
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}}",
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}",
+          "{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}"
+        ],
+        "output": [
+          "{\"type\":\"user\",\"uuid\":\"tr\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills were invoked in this session. Continue to follow these guidelines:\\n\\n### Skill: one\\nPath: /fixture/one\\n\\nbody\\n\\n---\\n\\n### Skill: two\\nPath: /fixture/two\\n\\nb\\n\\n---\\n\\n### Skill: one\\nPath: /new\\n\\nreplacement\\n\\n---\\n\\n### Skill: \\nPath: /skip\\n\\nskip\\n</system-reminder>\"},{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills are available for use with the Skill tool:\\n\\nlisted\\n</system-reminder>\\n\"},{\"type\":\"text\",\"text\":\"second\"}]}}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "kind": "uuid",
+            "value": "skills-id-2"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "tool-result-later-block",
+        "kind": "history",
+        "source": "[{\"type\":\"user\",\"uuid\":\"tr\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"prefix\"},{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"result\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]"
+      },
+      "expected": {
+        "name": "tool-result-later-block",
+        "before": "[{\"type\":\"user\",\"uuid\":\"tr\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"prefix\"},{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"result\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "after": "[{\"type\":\"user\",\"uuid\":\"tr\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"prefix\"},{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"result\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "reordered": [
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}}",
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}",
+          "{\"type\":\"user\",\"uuid\":\"tr\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"prefix\"},{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"result\"}]}}",
+          "{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}"
+        ],
+        "output": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills were invoked in this session. Continue to follow these guidelines:\\n\\n### Skill: one\\nPath: /fixture/one\\n\\nbody\\n\\n---\\n\\n### Skill: two\\nPath: /fixture/two\\n\\nb\\n\\n---\\n\\n### Skill: one\\nPath: /new\\n\\nreplacement\\n\\n---\\n\\n### Skill: \\nPath: /skip\\n\\nskip\\n</system-reminder>\"},{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills are available for use with the Skill tool:\\n\\nlisted\\n</system-reminder>\\n\"},{\"type\":\"text\",\"text\":\"prefix\\n\"},{\"type\":\"text\",\"text\":\"second\"}]},\"isMeta\":true,\"uuid\":\"u2\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "kind": "uuid",
+            "value": "skills-id-2"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "empty-skill-no-allocation",
+        "kind": "history",
+        "source": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"attachment\",\"uuid\":\"persisted-empty\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[]}},{\"type\":\"attachment\",\"uuid\":\"persisted-empty-list\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]"
+      },
+      "expected": {
+        "name": "empty-skill-no-allocation",
+        "before": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"attachment\",\"uuid\":\"persisted-empty\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[]}},{\"type\":\"attachment\",\"uuid\":\"persisted-empty-list\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "after": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"attachment\",\"uuid\":\"persisted-empty\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[]}},{\"type\":\"attachment\",\"uuid\":\"persisted-empty-list\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"\"}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "reordered": [
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-empty\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[]}}",
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-empty-list\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"\"}}",
+          "{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}}",
+          "{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}"
+        ],
+        "output": [
+          "{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"first\\n\"},{\"type\":\"text\",\"text\":\"second\"}]}}"
+        ],
+        "error": null,
+        "trace": []
+      }
+    },
+    {
+      "input": {
+        "name": "malformed-skill-drop",
+        "kind": "history",
+        "source": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"attachment\",\"uuid\":\"persisted-null\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[null]}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]"
+      },
+      "expected": {
+        "name": "malformed-skill-drop",
+        "before": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"attachment\",\"uuid\":\"persisted-null\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[null]}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "after": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"attachment\",\"uuid\":\"persisted-null\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[null]}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "reordered": [
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-null\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[null]}}",
+          "{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}}",
+          "{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}"
+        ],
+        "output": [
+          "{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"first\\n\"},{\"type\":\"text\",\"text\":\"second\"}]}}"
+        ],
+        "error": null,
+        "trace": []
+      }
+    },
+    {
+      "input": {
+        "name": "shadowed-value-drop",
+        "kind": "history",
+        "source": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"attachment\",\"uuid\":\"persisted-bad\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":{\"toString\":null},\"path\":\"p\",\"content\":\"c\"}]}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]"
+      },
+      "expected": {
+        "name": "shadowed-value-drop",
+        "before": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"attachment\",\"uuid\":\"persisted-bad\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":{\"toString\":null},\"path\":\"p\",\"content\":\"c\"}]}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "after": "[{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}},{\"type\":\"attachment\",\"uuid\":\"persisted-bad\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":{\"toString\":null},\"path\":\"p\",\"content\":\"c\"}]}},{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}]",
+        "reordered": [
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-bad\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":{\"toString\":null},\"path\":\"p\",\"content\":\"c\"}]}}",
+          "{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}}",
+          "{\"type\":\"user\",\"uuid\":\"u2\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"second\"}}"
+        ],
+        "output": [
+          "{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"first\\n\"},{\"type\":\"text\",\"text\":\"second\"}]}}"
+        ],
+        "error": null,
+        "trace": []
+      }
+    },
+    {
+      "input": {
+        "name": "retained-no-tools",
+        "kind": "history",
+        "source": "[{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}}]"
+      },
+      "expected": {
+        "name": "retained-no-tools",
+        "before": "[{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}}]",
+        "after": "[{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}}]",
+        "reordered": [
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}}",
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}",
+          "{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}}"
+        ],
+        "output": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills were invoked in this session. Continue to follow these guidelines:\\n\\n### Skill: one\\nPath: /fixture/one\\n\\nbody\\n\\n---\\n\\n### Skill: two\\nPath: /fixture/two\\n\\nb\\n\\n---\\n\\n### Skill: one\\nPath: /new\\n\\nreplacement\\n\\n---\\n\\n### Skill: \\nPath: /skip\\n\\nskip\\n</system-reminder>\"},{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills are available for use with the Skill tool:\\n\\nlisted\\n</system-reminder>\\n\"},{\"type\":\"text\",\"text\":\"first\"}]},\"isMeta\":true,\"uuid\":\"u1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "kind": "uuid",
+            "value": "skills-id-2"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "retained-native-write-tool",
+        "kind": "history",
+        "source": "[{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}}]",
+        "tools": "write"
+      },
+      "expected": {
+        "name": "retained-native-write-tool",
+        "before": "[{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}}]",
+        "after": "[{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}},{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}},{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}}]",
+        "reordered": [
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-invoked\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"invoked_skills\",\"skills\":[{\"name\":\"one\",\"path\":\"/fixture/one\",\"content\":\"body\"},{\"name\":\"two\",\"path\":\"/fixture/two\",\"content\":\"b\"},{\"name\":\"one\",\"path\":\"/new\",\"content\":\"replacement\"},{\"name\":\"\",\"path\":\"/skip\",\"content\":\"skip\"}]}}",
+          "{\"type\":\"attachment\",\"uuid\":\"persisted-listing\",\"timestamp\":\"2000-01-01T00:00:00Z\",\"attachment\":{\"type\":\"skill_listing\",\"content\":\"listed\"}}",
+          "{\"type\":\"user\",\"uuid\":\"u1\",\"timestamp\":\"2025-01-01T00:00:00Z\",\"message\":{\"role\":\"user\",\"content\":\"first\"}}"
+        ],
+        "output": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills were invoked in this session. Continue to follow these guidelines:\\n\\n### Skill: one\\nPath: /fixture/one\\n\\nbody\\n\\n---\\n\\n### Skill: two\\nPath: /fixture/two\\n\\nb\\n\\n---\\n\\n### Skill: one\\nPath: /new\\n\\nreplacement\\n\\n---\\n\\n### Skill: \\nPath: /skip\\n\\nskip\\n</system-reminder>\"},{\"type\":\"text\",\"text\":\"<system-reminder>\\nThe following skills are available for use with the Skill tool:\\n\\nlisted\\n</system-reminder>\\n\"},{\"type\":\"text\",\"text\":\"first\"}]},\"isMeta\":true,\"uuid\":\"u1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          },
+          {
+            "kind": "uuid",
+            "value": "skills-id-2"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "invoked empty string collection",
+        "kind": "projection",
+        "source": "{\"type\":\"invoked_skills\",\"skills\":\"\"}"
+      },
+      "expected": {
+        "name": "invoked empty string collection",
+        "before": "{\"type\":\"invoked_skills\",\"skills\":\"\"}",
+        "after": "{\"type\":\"invoked_skills\",\"skills\":\"\"}",
+        "reordered": null,
+        "output": [],
+        "error": null,
+        "trace": []
+      }
+    },
+    {
+      "input": {
+        "name": "invoked own zero length collection",
+        "kind": "projection",
+        "source": "{\"type\":\"invoked_skills\",\"skills\":{\"length\":-0}}"
+      },
+      "expected": {
+        "name": "invoked own zero length collection",
+        "before": "{\"type\":\"invoked_skills\",\"skills\":{\"length\":0}}",
+        "after": "{\"type\":\"invoked_skills\",\"skills\":{\"length\":0}}",
+        "reordered": null,
+        "output": [],
+        "error": null,
+        "trace": []
+      }
+    },
+    {
+      "input": {
+        "name": "listing missing content",
+        "kind": "projection",
+        "source": "{\"type\":\"skill_listing\"}"
+      },
+      "expected": {
+        "name": "listing missing content",
+        "before": "{\"type\":\"skill_listing\"}",
+        "after": "{\"type\":\"skill_listing\"}",
+        "reordered": null,
+        "output": [],
+        "error": null,
+        "trace": []
+      }
+    },
+    {
+      "input": {
+        "name": "listing empty array is truthy",
+        "kind": "projection",
+        "source": "{\"type\":\"skill_listing\",\"content\":[]}"
+      },
+      "expected": {
+        "name": "listing empty array is truthy",
+        "before": "{\"type\":\"skill_listing\",\"content\":[]}",
+        "after": "{\"type\":\"skill_listing\",\"content\":[]}",
+        "reordered": null,
+        "output": [
+          "{\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<system-reminder>\\nThe following skills are available for use with the Skill tool:\\n\\n\\n</system-reminder>\"},\"isMeta\":true,\"uuid\":\"skills-id-1\",\"timestamp\":\"2023-11-14T22:13:20.000Z\"}"
+        ],
+        "error": null,
+        "trace": [
+          {
+            "kind": "uuid",
+            "value": "skills-id-1"
+          },
+          {
+            "kind": "date",
+            "value": "2023-11-14T22:13:20.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "name": "nested array conversion error",
+        "kind": "projection",
+        "source": "{\"type\":\"invoked_skills\",\"skills\":[{\"name\":[\"ok\",{\"toString\":false}],\"path\":\"p\",\"content\":\"c\"}]}"
+      },
+      "expected": {
+        "name": "nested array conversion error",
+        "before": "{\"type\":\"invoked_skills\",\"skills\":[{\"name\":[\"ok\",{\"toString\":false}],\"path\":\"p\",\"content\":\"c\"}]}",
+        "after": "{\"type\":\"invoked_skills\",\"skills\":[{\"name\":[\"ok\",{\"toString\":false}],\"path\":\"p\",\"content\":\"c\"}]}",
+        "reordered": null,
+        "output": null,
+        "error": {
+          "class": "TypeError",
+          "name": "TypeError",
+          "message": "No default value",
+          "messageJSON": "\"No default value\""
+        },
+        "trace": []
+      }
+    }
+  ]
+}

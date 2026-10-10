@@ -1,0 +1,6432 @@
+[
+  {
+    "input": {
+      "name": "success without retry"
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "retry notice retains original SDK payload and request ID",
+      "failures": [
+        {
+          "status": 500,
+          "message": "diagnostic",
+          "headers": {
+            "request-id": "<original-request>"
+          },
+          "payload": {
+            "error": {
+              "message": "原始字段 <>&",
+              "count": 9007199254740992,
+              "value": null
+            }
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "diagnostic",
+              "status": 500,
+              "payload": {
+                "error": {
+                  "message": "原始字段 <>&",
+                  "count": 9007199254740992,
+                  "value": null
+                }
+              },
+              "headers": [
+                [
+                  "request-id",
+                  "<original-request>"
+                ]
+              ],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":500,\"headers\":{\"request-id\":\"<original-request>\"},\"requestID\":\"<original-request>\",\"error\":{\"error\":{\"message\":\"原始字段 <>&\",\"count\":9007199254740992,\"value\":null}}},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "HTTP 400",
+      "failures": [
+        {
+          "status": 400,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "upstream",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": {
+          "class": "APIError",
+          "name": "Error",
+          "message": "upstream",
+          "status": 400,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "HTTP 403",
+      "failures": [
+        {
+          "status": 403,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "upstream",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": {
+          "class": "APIError",
+          "name": "Error",
+          "message": "upstream",
+          "status": 403,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "HTTP 404",
+      "failures": [
+        {
+          "status": 404,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "upstream",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": {
+          "class": "APIError",
+          "name": "Error",
+          "message": "upstream",
+          "status": 404,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "HTTP 408",
+      "failures": [
+        {
+          "status": 408,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 408,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":408},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "HTTP 409",
+      "failures": [
+        {
+          "status": 409,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 409,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":409},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "HTTP 422",
+      "failures": [
+        {
+          "status": 422,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "upstream",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": {
+          "class": "APIError",
+          "name": "Error",
+          "message": "upstream",
+          "status": 422,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "HTTP 429",
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 429,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":429},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "HTTP 500",
+      "failures": [
+        {
+          "status": 500,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 500,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":500},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "HTTP 529",
+      "failures": [
+        {
+          "status": 529,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 529,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":529},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "401 invalidates helper then rebuilds client",
+      "failures": [
+        {
+          "status": 401,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "invalidate"
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 401,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":401},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "client",
+          "index": 2,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 2,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "403 revoked rebuilds client",
+      "failures": [
+        {
+          "status": 403,
+          "message": "OAuth token has been revoked"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "OAuth token has been revoked",
+              "status": 403,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":403},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "client",
+          "index": 2,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 2,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "401 wrapped context overflow is final",
+      "failures": [
+        {
+          "status": 401,
+          "message": "K3 supports only 256K context"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "K3 supports only 256K context",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": {
+          "class": "APIError",
+          "name": "Error",
+          "message": "K3 supports only 256K context",
+          "status": 401,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "non-API native error is final",
+      "failures": [
+        {
+          "kind": "native",
+          "message": "transport text"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "transport text",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": {
+          "class": "Error",
+          "name": "Error",
+          "message": "transport text",
+          "status": null,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "syntax error is final",
+      "failures": [
+        {
+          "kind": "syntax",
+          "message": "unexpected input"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "unexpected input",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": {
+          "class": "SyntaxError",
+          "name": "SyntaxError",
+          "message": "unexpected input",
+          "status": null,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "connection error rebuild and sticky keepalive",
+      "failures": [
+        {
+          "sdkClass": "APIConnectionError",
+          "cause": {
+            "kind": "native",
+            "code": "ECONNRESET",
+            "message": "peer reset"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": {
+              "class": "Error",
+              "name": "Error",
+              "message": "peer reset",
+              "status": null,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": "ECONNRESET"
+            },
+            "error": {
+              "class": "APIConnectionError",
+              "name": "Error",
+              "message": "Connection error.",
+              "status": null,
+              "payload": null,
+              "headers": [],
+              "cause": {
+                "class": "Error",
+                "name": "Error",
+                "message": "peer reset",
+                "status": null,
+                "payload": null,
+                "headers": [],
+                "cause": null,
+                "code": "ECONNRESET"
+              },
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"cause\":{\"code\":\"ECONNRESET\"},\"error\":{\"cause\":{\"code\":\"ECONNRESET\"}},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "client",
+          "index": 2,
+          "keepAliveDisabled": true
+        },
+        {
+          "kind": "operation",
+          "client": 2,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": true
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "connection EPIPE disables keepalive",
+      "failures": [
+        {
+          "sdkClass": "APIConnectionError",
+          "cause": {
+            "kind": "native",
+            "code": "EPIPE"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": {
+              "class": "Error",
+              "name": "Error",
+              "message": "",
+              "status": null,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": "EPIPE"
+            },
+            "error": {
+              "class": "APIConnectionError",
+              "name": "Error",
+              "message": "Connection error.",
+              "status": null,
+              "payload": null,
+              "headers": [],
+              "cause": {
+                "class": "Error",
+                "name": "Error",
+                "message": "",
+                "status": null,
+                "payload": null,
+                "headers": [],
+                "cause": null,
+                "code": "EPIPE"
+              },
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"cause\":{\"code\":\"EPIPE\"},\"error\":{\"cause\":{\"code\":\"EPIPE\"}},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "client",
+          "index": 2,
+          "keepAliveDisabled": true
+        },
+        {
+          "kind": "operation",
+          "client": 2,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": true
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "connection timeout reuses client",
+      "failures": [
+        {
+          "sdkClass": "APIConnectionTimeoutError"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIConnectionTimeoutError",
+              "name": "Error",
+              "message": "Request timed out.",
+              "status": null,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "factory rejection enters same retry loop",
+      "factoryFailures": [
+        {
+          "status": 500,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 500,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":500},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "client",
+          "index": 2,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 2,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "failed authentication client rebuild retains previous client",
+      "factoryFailures": [
+        null,
+        {
+          "status": 500,
+          "message": "upstream"
+        }
+      ],
+      "failures": [
+        {
+          "status": 401,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "invalidate"
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 401,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":401},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "client",
+          "index": 2,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 500,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 1062.5,
+            "retryAttempt": 2,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-2"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":500},\"retryInMs\":1062.5,\"retryAttempt\":2,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-2\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 1062.5
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 3,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 2
+    }
+  },
+  {
+    "input": {
+      "name": "401 unicode whitespace overflow prevents cache invalidation",
+      "failures": [
+        {
+          "status": 401,
+          "message": "K3 SUPPORTS ONLY 256 K﻿tokens of context"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "K3 SUPPORTS ONLY 256 K﻿tokens of context",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": {
+          "class": "APIError",
+          "name": "Error",
+          "message": "K3 SUPPORTS ONLY 256 K﻿tokens of context",
+          "status": 401,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "401 Kelvin sign is not ASCII K in Source regex",
+      "failures": [
+        {
+          "status": 401,
+          "message": "K3 supports only 256K context"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "invalidate"
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "K3 supports only 256K context",
+              "status": 401,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":401},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "client",
+          "index": 2,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 2,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "API subclass Abort thrown by operation wraps final error",
+      "failures": [
+        {
+          "sdkClass": "APIUserAbortError"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "Request was aborted.",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": {
+          "class": "APIUserAbortError",
+          "name": "Error",
+          "message": "Request was aborted.",
+          "status": null,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "explicit false overrides server error",
+      "failures": [
+        {
+          "status": 500,
+          "message": "upstream",
+          "headers": {
+            "x-should-retry": "false"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "upstream",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": {
+          "class": "APIError",
+          "name": "Error",
+          "message": "upstream",
+          "status": 500,
+          "payload": null,
+          "headers": [
+            [
+              "x-should-retry",
+              "false"
+            ]
+          ],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "explicit true permits invalid-request retry",
+      "failures": [
+        {
+          "status": 400,
+          "message": "upstream",
+          "headers": {
+            "x-should-retry": "true"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 400,
+              "payload": null,
+              "headers": [
+                [
+                  "x-should-retry",
+                  "true"
+                ]
+              ],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":400,\"headers\":{\"x-should-retry\":\"true\"},\"requestID\":null},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "overload body precedes explicit false",
+      "failures": [
+        {
+          "status": 400,
+          "message": "{\"type\":\"overloaded_error\"}",
+          "headers": {
+            "x-should-retry": "false"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "{\"type\":\"overloaded_error\"}",
+              "status": 400,
+              "payload": null,
+              "headers": [
+                [
+                  "x-should-retry",
+                  "false"
+                ]
+              ],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":400,\"headers\":{\"x-should-retry\":\"false\"},\"requestID\":null},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "unrecognized query source drops 529",
+      "options": {
+        "querySource": "title"
+      },
+      "failures": [
+        {
+          "status": 529,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "upstream",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": {
+          "class": "APIError",
+          "name": "Error",
+          "message": "upstream",
+          "status": 529,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "untyped query source conservatively retries 529",
+      "options": {},
+      "failures": [
+        {
+          "status": 529,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 529,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":529},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "pre-seeded 529 counter triggers fallback even at retry limit",
+      "options": {
+        "maxRetries": 0,
+        "fallbackModel": "fallback",
+        "initialConsecutive529Errors": 2
+      },
+      "env": {
+        "FALLBACK_FOR_ALL_PRIMARY_MODELS": "0"
+      },
+      "failures": [
+        {
+          "status": 529,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "fallback",
+        "name": "FallbackTriggeredError",
+        "message": "Model fallback triggered: deepseek-flash -> fallback",
+        "originalModel": "deepseek-flash",
+        "fallbackModel": "fallback"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "Opus primary third overload triggers fallback",
+      "options": {
+        "model": "claude-opus-4-7",
+        "fallbackModel": "fallback"
+      },
+      "failures": [
+        {
+          "status": 529,
+          "message": "upstream"
+        },
+        {
+          "status": 500,
+          "message": "upstream"
+        },
+        {
+          "status": 529,
+          "message": "upstream"
+        },
+        {
+          "status": 529,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "claude-opus-4-7",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 529,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":529},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "claude-opus-4-7",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 500,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 1062.5,
+            "retryAttempt": 2,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-2"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":500},\"retryInMs\":1062.5,\"retryAttempt\":2,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-2\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 1062.5
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 3,
+          "context": {
+            "model": "claude-opus-4-7",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 529,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 2125,
+            "retryAttempt": 3,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-3"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":529},\"retryInMs\":2125,\"retryAttempt\":3,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-3\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 2125
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 4,
+          "context": {
+            "model": "claude-opus-4-7",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "fallback",
+        "name": "FallbackTriggeredError",
+        "message": "Model fallback triggered: claude-opus-4-7 -> fallback",
+        "originalModel": "claude-opus-4-7",
+        "fallbackModel": "fallback"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 3
+    }
+  },
+  {
+    "input": {
+      "name": "canonical Opus external repeated overload",
+      "options": {
+        "model": "claude-opus-5-5"
+      },
+      "env": {
+        "USER_TYPE": "external"
+      },
+      "failures": [
+        {
+          "status": 529,
+          "message": "upstream"
+        },
+        {
+          "status": 529,
+          "message": "upstream"
+        },
+        {
+          "status": 529,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "claude-opus-5-5",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 529,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":529},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "claude-opus-5-5",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 529,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 1062.5,
+            "retryAttempt": 2,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-2"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":529},\"retryInMs\":1062.5,\"retryAttempt\":2,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-2\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 1062.5
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 3,
+          "context": {
+            "model": "claude-opus-5-5",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "Repeated 529 Overloaded errors",
+        "context": {
+          "model": "claude-opus-5-5",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": {
+          "class": "Error",
+          "name": "Error",
+          "message": "Repeated 529 Overloaded errors",
+          "status": null,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 2
+    }
+  },
+  {
+    "input": {
+      "name": "sandbox bypasses repeated-overload custom text",
+      "options": {
+        "model": "claude-opus-5-5"
+      },
+      "env": {
+        "USER_TYPE": "external",
+        "IS_SANDBOX": "0"
+      },
+      "failures": [
+        {
+          "status": 529,
+          "message": "upstream"
+        },
+        {
+          "status": 529,
+          "message": "upstream"
+        },
+        {
+          "status": 529,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "claude-opus-5-5",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 529,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":529},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "claude-opus-5-5",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 529,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 1062.5,
+            "retryAttempt": 2,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-2"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":529},\"retryInMs\":1062.5,\"retryAttempt\":2,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-2\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 1062.5
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 3,
+          "context": {
+            "model": "claude-opus-5-5",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 529,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 2125,
+            "retryAttempt": 3,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-3"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":529},\"retryInMs\":2125,\"retryAttempt\":3,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-3\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 2125
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 4,
+          "context": {
+            "model": "claude-opus-5-5",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 3
+    }
+  },
+  {
+    "input": {
+      "name": "alias does not impersonate canonical Opus",
+      "options": {
+        "model": "opus"
+      },
+      "failures": [
+        {
+          "status": 529,
+          "message": "upstream"
+        },
+        {
+          "status": 529,
+          "message": "upstream"
+        },
+        {
+          "status": 529,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "opus",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 529,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":529},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "opus",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 529,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 1062.5,
+            "retryAttempt": 2,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-2"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":529},\"retryInMs\":1062.5,\"retryAttempt\":2,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-2\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 1062.5
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 3,
+          "context": {
+            "model": "opus",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 529,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 2125,
+            "retryAttempt": 3,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-3"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":529},\"retryInMs\":2125,\"retryAttempt\":3,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-3\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 2125
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 4,
+          "context": {
+            "model": "opus",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 3
+    }
+  },
+  {
+    "input": {
+      "name": "policy rejection precedes 401 refresh and fast mode",
+      "options": {
+        "fastMode": true
+      },
+      "failures": [
+        {
+          "status": 401,
+          "message": "{\"error\":{\"code\":\"content_policy\"}}"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "{\"error\":{\"code\":\"content_policy\"}}",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          },
+          "fastMode": true
+        },
+        "original": {
+          "class": "APIError",
+          "name": "Error",
+          "message": "{\"error\":{\"code\":\"content_policy\"}}",
+          "status": 401,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "policy rejection precedes capacity handling",
+      "options": {
+        "fastMode": true
+      },
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream",
+          "payload": {
+            "error": {
+              "code": "cyber_policy"
+            }
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "upstream",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          },
+          "fastMode": true
+        },
+        "original": {
+          "class": "APIError",
+          "name": "Error",
+          "message": "upstream",
+          "status": 429,
+          "payload": {
+            "error": {
+              "code": "cyber_policy"
+            }
+          },
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "legacy overflow adjusts budget without delay",
+      "failures": [
+        {
+          "status": 400,
+          "message": "input length and `max_tokens` exceed context limit: 15000 + 10000 > 24000"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "maxTokensOverride": 8000
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "legacy overflow cannot reduce again",
+      "failures": [
+        {
+          "status": 400,
+          "message": "input length and `max_tokens` exceed context limit: 15000 + 10000 > 24000"
+        },
+        {
+          "status": 400,
+          "message": "input length and `max_tokens` exceed context limit: 14000 + 10000 > 24000"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "maxTokensOverride": 8000
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "input length and `max_tokens` exceed context limit: 14000 + 10000 > 24000",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          },
+          "maxTokensOverride": 8000
+        },
+        "original": {
+          "class": "APIError",
+          "name": "Error",
+          "message": "input length and `max_tokens` exceed context limit: 14000 + 10000 > 24000",
+          "status": 400,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "legacy overflow below floor exposes original SDK failure",
+      "failures": [
+        {
+          "status": 400,
+          "message": "input length and `max_tokens` exceed context limit: 20500 + 10000 > 24000"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "raw-error",
+        "error": {
+          "class": "APIError",
+          "name": "Error",
+          "message": "input length and `max_tokens` exceed context limit: 20500 + 10000 > 24000",
+          "status": 400,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "legacy malformed overflow remains nonretryable",
+      "failures": [
+        {
+          "status": 400,
+          "message": "input length and `max_tokens` exceed context limit: nope"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "input length and `max_tokens` exceed context limit: nope",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": {
+          "class": "APIError",
+          "name": "Error",
+          "message": "input length and `max_tokens` exceed context limit: nope",
+          "status": 400,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "zero retry limit excludes backoff",
+      "options": {
+        "maxRetries": 0
+      },
+      "failures": [
+        {
+          "status": 500,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "upstream",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": {
+          "class": "APIError",
+          "name": "Error",
+          "message": "upstream",
+          "status": 500,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "exhausted counter preserves final context",
+      "options": {
+        "maxRetries": 1
+      },
+      "failures": [
+        {
+          "status": 500,
+          "message": "upstream"
+        },
+        {
+          "status": 500,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 500,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 1,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":500},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":1,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "upstream",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": {
+          "class": "APIError",
+          "name": "Error",
+          "message": "upstream",
+          "status": 500,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "environment retry limit 0",
+      "env": {
+        "CLAUDE_CODE_MAX_RETRIES": "0"
+      },
+      "failures": [
+        {
+          "status": 500,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "upstream",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": {
+          "class": "APIError",
+          "name": "Error",
+          "message": "upstream",
+          "status": 500,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "environment retry limit -7",
+      "env": {
+        "CLAUDE_CODE_MAX_RETRIES": "-7"
+      },
+      "failures": [
+        {
+          "status": 500,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "undefined",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": null
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "environment retry limit not-a-number",
+      "env": {
+        "CLAUDE_CODE_MAX_RETRIES": "not-a-number"
+      },
+      "failures": [
+        {
+          "status": 500,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "undefined",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": null
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "environment retry limit 2tail",
+      "env": {
+        "CLAUDE_CODE_MAX_RETRIES": "2tail"
+      },
+      "failures": [
+        {
+          "status": 500,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 500,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 2,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":500},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":2,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "environment retry limit 999999999999999999999999",
+      "env": {
+        "CLAUDE_CODE_MAX_RETRIES": "9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+      },
+      "failures": [
+        {
+          "status": 500,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 500,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": null,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":500},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":null,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "fractional explicit limit preserves JS loop boundary",
+      "options": {
+        "maxRetries": 0.5
+      },
+      "failures": [
+        {
+          "status": 500,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "upstream",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          }
+        },
+        "original": {
+          "class": "APIError",
+          "name": "Error",
+          "message": "upstream",
+          "status": 500,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "ordinary retry-after 0",
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream",
+          "headers": {
+            "retry-after": "0"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 429,
+              "payload": null,
+              "headers": [
+                [
+                  "retry-after",
+                  "0"
+                ]
+              ],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 500,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":429,\"headers\":{\"retry-after\":\"0\"},\"requestID\":null},\"retryInMs\":500,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 500
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "ordinary retry-after -25",
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream",
+          "headers": {
+            "retry-after": "-25"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 429,
+              "payload": null,
+              "headers": [
+                [
+                  "retry-after",
+                  "-25"
+                ]
+              ],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 500,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":429,\"headers\":{\"retry-after\":\"-25\"},\"requestID\":null},\"retryInMs\":500,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 500
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "ordinary retry-after 2.5",
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream",
+          "headers": {
+            "retry-after": "2.5"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 429,
+              "payload": null,
+              "headers": [
+                [
+                  "retry-after",
+                  "2.5"
+                ]
+              ],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 2000,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":429,\"headers\":{\"retry-after\":\"2.5\"},\"requestID\":null},\"retryInMs\":2000,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 2000
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "ordinary retry-after nonsense",
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream",
+          "headers": {
+            "retry-after": "nonsense"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 429,
+              "payload": null,
+              "headers": [
+                [
+                  "retry-after",
+                  "nonsense"
+                ]
+              ],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":429,\"headers\":{\"retry-after\":\"nonsense\"},\"requestID\":null},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "ordinary retry-after 3600",
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream",
+          "headers": {
+            "retry-after": "3600"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 429,
+              "payload": null,
+              "headers": [
+                [
+                  "retry-after",
+                  "3600"
+                ]
+              ],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 3600000,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":429,\"headers\":{\"retry-after\":\"3600\"},\"requestID\":null},\"retryInMs\":3600000,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 3600000
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "fast retry-after 0",
+      "options": {
+        "fastMode": true,
+        "maxRetries": 1
+      },
+      "failures": [
+        {
+          "status": 529,
+          "message": "upstream",
+          "headers": {
+            "retry-after": "0"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 500
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "fast retry-after 19",
+      "options": {
+        "fastMode": true,
+        "maxRetries": 1
+      },
+      "failures": [
+        {
+          "status": 529,
+          "message": "upstream",
+          "headers": {
+            "retry-after": "19"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 19000
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "fast retry-after 20",
+      "options": {
+        "fastMode": true,
+        "maxRetries": 1
+      },
+      "failures": [
+        {
+          "status": 529,
+          "message": "upstream",
+          "headers": {
+            "retry-after": "20"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "cooldown",
+          "resetAt": 1700000600000,
+          "reason": "overloaded"
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": false
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "cooldown",
+          "resetAt": 1700000600000,
+          "reason": "overloaded"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "fast retry-after nonsense",
+      "options": {
+        "fastMode": true,
+        "maxRetries": 1
+      },
+      "failures": [
+        {
+          "status": 529,
+          "message": "upstream",
+          "headers": {
+            "retry-after": "nonsense"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "cooldown",
+          "resetAt": 1700001800000,
+          "reason": "overloaded"
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": false
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "cooldown",
+          "resetAt": 1700001800000,
+          "reason": "overloaded"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "fast short retries can terminate with last raw error",
+      "options": {
+        "fastMode": true,
+        "maxRetries": 0
+      },
+      "failures": [
+        {
+          "status": 529,
+          "message": "upstream",
+          "headers": {
+            "retry-after": "0"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 500
+        }
+      ],
+      "result": {
+        "kind": "cannot-retry",
+        "name": "RetryError",
+        "message": "upstream",
+        "context": {
+          "model": "deepseek-flash",
+          "thinkingConfig": {
+            "type": "disabled"
+          },
+          "fastMode": true
+        },
+        "original": {
+          "class": "APIError",
+          "name": "Error",
+          "message": "upstream",
+          "status": 529,
+          "payload": null,
+          "headers": [
+            [
+              "retry-after",
+              "0"
+            ]
+          ],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "fast disabled omits context fastMode",
+      "options": {
+        "fastMode": true
+      },
+      "env": {
+        "CLAUDE_CODE_DISABLE_FAST_MODE": "﻿YES"
+      },
+      "failures": [
+        {
+          "status": 529,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 529,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":529},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "active cooldown bypasses fast fallback",
+      "options": {
+        "fastMode": true
+      },
+      "cooldown": 1700000300000,
+      "failures": [
+        {
+          "status": 529,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 529,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":529},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "cooldown",
+          "resetAt": 1700000300000,
+          "reason": "rate_limit"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "expired cooldown notifies before first active-fast attempt",
+      "options": {
+        "fastMode": true
+      },
+      "cooldown": 1699999999000
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "cooldown_expired"
+        },
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "expired cooldown stays lazy until final state read",
+      "options": {
+        "fastMode": false
+      },
+      "cooldown": 1699999999000
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": false
+          }
+        },
+        {
+          "kind": "cooldown_expired"
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "disabled fast expires cooldown without notification",
+      "env": {
+        "CLAUDE_CODE_DISABLE_FAST_MODE": "1"
+      },
+      "cooldown": 1699999999000
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "overage out_of_credits",
+      "options": {
+        "fastMode": true
+      },
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream",
+          "headers": {
+            "anthropic-ratelimit-unified-overage-disabled-reason": "out_of_credits"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "overage",
+          "message": "Fast mode disabled · extra usage credits exhausted"
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": false
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "overage org_level_disabled_until",
+      "options": {
+        "fastMode": true
+      },
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream",
+          "headers": {
+            "anthropic-ratelimit-unified-overage-disabled-reason": "org_level_disabled_until"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "overage",
+          "message": "Fast mode disabled · extra usage spending cap reached"
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": false
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "overage org_level_disabled",
+      "options": {
+        "fastMode": true
+      },
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream",
+          "headers": {
+            "anthropic-ratelimit-unified-overage-disabled-reason": "org_level_disabled"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "overage",
+          "message": "Fast mode disabled · extra usage disabled by your organization"
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": false
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": null,
+        "penguinModeOrgEnabled": false,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "overage org_service_level_disabled",
+      "options": {
+        "fastMode": true
+      },
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream",
+          "headers": {
+            "anthropic-ratelimit-unified-overage-disabled-reason": "org_service_level_disabled"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "overage",
+          "message": "Fast mode disabled · extra usage disabled by your organization"
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": false
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": null,
+        "penguinModeOrgEnabled": false,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "overage member_level_disabled",
+      "options": {
+        "fastMode": true
+      },
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream",
+          "headers": {
+            "anthropic-ratelimit-unified-overage-disabled-reason": "member_level_disabled"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "overage",
+          "message": "Fast mode disabled · extra usage disabled for your account"
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": false
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": null,
+        "penguinModeOrgEnabled": false,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "overage seat_tier_level_disabled",
+      "options": {
+        "fastMode": true
+      },
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream",
+          "headers": {
+            "anthropic-ratelimit-unified-overage-disabled-reason": "seat_tier_level_disabled"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "overage",
+          "message": "Fast mode disabled · extra usage not available for your plan"
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": false
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": null,
+        "penguinModeOrgEnabled": false,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "overage seat_tier_zero_credit_limit",
+      "options": {
+        "fastMode": true
+      },
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream",
+          "headers": {
+            "anthropic-ratelimit-unified-overage-disabled-reason": "seat_tier_zero_credit_limit"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "overage",
+          "message": "Fast mode disabled · extra usage not available for your plan"
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": false
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": null,
+        "penguinModeOrgEnabled": false,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "overage member_zero_credit_limit",
+      "options": {
+        "fastMode": true
+      },
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream",
+          "headers": {
+            "anthropic-ratelimit-unified-overage-disabled-reason": "member_zero_credit_limit"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "overage",
+          "message": "Fast mode disabled · extra usage not available for your plan"
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": false
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": null,
+        "penguinModeOrgEnabled": false,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "overage overage_not_provisioned",
+      "options": {
+        "fastMode": true
+      },
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream",
+          "headers": {
+            "anthropic-ratelimit-unified-overage-disabled-reason": "overage_not_provisioned"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "overage",
+          "message": "Fast mode requires extra usage billing · /extra-usage to enable"
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": false
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": null,
+        "penguinModeOrgEnabled": false,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "overage no_limits_configured",
+      "options": {
+        "fastMode": true
+      },
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream",
+          "headers": {
+            "anthropic-ratelimit-unified-overage-disabled-reason": "no_limits_configured"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "overage",
+          "message": "Fast mode requires extra usage billing · /extra-usage to enable"
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": false
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": null,
+        "penguinModeOrgEnabled": false,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "overage ",
+      "options": {
+        "fastMode": true
+      },
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream",
+          "headers": {
+            "anthropic-ratelimit-unified-overage-disabled-reason": ""
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "overage",
+          "message": "Fast mode disabled · extra usage not available"
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": false
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": null,
+        "penguinModeOrgEnabled": false,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "overage unknown",
+      "options": {
+        "fastMode": true
+      },
+      "failures": [
+        {
+          "status": 429,
+          "message": "upstream",
+          "headers": {
+            "anthropic-ratelimit-unified-overage-disabled-reason": "unknown"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "overage",
+          "message": "Fast mode disabled · extra usage not available"
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": false
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": null,
+        "penguinModeOrgEnabled": false,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "fast org rejection persists and retries",
+      "options": {
+        "fastMode": true
+      },
+      "failures": [
+        {
+          "status": 400,
+          "message": "Fast mode is not enabled for your organization"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": true
+          }
+        },
+        {
+          "kind": "org_disabled",
+          "enabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            },
+            "fastMode": false
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": null,
+        "penguinModeOrgEnabled": false,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "remote 401 bypasses false header and overflow guard",
+      "env": {
+        "CLAUDE_CODE_REMOTE": "true"
+      },
+      "failures": [
+        {
+          "status": 401,
+          "message": "prompt is too long",
+          "headers": {
+            "x-should-retry": "false"
+          }
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "prompt is too long",
+              "status": 401,
+              "payload": null,
+              "headers": [
+                [
+                  "x-should-retry",
+                  "false"
+                ]
+              ],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":401,\"headers\":{\"x-should-retry\":\"false\"},\"requestID\":null},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        },
+        {
+          "kind": "client",
+          "index": 2,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 2,
+          "attempt": 2,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        }
+      ],
+      "result": {
+        "kind": "success",
+        "value": "success"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "caller abort before",
+      "abort": "before",
+      "failures": [
+        {
+          "status": 500,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [],
+      "result": {
+        "kind": "raw-error",
+        "error": {
+          "class": "APIUserAbortError",
+          "name": "Error",
+          "message": "Request was aborted.",
+          "status": null,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 0
+    }
+  },
+  {
+    "input": {
+      "name": "caller abort operation",
+      "abort": "operation",
+      "failures": [
+        {
+          "status": 500,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 500,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":500},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        }
+      ],
+      "result": {
+        "kind": "raw-error",
+        "error": {
+          "class": "APIUserAbortError",
+          "name": "Error",
+          "message": "Request was aborted.",
+          "status": null,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "caller abort yield",
+      "abort": "yield",
+      "failures": [
+        {
+          "status": 500,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 500,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":500},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        }
+      ],
+      "result": {
+        "kind": "raw-error",
+        "error": {
+          "class": "APIUserAbortError",
+          "name": "Error",
+          "message": "Request was aborted.",
+          "status": null,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "caller abort sleep",
+      "abort": "sleep",
+      "failures": [
+        {
+          "status": 500,
+          "message": "upstream"
+        }
+      ]
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 500,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":500},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        },
+        {
+          "kind": "sleep",
+          "milliseconds": 531.25
+        }
+      ],
+      "result": {
+        "kind": "raw-error",
+        "error": {
+          "class": "APIUserAbortError",
+          "name": "Error",
+          "message": "Request was aborted.",
+          "status": null,
+          "payload": null,
+          "headers": [],
+          "cause": null,
+          "code": null
+        }
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  },
+  {
+    "input": {
+      "name": "consumer stops before backoff or next attempt",
+      "failures": [
+        {
+          "status": 500,
+          "message": "upstream"
+        }
+      ],
+      "stopAfterYield": true
+    },
+    "observation": {
+      "trace": [
+        {
+          "kind": "client",
+          "index": 1,
+          "keepAliveDisabled": false
+        },
+        {
+          "kind": "operation",
+          "client": 1,
+          "attempt": 1,
+          "context": {
+            "model": "deepseek-flash",
+            "thinkingConfig": {
+              "type": "disabled"
+            }
+          }
+        },
+        {
+          "kind": "yield",
+          "notice": {
+            "type": "system",
+            "subtype": "api_error",
+            "level": "error",
+            "cause": null,
+            "error": {
+              "class": "APIError",
+              "name": "Error",
+              "message": "upstream",
+              "status": 500,
+              "payload": null,
+              "headers": [],
+              "cause": null,
+              "code": null
+            },
+            "retryInMs": 531.25,
+            "retryAttempt": 1,
+            "maxRetries": 4,
+            "timestamp": "2023-11-14T22:13:20.000Z",
+            "uuid": "retry-attempt-id-1"
+          },
+          "wire": "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"error\":{\"status\":500},\"retryInMs\":531.25,\"retryAttempt\":1,\"maxRetries\":4,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-attempt-id-1\"}"
+        }
+      ],
+      "result": {
+        "kind": "consumer-stopped"
+      },
+      "state": {
+        "fast": {
+          "status": "active"
+        },
+        "settingsFastMode": true,
+        "penguinModeOrgEnabled": true,
+        "keepAliveDisabled": false
+      },
+      "uuidCalls": 1
+    }
+  }
+]

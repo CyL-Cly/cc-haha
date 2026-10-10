@@ -1,0 +1,385 @@
+[
+  {
+    "id": "duration-fulfilled-normal",
+    "clock": {
+      "unixMillis": 1700000000000
+    },
+    "initialLastMainRequestID": "original-preexisting-main-request",
+    "requests": [
+      {
+        "production": {
+          "historySources": [
+            "{\"type\":\"user\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"message\":{\"role\":\"user\",\"content\":\"new original accounting provenance input\"}}"
+          ],
+          "systemSources": [],
+          "thinking": {
+            "type": "disabled"
+          },
+          "tools": [],
+          "sdkBetas": [],
+          "sessionID": "00000000-0000-4000-8000-000000000000",
+          "deviceID": "fixture-consumer-device",
+          "permissionProfile": "actual getEmptyToolPermissionContext/default",
+          "options": {
+            "model": "fixture-model",
+            "querySource": "sdk",
+            "isNonInteractiveSession": true,
+            "maxOutputTokensOverride": 32,
+            "agents": [],
+            "mcpTools": [],
+            "hasAppendSystemPrompt": false
+          }
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-provenance-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":4,\"output_tokens\":0,\"cache_read_input_tokens\":2,\"cache_creation_input_tokens\":1}}}\n\n",
+        "middle": "event: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"new original provenance tail text\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":3}}\n\n",
+        "ending": "event: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+        "responseRequestID": "original-provenance-response",
+        "program": "normal",
+        "permission": {
+          "initial": "fulfilled-actual-default",
+          "atMessageDelta": "keep-fulfilled"
+        },
+        "clockAtStart": 1700000000000,
+        "clockAtMessageDelta": 1700000000123,
+        "clockAtPermissionRelease": 1700000000987,
+        "returnValue": "original-provenance-return",
+        "callerAbortReason": "interrupt",
+        "throwMessage": "original consumer supplied throw"
+      }
+    ]
+  },
+  {
+    "id": "duration-held-normal",
+    "clock": {
+      "unixMillis": 1700000000000
+    },
+    "initialLastMainRequestID": "original-preexisting-main-request",
+    "requests": [
+      {
+        "production": {
+          "historySources": [
+            "{\"type\":\"user\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"message\":{\"role\":\"user\",\"content\":\"new original accounting provenance input\"}}"
+          ],
+          "systemSources": [],
+          "thinking": {
+            "type": "disabled"
+          },
+          "tools": [],
+          "sdkBetas": [],
+          "sessionID": "00000000-0000-4000-8000-000000000000",
+          "deviceID": "fixture-consumer-device",
+          "permissionProfile": "actual getEmptyToolPermissionContext/default",
+          "options": {
+            "model": "fixture-model",
+            "querySource": "sdk",
+            "isNonInteractiveSession": true,
+            "maxOutputTokensOverride": 32,
+            "agents": [],
+            "mcpTools": [],
+            "hasAppendSystemPrompt": false
+          }
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-provenance-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":4,\"output_tokens\":0,\"cache_read_input_tokens\":2,\"cache_creation_input_tokens\":1}}}\n\n",
+        "middle": "event: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"new original provenance tail text\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":3}}\n\n",
+        "ending": "event: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+        "responseRequestID": "original-provenance-response",
+        "program": "normal",
+        "permission": {
+          "initial": "fulfilled-actual-default",
+          "atMessageDelta": "replace-with-held-native-promise"
+        },
+        "clockAtStart": 1700000000000,
+        "clockAtMessageDelta": 1700000000123,
+        "clockAtPermissionRelease": 1700000000987,
+        "returnValue": "original-provenance-return",
+        "callerAbortReason": "interrupt",
+        "throwMessage": "original consumer supplied throw"
+      }
+    ]
+  },
+  {
+    "id": "duration-return-after-delta",
+    "clock": {
+      "unixMillis": 1700000000000
+    },
+    "initialLastMainRequestID": "original-preexisting-main-request",
+    "requests": [
+      {
+        "production": {
+          "historySources": [
+            "{\"type\":\"user\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"message\":{\"role\":\"user\",\"content\":\"new original accounting provenance input\"}}"
+          ],
+          "systemSources": [],
+          "thinking": {
+            "type": "disabled"
+          },
+          "tools": [],
+          "sdkBetas": [],
+          "sessionID": "00000000-0000-4000-8000-000000000000",
+          "deviceID": "fixture-consumer-device",
+          "permissionProfile": "actual getEmptyToolPermissionContext/default",
+          "options": {
+            "model": "fixture-model",
+            "querySource": "sdk",
+            "isNonInteractiveSession": true,
+            "maxOutputTokensOverride": 32,
+            "agents": [],
+            "mcpTools": [],
+            "hasAppendSystemPrompt": false
+          }
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-provenance-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":4,\"output_tokens\":0,\"cache_read_input_tokens\":2,\"cache_creation_input_tokens\":1}}}\n\n",
+        "middle": "event: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"new original provenance tail text\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":3}}\n\n",
+        "ending": "event: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+        "responseRequestID": "original-provenance-response",
+        "program": "return",
+        "permission": {
+          "initial": "fulfilled-actual-default",
+          "atMessageDelta": "replace-with-held-native-promise"
+        },
+        "clockAtStart": 1700000000000,
+        "clockAtMessageDelta": 1700000000123,
+        "clockAtPermissionRelease": 1700000000987,
+        "returnValue": "original-provenance-return",
+        "callerAbortReason": "interrupt",
+        "throwMessage": "original consumer supplied throw"
+      }
+    ]
+  },
+  {
+    "id": "duration-caller-abort-after-delta",
+    "clock": {
+      "unixMillis": 1700000000000
+    },
+    "initialLastMainRequestID": "original-preexisting-main-request",
+    "requests": [
+      {
+        "production": {
+          "historySources": [
+            "{\"type\":\"user\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"message\":{\"role\":\"user\",\"content\":\"new original accounting provenance input\"}}"
+          ],
+          "systemSources": [],
+          "thinking": {
+            "type": "disabled"
+          },
+          "tools": [],
+          "sdkBetas": [],
+          "sessionID": "00000000-0000-4000-8000-000000000000",
+          "deviceID": "fixture-consumer-device",
+          "permissionProfile": "actual getEmptyToolPermissionContext/default",
+          "options": {
+            "model": "fixture-model",
+            "querySource": "sdk",
+            "isNonInteractiveSession": true,
+            "maxOutputTokensOverride": 32,
+            "agents": [],
+            "mcpTools": [],
+            "hasAppendSystemPrompt": false
+          }
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-provenance-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":4,\"output_tokens\":0,\"cache_read_input_tokens\":2,\"cache_creation_input_tokens\":1}}}\n\n",
+        "middle": "event: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"new original provenance tail text\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":3}}\n\n",
+        "ending": "event: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+        "responseRequestID": "original-provenance-response",
+        "program": "caller-abort",
+        "permission": {
+          "initial": "fulfilled-actual-default",
+          "atMessageDelta": "replace-with-held-native-promise"
+        },
+        "clockAtStart": 1700000000000,
+        "clockAtMessageDelta": 1700000000123,
+        "clockAtPermissionRelease": 1700000000987,
+        "returnValue": "original-provenance-return",
+        "callerAbortReason": "interrupt",
+        "throwMessage": "original consumer supplied throw"
+      }
+    ]
+  },
+  {
+    "id": "duration-api-terminal-after-delta",
+    "clock": {
+      "unixMillis": 1700000000000
+    },
+    "initialLastMainRequestID": "original-preexisting-main-request",
+    "requests": [
+      {
+        "production": {
+          "historySources": [
+            "{\"type\":\"user\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"message\":{\"role\":\"user\",\"content\":\"new original accounting provenance input\"}}"
+          ],
+          "systemSources": [],
+          "thinking": {
+            "type": "disabled"
+          },
+          "tools": [],
+          "sdkBetas": [],
+          "sessionID": "00000000-0000-4000-8000-000000000000",
+          "deviceID": "fixture-consumer-device",
+          "permissionProfile": "actual getEmptyToolPermissionContext/default",
+          "options": {
+            "model": "fixture-model",
+            "querySource": "sdk",
+            "isNonInteractiveSession": true,
+            "maxOutputTokensOverride": 32,
+            "agents": [],
+            "mcpTools": [],
+            "hasAppendSystemPrompt": false
+          }
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-provenance-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":4,\"output_tokens\":0,\"cache_read_input_tokens\":2,\"cache_creation_input_tokens\":1}}}\n\n",
+        "middle": "event: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"new original provenance tail text\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":3}}\n\n",
+        "ending": "event: error\ndata: {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"original external terminal SSE error\"}}\n\n",
+        "responseRequestID": "original-provenance-response",
+        "program": "api-error",
+        "permission": {
+          "initial": "fulfilled-actual-default",
+          "atMessageDelta": "replace-with-held-native-promise"
+        },
+        "clockAtStart": 1700000000000,
+        "clockAtMessageDelta": 1700000000123,
+        "clockAtPermissionRelease": 1700000000987,
+        "returnValue": "original-provenance-return",
+        "callerAbortReason": "interrupt",
+        "throwMessage": "original consumer supplied throw"
+      }
+    ]
+  },
+  {
+    "id": "duration-throw-after-delta",
+    "clock": {
+      "unixMillis": 1700000000000
+    },
+    "initialLastMainRequestID": "original-preexisting-main-request",
+    "requests": [
+      {
+        "production": {
+          "historySources": [
+            "{\"type\":\"user\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"message\":{\"role\":\"user\",\"content\":\"new original accounting provenance input\"}}"
+          ],
+          "systemSources": [],
+          "thinking": {
+            "type": "disabled"
+          },
+          "tools": [],
+          "sdkBetas": [],
+          "sessionID": "00000000-0000-4000-8000-000000000000",
+          "deviceID": "fixture-consumer-device",
+          "permissionProfile": "actual getEmptyToolPermissionContext/default",
+          "options": {
+            "model": "fixture-model",
+            "querySource": "sdk",
+            "isNonInteractiveSession": true,
+            "maxOutputTokensOverride": 32,
+            "agents": [],
+            "mcpTools": [],
+            "hasAppendSystemPrompt": false
+          }
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-provenance-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":4,\"output_tokens\":0,\"cache_read_input_tokens\":2,\"cache_creation_input_tokens\":1}}}\n\n",
+        "middle": "event: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"new original provenance tail text\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":3}}\n\n",
+        "ending": "event: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+        "responseRequestID": "original-provenance-response",
+        "program": "throw",
+        "permission": {
+          "initial": "fulfilled-actual-default",
+          "atMessageDelta": "replace-with-held-native-promise"
+        },
+        "clockAtStart": 1700000000000,
+        "clockAtMessageDelta": 1700000000123,
+        "clockAtPermissionRelease": 1700000000987,
+        "returnValue": "original-provenance-return",
+        "callerAbortReason": "interrupt",
+        "throwMessage": "original consumer supplied throw"
+      }
+    ]
+  },
+  {
+    "id": "duration-two-normal-requests",
+    "clock": {
+      "unixMillis": 1700000000000
+    },
+    "initialLastMainRequestID": "original-preexisting-main-request",
+    "requests": [
+      {
+        "production": {
+          "historySources": [
+            "{\"type\":\"user\",\"uuid\":\"00000000-0000-4000-8000-000000000001\",\"message\":{\"role\":\"user\",\"content\":\"new original accounting provenance input\"}}"
+          ],
+          "systemSources": [],
+          "thinking": {
+            "type": "disabled"
+          },
+          "tools": [],
+          "sdkBetas": [],
+          "sessionID": "00000000-0000-4000-8000-000000000000",
+          "deviceID": "fixture-consumer-device",
+          "permissionProfile": "actual getEmptyToolPermissionContext/default",
+          "options": {
+            "model": "fixture-model",
+            "querySource": "sdk",
+            "isNonInteractiveSession": true,
+            "maxOutputTokensOverride": 32,
+            "agents": [],
+            "mcpTools": [],
+            "hasAppendSystemPrompt": false
+          }
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-provenance-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":4,\"output_tokens\":0,\"cache_read_input_tokens\":2,\"cache_creation_input_tokens\":1}}}\n\n",
+        "middle": "event: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"new original provenance tail text\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":3}}\n\n",
+        "ending": "event: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+        "responseRequestID": "original-provenance-response",
+        "program": "normal",
+        "permission": {
+          "initial": "fulfilled-actual-default",
+          "atMessageDelta": "keep-fulfilled"
+        },
+        "clockAtStart": 1700000000000,
+        "clockAtMessageDelta": 1700000000123,
+        "clockAtPermissionRelease": 1700000000987,
+        "returnValue": "original-provenance-return",
+        "callerAbortReason": "interrupt",
+        "throwMessage": "original consumer supplied throw"
+      },
+      {
+        "production": {
+          "historySources": [
+            "{\"type\":\"user\",\"uuid\":\"00000000-0000-4000-8000-000000000002\",\"message\":{\"role\":\"user\",\"content\":\"second original provenance time input\"}}"
+          ],
+          "systemSources": [],
+          "thinking": {
+            "type": "disabled"
+          },
+          "tools": [],
+          "sdkBetas": [],
+          "sessionID": "00000000-0000-4000-8000-000000000000",
+          "deviceID": "fixture-consumer-device",
+          "permissionProfile": "actual getEmptyToolPermissionContext/default",
+          "options": {
+            "model": "fixture-model",
+            "querySource": "sdk",
+            "isNonInteractiveSession": true,
+            "maxOutputTokensOverride": 32,
+            "agents": [],
+            "mcpTools": [],
+            "hasAppendSystemPrompt": false
+          }
+        },
+        "prefix": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"original-provenance-message\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"stop_reason\":null,\"stop_sequence\":null,\"usage\":{\"input_tokens\":4,\"output_tokens\":0,\"cache_read_input_tokens\":2,\"cache_creation_input_tokens\":1}}}\n\n",
+        "middle": "event: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"new original provenance tail text\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":3}}\n\n",
+        "ending": "event: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+        "responseRequestID": "original-provenance-response-2",
+        "program": "normal",
+        "permission": {
+          "initial": "fulfilled-actual-default",
+          "atMessageDelta": "keep-fulfilled"
+        },
+        "clockAtStart": 1700000002000,
+        "clockAtMessageDelta": 1700000002230,
+        "clockAtPermissionRelease": 1700000002987,
+        "returnValue": "original-provenance-return",
+        "callerAbortReason": "interrupt",
+        "throwMessage": "original consumer supplied throw"
+      }
+    ]
+  }
+]

@@ -1,0 +1,63 @@
+[
+  {
+    "input": {
+      "profile": "delegate-return-defined"
+    },
+    "events": [
+      "outer:start",
+      "inner:start",
+      "consumer:first",
+      "caller:return-returned",
+      "inner:finally",
+      "outer:finally",
+      "consumer:return",
+      "consumer:done"
+    ],
+    "results": [
+      {
+        "done": false,
+        "defined": true,
+        "value": "one"
+      },
+      {
+        "done": true,
+        "defined": true,
+        "value": "final"
+      },
+      {
+        "done": true,
+        "defined": false
+      }
+    ]
+  },
+  {
+    "input": {
+      "profile": "delegate-return-undefined"
+    },
+    "events": [
+      "outer:start",
+      "inner:start",
+      "consumer:first",
+      "caller:return-returned",
+      "inner:finally",
+      "outer:finally",
+      "consumer:return",
+      "consumer:done"
+    ],
+    "results": [
+      {
+        "done": false,
+        "defined": true,
+        "value": "one"
+      },
+      {
+        "done": true,
+        "defined": false
+      },
+      {
+        "done": true,
+        "defined": false
+      }
+    ]
+  }
+]
