@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createServer } from 'node:net'
 import { applyUserStateGuard, createQualityGateSandbox } from '../sandbox'
+import { resolveBackendLaunchTarget, spawnBackendServer, type BackendLaunchTarget, type BackendServer } from '../backendLaunch'
 import type { BaselineCase, BaselineTarget, LaneResult } from '../types'
 
 type ServerMessage = {
@@ -24,20 +25,6 @@ function getPort() {
       server.close(() => resolve(port))
     })
   })
-}
-
-async function waitForHttp(url: string, timeoutMs: number) {
-  const deadline = Date.now() + timeoutMs
-  while (Date.now() < deadline) {
-    try {
-      const res = await fetch(url)
-      if (res.ok) return
-    } catch {
-      // Keep polling until timeout.
-    }
-    await Bun.sleep(500)
-  }
-  throw new Error(`Timed out waiting for ${url}`)
 }
 
 async function runCommand(command: string[], cwd: string) {
@@ -228,7 +215,9 @@ export async function executeBaselineCase(
   rootDir: string,
   artifactDir: string,
   target?: BaselineTarget,
+  backendTarget?: BackendLaunchTarget,
 ): Promise<LaneResult> {
+  const launchTarget = resolveBackendLaunchTarget(rootDir, backendTarget)
   const started = Date.now()
   const resultId = target
     ? `baseline:${testCase.id}:${target.label.replace(/[^a-zA-Z0-9._-]+/g, '-')}`
@@ -252,21 +241,14 @@ export async function executeBaselineCase(
   // session index, and settings from CLAUDE_CONFIG_DIR. Without a sandbox the run
   // writes into the developer's real ~/.claude.
   const sandbox = createQualityGateSandbox({ label: `baseline-${testCase.id}`, seedProviders: true })
-  const server = Bun.spawn(['bun', 'run', 'src/server/index.ts', '--host', '127.0.0.1', '--port', String(port)], {
-    cwd: rootDir,
-    stdout: 'pipe',
-    stderr: 'pipe',
-    env: {
-      ...sandbox.env,
-      SERVER_PORT: String(port),
-    },
-  })
-  const stdoutPump = pipeToFile(server.stdout, serverLogPath)
-  const stderrPump = pipeToFile(server.stderr, serverLogPath)
+  let server: BackendServer | undefined
+  const pumps: Promise<void>[] = []
   const finish = (result: LaneResult) => applyUserStateGuard(result, sandbox, artifactDir)
 
   try {
-    await waitForHttp(`${baseUrl}/health`, 60_000)
+    server = spawnBackendServer({ rootDir, port, sandbox, target: launchTarget })
+    pumps.push(pipeToFile(server.stdout, serverLogPath), pipeToFile(server.stderr, serverLogPath))
+    await server.waitUntilHealthy(60_000)
 
     const createResponse = await fetch(`${baseUrl}/api/sessions`, {
       method: 'POST',
@@ -325,10 +307,12 @@ export async function executeBaselineCase(
       artifactDir,
     })
   } finally {
-    server.kill()
-    await server.exited.catch(() => undefined)
-    await Promise.all([stdoutPump, stderrPump]).catch(() => undefined)
-    rmSync(workRoot, { recursive: true, force: true })
-    sandbox.cleanup()
+    try {
+      await server?.stop()
+      await Promise.all(pumps).catch(() => undefined)
+    } finally {
+      rmSync(workRoot, { recursive: true, force: true })
+      sandbox.cleanup()
+    }
   }
 }

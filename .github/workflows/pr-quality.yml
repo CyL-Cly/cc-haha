@@ -23,6 +23,8 @@ jobs:
       blocking_reasons: ${{ steps.policy.outputs.blocking_reasons }}
       desktop_checks: ${{ steps.policy.outputs.desktop_checks }}
       server_checks: ${{ steps.policy.outputs.server_checks }}
+      go_checks: ${{ steps.policy.outputs.go_checks }}
+      go_parity_checks: ${{ steps.policy.outputs.go_parity_checks }}
       adapter_checks: ${{ steps.policy.outputs.adapter_checks }}
       desktop_native_checks: ${{ steps.policy.outputs.desktop_native_checks }}
       provider_contract_checks: ${{ steps.policy.outputs.provider_contract_checks }}
@@ -138,6 +140,152 @@ jobs:
         run: bun install --frozen-lockfile
       - name: Run root runtime checks
         run: bun run check:server
+
+  go-platform-checks:
+    name: go-native (${{ matrix.target }})
+    needs: scope-plan
+    if: needs.scope-plan.outputs.go_checks == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: darwin-amd64
+            target: darwin/amd64
+            runner: macos-15-intel
+          - id: darwin-arm64
+            target: darwin/arm64
+            runner: macos-15
+          - id: linux-amd64
+            target: linux/amd64
+            runner: ubuntu-22.04
+          - id: linux-arm64
+            target: linux/arm64
+            runner: ubuntu-22.04-arm
+          - id: windows-amd64
+            target: windows/amd64
+            runner: windows-2025
+          - id: windows-arm64
+            target: windows/arm64
+            runner: windows-11-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        env:
+          GIT_CONFIG_COUNT: '1'
+          GIT_CONFIG_KEY_0: core.autocrlf
+          GIT_CONFIG_VALUE_0: 'false'
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          architecture: ${{ endsWith(matrix.target, '/arm64') && 'arm64' || 'x64' }}
+          cache: false
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - name: Install root dependencies
+        run: bun install --frozen-lockfile
+      - name: Prepare pinned Go dependencies (setup network only)
+        run: bun run prepare:go
+      - name: Expose the runner's native MinGW compiler for Windows x64 race tests
+        if: matrix.id == 'windows-amd64'
+        shell: pwsh
+        run: |
+          $gcc = Get-Command gcc.exe -ErrorAction SilentlyContinue
+          if (!$gcc) {
+            foreach ($directory in @('C:\mingw64\bin', 'C:\msys64\mingw64\bin', 'C:\msys64\ucrt64\bin')) {
+              if (Test-Path "$directory\gcc.exe") { $gcc = Get-Item "$directory\gcc.exe"; break }
+            }
+          }
+          if (!$gcc) { throw 'Native Windows x64 GCC is required for Go race tests' }
+          $executable = if ($gcc.Source) { $gcc.Source } else { $gcc.FullName }
+          $target = & $executable -dumpmachine
+          if ($LASTEXITCODE -ne 0 -or $target -ne 'x86_64-w64-mingw32') { throw "Wrong Windows race compiler target: $target" }
+          (Split-Path $executable) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Run offline Go build, vet, unit, race and coverage checks
+        env:
+          COVERAGE_BASE_REF: origin/${{ github.base_ref }}
+          CC_HAHA_GO_TARGET: ${{ matrix.target }}
+        run: bun run check:go
+      - name: Upload Go check and coverage evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-checks-${{ matrix.id }}
+          path: artifacts/go-checks/
+          retention-days: 14
+
+  go-checks:
+    name: go-checks
+    needs: [scope-plan, go-platform-checks]
+    if: always() && needs.scope-plan.outputs.go_checks == 'true'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        env:
+          GIT_CONFIG_COUNT: '1'
+          GIT_CONFIG_KEY_0: core.autocrlf
+          GIT_CONFIG_VALUE_0: 'false'
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - name: Install root dependencies
+        run: bun install --frozen-lockfile
+      - name: Require every native platform job
+        env:
+          GO_PLATFORM_RESULT: ${{ needs.go-platform-checks.result }}
+        run: test "$GO_PLATFORM_RESULT" = success
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: go-checks-*
+          path: artifacts/go-platform-reports/
+      - name: Close native platform coverage over the final diff
+        env:
+          COVERAGE_BASE_REF: origin/${{ github.base_ref }}
+        run: bun run check:go-matrix --reports-dir "$GITHUB_WORKSPACE/artifacts/go-platform-reports"
+      - name: Upload all-target Go closure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-matrix-closure
+          path: artifacts/go-matrix/
+          retention-days: 14
+
+  go-parity:
+    name: go-parity
+    needs: scope-plan
+    if: needs.scope-plan.outputs.go_parity_checks == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache: false
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - name: Install root dependencies
+        run: bun install --frozen-lockfile
+      - name: Prepare pinned Go dependencies (setup network only)
+        run: bun run prepare:go
+      - name: Run offline TS and Go behavior parity
+        run: bun run check:go-parity
+      - name: Upload parity evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-parity
+          path: artifacts/go-parity/
+          retention-days: 14
 
   provider-contract-checks:
     name: provider-contract-checks
@@ -349,6 +497,8 @@ jobs:
       - policy-enforcement
       - desktop-checks
       - server-checks
+      - go-checks
+      - go-parity
       - provider-contract-checks
       - chat-contract-checks
       - agent-flow-checks
@@ -394,6 +544,8 @@ jobs:
           require_success "policy-enforcement" "${{ needs.policy-enforcement.result }}"
           require_selected "desktop-checks" "${{ needs.scope-plan.outputs.desktop_checks }}" "${{ needs.desktop-checks.result }}"
           require_selected "server-checks" "${{ needs.scope-plan.outputs.server_checks }}" "${{ needs.server-checks.result }}"
+          require_selected "go-checks" "${{ needs.scope-plan.outputs.go_checks }}" "${{ needs.go-checks.result }}"
+          require_selected "go-parity" "${{ needs.scope-plan.outputs.go_parity_checks }}" "${{ needs.go-parity.result }}"
           require_selected "provider-contract-checks" "${{ needs.scope-plan.outputs.provider_contract_checks }}" "${{ needs.provider-contract-checks.result }}"
           require_selected "chat-contract-checks" "${{ needs.scope-plan.outputs.chat_contract_checks }}" "${{ needs.chat-contract-checks.result }}"
           require_selected "agent-flow-checks" "${{ needs.scope-plan.outputs.agent_flow_checks }}" "${{ needs.agent-flow-checks.result }}"

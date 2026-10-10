@@ -376,9 +376,11 @@ describe('session collaboration', () => {
   })
 
   test('a short wait is raised to the minimum and says so, while a newer revision still returns immediately', async () => {
-    const startedAt = Date.now()
+    // Elapsed waits use a monotonic clock; wall time can change while the
+    // native timer is pending. Keep the original minimum-duration assertion.
+    const startedAt = performance.now()
     const raised = await service.wait(0, undefined, 0)
-    expect(Date.now() - startedAt).toBeGreaterThanOrEqual(10_000)
+    expect(performance.now() - startedAt).toBeGreaterThanOrEqual(10_000)
     expect(raised).toMatchObject({ requestedTimeoutMs: 0, timeoutMs: 10_000, messages: [] })
     expect(raised.guidance).toContain('clamped to 10000ms')
     await service.send('root', 'peer', 'arrived', 'arrived')

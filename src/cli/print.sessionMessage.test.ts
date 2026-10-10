@@ -36,6 +36,7 @@ test('headless session inbox acknowledges queued then consumed and deduplicates 
     const child = Bun.spawn(['./bin/claude-haha', '--bare', '-p', '--input-format', 'stream-json', '--output-format', 'stream-json', '--verbose'], { env, stdin: new Blob([input]), stdout: 'pipe', stderr: 'pipe' })
     const [stdout, stderr, code] = await Promise.all([new Response(child.stdout).text(), new Response(child.stderr).text(), child.exited])
     expect({ code, stderr }).toMatchObject({ code: 0 })
+    expect(stdout, stderr).not.toBe('')
     const events = stdout.trim().split('\n').map(line => JSON.parse(line))
     const controls = events.filter(event => event.type === 'control_response')
     expect(controls).toHaveLength(2)

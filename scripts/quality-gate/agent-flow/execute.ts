@@ -4,6 +4,7 @@ import { createServer } from 'node:net'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { createQualityGateSandbox, sandboxTranscriptEvidence } from '../sandbox'
+import { resolveBackendLaunchTarget, spawnBackendServer, type BackendLaunchTarget, type BackendServer } from '../backendLaunch'
 import {
   AGENT_FLOW_SCENARIOS,
   buildMockToolPrompt,
@@ -398,8 +399,10 @@ export async function executeAgentFlow(options: {
   rootDir: string
   artifactDir: string
   scenarios: AgentFlowScenario[]
+  backendTarget?: BackendLaunchTarget
 }): Promise<AgentFlowScenarioResult[]> {
   const { rootDir, artifactDir, scenarios } = options
+  const backendTarget = resolveBackendLaunchTarget(rootDir, options.backendTarget)
   mkdirSync(artifactDir, { recursive: true })
   const serverLogPath = join(artifactDir, 'server.log')
 
@@ -419,17 +422,13 @@ export async function executeAgentFlow(options: {
     },
   })
 
-  const server = Bun.spawn(['bun', 'run', 'src/server/index.ts', '--host', '127.0.0.1', '--port', String(port)], {
-    cwd: rootDir,
-    stdout: 'pipe',
-    stderr: 'pipe',
-    env: { ...sandbox.env, SERVER_PORT: String(port) },
-  })
-  const pumps = [pipeToFile(server.stdout, serverLogPath), pipeToFile(server.stderr, serverLogPath)]
-
+  let server: BackendServer | undefined
+  const pumps: Promise<void>[] = []
   const results: AgentFlowScenarioResult[] = []
   try {
-    await waitForHttp(`${baseUrl}/health`, 60_000)
+    server = spawnBackendServer({ rootDir, port, sandbox, target: backendTarget })
+    pumps.push(pipeToFile(server.stdout, serverLogPath), pipeToFile(server.stderr, serverLogPath))
+    await server.waitUntilHealthy(60_000)
 
     const ctx: ScenarioContext = {
       baseUrl,
@@ -502,11 +501,13 @@ export async function executeAgentFlow(options: {
       })
     }
 
-    server.kill()
-    await server.exited.catch(() => undefined)
-    await Promise.all(pumps).catch(() => undefined)
-    rmSync(workRoot, { recursive: true, force: true })
-    sandbox.cleanup()
+    try {
+      await server?.stop()
+      await Promise.all(pumps).catch(() => undefined)
+    } finally {
+      rmSync(workRoot, { recursive: true, force: true })
+      sandbox.cleanup()
+    }
   }
 
   return results

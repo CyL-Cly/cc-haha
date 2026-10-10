@@ -206,8 +206,14 @@ describe('bounded workspace watches', () => {
     await service.watchDirectories('task', ['src'], (event) => events.push(event), abort.signal)
     await fs.writeFile(path.join(root, 'src/a.ts'), 'one')
     await fs.writeFile(path.join(root, 'src/a.ts'), 'two')
+    // Deliver the write batch before probing the rename. macOS/Bun may report
+    // only the old filename for a rename; clients invalidate the directory too.
+    // Exact named/coarse coalescing is covered by the controlled-event tests.
+    await until(() => events.some((event) => event.paths.includes('src/a.ts')))
+    const writeBatchCount = events.length
     await fs.rename(path.join(root, 'src/a.ts'), path.join(root, 'src/b.ts'))
-    await until(() => events.some((event) => event.paths.includes('src/b.ts')))
+    await until(() => events.slice(writeBatchCount).some((event) => event.directories.includes('src')))
+    expect(await fs.readFile(path.join(root, 'src/b.ts'), 'utf8')).toBe('two')
     expect(events.flatMap((event) => event.paths)).toContain('src/a.ts')
     expect(events.every((event) => new Set(event.paths).size === event.paths.length)).toBe(true)
     expect(events.every((event) => event.directories.includes('src'))).toBe(true)

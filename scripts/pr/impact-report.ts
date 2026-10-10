@@ -36,6 +36,12 @@ function commandList(result: ReturnType<typeof evaluateChangePolicy>) {
   if (result.checks.server) {
     commands.push('bun run check:server')
   }
+  if (result.checks.go) {
+    commands.push('bun run check:go')
+  }
+  if (result.checks.goParity) {
+    commands.push('bun run check:go-parity')
+  }
   if (result.checks.providerContract) {
     commands.push('bun run check:provider-contract')
   }
@@ -129,6 +135,9 @@ function riskNotes(files: string[]) {
   }
   if (files.some((file) => file.startsWith('.github/workflows/') || file.startsWith('scripts/pr/'))) {
     notes.push('CI/policy changed: inspect the PR workflow behavior itself, not just application tests.')
+  }
+  if (files.some((file) => file.startsWith('backend/') || file.startsWith('scripts/quality-gate/go-parity/'))) {
+    notes.push('Go backend changed: run isolated build, vet, unit, race and changed-line coverage checks; compare the same offline protocol fixtures against both implementations.')
   }
 
   return notes

@@ -25,6 +25,8 @@ export type ChangePolicyResult = {
   checks: {
     desktop: boolean
     server: boolean
+    go: boolean
+    goParity: boolean
     adapters: boolean
     desktopNative: boolean
     providerContract: boolean
@@ -51,6 +53,7 @@ const areaLabels: Record<ChangeArea, string> = {
 }
 
 const cliCorePrefixes = [
+  'backend/',
   'bin/',
   'src/entrypoints/',
   'src/screens/',
@@ -204,6 +207,42 @@ const coveragePolicyExactPaths = new Set([
   'scripts/quality-gate/coverage-thresholds.json',
 ])
 
+// Go and the React/adapter clients communicate across processes, so the JS import
+// graph cannot discover these edges. Keep every existing boundary check selected
+// while the second implementation is developed against the frozen TS behavior.
+const goContractPrefixes = [
+  'backend/',
+  'contracts/',
+  'scripts/quality-gate/contracts/',
+  'scripts/quality-gate/go-parity/',
+  'scripts/quality-gate/agent-flow/',
+  'scripts/quality-gate/baseline/fixtures/',
+  'scripts/quality-gate/backendLaunch',
+  'scripts/pr/run-go-tests',
+  'scripts/pr/go-dependencies',
+  'scripts/pr/go-platforms',
+  'scripts/pr/run-go-matrix',
+]
+
+function isGoContractPath(path: string) {
+  return !isAgentInstructionPath(path) && startsWithAny(path, goContractPrefixes)
+}
+
+const goReferencePrefixes = [
+  'src/',
+  'desktop/src/api/websocket',
+  'desktop/src/api/sessions',
+  'adapters/common/http-client',
+  'adapters/common/ws-bridge',
+]
+
+function isGoReferencePath(path: string) {
+  return !isAgentInstructionPath(path) && (
+    startsWithAny(path, goReferencePrefixes) || path === 'package.json' ||
+    path === 'scripts/quality-gate/coverage-thresholds.json'
+  )
+}
+
 function normalizePath(path: string) {
   return path.trim().replace(/\\/g, '/').replace(/^\.\//, '')
 }
@@ -213,7 +252,7 @@ function startsWithAny(path: string, prefixes: string[]) {
 }
 
 function isCliCorePath(path: string) {
-  return startsWithAny(path, cliCorePrefixes)
+  return !isAgentInstructionPath(path) && startsWithAny(path, cliCorePrefixes)
 }
 
 function isAgentInstructionPath(path: string) {
@@ -231,7 +270,7 @@ function areasForPath(path: string): ChangeArea[] {
     areas.add('desktop')
   }
 
-  if (path.startsWith('src/server/')) {
+  if (path.startsWith('src/server/') || path.startsWith('backend/')) {
     areas.add('server')
   }
 
@@ -267,7 +306,7 @@ function hasMatchingTest(files: string[], predicate: (file: string) => boolean) 
 }
 
 function isExecutableSourcePath(path: string) {
-  return /\.[cm]?[jt]sx?$/.test(path)
+  return /\.[cm]?[jt]sx?$/.test(path) || path.endsWith('.go')
 }
 
 function changedProductionFiles(files: string[], predicate: (file: string) => boolean) {
@@ -275,8 +314,11 @@ function changedProductionFiles(files: string[], predicate: (file: string) => bo
     predicate(file) &&
     isExecutableSourcePath(file) &&
     !/\.test\.[cm]?[jt]sx?$/.test(file) &&
+    !/_test\.go$/.test(file) &&
     !file.includes('/__tests__/') &&
-    !file.includes('/fixtures/')
+    !file.includes('/fixtures/') &&
+    !file.includes('/testdata/') &&
+    !file.includes('/vendor/')
   ))
 }
 
@@ -289,6 +331,7 @@ function missingTestSignals(files: string[]) {
     file.startsWith('src/') &&
     !file.startsWith('src/server/')
   ))
+  const goProd = changedProductionFiles(files, (file) => file.startsWith('backend/'))
 
   if (desktopProd.length > 0 && !hasMatchingTest(files, (file) => file.startsWith('desktop/src/'))) {
     signals.push('Desktop product files changed without a desktop test file in the PR.')
@@ -304,6 +347,11 @@ function missingTestSignals(files: string[]) {
     !file.startsWith('src/server/')
   ))) {
     signals.push('Root runtime product files changed without a matching root runtime test file in the PR.')
+  }
+  if (goProd.length > 0 && !files.some((file) => (
+    file.startsWith('backend/') && /_test\.go$/.test(file) && !/\/(fixtures|testdata|vendor)\//.test(file)
+  ))) {
+    signals.push('Go backend product files changed without a Go backend test file in the PR.')
   }
 
   return signals
@@ -327,6 +375,8 @@ export function evaluateChangePolicy(
     inputDependentFiles.map(normalizePath).filter((file) => file && !changedSet.has(file)),
   )].sort()
   const selectionFiles = [...files, ...dependentFiles]
+  const touchesGoContracts = selectionFiles.some(isGoContractPath)
+  const touchesGoReference = selectionFiles.some(isGoReferencePath)
   const areas = new Set<ChangeArea>()
 
   for (const file of files) {
@@ -362,22 +412,22 @@ export function evaluateChangePolicy(
   // desktop/electron/** compiles against desktop/src/** outside desktop/tsconfig.json.
   const touchesDesktopWeb = selectionFiles.some((file) => (
     file.startsWith('desktop/src/') || desktopWebExactPaths.has(file)
-  ))
+  )) || touchesGoContracts
   const touchesDesktopNative = selectionFiles.some((file) => (
     file.startsWith('native/') ||
     file.startsWith('desktop/electron/') ||
     file.startsWith('desktop/scripts/') ||
     file.startsWith('desktop/src-tauri/') ||
     desktopNativeExactPaths.has(file)
-  ))
-  const touchesProviderContract = selectionFiles.some((file) => startsWithAny(file, providerContractPrefixes))
-  const touchesChatContract = selectionFiles.some((file) => startsWithAny(file, chatContractPrefixes))
-  const touchesAgentFlow = selectionFiles.some((file) => startsWithAny(file, agentFlowPrefixes))
-  const touchesPersistence = selectionFiles.some((file) => startsWithAny(file, persistencePrefixes))
+  )) || touchesGoContracts
+  const touchesProviderContract = touchesGoContracts || selectionFiles.some((file) => startsWithAny(file, providerContractPrefixes))
+  const touchesChatContract = touchesGoContracts || selectionFiles.some((file) => startsWithAny(file, chatContractPrefixes))
+  const touchesAgentFlow = touchesGoContracts || selectionFiles.some((file) => startsWithAny(file, agentFlowPrefixes))
+  const touchesPersistence = touchesGoContracts || selectionFiles.some((file) => startsWithAny(file, persistencePrefixes))
   const touchesPolicy = files.some((file) => (
     startsWithAny(file, policyPrefixes) ||
     policyExactPaths.has(file) ||
-    isAgentInstructionPath(file)
+    isAgentInstructionPath(file) || isGoContractPath(file)
   ))
 
   const touchesDocs = files.some((file) => (
@@ -388,7 +438,7 @@ export function evaluateChangePolicy(
       docsExactPaths.has(file)
     )
   ))
-  const touchesCoverage = files.some((file) => (
+  const touchesCoverage = files.some(isGoContractPath) || files.some((file) => (
     (isExecutableSourcePath(file) && (
       file.startsWith('desktop/src/') ||
       file.startsWith('src/') ||
@@ -415,8 +465,10 @@ export function evaluateChangePolicy(
     missingTestSignals: missingTests,
     checks: {
       desktop: touchesDesktopWeb,
-      server: selectionFiles.some((file) => file.startsWith('src/') && !isAgentInstructionPath(file)),
-      adapters: selectionFiles.some((file) => file.startsWith('adapters/') && !isAgentInstructionPath(file)),
+      server: touchesGoContracts || selectionFiles.some((file) => file.startsWith('src/') && !isAgentInstructionPath(file)),
+      go: touchesGoContracts || touchesGoReference,
+      goParity: touchesGoContracts || touchesGoReference,
+      adapters: touchesGoContracts || selectionFiles.some((file) => file.startsWith('adapters/') && !isAgentInstructionPath(file)),
       desktopNative: touchesDesktopNative,
       providerContract: touchesProviderContract,
       chatContract: touchesChatContract,
@@ -466,7 +518,7 @@ function formatSummary(result: ChangePolicyResult) {
     'PR change policy',
     `  Areas: ${result.areas.length ? result.areas.join(', ') : 'none'}`,
     `  Labels: ${result.labels.length ? result.labels.join(', ') : 'none'}`,
-    `  Checks: desktop=${result.checks.desktop}, server=${result.checks.server}, adapters=${result.checks.adapters}, desktopNative=${result.checks.desktopNative}, providerContract=${result.checks.providerContract}, chatContract=${result.checks.chatContract}, agentFlow=${result.checks.agentFlow}, persistence=${result.checks.persistence}, policy=${result.checks.policy}, docs=${result.checks.docs}, coverage=${result.checks.coverage}`,
+    `  Checks: desktop=${result.checks.desktop}, server=${result.checks.server}, go=${result.checks.go}, goParity=${result.checks.goParity}, adapters=${result.checks.adapters}, desktopNative=${result.checks.desktopNative}, providerContract=${result.checks.providerContract}, chatContract=${result.checks.chatContract}, agentFlow=${result.checks.agentFlow}, persistence=${result.checks.persistence}, policy=${result.checks.policy}, docs=${result.checks.docs}, coverage=${result.checks.coverage}`,
   ]
 
   if (result.cliCoreFiles.length > 0) {
@@ -513,6 +565,8 @@ function writeGithubOutputs(result: ChangePolicyResult) {
     blocking_reasons: result.blockingReasons.join(' | '),
     desktop_checks: String(result.checks.desktop),
     server_checks: String(result.checks.server),
+    go_checks: String(result.checks.go),
+    go_parity_checks: String(result.checks.goParity),
     adapter_checks: String(result.checks.adapters),
     desktop_native_checks: String(result.checks.desktopNative),
     provider_contract_checks: String(result.checks.providerContract),

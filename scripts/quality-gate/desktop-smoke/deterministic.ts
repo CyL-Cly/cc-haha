@@ -5,6 +5,7 @@ import { join, resolve } from 'node:path'
 import { runDesktopUiTeamPlanSmoke, TEAM_SMOKE_MODEL, TEAM_SMOKE_PROVIDER } from './team-plan'
 import { buildMockToolPrompt } from '../agent-flow/scenarios'
 import { applyUserStateGuard, createQualityGateSandbox } from '../sandbox'
+import { resolveBackendLaunchTarget, spawnBackendServer, type BackendLaunchTarget, type BackendServer } from '../backendLaunch'
 import type { LaneResult } from '../types'
 import {
   agentBrowserCommand,
@@ -160,8 +161,10 @@ export async function executeDeterministicDesktopSmoke(
   artifactDir: string,
   resultId: string,
   resultTitle: string,
+  backendTarget?: BackendLaunchTarget,
 ): Promise<LaneResult> {
   const started = Date.now()
+  const launchTarget = resolveBackendLaunchTarget(rootDir, backendTarget)
   mkdirSync(artifactDir, { recursive: true })
 
   const missing = describeDesktopUiSmokePrerequisites(rootDir)
@@ -202,14 +205,8 @@ export async function executeDeterministicDesktopSmoke(
   })
   seedDesktopUiSmokeProvider(sandbox.configDir)
 
-  const server = Bun.spawn(['bun', 'run', 'src/server/index.ts', '--host', '127.0.0.1', '--port', String(serverPort)], {
-    cwd: rootDir,
-    stdout: 'pipe',
-    stderr: 'pipe',
-    env: { ...sandbox.env, SERVER_PORT: String(serverPort) },
-  })
-  void pipeToFile(server.stdout, serverLogPath)
-  void pipeToFile(server.stderr, serverLogPath)
+  let server: BackendServer | undefined
+  const serverPumps: Promise<void>[] = []
 
   const viteExecutable = resolveDesktopViteExecutable(rootDir)
   if (!viteExecutable) {
@@ -237,7 +234,9 @@ export async function executeDeterministicDesktopSmoke(
   const { target, prompt } = buildDesktopUiSmokePrompt(projectDir)
 
   try {
-    await waitForHttp(`${baseUrl}/health`, 30_000)
+    server = spawnBackendServer({ rootDir, port: serverPort, sandbox, env: { ...sandbox.env }, target: launchTarget })
+    serverPumps.push(pipeToFile(server.stdout, serverLogPath), pipeToFile(server.stderr, serverLogPath))
+    await server.waitUntilHealthy(30_000)
     await waitForHttp(appUrl, 60_000)
 
     const created = await fetch(`${baseUrl}/api/sessions`, {
@@ -324,11 +323,15 @@ export async function executeDeterministicDesktopSmoke(
     await cleanupAgentBrowserSession(sessionName, browserLogPath)
     cleanupBrowserProfileProcesses(browserProfileDir, browserLogPath)
     appendFileSync(browserLogPath, `\n[quality-gate] Removed browser profile ${browserProfileDir}\n`)
-    await Promise.all([
-      stopDesktopSmokeProcess(server, 'server', serverLogPath),
-      stopDesktopSmokeProcess(vite, 'Vite', viteLogPath),
-    ])
-    removeDesktopSmokeTree(workRoot)
-    sandbox.cleanup()
+    try {
+      await Promise.all([
+        server?.stop(),
+        stopDesktopSmokeProcess(vite, 'Vite', viteLogPath),
+      ])
+      await Promise.allSettled(serverPumps)
+    } finally {
+      removeDesktopSmokeTree(workRoot)
+      sandbox.cleanup()
+    }
   }
 }

@@ -38,6 +38,10 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: package.json
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache: false
       - name: Install root dependencies
         run: bun install --frozen-lockfile
       - name: Install desktop dependencies
@@ -46,6 +50,8 @@ jobs:
       - name: Install adapter dependencies
         working-directory: adapters
         run: bun install --frozen-lockfile
+      - name: Prepare pinned Go dependencies (setup network only)
+        run: bun run prepare:go
 
       # Every deterministic lane, unconditionally — no path routing, no dependency
       # graph. This is the run that catches a check the router stopped selecting.
@@ -55,6 +61,12 @@ jobs:
         run: bun run check:agent-flow
       - name: Root runtime tests
         run: bun run check:server
+      - name: Go build, vet, unit, race and coverage
+        env:
+          COVERAGE_BASE_REF: origin/main
+        run: bun run check:go
+      - name: TS and Go behavior parity
+        run: bun run check:go-parity
       - name: Provider contracts
         run: bun run check:provider-contract
       - name: Desktop/server chat contracts
@@ -90,6 +102,122 @@ jobs:
             artifacts/agent-flow/
             artifacts/desktop-ui-smoke/
             artifacts/coverage/
+            artifacts/go-checks/
+            artifacts/go-parity/
+          retention-days: 14
+
+  go-platform-checks:
+    name: go-native (${{ matrix.target }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: darwin-amd64
+            target: darwin/amd64
+            runner: macos-15-intel
+          - id: darwin-arm64
+            target: darwin/arm64
+            runner: macos-15
+          - id: linux-amd64
+            target: linux/amd64
+            runner: ubuntu-22.04
+          - id: linux-arm64
+            target: linux/arm64
+            runner: ubuntu-22.04-arm
+          - id: windows-amd64
+            target: windows/amd64
+            runner: windows-2025
+          - id: windows-arm64
+            target: windows/arm64
+            runner: windows-11-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        env:
+          GIT_CONFIG_COUNT: '1'
+          GIT_CONFIG_KEY_0: core.autocrlf
+          GIT_CONFIG_VALUE_0: 'false'
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          architecture: ${{ endsWith(matrix.target, '/arm64') && 'arm64' || 'x64' }}
+          cache: false
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - name: Install root dependencies
+        run: bun install --frozen-lockfile
+      - name: Prepare pinned Go dependencies (setup network only)
+        run: bun run prepare:go
+      - name: Expose the runner's native MinGW compiler for Windows x64 race tests
+        if: matrix.id == 'windows-amd64'
+        shell: pwsh
+        run: |
+          $gcc = Get-Command gcc.exe -ErrorAction SilentlyContinue
+          if (!$gcc) {
+            foreach ($directory in @('C:\mingw64\bin', 'C:\msys64\mingw64\bin', 'C:\msys64\ucrt64\bin')) {
+              if (Test-Path "$directory\gcc.exe") { $gcc = Get-Item "$directory\gcc.exe"; break }
+            }
+          }
+          if (!$gcc) { throw 'Native Windows x64 GCC is required for Go race tests' }
+          $executable = if ($gcc.Source) { $gcc.Source } else { $gcc.FullName }
+          $target = & $executable -dumpmachine
+          if ($LASTEXITCODE -ne 0 -or $target -ne 'x86_64-w64-mingw32') { throw "Wrong Windows race compiler target: $target" }
+          (Split-Path $executable) | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Run offline Go build, vet, unit, race and coverage checks
+        env:
+          COVERAGE_BASE_REF: origin/main
+          CC_HAHA_GO_TARGET: ${{ matrix.target }}
+        run: bun run check:go
+      - name: Upload Go check and coverage evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-checks-${{ matrix.id }}
+          path: artifacts/go-checks/
+          retention-days: 14
+
+  go-checks:
+    name: go-checks
+    needs: go-platform-checks
+    if: always()
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        env:
+          GIT_CONFIG_COUNT: '1'
+          GIT_CONFIG_KEY_0: core.autocrlf
+          GIT_CONFIG_VALUE_0: 'false'
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - name: Install root dependencies
+        run: bun install --frozen-lockfile
+      - name: Require every native platform job
+        env:
+          GO_PLATFORM_RESULT: ${{ needs.go-platform-checks.result }}
+        run: test "$GO_PLATFORM_RESULT" = success
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: go-checks-*
+          path: artifacts/go-platform-reports/
+      - name: Close native platform coverage over the final diff
+        env:
+          COVERAGE_BASE_REF: origin/main
+        run: bun run check:go-matrix --reports-dir "$GITHUB_WORKSPACE/artifacts/go-platform-reports"
+      - name: Upload all-target Go closure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-matrix-closure
+          path: artifacts/go-matrix/
           retention-days: 14
 
   selection-drift:
@@ -112,4 +240,4 @@ jobs:
       - name: Module graph health
         run: bun test ./scripts/pr/module-graph.test.ts
       - name: Impact report on the full tree
-        run: bun run check:impact --files "$(git ls-files 'src/*' 'desktop/*' 'adapters/*' | head -400 | tr '\n' ',')"
+        run: bun run check:impact --files "$(git ls-files 'src/*' 'desktop/*' 'adapters/*' 'backend/*' | head -400 | tr '\n' ',')"

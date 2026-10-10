@@ -67,7 +67,7 @@ describe('print mode partial output', () => {
         expect(exitCode).toBe(1)
         expect(stderr).not.toContain('FIRST_PARTIAL_SENTINEL')
         expect(stderr).not.toContain('SECOND_PARTIAL_SENTINEL')
-        expect(stdout).toContain('FIRST_PARTIAL_SENTINEL')
+        expect(stdout, stderr).toContain('FIRST_PARTIAL_SENTINEL')
         expect(stdout).toContain('SECOND_PARTIAL_SENTINEL')
         expect(stdout).toContain('MIDSTREAM_SENTINEL_ERROR')
       } finally {
@@ -135,13 +135,14 @@ describe('print mode partial output', () => {
           },
         )
 
-        const [stdout, exitCode] = await Promise.all([
+        const [stdout, exitCode, stderr] = await Promise.all([
           new Response(child.stdout).text(),
           child.exited,
+          new Response(child.stderr).text(),
         ])
 
         expect(exitCode).toBe(1)
-        expect(stdout.match(/TRANSPORT_PARTIAL_SENTINEL/g)).toHaveLength(1)
+        expect(stdout.match(/TRANSPORT_PARTIAL_SENTINEL/g), stderr).toHaveLength(1)
         expect(stdout).toMatch(/socket|connection|stream/i)
       } finally {
         server.stop(true)

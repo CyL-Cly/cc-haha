@@ -62,12 +62,24 @@ if (result.checks.server) {
   await run(['bun', 'run', 'check:server'])
 }
 
+if (result.checks.go) {
+  await run(['bun', 'run', 'check:go'])
+}
+
+if (result.checks.goParity) {
+  await run(['bun', 'run', 'check:go-parity'])
+}
+
 if (result.checks.providerContract) {
   await run(['bun', 'run', 'check:provider-contract'])
 }
 
 if (result.checks.chatContract) {
   await run(['bun', 'run', 'check:chat-contract'])
+}
+
+if (result.checks.agentFlow) {
+  await run(['bun', 'run', 'check:agent-flow'])
 }
 
 if (result.checks.adapters) {

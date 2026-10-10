@@ -37,6 +37,18 @@ describe('quality gate modes', () => {
     }
   })
 
+  test('keeps Go checks and TS/Go parity deterministic and selected by the impact report', () => {
+    for (const mode of ['pr', 'baseline', 'release'] as const) {
+      for (const [id, command] of [['go-checks', 'check:go'], ['go-parity', 'check:go-parity']] as const) {
+        const lane = lanesForMode(mode).find(candidate => candidate.id === id)
+        expect(lane, `${id} missing from ${mode}`).toBeDefined()
+        expect(lane?.live).toBeUndefined()
+        expect(lane?.command).toEqual(['bun', 'run', command])
+        expect(lane?.impactRequiredCheck).toBe(`bun run ${command}`)
+      }
+    }
+  })
+
   test('baseline mode includes live baseline cases but not native checks', () => {
     const lanes = lanesForMode('baseline').map((lane) => lane.id)
     expect(lanes).toContain('baseline-catalog')

@@ -5,6 +5,79 @@ import { join } from 'node:path'
 import { evaluateChangePolicy } from './change-policy'
 
 describe('evaluateChangePolicy', () => {
+  test.each([
+    'backend/internal/protocol/sse.go',
+    'backend/internal/provider/anthropic.go',
+    'backend/cmd/claude-haha/main.go',
+    'backend/go.mod',
+    'backend/go.sum',
+    'scripts/quality-gate/go-parity/fixtures/tool-stream.json',
+    'scripts/pr/go-dependencies.ts',
+    'scripts/pr/go-platforms.ts',
+    'scripts/pr/run-go-matrix.ts',
+    'scripts/quality-gate/agent-flow/fixtures/workspace/src/notes.md',
+    'contracts/session.json',
+  ])('routes cross-process Go contracts without relying on JS imports: %s', file => {
+    const result = evaluateChangePolicy([file])
+    for (const check of ['go', 'goParity', 'server', 'desktop', 'adapters', 'desktopNative', 'providerContract', 'chatContract', 'agentFlow', 'persistence', 'policy', 'coverage'] as const) {
+      expect(result.checks[check], `${file} must select ${check}`).toBe(true)
+    }
+  })
+
+  test('keeps Go Harness changes under the CLI core approval and same-area test policies', () => {
+    const missing = evaluateChangePolicy(['backend/internal/harness/query.go'], ['allow-cli-core-change'])
+    expect(missing.areas).toEqual(['cli-core', 'server'])
+    expect(missing.missingTestSignals).toEqual(['Go backend product files changed without a Go backend test file in the PR.'])
+    expect(missing.blocked).toBe(true)
+
+    const files = ['backend/internal/harness/query.go', 'backend/internal/harness/query_test.go']
+    expect(evaluateChangePolicy(files).blockingReasons).toContain('CLI core changes require the allow-cli-core-change label and maintainer approval.')
+    const covered = evaluateChangePolicy(files, ['allow-cli-core-change'])
+    expect(covered.blocked).toBe(false)
+    expect(covered.missingTestSignals).toEqual([])
+  })
+
+  test('requires language-specific tests instead of accepting tests for the other implementation', () => {
+    const go = evaluateChangePolicy(['backend/internal/protocol/sse.go', 'src/server/__tests__/proxy-streaming.test.ts'], ['allow-cli-core-change'])
+    expect(go.missingTestSignals).toContain('Go backend product files changed without a Go backend test file in the PR.')
+    const ts = evaluateChangePolicy(['src/server/ws/handler.ts', 'backend/internal/protocol/sse_test.go'], ['allow-cli-core-change'])
+    expect(ts.missingTestSignals).toContain('Server product files changed without a server test file in the PR.')
+    const misplaced = evaluateChangePolicy(['src/server/ws/handler.ts', 'src/server/ws/handler_test.go'])
+    expect(misplaced.missingTestSignals).toContain('Server product files changed without a server test file in the PR.')
+    const fixture = evaluateChangePolicy(['backend/internal/protocol/sse.go', 'backend/testdata/fixture_test.go'], ['allow-cli-core-change'])
+    expect(fixture.missingTestSignals).toContain('Go backend product files changed without a Go backend test file in the PR.')
+  })
+
+  test('preserves the explicit missing-test override and keeps backend instructions on policy only', () => {
+    expect(evaluateChangePolicy(['backend/internal/protocol/sse.go'], ['allow-cli-core-change', 'allow-missing-tests']).blocked).toBe(false)
+    const guidance = evaluateChangePolicy(['backend/AGENTS.md'])
+    expect(guidance.areas).toEqual([])
+    expect(guidance.cliCoreFiles).toEqual([])
+    expect(guidance.checks.policy).toBe(true)
+    expect(guidance.checks.go).toBe(false)
+    expect(guidance.checks.desktopNative).toBe(false)
+    expect(guidance.blocked).toBe(false)
+  })
+
+  test('requires Go checks when the package entrypoint changes and keeps unrelated docs out', () => {
+    expect(evaluateChangePolicy(['package.json']).checks.go).toBe(true)
+    expect(evaluateChangePolicy(['docs/index.md']).checks.go).toBe(false)
+  })
+
+  test.each([
+    'src/query.ts', 'src/services/api/claude.ts', 'src/tools/FileWriteTool/FileWriteTool.ts',
+    'src/server/ws/handler.ts', 'desktop/src/api/websocket.ts', 'desktop/src/api/sessions.ts',
+    'adapters/common/http-client.ts', 'adapters/common/ws-bridge.ts',
+    'scripts/quality-gate/coverage-thresholds.json',
+  ])('selects Go validation when a reference or wire client changes: %s', file => {
+    const result = evaluateChangePolicy([file])
+    expect(result.checks.go).toBe(true)
+    expect(result.checks.goParity).toBe(true)
+    // Cross-language comparison is additive; it does not turn an unrelated TS
+    // implementation edit into a native packaging edit.
+    expect(result.checks.desktopNative).toBe(false)
+  })
+
   test('blocks CLI core changes without an override label', () => {
     const result = evaluateChangePolicy([
       'src/commands/help.ts',

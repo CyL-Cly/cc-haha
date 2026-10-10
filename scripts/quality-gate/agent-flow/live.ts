@@ -19,8 +19,9 @@ import { homedir, tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import { createQualityGateSandbox } from '../sandbox.ts'
+import { resolveBackendLaunchTarget, spawnBackendServer, type BackendLaunchTarget, type BackendServer } from '../backendLaunch.ts'
 import { loadProviderIndex, getProviderIndexPath } from '../providerTargets.ts'
-import { getPort, pipeToFile, runTurn, SessionSocket, waitForHttp } from './execute.ts'
+import { getPort, pipeToFile, runTurn, SessionSocket } from './execute.ts'
 import { LIVE_AGENT_FLOW_SCENARIOS } from './liveScenarios.ts'
 
 const FIXTURE = 'scripts/quality-gate/agent-flow/fixtures/workspace'
@@ -405,8 +406,10 @@ export async function executeLiveAgentFlow(options: {
   artifactDir: string
   target: ResolvedLiveTarget
   only?: string[]
+  backendTarget?: BackendLaunchTarget
 }): Promise<LiveAgentFlowResult[]> {
   const { rootDir, artifactDir, target } = options
+  const backendTarget = resolveBackendLaunchTarget(rootDir, options.backendTarget)
   mkdirSync(artifactDir, { recursive: true })
   const serverLogPath = join(artifactDir, 'server.log')
   rmSync(join(artifactDir, 'effort-evidence.json'), { force: true })
@@ -434,17 +437,13 @@ export async function executeLiveAgentFlow(options: {
     throw error
   }
 
-  const server = Bun.spawn(['bun', 'run', 'src/server/index.ts', '--host', '127.0.0.1', '--port', String(port)], {
-    cwd: rootDir,
-    stdout: 'pipe',
-    stderr: 'pipe',
-    env: { ...sandbox.env, SERVER_PORT: String(port) },
-  })
-  const pumps = [pipeToFile(server.stdout, serverLogPath), pipeToFile(server.stderr, serverLogPath)]
-
+  let server: BackendServer | undefined
+  const pumps: Promise<void>[] = []
   const results: LiveAgentFlowResult[] = []
   try {
-    await waitForHttp(`${baseUrl}/health`, 60_000)
+    server = spawnBackendServer({ rootDir, port, sandbox, target: backendTarget })
+    pumps.push(pipeToFile(server.stdout, serverLogPath), pipeToFile(server.stderr, serverLogPath))
+    await server.waitUntilHealthy(60_000)
 
     const ctx: LiveContext = {
       baseUrl,
@@ -496,17 +495,20 @@ export async function executeLiveAgentFlow(options: {
       }
     }
   } finally {
-    server.kill()
-    await Promise.allSettled(pumps)
-    // Checked before teardown: a run that wrote to the real config dir has to be loud,
-    // not quietly cleaned up. This lane seeds from the user's live provider state, so
-    // it is the one with something to lose.
-    const mutations = sandbox.detectUserStateMutations()
-    sandbox.cleanup()
-    if (mutations.length > 0) {
-      throw new Error(`live agent flow mutated real user state:\n  ${mutations.join('\n  ')}`)
+    try {
+      await server?.stop()
+      await Promise.allSettled(pumps)
+    } finally {
+      // Checked before teardown: a run that wrote to the real config dir has to be loud,
+      // not quietly cleaned up. This lane seeds from the user's live provider state, so
+      // it is the one with something to lose.
+      const mutations = sandbox.detectUserStateMutations()
+      sandbox.cleanup()
+      rmSync(workRoot, { recursive: true, force: true })
+      if (mutations.length > 0) {
+        throw new Error(`live agent flow mutated real user state:\n  ${mutations.join('\n  ')}`)
+      }
     }
-    rmSync(workRoot, { recursive: true, force: true })
   }
 
   return results

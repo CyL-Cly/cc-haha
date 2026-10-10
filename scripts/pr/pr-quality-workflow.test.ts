@@ -1,13 +1,15 @@
 import { describe, expect, test } from 'bun:test'
 import { readFileSync } from 'node:fs'
 import { parse } from 'yaml'
+import { GO_PLATFORMS } from './go-platforms'
 
 type WorkflowJob = {
   if?: string
   'runs-on'?: string
   'continue-on-error'?: boolean
   needs?: string | string[]
-  steps?: Array<{ name?: string; run?: string; 'working-directory'?: string }>
+  strategy?: { 'fail-fast'?: boolean; matrix?: { include?: Array<{ id: string; target: string; runner: string }> } }
+  steps?: Array<{ name?: string; run?: string; uses?: string; with?: Record<string, unknown>; env?: Record<string, unknown>; 'working-directory'?: string }>
 }
 
 function workflowJobs(workflow: string) {
@@ -38,6 +40,8 @@ describe('PR quality workflow', () => {
     expect(workflow).toContain('--plan-only')
     expect(workflow).toContain("if: needs.scope-plan.outputs.desktop_checks == 'true'")
     expect(workflow).toContain("if: needs.scope-plan.outputs.server_checks == 'true'")
+    expect(workflow).toContain("if: needs.scope-plan.outputs.go_checks == 'true'")
+    expect(workflow).toContain("if: needs.scope-plan.outputs.go_parity_checks == 'true'")
     expect(workflow).toContain("if: needs.scope-plan.outputs.provider_contract_checks == 'true'")
     expect(workflow).toContain("if: needs.scope-plan.outputs.chat_contract_checks == 'true'")
     expect(workflow).toContain("if: needs.scope-plan.outputs.persistence_checks == 'true'")
@@ -60,6 +64,8 @@ describe('PR quality workflow', () => {
     for (const jobId of [
       'desktop-checks',
       'server-checks',
+      'go-platform-checks',
+      'go-parity',
       'provider-contract-checks',
       'chat-contract-checks',
       'agent-flow-checks',
@@ -95,6 +101,82 @@ describe('PR quality workflow', () => {
       expect(ripgrep).toBeGreaterThanOrEqual(0)
       expect(ripgrep).toBeLessThan(check)
     }
+  })
+
+  test('runs Go build, vet, unit, race and parity using the backend toolchain declaration', () => {
+    const workflow = readFileSync('.github/workflows/pr-quality.yml', 'utf8')
+    const jobs = workflowJobs(workflow)
+    for (const [id, command] of [['go-platform-checks', 'check:go'], ['go-parity', 'check:go-parity']]) {
+      const job = jobs[id]
+      expect(job.needs).toBe('scope-plan')
+      expect(job['continue-on-error']).not.toBe(true)
+      expect(job.steps?.find(step => step.uses === 'actions/setup-go@v5')?.with).toEqual({ 'go-version-file': 'backend/go.mod', cache: false,
+        ...(id === 'go-platform-checks' ? { architecture: "${{ endsWith(matrix.target, '/arm64') && 'arm64' || 'x64' }}" } : {}),
+      })
+      expect(job.steps?.some(step => step.run === `bun run ${command}`)).toBe(true)
+      const prepare = job.steps?.findIndex(step => step.run === 'bun run prepare:go') ?? -1
+      const check = job.steps?.findIndex(step => step.run === `bun run ${command}`) ?? -1
+      expect(prepare).toBeGreaterThanOrEqual(0)
+      expect(prepare).toBeLessThan(check)
+      expect(job.steps?.[prepare].name).toContain('setup network only')
+      expect(jobs['pr-quality-gate'].needs).toContain(id === 'go-platform-checks' ? 'go-checks' : id)
+    }
+    expect(workflow).toContain('go_checks: ${{ steps.policy.outputs.go_checks }}')
+    expect(workflow).toContain('go_parity_checks: ${{ steps.policy.outputs.go_parity_checks }}')
+    expect(workflow).toContain('path: artifacts/go-checks/')
+    expect(workflow).toContain('path: artifacts/go-parity/')
+    const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as { scripts: Record<string, string> }
+    expect(packageJson.scripts['check:go']).toBe('bun run scripts/pr/run-go-tests.ts')
+    expect(packageJson.scripts['check:go-matrix']).toBe('bun run scripts/pr/run-go-matrix.ts')
+    expect(packageJson.scripts['check:go-parity']).toBe('bun run scripts/quality-gate/go-parity/index.ts')
+    expect(packageJson.scripts['prepare:go']).toBe('bun run scripts/pr/go-dependencies.ts')
+    expect(packageJson.scripts['check:policy']).toContain('scripts/pr/run-go-tests.test.ts')
+    expect(packageJson.scripts['check:policy']).toContain('scripts/pr/go-dependencies.test.ts')
+    expect(packageJson.scripts['check:policy']).toContain('scripts/pr/go-platforms.test.ts')
+  })
+
+  test('executes and closes the complete shipped native Go matrix in PR and manual workflows', () => {
+    const release = workflowJobs(readFileSync('.github/workflows/release-desktop.yml', 'utf8'))
+    const targets = (release.build.strategy?.matrix?.include ?? []).map((entry: any) => entry.target_triple)
+    expect(targets.sort()).toEqual(['aarch64-apple-darwin', 'x86_64-apple-darwin', 'aarch64-unknown-linux-gnu', 'x86_64-unknown-linux-gnu', 'aarch64-pc-windows-msvc', 'x86_64-pc-windows-msvc'].sort())
+    for (const path of ['.github/workflows/pr-quality.yml', '.github/workflows/nightly-quality.yml']) {
+      const jobs = workflowJobs(readFileSync(path, 'utf8'))
+      const matrix = jobs['go-platform-checks']
+      expect(matrix.strategy?.['fail-fast']).toBe(false)
+      expect(matrix.strategy?.matrix?.include).toEqual(GO_PLATFORMS.map(platform => ({ id: platform.target.replace('/', '-'), target: platform.target, runner: platform.runner })))
+      expect(matrix['runs-on']).toBe('${{ matrix.runner }}')
+      expect(matrix.steps?.find(step => step.uses === 'actions/upload-artifact@v4')?.with?.name).toBe('go-checks-${{ matrix.id }}')
+      const closure = jobs['go-checks']
+      for (const job of [matrix, closure]) expect(job.steps?.find(step => step.uses === 'actions/checkout@v4')?.env).toEqual({ GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: 'core.autocrlf', GIT_CONFIG_VALUE_0: 'false' })
+      expect(closure.needs).toContain('go-platform-checks')
+      expect(closure.if).toContain('always()')
+      expect(closure.steps?.some(step => step.run?.includes('test "$GO_PLATFORM_RESULT" = success'))).toBe(true)
+      expect(closure.steps?.some(step => step.run?.includes('bun run check:go-matrix --reports-dir'))).toBe(true)
+      expect(closure.steps?.find(step => step.uses === 'actions/download-artifact@v4')?.with).toEqual({ pattern: 'go-checks-*', path: 'artifacts/go-platform-reports/' })
+      expect(matrix['continue-on-error']).not.toBe(true)
+      expect(closure['continue-on-error']).not.toBe(true)
+    }
+  })
+
+  test.each([
+    { selected: true, result: 'success', exit: 0 },
+    { selected: true, result: 'failure', exit: 1 },
+    { selected: true, result: 'cancelled', exit: 1 },
+    { selected: true, result: 'skipped', exit: 1 },
+    { selected: false, result: 'skipped', exit: 0 },
+    { selected: false, result: 'success', exit: 1 },
+  ])('enforces selected Go and parity results in the stable gate: %j', scenario => {
+    const jobs = workflowJobs(readFileSync('.github/workflows/pr-quality.yml', 'utf8'))
+    const gateScript = jobs['pr-quality-gate'].steps!.find(step => step.run?.includes('require_selected'))!.run!
+    const script = gateScript.replace(/\$\{\{\s*([^}]+?)\s*\}\}/g, (_match, expression: string) => {
+      if (expression === 'needs.scope-plan.outputs.go_checks' || expression === 'needs.scope-plan.outputs.go_parity_checks') return String(scenario.selected)
+      if (expression.startsWith('needs.scope-plan.outputs.')) return 'false'
+      if (expression === 'needs.go-checks.result' || expression === 'needs.go-parity.result') return scenario.result
+      if (expression === 'needs.scope-plan.result' || expression === 'needs.policy-enforcement.result') return 'success'
+      return 'skipped'
+    })
+    const result = Bun.spawnSync(['bash', '-c', script], { env: { PATH: process.env.PATH ?? '' }, stdout: 'pipe', stderr: 'pipe' })
+    expect(result.exitCode, new TextDecoder().decode(result.stdout)).toBe(scenario.exit)
   })
 
   test('requires macOS Swift checks alongside the selected Linux native packaging lane', () => {
@@ -223,8 +305,13 @@ describe('full quality workflow', () => {
     // reappear here without one.
     expect(workflow).not.toContain('schedule:')
     expect(workflow).not.toContain('cron:')
+    expect(runs).toContain('bun run prepare:go')
+    expect(runs.indexOf('bun run prepare:go')).toBeLessThan(runs.indexOf('bun run check:go'))
+    expect(runs.indexOf('bun run prepare:go')).toBeLessThan(runs.indexOf('bun run check:go-parity'))
     for (const command of [
       'bun run check:policy',
+      'bun run check:go',
+      'bun run check:go-parity',
       'bun run check:agent-flow',
       'bun run check:server',
       'bun run check:provider-contract',

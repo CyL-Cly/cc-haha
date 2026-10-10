@@ -3,8 +3,9 @@
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, rmSync, statSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { tmpdir } from 'node:os'
-import { dirname, isAbsolute, join, relative, resolve } from 'node:path'
+import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path'
 import { createSandboxedTestEnvironment } from '../../pr/test-environment'
+import { sidecarBinaryName } from '../../../desktop/electron/services/sidecarBackend'
 
 export type PackageSmokePlatform = 'macos' | 'windows' | 'linux'
 export type PackageSmokeArch = 'x64' | 'arm64'
@@ -260,6 +261,17 @@ function addPresenceCheck(
     report.passedChecks.push(record)
   } else {
     report.missingChecks.push(record)
+  }
+}
+
+function addNoLegacyBusinessSidecarCheck(report: PackageSmokeReport, rootDir: string, sidecarDir: string, platform: string) {
+  const label = `${platform} contains no legacy TypeScript business sidecars`
+  const retired = findMatches(sidecarDir, candidate => basename(candidate).startsWith('claude-sidecar-')
+    && !basename(candidate).startsWith('claude-sidecar-go-'))
+  if (retired.length > 0) {
+    report.missingChecks.push(...retired.map(candidate => ({ label, path: toRelative(rootDir, candidate) })))
+  } else {
+    report.passedChecks.push({ label, path: toRelative(rootDir, sidecarDir) })
   }
 }
 
@@ -925,6 +937,7 @@ function inspectMacosArtifacts(rootDir: string, report: PackageSmokeReport, opti
   const nodePtyDir = join(unpackedDir, 'node_modules', 'node-pty')
   const prebuildsDir = join(nodePtyDir, 'prebuilds')
   const sidecarDir = join(unpackedDir, 'src-tauri', 'binaries')
+  addNoLegacyBusinessSidecarCheck(report, rootDir, sidecarDir, 'macOS')
   const helperApp = join(sidecarDir, 'cc-haha-computer-use.app')
   const helperInfoPlist = join(helperApp, 'Contents', 'Info.plist')
   const helperExecutable = join(helperApp, 'Contents', 'MacOS', 'cc-haha-computer-use')
@@ -962,7 +975,7 @@ function inspectMacosArtifacts(rootDir: string, report: PackageSmokeReport, opti
       ? 'aarch64-apple-darwin'
       : 'x86_64-apple-darwin'
     const nodePtyArch = report.arch === 'arm64' ? 'darwin-arm64' : 'darwin-x64'
-    const sidecar = join(sidecarDir, `claude-sidecar-${targetTriple}`)
+    const sidecar = join(sidecarDir, sidecarBinaryName(targetTriple))
     const pty = join(prebuildsDir, nodePtyArch, 'pty.node')
     const spawnHelper = join(prebuildsDir, nodePtyArch, 'spawn-helper')
     addPresenceCheck(report, rootDir, `macOS ${report.arch} unpacked sidecar binary`, sidecar)
@@ -993,7 +1006,7 @@ function inspectMacosArtifacts(rootDir: string, report: PackageSmokeReport, opti
       report,
       rootDir,
       'macOS unpacked sidecar binary',
-      findMatches(sidecarDir, (candidate) => normalizePath(candidate).includes('/claude-sidecar-')),
+      findMatches(sidecarDir, (candidate) => normalizePath(candidate).includes('/claude-sidecar-go-')),
       sidecarDir,
     )
     addMatchCheck(
@@ -1022,7 +1035,7 @@ function inspectMacosArtifacts(rootDir: string, report: PackageSmokeReport, opti
         report,
         rootDir,
         appBundle,
-        join(sidecarDir, `claude-sidecar-${targetTriple}`),
+        join(sidecarDir, sidecarBinaryName(targetTriple)),
         helperApp,
         options.commandRunner ?? defaultCommandRunner,
       )
@@ -1082,11 +1095,12 @@ function inspectWindowsArtifacts(rootDir: string, report: PackageSmokeReport) {
     const unpackedResourcesDir = join(resourcesDir, 'app.asar.unpacked')
     const nodePtyDir = join(unpackedResourcesDir, 'node_modules', 'node-pty')
     const sidecarDir = join(unpackedResourcesDir, 'src-tauri', 'binaries')
+    addNoLegacyBusinessSidecarCheck(report, rootDir, sidecarDir, 'Windows')
     const sidecarNeedle = report.arch === 'arm64'
-      ? '/claude-sidecar-aarch64-pc-windows-msvc.exe'
+      ? '/' + sidecarBinaryName('aarch64-pc-windows-msvc')
       : report.arch === 'x64'
-        ? '/claude-sidecar-x86_64-pc-windows-msvc.exe'
-        : '/claude-sidecar-'
+        ? '/' + sidecarBinaryName('x86_64-pc-windows-msvc')
+        : '/claude-sidecar-go-'
     const nodePtyNeedle = report.arch === 'arm64'
       ? '/win32-arm64/'
       : report.arch === 'x64'
@@ -1221,6 +1235,7 @@ function inspectLinuxArtifacts(rootDir: string, report: PackageSmokeReport) {
     const unpackedResourcesDir = join(resourcesDir, 'app.asar.unpacked')
     const nodePtyDir = join(unpackedResourcesDir, 'node_modules', 'node-pty')
     const sidecarDir = join(unpackedResourcesDir, 'src-tauri', 'binaries')
+    addNoLegacyBusinessSidecarCheck(report, rootDir, sidecarDir, 'Linux')
     addPresenceCheck(report, rootDir, 'Linux app.asar', join(resourcesDir, 'app.asar'))
     addInstalledUpdateMetadataCheck(
       report,
@@ -1234,7 +1249,7 @@ function inspectLinuxArtifacts(rootDir: string, report: PackageSmokeReport) {
       report,
       rootDir,
       'Linux unpacked sidecar binary',
-      findMatches(sidecarDir, (candidate) => normalizePath(candidate).includes('/claude-sidecar-')),
+      findMatches(sidecarDir, (candidate) => normalizePath(candidate).includes('/claude-sidecar-go-')),
       sidecarDir,
     )
     addBundledRipgrepLicenseChecks(report, rootDir, sidecarDir, 'Linux')

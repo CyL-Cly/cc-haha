@@ -50,7 +50,7 @@ test('publishes real shell terminals while the model is still working, without r
     if (JSON.stringify(body.messages).includes('<task-notification>')) sawModelNotification = true
     return response([{ type: 'text', text: 'Finished developing.' }], 'end_turn')
   } })
-  const child = Bun.spawn([process.execPath, '--no-env-file', resolve('bin/claude-haha'),
+  const child = Bun.spawn([resolve('bin/claude-haha'),
     '--bare', '-p', '--verbose', '--input-format', 'stream-json', '--output-format', 'stream-json',
     '--dangerously-skip-permissions'], {
     cwd: home,

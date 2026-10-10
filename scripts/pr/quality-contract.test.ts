@@ -92,6 +92,7 @@ describe('feature quality contract', () => {
     expect(packageJson.scripts?.['check:chat-contract']).toBe('bun run scripts/pr/run-chat-contract-tests.ts')
     expect(packageJson.scripts?.['check:policy']).toContain('bun test ./scripts/')
     expect(packageJson.scripts?.['check:native']).toContain('electron:package:dir')
+    expect(packageJson.scripts?.['check:native']).toContain('electron:package:dir --config.electronDist=node_modules/electron/dist')
     expect(packageJson.scripts?.['check:native']).toContain('test:package-smoke:current')
     expect(packageJson.scripts?.['test:package-smoke:current']).toBe('bun run scripts/quality-gate/package-smoke/current.ts')
     expect(prePushHook).toContain('non-blocking')
@@ -160,8 +161,7 @@ describe('feature quality contract', () => {
   })
 
   test('keeps quality gate lanes that boot the real server out of the developer config', () => {
-    // Baseline, desktop smoke, and provider smoke all spawn src/server/index.ts.
-    // That server resolves transcripts, session index, diagnostics, and settings
+    // Each product backend resolves transcripts, session index and settings
     // from CLAUDE_CONFIG_DIR, so inheriting the parent environment makes a QA run
     // read and write the developer's real ~/.claude. Desktop smoke additionally
     // switched the global permission mode to bypassPermissions.
@@ -172,10 +172,15 @@ describe('feature quality contract', () => {
     }
 
     for (const [path, source] of Object.entries(laneSources)) {
-      const serverSpawns = source.split('\n').filter((line) => line.includes("'src/server/index.ts'"))
-      expect(serverSpawns.length, `${path} should still spawn the real server`).toBeGreaterThan(0)
+      if (source.includes('spawnBackendServer(')) {
+        expect(source, `${path} must pass its guarded sandbox to the backend launcher`).toMatch(/spawnBackendServer\(\{[^}]*\bsandbox\b[^}]*\}\)/)
+        expect(source).toContain("from '../backendLaunch'")
+      } else {
+        const serverSpawns = source.split('\n').filter((line) => line.includes("'src/server/index.ts'"))
+        expect(serverSpawns.length, `${path} should still spawn the real server`).toBeGreaterThan(0)
+        expect(source, `${path} must pass the sandbox environment to the server`).toContain('...sandbox.env')
+      }
       expect(source, `${path} must sandbox the server it spawns`).toContain('createQualityGateSandbox')
-      expect(source, `${path} must pass the sandbox environment to the server`).toContain('...sandbox.env')
       expect(source, `${path} must not inherit the developer environment`).not.toContain('...process.env,\n      SERVER_PORT')
       expect(source, `${path} must release the sandbox`).toContain('sandbox.cleanup()')
       expect(
@@ -183,6 +188,14 @@ describe('feature quality contract', () => {
         `${path} must fail the lane when user state was written`,
       ).toBe(true)
     }
+
+    const launcher = readFileSync('scripts/quality-gate/backendLaunch.ts', 'utf8')
+    expect(launcher).toContain("kind: 'typescript'")
+    expect(launcher).toContain("resolve(rootDir, 'src/server/index.ts')")
+    expect(launcher).toContain('validateSandbox(options.sandbox, baseEnv)')
+    expect(launcher).toContain("'CLAUDE_CONFIG_DIR'")
+    expect(launcher).toContain('env: childEnv')
+    expect(launcher).not.toContain('...process.env')
 
     const sandbox = readFileSync('scripts/quality-gate/sandbox.ts', 'utf8')
     expect(sandbox).toContain('createSandboxedTestEnvironment')
