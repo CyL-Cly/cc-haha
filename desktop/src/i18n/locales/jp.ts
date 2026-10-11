@@ -3762,6 +3762,7 @@ export const jp: Record<TranslationKey, string> = {
   'header.waitingCount': '{count} 件が対応待ち',
   'header.renameSession': 'セッション名',
   'header.renameHint': 'ダブルクリックで名前を変更',
+  'header.sessionFailed': '直前のターンでエラー',
 
   // スキルマーケット
   'sidebar.market': 'スキルマーケット',

@@ -1,6 +1,6 @@
 import { Fragment, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { isRootPageTab, useTabStore, type Tab } from '../../stores/tabStore'
+import { HOME_RETURN_ID, isRootPageTab, useTabStore, type Tab } from '../../stores/tabStore'
 import { useChatStore } from '../../stores/chatStore'
 import { useSessionStore } from '../../stores/sessionStore'
 import { useUIStore } from '../../stores/uiStore'
@@ -11,6 +11,7 @@ import { teamTaskWindowsForSnapshot, useTeamStore } from '../../stores/teamStore
 import { StatusDot } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { useTranslation } from '../../i18n'
+import { displaySessionTitle } from '../../lib/sessionTitle'
 import { getDesktopHost } from '../../lib/desktopHost'
 import { nextAttentionSessionId } from '../../lib/sessionAttention'
 import { openDesktopNotificationTarget } from '../../lib/desktopNotificationNavigation'
@@ -60,8 +61,13 @@ export function AppHeader() {
   const activeSession = activeSessionId ? sessions.find((session) => session.id === activeSessionId) : undefined
   const { attentionIds, runningIds } = useSessionStatus()
 
+  // The session list's title wins over the tab's copy of it; a server
+  // placeholder ("Untitled Session") is shown in the user's language.
   const sessionTitle = (sessionId: string, fallback?: string) =>
-    sessions.find((session) => session.id === sessionId)?.title || fallback || t('tabs.untitled')
+    displaySessionTitle(
+      sessions.find((session) => session.id === sessionId)?.title,
+      displaySessionTitle(fallback, t('tabs.untitled')),
+    )
 
   // Waiting sessions other than the one on screen, in sidebar order (most
   // recent first); ones the list has not loaded go after it.
@@ -93,7 +99,10 @@ export function AppHeader() {
   let leading: ReactNode = null
   if (activeTab?.type === 'session' && activeSessionId) {
     leading = (
+      // Keyed so a rename half-typed in one chat can never be saved into
+      // another one shown in its place.
       <SessionTitle
+        key={activeSessionId}
         sessionId={activeSessionId}
         title={sessionTitle(activeSessionId, activeTab.title)}
         needsAttention={attentionIds.has(activeSessionId)}
@@ -102,29 +111,29 @@ export function AppHeader() {
       />
     )
   } else if (activeTab && isRootPageTab(activeTab)) {
-    const previous = tabs.length > 1 ? tabs[tabs.length - 2] : undefined
-    const previousTitle = previous ? tabTitle(previous, sessionTitle, t) : null
-    leading = (
-      <>
-        {previous && previousTitle ? (
-          <Button
-            variant="ghost"
-            size="base"
-            icon={<ChevronLeft size={14} strokeWidth={1.75} aria-hidden="true" />}
-            aria-label={t('header.backTo', { title: previousTitle })}
-            title={t('header.backTo', { title: previousTitle })}
-            onClick={() => useTabStore.getState().closeTab(activeTab.sessionId)}
-            data-testid="app-header-back"
-            className="min-w-0 max-w-[40%] shrink"
-          >
-            <span className="truncate">{previousTitle}</span>
-          </Button>
-        ) : null}
-        <h1 data-testid="app-header-title" className="truncate text-[13px] font-semibold text-[var(--color-text-primary)]">
-          {tabTitle(activeTab, sessionTitle, t)}
-        </h1>
-      </>
-    )
+    // Only the way back: Settings, the market and scheduled tasks each open
+    // with their own page head, and a second title here said it twice.
+    const returnTo = activeTab.returnTabId === HOME_RETURN_ID
+      ? HOME_RETURN_ID
+      : tabs.find((tab) => tab.sessionId === activeTab.returnTabId) ??
+        (tabs.length > 1 ? tabs[tabs.length - 2] : undefined)
+    const backTitle = returnTo === HOME_RETURN_ID
+      ? t('sidebar.newSession')
+      : returnTo ? tabTitle(returnTo, sessionTitle, t) : null
+    leading = backTitle ? (
+      <Button
+        variant="ghost"
+        size="base"
+        icon={<ChevronLeft size={14} strokeWidth={1.75} aria-hidden="true" />}
+        aria-label={t('header.backTo', { title: backTitle })}
+        title={t('header.backTo', { title: backTitle })}
+        onClick={() => useTabStore.getState().closeTab(activeTab.sessionId)}
+        data-testid="app-header-back"
+        className="min-w-0 max-w-[60%] shrink"
+      >
+        <span className="truncate">{backTitle}</span>
+      </Button>
+    ) : null
   } else if (activeTab) {
     const trail = buildTrail(activeTab, tabs, (tab) => tabTitle(tab, sessionTitle, t), sessionTitle)
     leading = (
@@ -137,7 +146,7 @@ export function AppHeader() {
                 <ChevronRight size={14} strokeWidth={1.75} aria-hidden="true" className="shrink-0 text-[var(--color-text-tertiary)]" />
               ) : null}
               {isCurrent ? (
-                <h1 aria-current="page" data-testid="app-header-title" className="truncate px-1.5 text-[13px] font-semibold text-[var(--color-text-primary)]">
+                <h1 aria-current="page" data-testid="app-header-title" title={crumb.title} className="truncate px-1.5 text-[13px] font-semibold text-[var(--color-text-primary)]">
                   {crumb.title}
                 </h1>
               ) : (
@@ -145,6 +154,7 @@ export function AppHeader() {
                   variant="ghost"
                   size="base"
                   onClick={() => returnToTab(crumb.id)}
+                  title={crumb.title}
                   className="min-w-0 max-w-[40%] shrink"
                 >
                   <span className="truncate">{crumb.title}</span>
@@ -298,7 +308,7 @@ function SessionTitle({
     : isRunning
       ? <StatusDot tone="info" pulse label={t('tabs.sessionRunning')} />
       : hasError
-        ? <StatusDot tone="danger" />
+        ? <StatusDot tone="danger" label={t('header.sessionFailed')} />
         : null
 
   return (
@@ -322,12 +332,21 @@ function SessionTitle({
       ) : (
         // The page's one heading: the conversation below no longer repeats it.
         // No-drag: inside the window's drag region a double-click would zoom
-        // the window instead of reaching the title.
+        // the window instead of reaching the title. Focusable, so Enter or F2
+        // renames without a mouse; the hover text keeps the full title, which
+        // the row truncates.
         <h1
           data-testid="app-header-title"
-          title={t('header.renameHint')}
+          tabIndex={0}
+          title={`${title}\n${t('header.renameHint')}`}
           onDoubleClick={() => setDraft(title)}
-          className="tab-bar-interactive truncate text-[13px] font-semibold text-[var(--color-text-primary)]"
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === 'F2') {
+              event.preventDefault()
+              setDraft(title)
+            }
+          }}
+          className="tab-bar-interactive truncate rounded-[var(--radius-xs)] text-[13px] font-semibold text-[var(--color-text-primary)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]"
         >
           {title}
         </h1>
@@ -351,6 +370,9 @@ function tabTitle(
     case 'market':
     case 'connectors':
       return t('sidebar.extensions')
+    case 'team':
+      // The workbench below names the team; the trail names the surface.
+      return 'Agent Teams'
     default:
       return tab.title || t('tabs.untitled')
   }

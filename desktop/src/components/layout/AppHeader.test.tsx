@@ -149,6 +149,8 @@ vi.mock('../../i18n', () => ({
       'header.waitingCount': '{count} waiting',
       'header.renameSession': 'Session name',
       'header.renameHint': 'Double-click to rename',
+      'header.sessionFailed': 'The last turn failed',
+      'sidebar.newSession': 'New session',
       'sidebar.scheduled': 'Scheduled',
       'settings.title': 'Localized Settings',
       'openProject.openProject': 'Open project',
@@ -1851,20 +1853,20 @@ describe('AppHeader', () => {
       expect(sessionsApiMock.rename).not.toHaveBeenCalled()
     })
 
-    it('names a root page and leads back to the chat it was opened from', async () => {
+    it('gives a root page only the way back to the chat it was opened over, never a second title', async () => {
       const { SETTINGS_TAB_ID } = await import('../../stores/tabStore')
       const { useTabStore } = await renderHeader(
         [
           { sessionId: 's1', title: 'Fix login redirect', type: 'session', status: 'idle' },
-          { sessionId: SETTINGS_TAB_ID, title: '设置', type: 'settings', status: 'idle' },
+          { sessionId: SETTINGS_TAB_ID, title: '设置', type: 'settings', status: 'idle', returnTabId: 's1' },
         ],
         SETTINGS_TAB_ID,
         [{ id: 's1', title: 'Fix login redirect' }],
       )
 
-      // The persisted title is stale; the page is named in the current locale.
-      expect(screen.getByTestId('app-header-title')).toHaveTextContent('Localized Settings')
-      expect(screen.queryByText('设置')).not.toBeInTheDocument()
+      // The page opens with its own head; the header does not repeat it.
+      expect(screen.queryByTestId('app-header-title')).not.toBeInTheDocument()
+      expect(screen.getByTestId('workspace-session-header')).not.toHaveTextContent('Localized Settings')
 
       fireEvent.click(screen.getByRole('button', { name: 'Back to Fix login redirect' }))
 
@@ -1872,12 +1874,98 @@ describe('AppHeader', () => {
       expect(useTabStore.getState().tabs.map((tab) => tab.sessionId)).toEqual(['s1'])
     })
 
+    it('leads back to the new-session page a root page was opened from', async () => {
+      const { MARKET_TAB_ID } = await import('../../stores/tabStore')
+      const { useTabStore } = await renderHeader(
+        [
+          { sessionId: 's1', title: 'Fix login redirect', type: 'session', status: 'idle' },
+          { sessionId: MARKET_TAB_ID, title: 'Market', type: 'market', status: 'idle', returnTabId: '' },
+        ],
+        MARKET_TAB_ID,
+        [{ id: 's1', title: 'Fix login redirect' }],
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: 'Back to New session' }))
+
+      expect(useTabStore.getState().activeTabId).toBeNull()
+    })
+
     it('offers no way back from a root page with nothing behind it', async () => {
       const { MARKET_TAB_ID } = await import('../../stores/tabStore')
       await renderHeader([{ sessionId: MARKET_TAB_ID, title: 'Market', type: 'market', status: 'idle' }], MARKET_TAB_ID)
 
-      expect(screen.getByTestId('app-header-title')).toHaveTextContent('Extension Market')
       expect(screen.queryByTestId('app-header-back')).not.toBeInTheDocument()
+    })
+
+    it('shows a server placeholder title in the user\'s language', async () => {
+      const { useTabStore } = await renderHeader(
+        [{ sessionId: 's1', title: 'New session', type: 'session', status: 'idle' }],
+        's1',
+        [{ id: 's1', title: 'Untitled Session' }],
+      )
+
+      // The tab carries the localized name the sidebar gave it.
+      expect(screen.getByTestId('app-header-title')).toHaveTextContent(/^New session$/)
+
+      act(() => {
+        useTabStore.getState().updateTabTitle('s1', 'Untitled Session')
+      })
+      expect(screen.getByTestId('app-header-title')).toHaveTextContent(/^Untitled$/)
+    })
+
+    it('renames from the keyboard, and keeps the full title as the hover text', async () => {
+      sessionsApiMock.rename.mockResolvedValue(undefined)
+      await renderHeader(
+        [{ sessionId: 's1', title: 'A long title the row truncates', type: 'session', status: 'idle' }],
+        's1',
+        [{ id: 's1', title: 'A long title the row truncates' }],
+      )
+      const title = screen.getByTestId('app-header-title')
+      expect(title).toHaveAttribute('tabindex', '0')
+      expect(title.getAttribute('title')).toContain('A long title the row truncates')
+
+      fireEvent.keyDown(title, { key: 'F2' })
+      const input = screen.getByRole('textbox', { name: 'Session name' })
+      fireEvent.change(input, { target: { value: 'Shorter' } })
+      await act(async () => {
+        fireEvent.keyDown(input, { key: 'Enter' })
+      })
+
+      expect(sessionsApiMock.rename).toHaveBeenCalledExactlyOnceWith('s1', 'Shorter')
+    })
+
+    it('drops a half-typed rename when another chat takes the screen', async () => {
+      const { useTabStore } = await renderHeader(
+        [
+          { sessionId: 's1', title: 'One', type: 'session', status: 'idle' },
+          { sessionId: 's2', title: 'Two', type: 'session', status: 'idle' },
+        ],
+        's1',
+        [{ id: 's1', title: 'One' }, { id: 's2', title: 'Two' }],
+      )
+      fireEvent.doubleClick(screen.getByTestId('app-header-title'))
+      fireEvent.change(screen.getByRole('textbox', { name: 'Session name' }), { target: { value: 'Typed for One' } })
+
+      act(() => {
+        useTabStore.setState({ activeTabId: 's2' })
+      })
+
+      expect(screen.queryByRole('textbox', { name: 'Session name' })).not.toBeInTheDocument()
+      expect(screen.getByTestId('app-header-title')).toHaveTextContent('Two')
+      expect(sessionsApiMock.rename).not.toHaveBeenCalled()
+    })
+
+    it('updates the title after a rename even for a chat outside the loaded list', async () => {
+      sessionsApiMock.rename.mockResolvedValue(undefined)
+      await renderHeader([{ sessionId: 'old', title: 'Old chat', type: 'session', status: 'idle' }], 'old')
+
+      fireEvent.doubleClick(screen.getByTestId('app-header-title'))
+      fireEvent.change(screen.getByRole('textbox', { name: 'Session name' }), { target: { value: 'Renamed old chat' } })
+      await act(async () => {
+        fireEvent.keyDown(screen.getByRole('textbox', { name: 'Session name' }), { key: 'Enter' })
+      })
+
+      expect(screen.getByTestId('app-header-title')).toHaveTextContent('Renamed old chat')
     })
 
     it('trails a nested subagent back to its chat, and each step leads there', async () => {
@@ -1907,6 +1995,22 @@ describe('AppHeader', () => {
       fireEvent.click(within(screen.getByRole('navigation', { name: 'Page path' })).getByRole('button', { name: 'Root session' }))
       expect(useTabStore.getState().activeTabId).toBe('root')
       expect(useTabStore.getState().tabs.map((tab) => tab.sessionId)).toEqual(['root'])
+    })
+
+    it('names the team page by its surface; the workbench below names the team', async () => {
+      const { useTabStore } = await import('../../stores/tabStore')
+      await renderHeader(
+        [{ sessionId: 'lead', title: 'Lead', type: 'session', status: 'idle' }],
+        'lead',
+        [{ id: 'lead', title: 'Review the PR' }],
+      )
+      await act(async () => {
+        useTabStore.getState().openTeamWorkbenchTab('lead', 'security-review-team')
+      })
+
+      const trail = screen.getByRole('navigation', { name: 'Page path' })
+      expect(within(trail).getByTestId('app-header-title')).toHaveTextContent('Agent Teams')
+      expect(trail).not.toHaveTextContent('security-review-team')
     })
 
     it('jumps straight from a team member to its chat, closing the pages in between', async () => {
@@ -2097,8 +2201,7 @@ describe('AppHeader', () => {
       act(() => {
         useTabStore.getState().updateTabStatus('failed', 'error')
       })
-      // The dot is decorative and has no name, so it is found by its danger colour.
-      expect(headerSession().querySelector('[class*="--color-error"]')).toBeInTheDocument()
+      expect(within(headerSession()).getByLabelText('The last turn failed')).toBeInTheDocument()
 
       // Waiting outranks an earlier failure: the failed turn is over, the card is not.
       await receive('failed', request('rf'))

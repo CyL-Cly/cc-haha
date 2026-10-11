@@ -8,6 +8,7 @@ import {
 } from '../lib/appZoom'
 import { useSettingsStore } from '../stores/settingsStore'
 import { hasRunningSubagentTasks } from '../lib/backgroundTasks'
+import { detectPlatform } from '../lib/workspace/shortcuts'
 
 export function useKeyboardShortcuts() {
   const openModal = useUIStore((s) => s.openModal)
@@ -47,10 +48,12 @@ export function useKeyboardShortcuts() {
 
       const meta = e.metaKey || e.ctrlKey
 
-      // Cmd+N — the new-session page, from wherever you are
-      if (meta && e.key === 'n') {
+      // Cmd+N — what the sidebar's "New session" item does (it shows ⌘N).
+      // Cmd only on macOS: Ctrl+N is "next line" in a macOS text field.
+      const newSessionChord = detectPlatform() === 'mac' ? e.metaKey && !e.ctrlKey : e.ctrlKey
+      if (newSessionChord && e.key === 'n' && !e.shiftKey && !e.altKey) {
         e.preventDefault()
-        useTabStore.getState().goHome()
+        useUIStore.getState().requestNewSession()
       }
 
       // Cmd+K — Open global session search

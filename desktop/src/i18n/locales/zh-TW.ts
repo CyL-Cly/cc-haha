@@ -3761,6 +3761,7 @@ export const zh: Record<TranslationKey, string> = {
   'header.waitingCount': '{count} 個等你處理',
   'header.renameSession': '會話名稱',
   'header.renameHint': '按兩下重新命名',
+  'header.sessionFailed': '上一輪出錯',
 
   // 技能市集
   'sidebar.market': '技能市集',

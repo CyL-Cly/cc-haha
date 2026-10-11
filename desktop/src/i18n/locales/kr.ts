@@ -3764,6 +3764,7 @@ export const kr: Record<TranslationKey, string> = {
   'header.waitingCount': '{count}개 대기 중',
   'header.renameSession': '세션 이름',
   'header.renameHint': '두 번 클릭하여 이름 바꾸기',
+  'header.sessionFailed': '마지막 턴 오류',
 
   // 스킬 마켓
   'sidebar.market': '스킬 마켓',

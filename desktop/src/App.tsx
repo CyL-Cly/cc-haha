@@ -6,6 +6,7 @@ import { RemoteAccessGate } from './pages/RemoteAccess'
 import { isPublicAccessRuntime } from './lib/publicAccessRuntime'
 import { useChatStore } from './stores/chatStore'
 import { installHiddenSessionRelease } from './stores/hiddenSessionRelease'
+import { installEmptySessionCleanup } from './stores/emptySessionCleanup'
 import { useMobileShellLayout } from './components/mobile/mobileShellLayout'
 import { isDesktopRuntime } from './lib/desktopRuntime'
 
@@ -24,6 +25,7 @@ function ConnectedApp() {
     }),
     [shellLayout],
   )
+  useEffect(() => installEmptySessionCleanup(useChatStore), [])
   useEffect(() => {
     let cleanup: (() => void) | undefined
     let cancelled = false

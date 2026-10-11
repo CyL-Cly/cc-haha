@@ -641,7 +641,9 @@ describe('ActiveSession task polling', () => {
     render(<ActiveSession />)
 
     const hero = screen.getByTestId('empty-session-hero')
-    expect(within(hero).getByRole('heading', { level: 1 })).toHaveTextContent('project')
+    // h2: the window header holds the page's one h1.
+    expect(within(hero).getByRole('heading', { level: 2 })).toHaveTextContent('project')
+    expect(within(hero).queryByRole('heading', { level: 1 })).toBeNull()
     // Only this project's threads with something in them, newest first; the
     // blank session itself is not "recent".
     const starter = screen.getByTestId('new-session-starter')

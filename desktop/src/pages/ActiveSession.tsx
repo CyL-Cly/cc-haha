@@ -918,13 +918,14 @@ export function ActiveSession({ sessionId, active = true }: { sessionId?: string
             >
               <div className="flex max-w-[600px] flex-col items-center gap-2.5 text-center">
                 <BrandSeal size={compactEmptyHero ? 'md' : 'lg'} />
-                <h1
+                {/* h2: the window header holds the page's h1, the chat's title. */}
+                <h2
                   className={`mt-2 font-semibold leading-[1.3] tracking-tight text-[var(--color-text-primary)] ${compactEmptyHero ? 'text-[22px]' : 'text-[26px]'}`}
                 >
                   {emptyHeroProject
                     ? t('empty.heroTitle', { project: emptyHeroProject })
                     : t('empty.heroTitleNoProject')}
-                </h1>
+                </h2>
                 <p className="text-[14px] text-[var(--color-text-tertiary)]">
                   {t('empty.heroSubtitle')}
                 </p>

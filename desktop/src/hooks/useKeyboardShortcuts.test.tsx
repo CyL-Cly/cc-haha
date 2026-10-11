@@ -5,6 +5,7 @@ import { useSettingsStore } from '../stores/settingsStore'
 import { useKeyboardShortcuts } from './useKeyboardShortcuts'
 import { useChatStore, type PerSessionState } from '../stores/chatStore'
 import { useTabStore } from '../stores/tabStore'
+import { useUIStore } from '../stores/uiStore'
 
 function ShortcutHost() {
   useKeyboardShortcuts()
@@ -48,18 +49,38 @@ describe('useKeyboardShortcuts new session', () => {
     useTabStore.setState({ tabs: [], activeTabId: null })
   })
 
-  it('goes to the new-session page from a chat, leaving the pages on top of it behind', () => {
-    useTabStore.getState().openTab('session-1', 'Chat')
-    useTabStore.getState().openSubagentTab('session-1', 'tool-1', 'Run')
+  it('asks for a new session, as the sidebar item that shows ⌘N does', () => {
+    setNavigatorPlatform('MacIntel')
+    const before = useUIStore.getState().newSessionRequest
     render(<ShortcutHost />)
 
     const event = new KeyboardEvent('keydown', { key: 'n', metaKey: true, bubbles: true, cancelable: true })
     document.dispatchEvent(event)
 
     expect(event.defaultPrevented).toBe(true)
-    expect(useTabStore.getState().activeTabId).toBeNull()
-    // The chat stays warm; only the page is left behind.
-    expect(useTabStore.getState().tabs.map((tab) => tab.sessionId)).toEqual(['session-1'])
+    expect(useUIStore.getState().newSessionRequest).toBe(before + 1)
+  })
+
+  it('leaves Ctrl+N alone on macOS, where it moves the caret to the next line', () => {
+    setNavigatorPlatform('MacIntel')
+    const before = useUIStore.getState().newSessionRequest
+    render(<ShortcutHost />)
+
+    const event = new KeyboardEvent('keydown', { key: 'n', ctrlKey: true, bubbles: true, cancelable: true })
+    document.dispatchEvent(event)
+
+    expect(event.defaultPrevented).toBe(false)
+    expect(useUIStore.getState().newSessionRequest).toBe(before)
+  })
+
+  it('uses Ctrl+N elsewhere', () => {
+    setNavigatorPlatform('Win32')
+    const before = useUIStore.getState().newSessionRequest
+    render(<ShortcutHost />)
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'n', ctrlKey: true, bubbles: true, cancelable: true }))
+
+    expect(useUIStore.getState().newSessionRequest).toBe(before + 1)
   })
 })
 

@@ -313,7 +313,9 @@ export function SubagentRunPage({
       details={data ? (
         <>
           <span>{t('subagentRun.agent')}: {data.agentId ?? t('subagentRun.unknown')}</span>
-          {data.description ? <span>{data.description}</span> : null}
+          {/* The run is named by its description already (the header's trail
+              on the desktop, the top bar on a phone); only a different one adds anything. */}
+          {data.description && data.description.trim() !== title.trim() ? <span>{data.description}</span> : null}
           {data.outputFile ? <span>{t('subagentRun.output')}: {data.outputFile}</span> : null}
           {data.historyComplete === false ? <span role="status">{t('subagentRun.incompleteHistory')}</span> : null}
         </>

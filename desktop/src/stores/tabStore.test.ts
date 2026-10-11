@@ -5,6 +5,13 @@ import { useSessionRuntimeStore } from './sessionRuntimeStore'
 import { useSessionStore } from './sessionStore'
 import { SETTINGS_TAB_ID, MARKET_TAB_ID, CONNECTORS_TAB_ID, SCHEDULED_TAB_ID, WARM_SESSION_LIMIT, useTabStore } from './tabStore'
 
+/** The new-session page: no tab is shown and the chats stay warm. */
+function showNewSessionPage() {
+  useTabStore.setState((state) => ({ tabs: state.tabs.filter((tab) => tab.type === 'session'), activeTabId: null }))
+  useTabStore.getState().saveTabs()
+}
+
+
 vi.mock('../api/sessions', () => ({
   sessionsApi: {
     list: vi.fn(async () => ({ sessions: [] })),
@@ -150,18 +157,47 @@ describe('tabStore', () => {
       expect(useTabStore.getState().activeTabId).toBe('s2')
     })
 
-    it('swaps one root page for another, and closing it shows what was on screen before', () => {
+    it('keeps a root page under the one opened from it, and no deeper', () => {
       useTabStore.getState().openTab('s1', 's1')
       useTabStore.getState().openTab(SETTINGS_TAB_ID, 'Settings', 'settings')
       useTabStore.getState().openTab(SCHEDULED_TAB_ID, 'Scheduled', 'scheduled')
       useTabStore.getState().openTab(MARKET_TAB_ID, 'Market', 'market')
 
-      expect(ids()).toEqual(['s1', MARKET_TAB_ID])
+      // Settings is dropped: only the page the market was opened over stays.
+      expect(ids()).toEqual(['s1', SCHEDULED_TAB_ID, MARKET_TAB_ID])
 
       useTabStore.getState().closeTab(MARKET_TAB_ID)
+      expect(useTabStore.getState().activeTabId).toBe(SCHEDULED_TAB_ID)
 
+      // Scheduled's own way back (Settings) is gone, so it falls back to the chat.
+      useTabStore.getState().closeTab(SCHEDULED_TAB_ID)
       expect(ids()).toEqual(['s1'])
       expect(useTabStore.getState().activeTabId).toBe('s1')
+    })
+
+    it('leads Back from a page opened over the market to the market', () => {
+      useTabStore.getState().openTab('s1', 's1')
+      useTabStore.getState().openTab(MARKET_TAB_ID, 'Market', 'market')
+      // A plugin's "open settings" link.
+      useTabStore.getState().openTab(SETTINGS_TAB_ID, 'Settings', 'settings')
+
+      useTabStore.getState().closeTab(SETTINGS_TAB_ID)
+
+      expect(useTabStore.getState().activeTabId).toBe(MARKET_TAB_ID)
+      expect(ids()).toEqual(['s1', MARKET_TAB_ID])
+    })
+
+    it('leads Back from a page opened on the new-session page to the new-session page', () => {
+      useTabStore.getState().openTab('s1', 's1')
+      showNewSessionPage()
+      useTabStore.getState().openTab(SETTINGS_TAB_ID, 'Settings', 'settings')
+      // A deep link into Settings while it is already open keeps its way back.
+      useTabStore.getState().openTab(SETTINGS_TAB_ID, 'Settings', 'settings')
+
+      useTabStore.getState().closeTab(SETTINGS_TAB_ID)
+
+      expect(useTabStore.getState().activeTabId).toBeNull()
+      expect(ids()).toEqual(['s1'])
     })
 
     it('stacks a root page on a run page, so Back from it lands on the run', () => {
@@ -179,11 +215,30 @@ describe('tabStore', () => {
       useTabStore.getState().openTab('s2', 's2')
       useTabStore.getState().openSubagentTab('s2', 'tool-1', 'Run')
 
-      useTabStore.getState().goHome()
+      showNewSessionPage()
 
       expect(useTabStore.getState().activeTabId).toBeNull()
       expect(ids()).toEqual(['s1', 's2'])
-      expect(JSON.parse(localStorage.getItem('cc-haha-open-tabs')!).activeTabId).toBe('s1')
+      expect(JSON.parse(localStorage.getItem('cc-haha-open-tabs')!).activeTabId).toBeNull()
+    })
+
+    it('restarts where it stopped: the new-session page, or the chat a run page belongs to', async () => {
+      vi.mocked(sessionsApi.list).mockResolvedValue({
+        sessions: ['a', 'b', 'c', 'd'].map((id) => ({ ...historicalSummary(id), title: id })),
+        total: 4,
+      } as never)
+      for (const id of ['a', 'b', 'c', 'd']) useTabStore.getState().openTab(id, id)
+      useTabStore.getState().setActiveTab('b')
+      useTabStore.getState().openSubagentTab('b', 'tool-1', 'Run')
+      expect(JSON.parse(localStorage.getItem('cc-haha-open-tabs')!).activeTabId).toBe('b')
+
+      showNewSessionPage()
+      useTabStore.setState({ tabs: [], activeTabId: 'stale' })
+      await useTabStore.getState().restoreTabs()
+
+      expect(useTabStore.getState().activeTabId).toBeNull()
+      // All four chats come back warm, not three.
+      expect(ids()).toEqual(['a', 'c', 'd', 'b'])
     })
 
     it('restores an old strip of many tabs as the shown one plus the three chats nearest its end', async () => {
@@ -377,6 +432,7 @@ describe('tabStore', () => {
         title: 'Settings',
         type: 'settings',
         status: 'idle',
+        returnTabId: '',
       },
     ])
   })

@@ -52,8 +52,17 @@ export type Tab = {
   teamLeadSessionId?: string
   teamMemberAgentId?: string
   teamIncarnationId?: string
+  /**
+   * Where Back leads. Subagent and member pages: the page or chat that opened
+   * them. Settings, the market and scheduled tasks: whatever was on screen
+   * when they opened — another root page, a chat, a run page, or
+   * `HOME_RETURN_ID` for the new-session page, which has no tab of its own.
+   */
   returnTabId?: string
 }
+
+/** `returnTabId` of a root page opened from the new-session page. */
+export const HOME_RETURN_ID = ''
 
 type PersistedTab = {
   sessionId: string
@@ -93,8 +102,6 @@ type TabStore = {
   returnFromTeamMember: (tabId: string) => void
   closeTab: (sessionId: string) => void
   setActiveTab: (sessionId: string) => void
-  /** Show the new-session page, leaving any open page behind. */
-  goHome: () => void
   updateTabTitle: (sessionId: string, title: string) => void
   updateTabStatus: (sessionId: string, status: Tab['status']) => void
   replaceTabSession: (oldSessionId: string, newSessionId: string) => void
@@ -164,17 +171,21 @@ export function isRootPageTab(tab: Pick<Tab, 'type'> | undefined): boolean {
  * sees. Chats sit at the bottom (the warm set); pages sit on top of the chat
  * they were opened from. Showing a tab moves it to the top, and:
  * - showing a chat leaves every page behind it;
- * - showing Settings, the market or scheduled tasks replaces the one open;
+ * - showing Settings, the market or scheduled tasks drops every other root
+ *   page except the one it was opened from, so Back from Settings opened out
+ *   of the market lands on the market, but switching sections from the
+ *   sidebar does not pile them up;
  * - subagent, team and member pages stack, so Back unwinds them in order.
- * The shown tab is always the last one, so closing it lands on whatever was
- * shown before it.
+ * The shown tab is always the last one.
  */
 function navigateTo(tabs: Tab[], tabId: string): Tab[] {
   const target = tabs.find((tab) => tab.sessionId === tabId)
   if (!target) return tabs
   let next = tabs.filter((tab) => tab.sessionId !== tabId)
   if (target.type === 'session') next = next.filter((tab) => tab.type === 'session')
-  else if (isRootPageTab(target)) next = next.filter((tab) => !isRootPageTab(tab))
+  else if (isRootPageTab(target)) {
+    next = next.filter((tab) => !isRootPageTab(tab) || tab.sessionId === target.returnTabId)
+  }
   next.push(target)
   return evictColdSessions(next)
 }
@@ -207,8 +218,9 @@ function trimRestoredTabs(openTabs: PersistedTab[], activeTabId: string | null):
     ? getPersistentSpecialTabType(openTabs.find((tab) => tab.sessionId === activeTabId) ?? { sessionId: activeTabId })
     : null
   const sessionIds = openTabs.flatMap((tab) => getPersistedSessionId(tab) ? [tab.sessionId] : [])
-  const warm = new Set(sessionIds.filter((id) => id !== activeTabId).slice(-(WARM_SESSION_LIMIT - 1)))
-  if (activeTabId) warm.add(activeTabId)
+  const activeIsChat = activeTabId !== null && sessionIds.includes(activeTabId)
+  const warm = new Set(sessionIds.filter((id) => id !== activeTabId).slice(-(activeIsChat ? WARM_SESSION_LIMIT - 1 : WARM_SESSION_LIMIT)))
+  if (activeIsChat && activeTabId) warm.add(activeTabId)
   return openTabs.filter((tab) => {
     const rootType = getPersistentSpecialTabType(tab)
     if (rootType) return rootType === activeRootType
@@ -222,19 +234,20 @@ export const useTabStore = create<TabStore>((set, get) => ({
 
   openTab: (sessionId, title, type) => {
     if (sessionId === CONNECTORS_TAB_ID || type === 'connectors') { sessionId = MARKET_TAB_ID; type = 'market' }
-    const { tabs } = get()
+    const { tabs, activeTabId } = get()
     const existing = tabs.find((t) => t.sessionId === sessionId)
+    const nextType = type ?? existing?.type ?? 'session'
+    // A root page remembers what it was opened over, unless it is already
+    // the page on screen (a deep link into Settings while Settings is open).
+    const returnTabId = isRootPageTab({ type: nextType }) && activeTabId !== sessionId
+      ? activeTabId ?? HOME_RETURN_ID
+      : existing?.returnTabId
+    const opened: Tab = existing
+      ? { ...existing, title, type: nextType, ...(returnTabId !== undefined ? { returnTabId } : {}) }
+      : { sessionId, title, type: nextType, status: 'idle', ...(returnTabId !== undefined ? { returnTabId } : {}) }
     const nextTabs: Tab[] = existing
-      ? tabs.map((tab) =>
-          tab.sessionId === sessionId
-            ? {
-                ...tab,
-                title,
-                type: type ?? tab.type ?? 'session',
-              }
-            : tab,
-        )
-      : [...tabs, { sessionId, title, type: type ?? 'session', status: 'idle' }]
+      ? tabs.map((tab) => tab.sessionId === sessionId ? opened : tab)
+      : [...tabs, opened]
     set({ tabs: navigateTo(nextTabs, sessionId), activeTabId: sessionId })
     get().saveTabs()
   },
@@ -355,13 +368,23 @@ export const useTabStore = create<TabStore>((set, get) => ({
     const index = tabs.findIndex((t) => t.sessionId === sessionId)
     if (index < 0) return
 
-    const newTabs = tabs.filter((t) => t.sessionId !== sessionId)
+    let newTabs = tabs.filter((t) => t.sessionId !== sessionId)
     let newActiveId = activeTabId
 
-    // The shown tab is the last one, so closing it shows what was shown
-    // before it.
+    // Closing the shown tab shows what it was opened over: a root page knows
+    // (the new-session page included); anything else falls back to the tab
+    // shown before it, which the stack keeps last.
     if (activeTabId === sessionId) {
-      newActiveId = newTabs[newTabs.length - 1]?.sessionId ?? null
+      const closed = tabs[index]!
+      const returnTo = isRootPageTab(closed) ? closed.returnTabId : undefined
+      if (returnTo === HOME_RETURN_ID) {
+        newActiveId = null
+      } else if (returnTo && newTabs.some((tab) => tab.sessionId === returnTo)) {
+        newActiveId = returnTo
+        newTabs = navigateTo(newTabs, returnTo)
+      } else {
+        newActiveId = newTabs[newTabs.length - 1]?.sessionId ?? null
+      }
     }
 
     set({ tabs: newTabs, activeTabId: newActiveId })
@@ -371,11 +394,6 @@ export const useTabStore = create<TabStore>((set, get) => ({
 
   setActiveTab: (sessionId) => {
     set((state) => ({ tabs: navigateTo(state.tabs, sessionId), activeTabId: sessionId }))
-    get().saveTabs()
-  },
-
-  goHome: () => {
-    set((state) => ({ tabs: state.tabs.filter((tab) => tab.type === 'session'), activeTabId: null }))
     get().saveTabs()
   },
 
@@ -412,20 +430,25 @@ export const useTabStore = create<TabStore>((set, get) => ({
       tab.type !== 'team-member'
     ))
     const activeTab = tabs.find((tab) => tab.sessionId === activeTabId)
-    // Detached views (workbench, team) restore to the session they were spun
-    // out of rather than to a stale synthetic tab id.
+    // Detached views (subagent, team, member, workbench) restore to the
+    // session they were spun out of rather than to a synthetic tab id. The
+    // new-session page is saved as null, and anything else falls back to the
+    // most recently shown chat, which the stack keeps last.
     const detachedOrigin = (
       activeTab?.type === 'workbench' ||
+      activeTab?.type === 'subagent' ||
       activeTab?.type === 'team' ||
       activeTab?.type === 'team-member'
     )
       ? activeTab.sourceSessionId
       : undefined
-    const persistedActiveTabId = activeTabId && persistableTabs.some((tab) => tab.sessionId === activeTabId)
-      ? activeTabId
-      : detachedOrigin && persistableTabs.some((tab) => tab.sessionId === detachedOrigin)
-        ? detachedOrigin
-        : (persistableTabs[0]?.sessionId ?? null)
+    const persistedActiveTabId = activeTabId === null
+      ? null
+      : persistableTabs.some((tab) => tab.sessionId === activeTabId)
+        ? activeTabId
+        : detachedOrigin && persistableTabs.some((tab) => tab.sessionId === detachedOrigin)
+          ? detachedOrigin
+          : (persistableTabs[persistableTabs.length - 1]?.sessionId ?? null)
     const data: TabPersistence = {
       openTabs: persistableTabs.map((t) => ({
         sessionId: t.sessionId,
@@ -536,7 +559,12 @@ export const useTabStore = create<TabStore>((set, get) => ({
       const legacyActive = data.openTabs.find(tab => tab.sessionId === data.activeTabId)
       const activeType = legacyActive && getPersistentSpecialTabType(legacyActive)
       const normalizedActive = activeType ? PERSISTENT_SPECIAL_TAB_IDS[activeType] : data.activeTabId
-      const activeId = normalizedActive && uniqueTabs.some(tab => tab.sessionId === normalizedActive) ? normalizedActive : uniqueTabs[0]!.sessionId
+      // Saved at the new-session page: come back there, chats still warm.
+      if (data.activeTabId === null) {
+        set({ tabs: uniqueTabs, activeTabId: null })
+        return
+      }
+      const activeId = normalizedActive && uniqueTabs.some(tab => tab.sessionId === normalizedActive) ? normalizedActive : uniqueTabs[uniqueTabs.length - 1]!.sessionId
 
       set({ tabs: navigateTo(uniqueTabs, activeId), activeTabId: activeId })
     } catch { /* noop */ }

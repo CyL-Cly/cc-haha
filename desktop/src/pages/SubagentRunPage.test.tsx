@@ -474,6 +474,17 @@ describe('SubagentRunPage', () => {
     expectSharedSessionSurface('subagent')
   })
 
+  it('does not repeat the run description when it is the name the run is shown under', async () => {
+    vi.mocked(subagentsApi.getRunByTool).mockResolvedValue(subagentRun())
+
+    render(<SubagentRunPage sourceSessionId="session-1" toolUseId="tool-1" taskId="agent-1" title="Explore repo" />)
+
+    await screen.findByTestId('subagent-conversation')
+    const header = screen.getByTestId('session-header')
+    expect(within(header).getByText('Agent: abc123')).toBeInTheDocument()
+    expect(within(header).queryByText('Explore repo')).not.toBeInTheDocument()
+  })
+
   it('shows the model the newest transcript turn answered on, not an earlier one', async () => {
     vi.mocked(subagentsApi.getRunByTool).mockResolvedValue(subagentRun({
       messages: [

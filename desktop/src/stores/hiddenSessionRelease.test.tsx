@@ -23,7 +23,8 @@ vi.mock('../lib/desktopNotifications', () => ({ notifyDesktop: notifyDesktopMock
 
 import { wsManager } from '../api/websocket'
 import { useChatStore } from './chatStore'
-import { installHiddenSessionRelease } from './hiddenSessionRelease'
+import { installHiddenSessionRelease, RELEASED_TRANSCRIPT_LIMIT } from './hiddenSessionRelease'
+import { registerSideChatSession, unregisterSideChatSession } from '../lib/sideChatSessions'
 import { WARM_SESSION_LIMIT, useTabStore, type Tab } from './tabStore'
 import { useTeamStore } from './teamStore'
 import { useSessionStore } from './sessionStore'
@@ -424,6 +425,62 @@ describe('releasing sessions that no tab shows (#1485)', () => {
     act(() => useTabStore.getState().closeTab('subagent:source__tool-1'))
     await settle()
     expect(isHeld('source')).toBe(false)
+  })
+
+  it('releases a side chat with its parent once both are done, keeping its transcript', async () => {
+    registerSideChatSession('side-of-parent', 'parent')
+    try {
+      useTabStore.setState({ tabs: [sessionTab('parent', 'Parent chat')], activeTabId: 'parent' })
+      const parentSocket = connect('parent')
+      const sideSocket = connect('side-of-parent')
+      serverSays(parentSocket, TURN_COMPLETE)
+      serverSays(sideSocket, { type: 'status', state: 'thinking' })
+      await settle()
+      act(() => { vi.advanceTimersByTime(EIGHTEEN_HOURS_MS) })
+      // While the parent is in the warm set its workspace, side chat included, stays.
+      expect(isHeld('side-of-parent')).toBe(true)
+
+      moveOnFrom('parent')
+      await settle()
+      expect(isHeld('parent')).toBe(false)
+      // Still answering: it finishes first.
+      expect(isHeld('side-of-parent')).toBe(true)
+
+      serverSays(sideSocket, TURN_COMPLETE)
+      await settle()
+      expectReleasedWithTranscript('side-of-parent')
+    } finally {
+      unregisterSideChatSession('side-of-parent')
+    }
+  })
+
+  it(`keeps at most ${RELEASED_TRANSCRIPT_LIMIT} released conversations, never dropping one with something unsent`, async () => {
+    const ids = Array.from({ length: RELEASED_TRANSCRIPT_LIMIT + 3 }, (_, index) => `released-${index}`)
+    for (const id of ids) {
+      const socket = connect(id)
+      if (id === 'released-1') {
+        act(() => {
+          useChatStore.setState((state) => ({
+            sessions: {
+              ...state.sessions,
+              [id]: { ...state.sessions[id]!, composerDraft: { input: 'a question I have not sent', attachments: [] } },
+            },
+          }))
+        })
+      }
+      serverSays(socket, TURN_COMPLETE)
+      await settle()
+    }
+
+    const sessions = useChatStore.getState().sessions
+    // Oldest first; the one holding a draft is skipped over, not dropped.
+    expect(sessions['released-0']).toBeUndefined()
+    expect(sessions['released-1']?.composerDraft?.input).toBe('a question I have not sent')
+    expect(sessions['released-2']).toBeUndefined()
+    expect(sessions['released-3']).toBeUndefined()
+    const kept = ids.filter((id) => sessions[id])
+    expect(kept).toHaveLength(RELEASED_TRANSCRIPT_LIMIT)
+    expect(kept.every((id) => sessions[id]!.connectionState === 'disconnected')).toBe(true)
   })
 
   describe('in the phone and tablet shells, which show one session at a time', () => {

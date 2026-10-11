@@ -46,6 +46,7 @@ import { useSessionStatus } from '../../hooks/useSessionStatus'
 import { getSessionWorkspaceState, getSessionSeedWorkDir } from '../../lib/sessionWorkspace'
 import { detectPlatform } from '../../lib/workspace/shortcuts'
 import { SessionAttentionMark } from './SessionAttentionMark'
+import { displaySessionTitle } from '../../lib/sessionTitle'
 import {
   buildSidebarProjectPreferences,
   hasSidebarProjectPreferences,
@@ -494,6 +495,23 @@ export function Sidebar({
       })
     }
   }, [addToast, restoreHiddenProjectForWorkDir, t])
+
+  // "New session" and its Cmd+N shortcut: a session in the project of the
+  // chat on screen.
+  const createSessionInCurrentProject = useCallback(() => {
+    const currentTabId = useTabStore.getState().activeTabId
+    const currentSession = currentTabId
+      ? useSessionStore.getState().sessions.find((s) => s.id === currentTabId)
+      : null
+    void createSessionForWorkDir(getSessionSeedWorkDir(currentSession))
+  }, [createSessionForWorkDir])
+  const newSessionRequest = useUIStore((s) => s.newSessionRequest)
+  const handledNewSessionRequest = useRef(newSessionRequest)
+  useEffect(() => {
+    if (newSessionRequest === handledNewSessionRequest.current) return
+    handledNewSessionRequest.current = newSessionRequest
+    createSessionInCurrentProject()
+  }, [createSessionInCurrentProject, newSessionRequest])
 
   const openProjectHeaderMenu = useCallback((event: React.MouseEvent, type: SidebarHeaderMenuType) => {
     event.stopPropagation()
@@ -1030,13 +1048,7 @@ export function Sidebar({
           active={false}
           collapsed={!expanded}
           label={t('sidebar.newSession')}
-          onClick={() => {
-            const currentTabId = useTabStore.getState().activeTabId
-            const currentSession = currentTabId
-              ? useSessionStore.getState().sessions.find((s) => s.id === currentTabId)
-              : null
-            void createSessionForWorkDir(getSessionSeedWorkDir(currentSession))
-          }}
+          onClick={createSessionInCurrentProject}
           icon={<Plus size={16} strokeWidth={ICON_STROKE} aria-hidden="true" />}
           shortcut={`${MOD_KEY}N`}
         >
@@ -1368,7 +1380,7 @@ export function Sidebar({
                                     }
                                   `}
                                   aria-pressed={isBatchMode ? selectedSessionIds.has(session.id) : undefined}
-                                  title={session.title || t('tabs.untitled')}
+                                  title={displaySessionTitle(session.title, t('tabs.untitled'))}
                                 >
                                   <span className="flex min-w-0 flex-1 items-center gap-1.5">
                                     {isBatchMode ? (
@@ -1387,7 +1399,7 @@ export function Sidebar({
                                         )}
                                       </span>
                                     ) : null}
-                                    <span className="min-w-0 flex-1 truncate">{session.title || t('tabs.untitled')}</span>
+                                    <span className="min-w-0 flex-1 truncate">{displaySessionTitle(session.title, t('tabs.untitled'))}</span>
                                     {getSessionWorkspaceState(session) === 'missing' && (
                                       <span
                                         className="flex-shrink-0 text-[11px] text-[var(--color-warning)]"
@@ -1643,7 +1655,7 @@ export function Sidebar({
               <ul className="max-h-40 space-y-1 overflow-y-auto rounded-[var(--radius-md)] bg-[var(--color-surface-container)] p-2">
                 {pendingBatchDeleteSessions.slice(0, 5).map((session) => (
                   <li key={session.id} className="truncate text-xs text-[var(--color-text-secondary)]">
-                    {session.title || t('tabs.untitled')}
+                    {displaySessionTitle(session.title, t('tabs.untitled'))}
                   </li>
                 ))}
                 {(pendingBatchDeleteSessionIds?.length ?? 0) > 5 && (

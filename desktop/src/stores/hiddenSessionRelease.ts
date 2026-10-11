@@ -1,15 +1,26 @@
 import type { StoreApi } from 'zustand'
 import { wsManager } from '../api/websocket'
 import { hasRunningBackgroundTasks } from '../lib/backgroundTasks'
-import { isSideChatSession } from '../lib/sideChatSessions'
+import { getSideChatParentSessionId, isSideChatSession } from '../lib/sideChatSessions'
 import { useTabStore, type Tab } from './tabStore'
 import { useTeamStore } from './teamStore'
 import type { PerSessionState } from './chatStore'
 
 type HiddenSessionChatState = {
   sessions: Record<string, PerSessionState>
+  askUserQuestionDrafts?: Record<string, unknown>
   disconnectSession: (sessionId: string, options?: { keepTranscript?: boolean }) => void
 }
+
+/**
+ * How many released conversations keep their transcript cached. Each is only
+ * a record once its socket is gone, but the chat store splits its activity
+ * budget across every record it holds, so an app that visits hundreds of
+ * chats would otherwise starve the one on screen. Past this, the oldest
+ * released records with nothing unsent are dropped; going back to one loads
+ * its history again.
+ */
+export const RELEASED_TRANSCRIPT_LIMIT = 16
 
 /**
  * Which sessions a client shows. On the desktop every tab on the navigation
@@ -32,7 +43,22 @@ function shownTabs(scope: SessionDisplayScope): Tab[] {
 }
 
 function isShown(sessionId: string, scope: SessionDisplayScope): boolean {
+  // A side chat lives in its parent's workspace: it is on screen exactly as
+  // long as the parent is. One whose parent is unknown is kept.
+  if (isSideChatSession(sessionId)) {
+    const parent = getSideChatParentSessionId(sessionId)
+    return parent === undefined || isShown(parent, scope)
+  }
   return shownTabs(scope).some((tab) => tabReferences(tab).includes(sessionId))
+}
+
+/** Nothing typed, queued or half-answered that dropping the record would lose. */
+function holdsNothingUnsent(session: PerSessionState, askDrafts: unknown): boolean {
+  return !session.composerDraft?.input?.trim() &&
+    !(session.composerDraft?.attachments?.length) &&
+    !session.repositoryLaunchDraft &&
+    !askDrafts &&
+    !hasForegroundWork(session)
 }
 
 /** The turn is still running, or it is the user's move (a prompt or question). */
@@ -74,7 +100,9 @@ function isCliStillWorking(session: PerSessionState): boolean {
  * Releasing never drops the transcript, draft or queued messages. Chats leave
  * the desktop's warm set on their own (`WARM_SESSION_LIMIT`), not because
  * someone closed them, so going back has to find the conversation where it
- * was. The chat store's history budget is what bounds that cache.
+ * was. The chat store's history budget bounds the cached messages, and
+ * `RELEASED_TRANSCRIPT_LIMIT` bounds how many released records are kept.
+ * A side chat is released with its parent and reconnects when shown again.
  */
 export function installHiddenSessionRelease(
   chatStore: Pick<StoreApi<HiddenSessionChatState>, 'getState' | 'subscribe'>,
@@ -82,6 +110,28 @@ export function installHiddenSessionRelease(
 ): () => void {
   let installed = true
   const scheduled = new Set<string>()
+  // Released sessions, oldest first, for `RELEASED_TRANSCRIPT_LIMIT`.
+  const released: string[] = []
+
+  const pruneReleased = () => {
+    if (released.length <= RELEASED_TRANSCRIPT_LIMIT) return
+    const { sessions, askUserQuestionDrafts, disconnectSession } = chatStore.getState()
+    for (let index = 0; index < released.length && released.length > RELEASED_TRANSCRIPT_LIMIT;) {
+      const sessionId = released[index]!
+      const session = sessions[sessionId]
+      if (!session || session.connectionState !== 'disconnected') {
+        // Gone or reconnected since: no longer a released record.
+        released.splice(index, 1)
+        continue
+      }
+      if (!isShown(sessionId, scope) && holdsNothingUnsent(session, askUserQuestionDrafts?.[sessionId])) {
+        released.splice(index, 1)
+        disconnectSession(sessionId)
+        continue
+      }
+      index += 1
+    }
+  }
 
   const releaseIfDone = (sessionId: string) => {
     const { sessions, disconnectSession } = chatStore.getState()
@@ -89,13 +139,24 @@ export function installHiddenSessionRelease(
     if (
       !session ||
       isShown(sessionId, scope) ||
-      isSideChatSession(sessionId) ||
       !wsManager.getConnectedSessionIds().includes(sessionId) ||
       hasForegroundWork(session) ||
       isCliStillWorking(session) ||
       useTeamStore.getState().teamNameBySession[sessionId]
     ) return
     disconnectSession(sessionId, { keepTranscript: true })
+    const at = released.indexOf(sessionId)
+    if (at >= 0) released.splice(at, 1)
+    released.push(sessionId)
+    pruneReleased()
+  }
+
+  // A parent leaving the screen takes its side chats with it.
+  const scheduleWithSideChats = (sessionId: string) => {
+    schedule(sessionId)
+    for (const id in chatStore.getState().sessions) {
+      if (isSideChatSession(id) && getSideChatParentSessionId(id) === sessionId) schedule(id)
+    }
   }
 
   const schedule = (sessionId: string | undefined) => {
@@ -120,7 +181,7 @@ export function installHiddenSessionRelease(
     if (state.tabs === previous.tabs && state.activeTabId === previous.activeTabId) return
     for (const tab of previous.tabs) {
       for (const sessionId of tabReferences(tab)) {
-        if (sessionId && !isShown(sessionId, scope)) schedule(sessionId)
+        if (sessionId && !isShown(sessionId, scope)) scheduleWithSideChats(sessionId)
       }
     }
   })

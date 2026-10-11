@@ -1078,6 +1078,22 @@ describe('Sidebar', () => {
     expect(screen.getByRole('menuitem', { name: 'Use existing folder' })).toBeInTheDocument()
   })
 
+  it('answers Cmd+N exactly as its "New Session" item does: a session in the project on screen', async () => {
+    createSession.mockResolvedValue('shortcut-session')
+    useSessionStore.setState({
+      sessions: [makeSession('alpha-1', 'Alpha Session', '/workspace/alpha', new Date().toISOString())],
+    })
+    useTabStore.setState({ tabs: [{ sessionId: 'alpha-1', title: 'Alpha Session', type: 'session', status: 'idle' }], activeTabId: 'alpha-1' })
+    render(<Sidebar />)
+    // Mounting does not replay a request made before it.
+    expect(createSession).not.toHaveBeenCalled()
+
+    act(() => useUIStore.getState().requestNewSession())
+
+    await waitFor(() => expect(createSession).toHaveBeenCalledExactlyOnceWith('/workspace/alpha'))
+    await waitFor(() => expect(useTabStore.getState().activeTabId).toBe('shortcut-session'))
+  })
+
   it('uses hydrated display names while preserving the project path used by actions', async () => {
     act(() => {
       hydrateProjectDisplayNames(

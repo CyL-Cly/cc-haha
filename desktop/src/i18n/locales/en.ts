@@ -3761,6 +3761,7 @@ Row 9, all 8 cells: continuing from straight down, turning left through lower-le
   'header.waitingCount': '{count} waiting',
   'header.renameSession': 'Session name',
   'header.renameHint': 'Double-click to rename',
+  'header.sessionFailed': 'The last turn failed',
 
   // Skills Market
   'sidebar.market': 'Skills Market',
