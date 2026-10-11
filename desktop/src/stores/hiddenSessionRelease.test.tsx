@@ -9,6 +9,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import '@testing-library/jest-dom'
 
 const notifyDesktopMock = vi.hoisted(() => vi.fn())
+const discardSideChatMock = vi.hoisted(() => vi.fn(async () => ({})))
 const sessionsApiMock = vi.hoisted(() => ({
   delete: vi.fn(() => Promise.resolve()),
   getSlashCommands: vi.fn(async () => ({ commands: [] })),
@@ -18,6 +19,7 @@ const sessionsApiMock = vi.hoisted(() => ({
 }))
 
 vi.mock('../api/sessions', () => ({ sessionsApi: sessionsApiMock }))
+vi.mock('../api/sideChats', () => ({ sideChatsApi: { discard: discardSideChatMock } }))
 vi.mock('../api/teams', () => ({ teamsApi: { getWorkbenchForSession: vi.fn() } }))
 vi.mock('../lib/desktopNotifications', () => ({ notifyDesktop: notifyDesktopMock }))
 
@@ -28,6 +30,7 @@ import { registerSideChatSession, unregisterSideChatSession } from '../lib/sideC
 import { WARM_SESSION_LIMIT, useTabStore, type Tab } from './tabStore'
 import { useTeamStore } from './teamStore'
 import { useSessionStore } from './sessionStore'
+import { useSideChatStore } from './sideChatStore'
 import { navigateMobileUp } from '../components/mobile/mobileNavigation'
 import type { ServerMessage } from '../types/chat'
 
@@ -173,6 +176,8 @@ describe('releasing sessions that no tab shows (#1485)', () => {
     wsManager.disconnectAll()
     disconnectSpy = vi.spyOn(wsManager, 'disconnect')
     notifyDesktopMock.mockClear()
+    discardSideChatMock.mockClear()
+    useSideChatStore.setState({ entries: {} })
     uninstall = installHiddenSessionRelease(useChatStore)
 
     class ResizeObserverMock {
@@ -427,28 +432,64 @@ describe('releasing sessions that no tab shows (#1485)', () => {
     expect(isHeld('source')).toBe(false)
   })
 
-  it('releases a side chat with its parent once both are done, keeping its transcript', async () => {
+  it.each([
+    { scope: 'open-tabs' as const, finishesWhileHidden: false },
+    { scope: 'open-tabs' as const, finishesWhileHidden: true },
+    { scope: 'active-tab' as const, finishesWhileHidden: false },
+    { scope: 'active-tab' as const, finishesWhileHidden: true },
+  ])('keeps a temporary side chat usable until explicitly closed ($scope, finishes while hidden: $finishesWhileHidden)', async ({ scope, finishesWhileHidden }) => {
+    uninstall()
+    uninstall = installHiddenSessionRelease(useChatStore, { scope })
     registerSideChatSession('side-of-parent', 'parent')
     try {
+      useSideChatStore.setState({ entries: {
+        'side-of-parent': { sessionId: 'side-of-parent', parentSessionId: 'parent', workDir: '/repo', title: 'Side chat', ephemeral: true },
+      } })
       useTabStore.setState({ tabs: [sessionTab('parent', 'Parent chat')], activeTabId: 'parent' })
       const parentSocket = connect('parent')
       const sideSocket = connect('side-of-parent')
       serverSays(parentSocket, TURN_COMPLETE)
+      serverSays(sideSocket, cliRun('running'))
       serverSays(sideSocket, { type: 'status', state: 'thinking' })
+      for (const message of replyText('Side chat context.')) serverSays(sideSocket, message)
+      if (!finishesWhileHidden) {
+        serverSays(sideSocket, TURN_COMPLETE)
+        serverSays(sideSocket, cliRun('idle'))
+      }
       await settle()
-      act(() => { vi.advanceTimersByTime(EIGHTEEN_HOURS_MS) })
-      // While the parent is in the warm set its workspace, side chat included, stays.
-      expect(isHeld('side-of-parent')).toBe(true)
 
       moveOnFrom('parent')
       await settle()
       expect(isHeld('parent')).toBe(false)
-      // Still answering: it finishes first.
-      expect(isHeld('side-of-parent')).toBe(true)
-
-      serverSays(sideSocket, TURN_COMPLETE)
+      if (finishesWhileHidden) {
+        serverSays(sideSocket, TURN_COMPLETE)
+        serverSays(sideSocket, cliRun('idle'))
+      }
       await settle()
-      expectReleasedWithTranscript('side-of-parent')
+      // #1513 released this socket when the parent left the warm set. The
+      // server then destroyed the non-persistent CLI after its idle grace,
+      // and a later send failed with SESSION_DELETED despite cached messages.
+      act(() => { vi.advanceTimersByTime(EIGHTEEN_HOURS_MS) })
+      await settle()
+      expect(sideSocket.closedByClient).toBe(false)
+      expect(isHeld('side-of-parent')).toBe(true)
+      expect(disconnectSpy).not.toHaveBeenCalledWith('side-of-parent')
+
+      act(() => useTabStore.getState().openTab('parent', 'Parent chat'))
+      act(() => useChatStore.getState().sendMessage('side-of-parent', 'Continue the side chat'))
+      expect(socketsFor('side-of-parent')).toEqual([sideSocket])
+      expect(sideSocket.sent).toContainEqual(expect.objectContaining({ type: 'user_message', content: 'Continue the side chat' }))
+      expect(useChatStore.getState().sessions['side-of-parent']?.messages).toContainEqual(expect.objectContaining({ type: 'assistant_text', content: 'Side chat context.' }))
+      serverSays(sideSocket, TURN_COMPLETE)
+      serverSays(sideSocket, cliRun('idle'))
+      await settle()
+
+      await act(async () => { await useSideChatStore.getState().close('side-of-parent') })
+      expect(discardSideChatMock).toHaveBeenCalledWith('parent', 'side-of-parent')
+      expect(sideSocket.closedByClient).toBe(true)
+      expect(isHeld('side-of-parent')).toBe(false)
+      expect(useChatStore.getState().sessions['side-of-parent']).toBeUndefined()
+      expect(useSideChatStore.getState().entries['side-of-parent']).toBeUndefined()
     } finally {
       unregisterSideChatSession('side-of-parent')
     }

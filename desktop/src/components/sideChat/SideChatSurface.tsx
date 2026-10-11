@@ -16,9 +16,9 @@ export function SideChatSurface({ parentSessionId, sideChatId, visible = true }:
   const empty = useChatStore(state => !state.sessions[sideChatId]?.messages.length && !state.sessions[sideChatId]?.streamingText && (state.sessions[sideChatId]?.chatState ?? 'idle') === 'idle')
   const released = useChatStore(state => (state.sessions[sideChatId]?.connectionState ?? 'disconnected') === 'disconnected')
   const owned = Boolean(entry && entry.parentSessionId === parentSessionId)
-  // A side chat is released with its parent once the parent leaves the warm
-  // set (hiddenSessionRelease); showing it again reconnects on top of the
-  // transcript it kept.
+  // Reconnect a lost transport when shown. Hidden-session cleanup keeps this
+  // temporary runtime connected: its CLI context cannot be restored from the
+  // cached transcript after the server reclaims it.
   useEffect(() => {
     if (owned && visible && released) {
       useChatStore.getState().connectToSession(sideChatId, { prewarm: false, applyRuntimeSelection: false })
