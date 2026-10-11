@@ -3457,8 +3457,6 @@ export const jp: Record<TranslationKey, string> = {
   'agentTeams.openConversation': '{name} と直接話す',
   'agentTeams.openExecution': '{name} の実行を表示',
   'agentTeams.dependencyLegend': '実線：主依存 · 破線：副依存 · ホバーでフォーカス',
-  'agentTeams.backToSession': 'セッションに戻る',
-  'agentTeams.backToOverview': 'チーム概要に戻る',
   'agentTeams.openInTab': 'タブで開く',
   'agentTeams.communication.lifecycle.idle_notification': '待機状態に入り、次の作業を待っています',
   'agentTeams.communication.lifecycle.shutdown_request': '終了を要請しました',
@@ -3534,7 +3532,6 @@ export const jp: Record<TranslationKey, string> = {
   // ─── SubAgent Run ──────────────────────────────────────
   'subagentRun.incompleteHistory': '一部の履歴を読み込めませんでした。利用可能な内容を表示しています。更新して再試行できます。',
   'subagentRun.refresh': 'SubAgent 実行を更新',
-  'subagentRun.backToParent': '親セッションに戻る',
   'subagentRun.loading': 'SubAgent 実行を読み込み中...',
   'subagentRun.source': 'ソース',
   'subagentRun.agent': 'Agent',
@@ -3625,7 +3622,6 @@ export const jp: Record<TranslationKey, string> = {
 
   // ─── Active Session ──────────────────────────────────────
   'session.untitled': '無題のセッション',
-  'session.active': 'セッションがアクティブ',
   'session.lastUpdated': '最終更新 {time}',
   'session.messages': '{count} 件のメッセージ',
   'session.apiTokens': '{count} API tokens',
@@ -3726,13 +3722,6 @@ export const jp: Record<TranslationKey, string> = {
 
   // ─── Tabs ──────────────────────────────────────
   'tabs.close': '閉じる',
-  'tabs.closeOthers': '他を閉じる',
-  'tabs.closeLeft': '左側を閉じる',
-  'tabs.closeRight': '右側を閉じる',
-  'tabs.closeAll': 'すべて閉じる',
-  'tabs.closeConfirmTitle': 'セッション実行中',
-  'tabs.closeConfirmMessage': 'このセッションはまだ実行中です。どうしますか？',
-  'tabs.closeConfirmKeep': '実行を継続',
   // ─── Slash Command Descriptions ──────────────────────────────────────
   'slashCmd.agent.description': '選択した Agent でプロンプトを実行',
   'slashCmd.mcp.description': '現在のチャットコンテキストで利用可能な MCP ツールを開く',
@@ -3761,21 +3750,18 @@ export const jp: Record<TranslationKey, string> = {
   'slashCmd.terminal-setup.description': 'ターミナル統合をセットアップ',
   'slashCmd.vim.description': 'Vim 編集モードを切り替え',
 
-  'tabs.closeConfirmStop': '停止して閉じる',
-  'tabs.closeAllConfirmTitle': 'セッション実行中',
-  'tabs.closeAllConfirmMessage': '{count} 件のセッションがまだ実行中です。これらのタブを閉じる前に停止しますか？',
-  'tabs.closeAllConfirmStop': 'すべて停止して閉じる',
   'tabs.sessionRunning': 'セッション実行中',
-  'tabs.openTerminal': 'ターミナルを開く',
   'tabs.showWorkspace': 'ワークスペースを表示',
   'tabs.hideWorkspace': 'ワークスペースを非表示',
   'tabs.showBrowser': 'ブラウザを表示',
   'tabs.hideBrowser': 'ブラウザを非表示',
-  'tabs.scrollLeft': 'タブを左にスクロール',
-  'tabs.scrollRight': 'タブを右にスクロール',
   'tabs.jumpToAttention': '次の待機中のセッションへ移動（{count} 件）',
-  'tabs.closeTab': '{title} を閉じる',
   'tabs.untitled': '無題',
+  'header.backTo': '{title} に戻る',
+  'header.breadcrumb': 'ページの階層',
+  'header.waitingCount': '{count} 件が対応待ち',
+  'header.renameSession': 'セッション名',
+  'header.renameHint': 'ダブルクリックで名前を変更',
 
   // スキルマーケット
   'sidebar.market': 'スキルマーケット',

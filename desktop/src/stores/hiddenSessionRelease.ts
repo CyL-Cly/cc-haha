@@ -12,9 +12,11 @@ type HiddenSessionChatState = {
 }
 
 /**
- * Which sessions a client shows. On the desktop every open tab stays live,
- * active or not. The phone and tablet shells show one page at a time: the
- * rest of their tabs are only a way back, and keep their transcript cached.
+ * Which sessions a client shows. On the desktop every tab on the navigation
+ * stack stays live: the chat on screen, the chats used just before it (capped
+ * by `WARM_SESSION_LIMIT`) and whatever the open pages read. The phone and
+ * tablet shells show one page at a time: the rest of their tabs are only a way
+ * back, and keep their transcript cached.
  */
 export type SessionDisplayScope = 'open-tabs' | 'active-tab'
 
@@ -67,7 +69,12 @@ function isCliStillWorking(session: PerSessionState): boolean {
  * notification or the waiting list brings them back), a CLI still running
  * background work, and a team lead, whose socket carries every member's
  * approvals and team events. Side chats are shown by their parent's workspace
- * and released with it. A session that still has a tab keeps its transcript.
+ * and released with it.
+ *
+ * Releasing never drops the transcript, draft or queued messages. Chats leave
+ * the desktop's warm set on their own (`WARM_SESSION_LIMIT`), not because
+ * someone closed them, so going back has to find the conversation where it
+ * was. The chat store's history budget is what bounds that cache.
  */
 export function installHiddenSessionRelease(
   chatStore: Pick<StoreApi<HiddenSessionChatState>, 'getState' | 'subscribe'>,
@@ -88,8 +95,7 @@ export function installHiddenSessionRelease(
       isCliStillWorking(session) ||
       useTeamStore.getState().teamNameBySession[sessionId]
     ) return
-    const stillOpen = isShown(sessionId, 'open-tabs')
-    disconnectSession(sessionId, stillOpen ? { keepTranscript: true } : undefined)
+    disconnectSession(sessionId, { keepTranscript: true })
   }
 
   const schedule = (sessionId: string | undefined) => {

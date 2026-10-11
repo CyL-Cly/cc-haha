@@ -24,6 +24,7 @@ const sessionsApiMock = vi.hoisted(() => ({
   getRepositoryContext: vi.fn(),
   getRecentProjects: vi.fn(),
   createRepositoryBranch: vi.fn(),
+  getLiveStatus: vi.fn(),
 }))
 
 const repositoryContextMock = sessionsApiMock.getRepositoryContext
@@ -436,6 +437,8 @@ describe('Sidebar', () => {
     sessionsApiMock.listProjectHistory.mockReset()
     sessionsApiMock.listProjectHistory.mockResolvedValue({ sessions: [], nextCursor: null })
     sessionsApiMock.getGitInfo.mockReset()
+    sessionsApiMock.getLiveStatus.mockReset()
+    sessionsApiMock.getLiveStatus.mockResolvedValue({ sessions: [] })
     sessionsApiMock.getRecentProjects.mockReset()
     sessionsApiMock.createRepositoryBranch.mockReset()
     agentsApiMock.list.mockReset()
@@ -2344,6 +2347,26 @@ describe('Sidebar', () => {
     expect(refresh.querySelector('svg')).toHaveClass('animate-spin')
     fireEvent.click(refresh)
     await waitFor(() => expect(fetchSessions).toHaveBeenCalledTimes(2))
+  })
+
+  it('marks a session the server reports waiting, though this window has no socket to it', async () => {
+    // Started from the phone, an IM channel or a scheduled task, or released
+    // from the warm set: the chat store has nothing to say about it.
+    sessionsApiMock.getLiveStatus.mockResolvedValue({
+      sessions: [{ id: 'elsewhere', activityState: 'waiting' }, { id: 'busy-elsewhere', activityState: 'running' }],
+    })
+    useSessionStore.setState({
+      sessions: [
+        makeSession('elsewhere', 'Started on the phone', '/workspace/alpha', new Date(Date.now() - 20 * 60_000).toISOString()),
+        makeSession('busy-elsewhere', 'Scheduled run', '/workspace/alpha', new Date(Date.now() - 30 * 60_000).toISOString()),
+      ],
+    })
+    render(<Sidebar />)
+
+    const waitingRow = screen.getByRole('button', { name: /Started on the phone/ })
+    expect(await within(waitingRow).findByLabelText('Waiting for your approval')).toBeInTheDocument()
+    const busyRow = screen.getByRole('button', { name: /Scheduled run/ })
+    expect(within(busyRow).getByLabelText('Session running')).toBeInTheDocument()
   })
 
   it('swaps the relative time for a short waiting label on a session that needs the user', () => {

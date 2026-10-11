@@ -1634,19 +1634,6 @@ button, input, textarea, select, a, [role="button"] {
   -webkit-app-region: no-drag;
 }
 
-/* Scrolled-out tabs must not subtract native drag regions from the sidebar.
-   Reset every descendant, including buttons covered by the global rules.
-   The stationary sibling below supplies the visible no-drag rectangle. */
-.tab-strip-scroll .tab-bar-interactive,
-.tab-strip-scroll .tab-bar-interactive * {
-  app-region: initial;
-  -webkit-app-region: initial;
-}
-.tab-strip-hit-region {
-  app-region: no-drag;
-  -webkit-app-region: no-drag;
-}
-
 /* 「素」 popover shell: a near-opaque white sheet, the same hairline every card
    uses, and the dropdown step of the shadow scale. The old translucent border
    (`--color-surface-glass-border`) vanished against white pages, so menus read

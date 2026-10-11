@@ -3459,8 +3459,6 @@ export const kr: Record<TranslationKey, string> = {
   'agentTeams.openConversation': '{name}에게 직접 말하기',
   'agentTeams.openExecution': '{name} 실행 보기',
   'agentTeams.dependencyLegend': '실선: 주 의존성 · 점선: 보조 의존성 · 호버로 집중',
-  'agentTeams.backToSession': '세션으로 돌아가기',
-  'agentTeams.backToOverview': '팀 개요로 돌아가기',
   'agentTeams.openInTab': '탭에서 열기',
   'agentTeams.communication.lifecycle.idle_notification': '대기 상태로 전환, 다음 작업 대기 중',
   'agentTeams.communication.lifecycle.shutdown_request': '종료를 요청했습니다',
@@ -3536,7 +3534,6 @@ export const kr: Record<TranslationKey, string> = {
   // ─── SubAgent Run ──────────────────────────────────────
   'subagentRun.incompleteHistory': '일부 기록을 읽을 수 없어 확인 가능한 내용을 표시합니다. 새로고침하여 다시 시도하세요.',
   'subagentRun.refresh': 'SubAgent 실행 새로고침',
-  'subagentRun.backToParent': '상위 세션으로 돌아가기',
   'subagentRun.loading': 'SubAgent 실행을 불러오는 중...',
   'subagentRun.source': '소스',
   'subagentRun.agent': 'Agent',
@@ -3627,7 +3624,6 @@ export const kr: Record<TranslationKey, string> = {
 
   // ─── Active Session ──────────────────────────────────────
   'session.untitled': '제목 없는 세션',
-  'session.active': '세션 활성',
   'session.lastUpdated': '마지막 업데이트 {time}',
   'session.messages': '{count}개의 메시지',
   'session.apiTokens': '{count} API tokens',
@@ -3728,13 +3724,6 @@ export const kr: Record<TranslationKey, string> = {
 
   // ─── Tabs ──────────────────────────────────────
   'tabs.close': '닫기',
-  'tabs.closeOthers': '다른 탭 닫기',
-  'tabs.closeLeft': '왼쪽 탭 닫기',
-  'tabs.closeRight': '오른쪽 탭 닫기',
-  'tabs.closeAll': '모두 닫기',
-  'tabs.closeConfirmTitle': '세션 실행 중',
-  'tabs.closeConfirmMessage': '이 세션은 아직 실행 중입니다. 어떻게 하시겠습니까?',
-  'tabs.closeConfirmKeep': '계속 실행',
   // ─── Slash Command Descriptions ──────────────────────────────────────
   'slashCmd.agent.description': '선택한 Agent로 프롬프트 실행',
   'slashCmd.mcp.description': '현재 채팅 컨텍스트에서 사용 가능한 MCP 도구 열기',
@@ -3763,21 +3752,18 @@ export const kr: Record<TranslationKey, string> = {
   'slashCmd.terminal-setup.description': '터미널 통합 설정',
   'slashCmd.vim.description': 'Vim 편집 모드 전환',
 
-  'tabs.closeConfirmStop': '중지하고 닫기',
-  'tabs.closeAllConfirmTitle': '세션 실행 중',
-  'tabs.closeAllConfirmMessage': '{count}개의 세션이 아직 실행 중입니다. 이 탭들을 닫기 전에 중지하시겠습니까?',
-  'tabs.closeAllConfirmStop': '모두 중지하고 닫기',
   'tabs.sessionRunning': '세션 실행 중',
-  'tabs.openTerminal': '터미널 열기',
   'tabs.showWorkspace': '작업 공간 표시',
   'tabs.hideWorkspace': '작업 공간 숨기기',
   'tabs.showBrowser': '브라우저 표시',
   'tabs.hideBrowser': '브라우저 숨기기',
-  'tabs.scrollLeft': '탭 왼쪽으로 스크롤',
-  'tabs.scrollRight': '탭 오른쪽으로 스크롤',
   'tabs.jumpToAttention': '다음 대기 중인 세션으로 이동 ({count}개)',
-  'tabs.closeTab': '{title} 닫기',
   'tabs.untitled': '제목 없음',
+  'header.backTo': '{title}(으)로 돌아가기',
+  'header.breadcrumb': '페이지 경로',
+  'header.waitingCount': '{count}개 대기 중',
+  'header.renameSession': '세션 이름',
+  'header.renameHint': '두 번 클릭하여 이름 바꾸기',
 
   // 스킬 마켓
   'sidebar.market': '스킬 마켓',

@@ -2,7 +2,6 @@ import { create } from 'zustand'
 import { sessionsApi } from '../api/sessions'
 import { ApiError } from '../api/client'
 import { dropSession as dropVirtualHeightSession } from '../components/chat/virtualHeightCache'
-import { destroyTerminalRuntime } from '../lib/terminalRuntime'
 import { useSessionRuntimeStore } from './sessionRuntimeStore'
 import { teamMemberSessionId } from '../types/team'
 import type { SessionListItem } from '../types/session'
@@ -13,14 +12,26 @@ export const SETTINGS_TAB_ID = '__settings__'
 export const SCHEDULED_TAB_ID = '__scheduled__'
 export const CONNECTORS_TAB_ID = '__connectors__'
 export const MARKET_TAB_ID = '__market__'
+/** Retired app-level terminal tabs. Kept only to recognise their ids. */
 export const TERMINAL_TAB_PREFIX = '__terminal__'
 export const WORKBENCH_TAB_PREFIX = '__workbench__'
 export const SUBAGENT_TAB_PREFIX = '__subagent__'
 export const TEAM_TAB_PREFIX = '__team__'
 export const TEAM_MEMBER_TAB_PREFIX = 'team-member:'
 
-export type TabType = 'session' | 'settings' | 'scheduled' | 'connectors' | 'market' | 'terminal' | 'workbench' | 'subagent' | 'team' | 'team-member'
+export type TabType = 'session' | 'settings' | 'scheduled' | 'connectors' | 'market' | 'workbench' | 'subagent' | 'team' | 'team-member'
 type PersistentSpecialTabType = 'settings' | 'scheduled' | 'connectors' | 'market'
+
+/**
+ * How many chats keep their socket, and so their CLI and MCP servers, while
+ * not on screen: the one in view plus the three used before it. There is no
+ * tab strip any more, so nobody closes chats by hand; without a bound every
+ * chat ever opened would pin a CLI until the app quits (#1485). A chat that
+ * drops out is released only once its work is done (`hiddenSessionRelease`)
+ * and keeps its transcript and draft, so coming back costs a CLI start, not
+ * the conversation.
+ */
+export const WARM_SESSION_LIMIT = 4
 
 // Retired tab shapes that older builds persisted. `persistenceMigrations`
 // rewrites them at startup; restoreTabs tolerates them as a second guard.
@@ -32,8 +43,6 @@ export type Tab = {
   title: string
   type: TabType
   status: 'idle' | 'running' | 'error'
-  terminalCwd?: string
-  terminalRuntimeId?: string
   workbenchSessionId?: string
   sourceSessionId?: string
   sourceTurnKey?: string
@@ -64,7 +73,6 @@ type TabStore = {
   activeTabId: string | null
 
   openTab: (sessionId: string, title: string, type?: TabType) => void
-  openTerminalTab: (cwd?: string, terminalRuntimeId?: string) => string
   openSubagentTab: (
     sourceSessionId: string,
     toolUseId: string,
@@ -85,10 +93,11 @@ type TabStore = {
   returnFromTeamMember: (tabId: string) => void
   closeTab: (sessionId: string) => void
   setActiveTab: (sessionId: string) => void
+  /** Show the new-session page, leaving any open page behind. */
+  goHome: () => void
   updateTabTitle: (sessionId: string, title: string) => void
   updateTabStatus: (sessionId: string, status: Tab['status']) => void
   replaceTabSession: (oldSessionId: string, newSessionId: string) => void
-  moveTab: (fromIndex: number, toIndex: number) => void
 
   saveTabs: () => void
   restoreTabs: () => Promise<void>
@@ -144,6 +153,69 @@ function getPersistedSessionId(tab: PersistedTab): string | null {
   return tab.sessionId
 }
 
+/** Settings, scheduled tasks and the extension market: one page at a time. */
+export function isRootPageTab(tab: Pick<Tab, 'type'> | undefined): boolean {
+  return tab?.type === 'settings' || tab?.type === 'scheduled' ||
+    tab?.type === 'market' || tab?.type === 'connectors'
+}
+
+/**
+ * The tab list is a navigation stack, most recent last, not a strip anyone
+ * sees. Chats sit at the bottom (the warm set); pages sit on top of the chat
+ * they were opened from. Showing a tab moves it to the top, and:
+ * - showing a chat leaves every page behind it;
+ * - showing Settings, the market or scheduled tasks replaces the one open;
+ * - subagent, team and member pages stack, so Back unwinds them in order.
+ * The shown tab is always the last one, so closing it lands on whatever was
+ * shown before it.
+ */
+function navigateTo(tabs: Tab[], tabId: string): Tab[] {
+  const target = tabs.find((tab) => tab.sessionId === tabId)
+  if (!target) return tabs
+  let next = tabs.filter((tab) => tab.sessionId !== tabId)
+  if (target.type === 'session') next = next.filter((tab) => tab.type === 'session')
+  else if (isRootPageTab(target)) next = next.filter((tab) => !isRootPageTab(tab))
+  next.push(target)
+  return evictColdSessions(next)
+}
+
+/**
+ * Drop the least recently shown chats past `WARM_SESSION_LIMIT`. The shown
+ * tab and any chat a page on the stack belongs to are never dropped.
+ */
+function evictColdSessions(tabs: Tab[]): Tab[] {
+  let excess = tabs.filter((tab) => tab.type === 'session').length - WARM_SESSION_LIMIT
+  if (excess <= 0) return tabs
+  const shown = tabs[tabs.length - 1]
+  const referenced = new Set(tabs.flatMap((tab) => tab.type === 'session'
+    ? []
+    : [tab.sourceSessionId, tab.teamLeadSessionId, tab.workbenchSessionId]))
+  return tabs.filter((tab) => {
+    if (excess <= 0 || tab.type !== 'session' || tab === shown || referenced.has(tab.sessionId)) return true
+    excess -= 1
+    return false
+  })
+}
+
+/**
+ * Old builds saved every open tab in strip order. Keep what the stack can
+ * hold: a root page only if it was the one showing, the saved active chat,
+ * and the chats nearest the end of the list.
+ */
+function trimRestoredTabs(openTabs: PersistedTab[], activeTabId: string | null): PersistedTab[] {
+  const activeRootType = activeTabId
+    ? getPersistentSpecialTabType(openTabs.find((tab) => tab.sessionId === activeTabId) ?? { sessionId: activeTabId })
+    : null
+  const sessionIds = openTabs.flatMap((tab) => getPersistedSessionId(tab) ? [tab.sessionId] : [])
+  const warm = new Set(sessionIds.filter((id) => id !== activeTabId).slice(-(WARM_SESSION_LIMIT - 1)))
+  if (activeTabId) warm.add(activeTabId)
+  return openTabs.filter((tab) => {
+    const rootType = getPersistentSpecialTabType(tab)
+    if (rootType) return rootType === activeRootType
+    return !getPersistedSessionId(tab) || warm.has(tab.sessionId)
+  })
+}
+
 export const useTabStore = create<TabStore>((set, get) => ({
   tabs: [],
   activeTabId: null,
@@ -152,9 +224,8 @@ export const useTabStore = create<TabStore>((set, get) => ({
     if (sessionId === CONNECTORS_TAB_ID || type === 'connectors') { sessionId = MARKET_TAB_ID; type = 'market' }
     const { tabs } = get()
     const existing = tabs.find((t) => t.sessionId === sessionId)
-    if (existing) {
-      set({
-        tabs: tabs.map((tab) =>
+    const nextTabs: Tab[] = existing
+      ? tabs.map((tab) =>
           tab.sessionId === sessionId
             ? {
                 ...tab,
@@ -162,36 +233,10 @@ export const useTabStore = create<TabStore>((set, get) => ({
                 type: type ?? tab.type ?? 'session',
               }
             : tab,
-        ),
-        activeTabId: sessionId,
-      })
-    } else {
-      set({
-        tabs: [...tabs, { sessionId, title, type: type ?? 'session', status: 'idle' }],
-        activeTabId: sessionId,
-      })
-    }
+        )
+      : [...tabs, { sessionId, title, type: type ?? 'session', status: 'idle' }]
+    set({ tabs: navigateTo(nextTabs, sessionId), activeTabId: sessionId })
     get().saveTabs()
-  },
-
-  openTerminalTab: (cwd, terminalRuntimeId) => {
-    const { tabs } = get()
-    const nextIndex = Math.max(
-      0,
-      ...tabs
-        .filter((tab) => tab.type === 'terminal')
-        .map((tab) => {
-          const match = /^Terminal (\d+)$/.exec(tab.title)
-          return match ? Number(match[1]) : 0
-        }),
-    ) + 1
-    const sessionId = `${TERMINAL_TAB_PREFIX}${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-    set({
-      tabs: [...tabs, { sessionId, title: `Terminal ${nextIndex}`, type: 'terminal', status: 'idle', terminalCwd: cwd, terminalRuntimeId }],
-      activeTabId: sessionId,
-    })
-    get().saveTabs()
-    return sessionId
   },
 
   openSubagentTab: (sourceSessionId, toolUseId, title = 'SubAgent', taskId, returnTabId) => {
@@ -210,9 +255,9 @@ export const useTabStore = create<TabStore>((set, get) => ({
     }
 
     set({
-      tabs: existing
+      tabs: navigateTo(existing
         ? tabs.map((current) => current.sessionId === tabId ? tab : current)
-        : [...tabs, tab],
+        : [...tabs, tab], tabId),
       activeTabId: tabId,
     })
     get().saveTabs()
@@ -243,9 +288,9 @@ export const useTabStore = create<TabStore>((set, get) => ({
     }
 
     set({
-      tabs: tabs.some((current) => current.sessionId === tabId)
+      tabs: navigateTo(tabs.some((current) => current.sessionId === tabId)
         ? tabs.map((current) => current.sessionId === tabId ? tab : current)
-        : [...tabs, tab],
+        : [...tabs, tab], tabId),
       activeTabId: tabId,
     })
     get().saveTabs()
@@ -283,9 +328,9 @@ export const useTabStore = create<TabStore>((set, get) => ({
     }
 
     set({
-      tabs: tabs.some((current) => current.sessionId === tabId)
+      tabs: navigateTo(tabs.some((current) => current.sessionId === tabId)
         ? tabs.map((current) => current.sessionId === tabId ? tab : current)
-        : [...tabs, tab],
+        : [...tabs, tab], tabId),
       activeTabId: tabId,
     })
     get().saveTabs()
@@ -313,27 +358,24 @@ export const useTabStore = create<TabStore>((set, get) => ({
     const newTabs = tabs.filter((t) => t.sessionId !== sessionId)
     let newActiveId = activeTabId
 
+    // The shown tab is the last one, so closing it shows what was shown
+    // before it.
     if (activeTabId === sessionId) {
-      if (newTabs.length === 0) {
-        newActiveId = null
-      } else if (index >= newTabs.length) {
-        newActiveId = newTabs[newTabs.length - 1]!.sessionId
-      } else {
-        newActiveId = newTabs[index]!.sessionId
-      }
+      newActiveId = newTabs[newTabs.length - 1]?.sessionId ?? null
     }
 
     set({ tabs: newTabs, activeTabId: newActiveId })
     get().saveTabs()
-    const closedTab = tabs[index]
-    if (closedTab?.type === 'terminal') {
-      destroyTerminalRuntime(closedTab.terminalRuntimeId ?? closedTab.sessionId)
-    }
     dropVirtualHeightSession(sessionId)
   },
 
   setActiveTab: (sessionId) => {
-    set({ activeTabId: sessionId })
+    set((state) => ({ tabs: navigateTo(state.tabs, sessionId), activeTabId: sessionId }))
+    get().saveTabs()
+  },
+
+  goHome: () => {
+    set((state) => ({ tabs: state.tabs.filter((tab) => tab.type === 'session'), activeTabId: null }))
     get().saveTabs()
   },
 
@@ -361,21 +403,9 @@ export const useTabStore = create<TabStore>((set, get) => ({
     get().saveTabs()
   },
 
-  moveTab: (fromIndex, toIndex) => {
-    if (fromIndex === toIndex) return
-    const { tabs } = get()
-    if (fromIndex < 0 || fromIndex >= tabs.length || toIndex < 0 || toIndex >= tabs.length) return
-    const newTabs = [...tabs]
-    const [moved] = newTabs.splice(fromIndex, 1)
-    newTabs.splice(toIndex, 0, moved!)
-    set({ tabs: newTabs })
-    get().saveTabs()
-  },
-
   saveTabs: () => {
     const { tabs, activeTabId } = get()
     const persistableTabs = tabs.filter((tab) => (
-      tab.type !== 'terminal' &&
       tab.type !== 'workbench' &&
       tab.type !== 'subagent' &&
       tab.type !== 'team' &&
@@ -422,14 +452,15 @@ export const useTabStore = create<TabStore>((set, get) => ({
       if (!raw) return
 
       const parsed = JSON.parse(raw) as TabPersistence
+      const activeTabId = normalizeLegacyActiveTabId(parsed.activeTabId)
       const data: TabPersistence = {
-        openTabs: Array.isArray(parsed.openTabs)
+        openTabs: trimRestoredTabs(Array.isArray(parsed.openTabs)
           ? parsed.openTabs.flatMap((tab) => {
               const normalized = normalizeLegacyPersistedTab(tab)
               return normalized ? [normalized] : []
             })
-          : [],
-        activeTabId: normalizeLegacyActiveTabId(parsed.activeTabId),
+          : [], activeTabId),
+        activeTabId,
       }
       if (data.openTabs.length === 0) {
         set({ tabs: [], activeTabId: null })
@@ -507,7 +538,7 @@ export const useTabStore = create<TabStore>((set, get) => ({
       const normalizedActive = activeType ? PERSISTENT_SPECIAL_TAB_IDS[activeType] : data.activeTabId
       const activeId = normalizedActive && uniqueTabs.some(tab => tab.sessionId === normalizedActive) ? normalizedActive : uniqueTabs[0]!.sessionId
 
-      set({ tabs: uniqueTabs, activeTabId: activeId })
+      set({ tabs: navigateTo(uniqueTabs, activeId), activeTabId: activeId })
     } catch { /* noop */ }
   },
 }))

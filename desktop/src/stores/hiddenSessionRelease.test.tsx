@@ -1,8 +1,10 @@
 // A session socket is what keeps its CLI and MCP servers alive on the server,
 // which reclaims a runtime only after the last client socket closes (#1485).
-// These tests drive the real wsManager, chat store and tab bar on top of a fake
-// WebSocket that answers heartbeats, so they see when a socket really closes.
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+// These tests drive the real wsManager, chat store and tab store on top of a
+// fake WebSocket that answers heartbeats, so they see when a socket really
+// closes. On the desktop a chat leaves the screen by dropping out of the warm
+// set: the shown chat and the three used before it (WARM_SESSION_LIMIT).
+import { act, cleanup } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import '@testing-library/jest-dom'
 
@@ -15,37 +17,16 @@ const sessionsApiMock = vi.hoisted(() => ({
   getHistoryRecovery: vi.fn(async () => ({ status: 'incomplete', messages: [] })),
 }))
 
-vi.mock('../i18n', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('../i18n')>()),
-  useTranslation: () => (key: string, params?: Record<string, string | number>) => {
-    const translations: Record<string, string> = {
-      'tabs.closeConfirmTitle': 'Session Running',
-      'tabs.closeConfirmMessage': 'Still running',
-      'tabs.closeConfirmKeep': 'Keep Running',
-      'tabs.closeConfirmStop': 'Stop & Close',
-      'tabs.closeTab': 'Close {title}',
-      'common.cancel': 'Cancel',
-    }
-    let text = translations[key] ?? key
-    for (const [name, value] of Object.entries(params ?? {})) {
-      text = text.replace(`{${name}}`, String(value))
-    }
-    return text
-  },
-}))
 vi.mock('../api/sessions', () => ({ sessionsApi: sessionsApiMock }))
 vi.mock('../api/teams', () => ({ teamsApi: { getWorkbenchForSession: vi.fn() } }))
 vi.mock('../lib/desktopNotifications', () => ({ notifyDesktop: notifyDesktopMock }))
-vi.mock('../components/layout/OpenProjectMenu', () => ({ OpenProjectMenu: () => null }))
-vi.mock('../components/layout/WindowControls', () => ({ WindowControls: () => null, showWindowControls: false }))
 
 import { wsManager } from '../api/websocket'
 import { useChatStore } from './chatStore'
 import { installHiddenSessionRelease } from './hiddenSessionRelease'
-import { useTabStore, type Tab } from './tabStore'
+import { WARM_SESSION_LIMIT, useTabStore, type Tab } from './tabStore'
 import { useTeamStore } from './teamStore'
 import { useSessionStore } from './sessionStore'
-import { TabBar } from '../components/layout/TabBar'
 import { navigateMobileUp } from '../components/mobile/mobileNavigation'
 import type { ServerMessage } from '../types/chat'
 
@@ -133,10 +114,20 @@ async function settle() {
   })
 }
 
-function closeTabKeepingItRunning(title: string) {
-  fireEvent.click(screen.getByLabelText(`Close ${title}`))
-  expect(screen.getByRole('dialog', { name: 'Session Running' })).toBeInTheDocument()
-  fireEvent.click(screen.getByText('Keep Running'))
+/** Open enough other chats that `sessionId` drops out of the warm set. */
+function moveOnFrom(sessionId: string) {
+  act(() => {
+    for (let index = 0; index < WARM_SESSION_LIMIT; index += 1) {
+      useTabStore.getState().openTab(`next-${index}`, `Next ${index}`)
+    }
+  })
+  expect(useTabStore.getState().tabs.some((tab) => tab.sessionId === sessionId)).toBe(false)
+}
+
+/** Released, but the conversation, draft and queue are still there to come back to. */
+function expectReleasedWithTranscript(sessionId: string) {
+  expect(isHeld(sessionId)).toBe(false)
+  expect(useChatStore.getState().sessions[sessionId]?.connectionState).toBe('disconnected')
 }
 
 /** What the server forwards from the CLI's `session_state_changed`. */
@@ -189,7 +180,6 @@ describe('releasing sessions that no tab shows (#1485)', () => {
       disconnect() {}
     }
     Object.defineProperty(window, 'ResizeObserver', { configurable: true, value: ResizeObserverMock })
-    Object.defineProperty(window.HTMLElement.prototype, 'scrollIntoView', { configurable: true, value: vi.fn() })
 
     useTabStore.setState({ tabs: [], activeTabId: null })
     useChatStore.setState({ sessions: {} } as Partial<ReturnType<typeof useChatStore.getState>>)
@@ -207,18 +197,16 @@ describe('releasing sessions that no tab shows (#1485)', () => {
     globalThis.WebSocket = originalWebSocket
   })
 
-  it('releases a session kept running from its tab once its CLI run ends, after notifying', async () => {
-    useTabStore.setState({ tabs: [sessionTab('busy', 'Busy chat'), sessionTab('other', 'Other chat')], activeTabId: 'busy' })
+  it('releases a chat that left the warm set mid-run once its CLI run ends, after notifying', async () => {
+    useTabStore.setState({ tabs: [sessionTab('busy', 'Busy chat')], activeTabId: 'busy' })
     const socket = connect('busy')
     serverSays(socket, cliRun('running'))
     serverSays(socket, { type: 'status', state: 'thinking', verb: 'Thinking' })
 
-    render(<TabBar />)
-    closeTabKeepingItRunning('Busy chat')
+    moveOnFrom('busy')
     await settle()
 
-    // Still working: the user asked to keep it running.
-    expect(useTabStore.getState().tabs.map((tab) => tab.sessionId)).toEqual(['other'])
+    // Still working: moving on never stops a run.
     expect(isHeld('busy')).toBe(true)
 
     for (const message of replyText('Refactor finished.')) serverSays(socket, message)
@@ -234,8 +222,10 @@ describe('releasing sessions that no tab shows (#1485)', () => {
     // Nothing is left to do: release it, so the server can reclaim the CLI.
     expect(disconnectSpy).toHaveBeenCalledWith('busy')
     expect(socket.closedByClient).toBe(true)
-    expect(isHeld('busy')).toBe(false)
-    expect(useChatStore.getState().sessions.busy).toBeUndefined()
+    expectReleasedWithTranscript('busy')
+    const text = useChatStore.getState().sessions.busy?.messages
+      .map((message) => message.type === 'assistant_text' ? message.content : '').join('')
+    expect(text).toContain('Refactor finished.')
     act(() => { vi.advanceTimersByTime(EIGHTEEN_HOURS_MS) })
     expect(socketsFor('busy')).toHaveLength(1)
   })
@@ -248,8 +238,7 @@ describe('releasing sessions that no tab shows (#1485)', () => {
     serverSays(socket, shellTask('task_started', 'tests'))
     serverSays(socket, TURN_COMPLETE)
 
-    render(<TabBar />)
-    closeTabKeepingItRunning('Build chat')
+    moveOnFrom('builder')
     await settle()
     expect(isHeld('builder')).toBe(true)
 
@@ -271,19 +260,40 @@ describe('releasing sessions that no tab shows (#1485)', () => {
     expect(isHeld('builder')).toBe(false)
   })
 
-  it('releases at once when the turn finished while the close dialog was open', async () => {
+  it('releases at once a chat whose turn was already done when it left the warm set', async () => {
     useTabStore.setState({ tabs: [sessionTab('racing', 'Racing chat')], activeTabId: 'racing' })
     const socket = connect('racing')
     serverSays(socket, { type: 'status', state: 'tool_executing' })
-
-    render(<TabBar />)
-    fireEvent.click(screen.getByLabelText('Close Racing chat'))
     serverSays(socket, TURN_COMPLETE)
-    fireEvent.click(screen.getByText('Keep Running'))
+
+    moveOnFrom('racing')
     await settle()
 
     expect(socket.closedByClient).toBe(true)
-    expect(isHeld('racing')).toBe(false)
+    expectReleasedWithTranscript('racing')
+  })
+
+  it('keeps every chat in the warm set connected however long it sits idle', async () => {
+    const warm = ['w1', 'w2', 'w3', 'w4']
+    for (const id of warm) {
+      act(() => useTabStore.getState().openTab(id, id))
+      const socket = connect(id)
+      serverSays(socket, cliRun('running'))
+      serverSays(socket, TURN_COMPLETE)
+      serverSays(socket, cliRun('idle'))
+    }
+    await settle()
+    act(() => { vi.advanceTimersByTime(EIGHTEEN_HOURS_MS) })
+
+    expect(warm.map(isHeld)).toEqual([true, true, true, true])
+    expect(disconnectSpy).not.toHaveBeenCalled()
+
+    // A fifth chat pushes out the least recently shown one, and only that one.
+    act(() => useTabStore.getState().openTab('w5', 'w5'))
+    connect('w5')
+    await settle()
+    expect(['w1', 'w2', 'w3', 'w4', 'w5'].map(isHeld)).toEqual([false, true, true, true, true])
+    expectReleasedWithTranscript('w1')
   })
 
   it('keeps a hidden session while it waits on the user, and releases it once that turn ends', async () => {
@@ -291,8 +301,7 @@ describe('releasing sessions that no tab shows (#1485)', () => {
     const socket = connect('asking')
     serverSays(socket, { type: 'status', state: 'thinking' })
 
-    render(<TabBar />)
-    closeTabKeepingItRunning('Asking chat')
+    moveOnFrom('asking')
     serverSays(socket, { type: 'permission_request', requestId: 'req-1', toolName: 'Bash', input: { command: 'rm -rf build' } })
     await settle()
     act(() => { vi.advanceTimersByTime(EIGHTEEN_HOURS_MS) })
@@ -314,8 +323,7 @@ describe('releasing sessions that no tab shows (#1485)', () => {
     const socket = connect('desk')
     serverSays(socket, { type: 'status', state: 'thinking' })
 
-    render(<TabBar />)
-    closeTabKeepingItRunning('Desktop chat')
+    moveOnFrom('desk')
     serverSays(socket, {
       type: 'computer_use_permission_request',
       requestId: 'cu-1',
@@ -345,8 +353,7 @@ describe('releasing sessions that no tab shows (#1485)', () => {
       }))
     })
 
-    render(<TabBar />)
-    closeTabKeepingItRunning('Queued chat')
+    moveOnFrom('queued')
     serverSays(socket, TURN_COMPLETE)
     await settle()
 
@@ -361,9 +368,8 @@ describe('releasing sessions that no tab shows (#1485)', () => {
     // A task restored from a transcript without its terminal record.
     serverSays(socket, shellTask('task_started', 'stale-shell'))
 
-    render(<TabBar />)
     // An idle chat still counts as running while it shows a background shell.
-    closeTabKeepingItRunning('Old chat')
+    moveOnFrom('ghost')
     await settle()
     expect(isHeld('ghost')).toBe(true)
 
@@ -372,8 +378,7 @@ describe('releasing sessions that no tab shows (#1485)', () => {
     serverSays(socket, cliRun('idle'))
     await settle()
 
-    expect(useChatStore.getState().sessions.ghost).toBeUndefined()
-    expect(isHeld('ghost')).toBe(false)
+    expectReleasedWithTranscript('ghost')
   })
 
   it('keeps a team lead and releases it only once its team is gone', async () => {
@@ -383,8 +388,7 @@ describe('releasing sessions that no tab shows (#1485)', () => {
     serverSays(socket, cliRun('running'))
     serverSays(socket, { type: 'status', state: 'thinking' })
 
-    render(<TabBar />)
-    closeTabKeepingItRunning('Lead chat')
+    moveOnFrom('lead')
     serverSays(socket, TURN_COMPLETE)
     serverSays(socket, cliRun('idle'))
     await settle()
@@ -397,21 +401,17 @@ describe('releasing sessions that no tab shows (#1485)', () => {
     expect(isHeld('lead')).toBe(false)
   })
 
-  it('keeps a session while its team workbench or a subagent tab still reads it', async () => {
+  it('keeps a session while its team workbench or a subagent page still reads it', async () => {
     useTabStore.setState({
       tabs: [
-        sessionTab('source', 'Source chat'),
         { sessionId: 'team:source', title: 'Agent Teams', type: 'team', status: 'idle', teamLeadSessionId: 'source', sourceSessionId: 'source' },
         { sessionId: 'subagent:source__tool-1', title: 'SubAgent', type: 'subagent', status: 'idle', sourceSessionId: 'source', subagentToolUseId: 'tool-1' },
       ],
-      activeTabId: 'source',
+      activeTabId: 'subagent:source__tool-1',
     })
     const socket = connect('source')
     serverSays(socket, cliRun('running'))
     serverSays(socket, { type: 'status', state: 'thinking' })
-
-    render(<TabBar />)
-    closeTabKeepingItRunning('Source chat')
     serverSays(socket, TURN_COMPLETE)
     serverSays(socket, cliRun('idle'))
     await settle()
@@ -509,9 +509,9 @@ describe('releasing sessions that no tab shows (#1485)', () => {
     })
   })
 
-  it('keeps sessions that a tab shows, side chats, and the tab the user reopens', async () => {
+  it('keeps the warm chats, side chats, and a chat the user goes back to before it is done', async () => {
     useTabStore.setState({
-      tabs: [sessionTab('front', 'Front chat'), sessionTab('back', 'Back chat'), sessionTab('reopened', 'Reopened chat')],
+      tabs: [sessionTab('reopened', 'Reopened chat'), sessionTab('back', 'Back chat'), sessionTab('front', 'Front chat')],
       activeTabId: 'front',
     })
     connect('front')
@@ -525,8 +525,13 @@ describe('releasing sessions that no tab shows (#1485)', () => {
     serverSays(sideSocket, TURN_COMPLETE)
     serverSays(reopenedSocket, { type: 'status', state: 'thinking' })
 
-    render(<TabBar />)
-    closeTabKeepingItRunning('Reopened chat')
+    // Two more chats push the oldest, still-running one out of the warm set...
+    act(() => {
+      useTabStore.getState().openTab('next-a', 'Next A')
+      useTabStore.getState().openTab('next-b', 'Next B')
+    })
+    expect(useTabStore.getState().tabs.some((tab) => tab.sessionId === 'reopened')).toBe(false)
+    // ...and the user goes back to it in the same update its turn ends in.
     act(() => {
       reopenedSocket.receive(TURN_COMPLETE)
       useTabStore.getState().openTab('reopened', 'Reopened chat')
@@ -535,9 +540,10 @@ describe('releasing sessions that no tab shows (#1485)', () => {
     act(() => { vi.advanceTimersByTime(EIGHTEEN_HOURS_MS) })
 
     expect(isHeld('front')).toBe(true)
-    expect(isHeld('back')).toBe(true)
     expect(isHeld('reopened')).toBe(true)
     expect(isHeld('side-chat-1')).toBe(true)
-    expect(disconnectSpy).not.toHaveBeenCalled()
+    // Going back made `back` the least recent of five, and it was done.
+    expectReleasedWithTranscript('back')
+    expect(disconnectSpy.mock.calls).toEqual([['back']])
   })
 })

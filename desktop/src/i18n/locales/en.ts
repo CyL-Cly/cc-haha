@@ -3456,8 +3456,6 @@ Row 9, all 8 cells: continuing from straight down, turning left through lower-le
   'agentTeams.openConversation': 'Talk directly to {name}',
   'agentTeams.openExecution': 'View {name} execution',
   'agentTeams.dependencyLegend': 'Solid: primary dependency · dashed: secondary · hover to focus',
-  'agentTeams.backToSession': 'Back to session',
-  'agentTeams.backToOverview': 'Back to team overview',
   'agentTeams.openInTab': 'Open in tab',
   'agentTeams.communication.lifecycle.idle_notification': 'Went idle, waiting for work',
   'agentTeams.communication.lifecycle.shutdown_request': 'Asked to wrap up',
@@ -3533,7 +3531,6 @@ Row 9, all 8 cells: continuing from straight down, turning left through lower-le
   // ─── SubAgent Run ──────────────────────────────────────
   'subagentRun.incompleteHistory': 'Some history could not be read. Available content is shown; refresh to retry.',
   'subagentRun.refresh': 'Refresh SubAgent run',
-  'subagentRun.backToParent': 'Back to parent session',
   'subagentRun.loading': 'Loading SubAgent run...',
   'subagentRun.source': 'Source',
   'subagentRun.agent': 'Agent',
@@ -3624,7 +3621,6 @@ Row 9, all 8 cells: continuing from straight down, turning left through lower-le
 
   // ─── Active Session ──────────────────────────────────────
   'session.untitled': 'Untitled Session',
-  'session.active': 'session active',
   'session.lastUpdated': 'last updated {time}',
   'session.messages': '{count} messages',
   'session.apiTokens': '{count} API tokens',
@@ -3725,13 +3721,6 @@ Row 9, all 8 cells: continuing from straight down, turning left through lower-le
 
   // ─── Tabs ──────────────────────────────────────
   'tabs.close': 'Close',
-  'tabs.closeOthers': 'Close Others',
-  'tabs.closeLeft': 'Close to the Left',
-  'tabs.closeRight': 'Close to the Right',
-  'tabs.closeAll': 'Close All',
-  'tabs.closeConfirmTitle': 'Session Running',
-  'tabs.closeConfirmMessage': 'This session is still running. What would you like to do?',
-  'tabs.closeConfirmKeep': 'Keep Running',
   // ─── Slash Command Descriptions ──────────────────────────────────────
   'slashCmd.agent.description': 'Run a prompt with a selected Agent',
   'slashCmd.mcp.description': 'Open available MCP tools for the current chat context',
@@ -3760,21 +3749,18 @@ Row 9, all 8 cells: continuing from straight down, turning left through lower-le
   'slashCmd.terminal-setup.description': 'Set up terminal integration',
   'slashCmd.vim.description': 'Toggle vim editing mode',
 
-  'tabs.closeConfirmStop': 'Stop & Close',
-  'tabs.closeAllConfirmTitle': 'Sessions Running',
-  'tabs.closeAllConfirmMessage': '{count} sessions are still running. Stop them before closing these tabs?',
-  'tabs.closeAllConfirmStop': 'Stop All & Close',
   'tabs.sessionRunning': 'Session running',
-  'tabs.openTerminal': 'Open Terminal',
   'tabs.showWorkspace': 'Show Workspace',
   'tabs.hideWorkspace': 'Hide Workspace',
   'tabs.showBrowser': 'Show Browser',
   'tabs.hideBrowser': 'Hide Browser',
-  'tabs.scrollLeft': 'Scroll tabs left',
-  'tabs.scrollRight': 'Scroll tabs right',
   'tabs.jumpToAttention': 'Jump to the next waiting session ({count} waiting)',
-  'tabs.closeTab': 'Close {title}',
   'tabs.untitled': 'Untitled',
+  'header.backTo': 'Back to {title}',
+  'header.breadcrumb': 'Page path',
+  'header.waitingCount': '{count} waiting',
+  'header.renameSession': 'Session name',
+  'header.renameHint': 'Double-click to rename',
 
   // Skills Market
   'sidebar.market': 'Skills Market',

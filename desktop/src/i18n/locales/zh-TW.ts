@@ -3456,8 +3456,6 @@ export const zh: Record<TranslationKey, string> = {
   'agentTeams.openConversation': '直接與 {name} 對話',
   'agentTeams.openExecution': '查看 {name} 的執行過程',
   'agentTeams.dependencyLegend': '實線為主要依賴 · 虛線為次要依賴 · 懸停聚焦',
-  'agentTeams.backToSession': '返回工作階段',
-  'agentTeams.backToOverview': '返回團隊總覽',
   'agentTeams.openInTab': '在分頁開啟',
   'agentTeams.communication.lifecycle.idle_notification': '進入待命，等待新任務',
   'agentTeams.communication.lifecycle.shutdown_request': '請求結束工作',
@@ -3533,7 +3531,6 @@ export const zh: Record<TranslationKey, string> = {
   // ─── SubAgent Run ──────────────────────────────────────
   'subagentRun.incompleteHistory': '部分歷史記錄無法讀取，已顯示可用內容；可重新整理重試。',
   'subagentRun.refresh': '重新整理 SubAgent 執行',
-  'subagentRun.backToParent': '返回父級會話',
   'subagentRun.loading': '正在載入 SubAgent 執行...',
   'subagentRun.source': '來源',
   'subagentRun.agent': 'Agent',
@@ -3624,7 +3621,6 @@ export const zh: Record<TranslationKey, string> = {
 
   // ─── 活躍會話 ──────────────────────────────────────
   'session.untitled': '未命名會話',
-  'session.active': '會話活躍中',
   'session.lastUpdated': '最後更新 {time}',
   'session.messages': '{count} 條訊息',
   'session.apiTokens': '{count} API tokens',
@@ -3725,15 +3721,6 @@ export const zh: Record<TranslationKey, string> = {
 
   // ─── Tabs ──────────────────────────────────────
   'tabs.close': '關閉',
-  'tabs.closeOthers': '關閉其他',
-  'tabs.closeLeft': '關閉左側',
-  'tabs.closeRight': '關閉右側',
-  'tabs.closeAll': '關閉所有',
-  'tabs.closeConfirmTitle': '會話執行中',
-  'tabs.closeConfirmMessage': '此會話仍在執行，你想要怎麼做？',
-  'tabs.closeConfirmKeep': '保持執行',
-  'tabs.closeConfirmStop': '停止並關閉',
-  'tabs.closeAllConfirmTitle': '多個會話執行中',
   // ─── Slash Command Descriptions ──────────────────────────────────────
   'slashCmd.agent.description': '使用指定 Agent 執行提示',
   'slashCmd.mcp.description': '開啟當前聊天上下文中可用的 MCP 工具',
@@ -3762,19 +3749,18 @@ export const zh: Record<TranslationKey, string> = {
   'slashCmd.terminal-setup.description': '設定終端整合',
   'slashCmd.vim.description': '切換 vim 編輯模式',
 
-  'tabs.closeAllConfirmMessage': '仍有 {count} 個會話正在執行。關閉這些標籤前是否停止它們？',
-  'tabs.closeAllConfirmStop': '全部停止並關閉',
   'tabs.sessionRunning': '會話執行中',
-  'tabs.openTerminal': '開啟終端',
   'tabs.showWorkspace': '顯示工作區',
   'tabs.hideWorkspace': '隱藏工作區',
   'tabs.showBrowser': '顯示瀏覽器',
   'tabs.hideBrowser': '隱藏瀏覽器',
-  'tabs.scrollLeft': '分頁向左捲動',
-  'tabs.scrollRight': '分頁向右捲動',
   'tabs.jumpToAttention': '跳轉到下一個待處理會話（共 {count} 個）',
-  'tabs.closeTab': '關閉 {title}',
   'tabs.untitled': '未命名',
+  'header.backTo': '返回{title}',
+  'header.breadcrumb': '頁面路徑',
+  'header.waitingCount': '{count} 個等你處理',
+  'header.renameSession': '會話名稱',
+  'header.renameHint': '按兩下重新命名',
 
   // 技能市集
   'sidebar.market': '技能市集',

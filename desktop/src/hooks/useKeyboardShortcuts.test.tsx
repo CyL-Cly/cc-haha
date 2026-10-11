@@ -42,6 +42,27 @@ function makeIdleSession(overrides: Partial<PerSessionState> = {}): PerSessionSt
   }
 }
 
+describe('useKeyboardShortcuts new session', () => {
+  afterEach(() => {
+    cleanup()
+    useTabStore.setState({ tabs: [], activeTabId: null })
+  })
+
+  it('goes to the new-session page from a chat, leaving the pages on top of it behind', () => {
+    useTabStore.getState().openTab('session-1', 'Chat')
+    useTabStore.getState().openSubagentTab('session-1', 'tool-1', 'Run')
+    render(<ShortcutHost />)
+
+    const event = new KeyboardEvent('keydown', { key: 'n', metaKey: true, bubbles: true, cancelable: true })
+    document.dispatchEvent(event)
+
+    expect(event.defaultPrevented).toBe(true)
+    expect(useTabStore.getState().activeTabId).toBeNull()
+    // The chat stays warm; only the page is left behind.
+    expect(useTabStore.getState().tabs.map((tab) => tab.sessionId)).toEqual(['session-1'])
+  })
+})
+
 describe('useKeyboardShortcuts app zoom', () => {
   beforeEach(() => {
     window.localStorage.clear()

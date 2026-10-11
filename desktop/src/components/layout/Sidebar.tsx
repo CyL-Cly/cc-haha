@@ -29,7 +29,6 @@ import { sessionsApi } from '../../api/sessions'
 import type { SessionListItem } from '../../types/session'
 import { useTabStore, SETTINGS_TAB_ID, SCHEDULED_TAB_ID, MARKET_TAB_ID, CONNECTORS_TAB_ID } from '../../stores/tabStore'
 import { useChatStore } from '../../stores/chatStore'
-import { useShallow } from 'zustand/react/shallow'
 import { useOpenTargetStore } from '../../stores/openTargetStore'
 import {
   resetProjectDisplayName,
@@ -43,8 +42,7 @@ import {
   type SidebarProjectPreferences,
 } from '../../api/desktopUiPreferences'
 import { getDesktopHost } from '../../lib/desktopHost'
-import { hasRunningBackgroundTasks } from '../../lib/backgroundTasks'
-import { collectAttentionIds } from '../../lib/sessionAttention'
+import { useSessionStatus } from '../../hooks/useSessionStatus'
 import { getSessionWorkspaceState, getSessionSeedWorkDir } from '../../lib/sessionWorkspace'
 import { detectPlatform } from '../../lib/workspace/shortcuts'
 import { SessionAttentionMark } from './SessionAttentionMark'
@@ -150,17 +148,9 @@ export function Sidebar({
   const openModal = useUIStore((s) => s.openModal)
   const closeModal = useUIStore((s) => s.closeModal)
   const activeTabId = useTabStore((s) => s.activeTabId)
-  const tabs = useTabStore((s) => s.tabs)
-  // Only which sessions are running or waiting, never the session map itself:
-  // that changes on every streamed token of every session, and re-rendering the
-  // whole project tree for each one kept the window busy while long runs
-  // streamed (#1480). `useShallow` keeps an unchanged id list from re-rendering.
-  const runningChatSessionIds = useChatStore(useShallow((s) =>
-    Object.keys(s.sessions).filter((sessionId) => {
-      const sessionState = s.sessions[sessionId]!
-      return sessionState.chatState !== 'idle' || hasRunningBackgroundTasks(sessionState.backgroundAgentTasks)
-    })))
-  const attentionSessionIdList = useChatStore(useShallow((s) => collectAttentionIds(s.sessions)))
+  // Every session's state, including ones started elsewhere or released from
+  // this window's warm set, without subscribing to the session map (#1480).
+  const sessionStatus = useSessionStatus()
   const closeTab = useTabStore((s) => s.closeTab)
   const disconnectSession = useChatStore((s) => s.disconnectSession)
   const fileManagerPlatform = useOpenTargetStore((s) => (
@@ -305,20 +295,15 @@ export function Sidebar({
     () => new Map(sessions.map((session) => [session.id, session])),
     [sessions],
   )
-  const runningSessionIds = useMemo(() => {
-    const ids = new Set<string>()
-    for (const tab of tabs) {
-      if (tab.type === 'session' && tab.status === 'running') ids.add(tab.sessionId)
-    }
-    for (const sessionId of runningChatSessionIds) ids.add(sessionId)
-    return ids
-  }, [runningChatSessionIds, tabs])
-  // 停在权限请求上的会话在 `runningSessionIds` 里也算「没结束」，但它不是在
-  // 干活而是在等人。两个视图都要把这两种状态分开显示。
-  // 判定看挂起的请求记录而不是 `chatState`：`status` / `session_state` 消息会在
-  // 卡片还开着的时候把 chatState 改掉，按它判定会在有卡的会话上熄灯。tab 栏与
-  // 这里共用同一个 `sessionNeedsAttention`，不要各写各的。
-  const attentionSessionIds = useMemo(() => new Set(attentionSessionIdList), [attentionSessionIdList])
+  // A session parked on a permission card has not finished either, so it
+  // still counts as running for grouping; the row draws waiting over running.
+  // Waiting is read from the open requests, never `chatState` — see
+  // `sessionNeedsAttention`, which every surface shares.
+  const attentionSessionIds = sessionStatus.attentionIds
+  const runningSessionIds = useMemo(
+    () => new Set([...sessionStatus.runningIds, ...sessionStatus.attentionIds]),
+    [sessionStatus],
+  )
   // Row times ("10m ago") and the task view's day buckets read the clock. They
   // used to refresh as a side effect of re-rendering on every streamed token;
   // a minute tick keeps them current without that.
@@ -2043,7 +2028,7 @@ function getVisibleProjectSessions(
   // 折叠起来等于信号在最后一步断了。它们按列表原有顺序排在前几行之后。
   // 只管已经加载进列表的行：侧边栏每个项目只预取最近
   // `SIDEBAR_PROJECT_SESSION_PREVIEW_LIMIT` 条，更早的会话在列表里根本没有行，
-  // 桌面上由 tab 栏兜底，手机上要展开历史后才看得到。
+  // 要展开历史后才看得到；等人的会话另有顶栏的「等你处理」可以直接跳过去。
   const pinned = sessions
     .slice(PROJECT_GROUP_VISIBLE_COUNT)
     .filter((session) => session.id === activeSessionId || attentionSessionIds.has(session.id))

@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react'
-import { useSessionStore } from '../stores/sessionStore'
 import { useChatStore } from '../stores/chatStore'
 import { useTabStore } from '../stores/tabStore'
 import { useUIStore } from '../stores/uiStore'
@@ -11,8 +10,6 @@ import { useSettingsStore } from '../stores/settingsStore'
 import { hasRunningSubagentTasks } from '../lib/backgroundTasks'
 
 export function useKeyboardShortcuts() {
-  const setActiveSession = useSessionStore((s) => s.setActiveSession)
-  const setActiveView = useUIStore((s) => s.setActiveView)
   const openModal = useUIStore((s) => s.openModal)
   const closeModal = useUIStore((s) => s.closeModal)
   const activeModal = useUIStore((s) => s.activeModal)
@@ -50,11 +47,10 @@ export function useKeyboardShortcuts() {
 
       const meta = e.metaKey || e.ctrlKey
 
-      // Cmd+N — New session
+      // Cmd+N — the new-session page, from wherever you are
       if (meta && e.key === 'n') {
         e.preventDefault()
-        setActiveSession(null)
-        setActiveView('code')
+        useTabStore.getState().goHome()
       }
 
       // Cmd+K — Open global session search
@@ -87,5 +83,5 @@ export function useKeyboardShortcuts() {
 
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
-  }, [closeModal, openModal, setActiveSession, setActiveView, setUiZoom, stopGeneration])
+  }, [closeModal, openModal, setUiZoom, stopGeneration])
 }
