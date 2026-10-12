@@ -7,6 +7,7 @@ import {
   ConversationService,
   DESKTOP_CLI_GRACEFUL_SHUTDOWN_TIMEOUT_MS,
 } from '../services/conversationService.js'
+import { hahaOAuthService } from '../services/hahaOAuthService.js'
 import { ProviderService } from '../services/providerService.js'
 import { sessionService } from '../services/sessionService.js'
 import { updateTraceCaptureSettings } from '../services/traceCaptureService.js'
@@ -84,9 +85,13 @@ describe('ConversationService', () => {
     delete process.env.CC_HAHA_TRACE_PROVIDER_FORMAT
     process.env.CC_HAHA_DISABLE_TERMINAL_SHELL_ENV = '1'
     resetTerminalShellEnvironmentCacheForTests()
+    // Spawning an official-mode session looks the account up through the
+    // profile endpoint; keep that off the network.
+    hahaOAuthService.setFetchAccountUuidFn(async () => 'account-uuid-from-profile')
   })
 
   afterEach(async () => {
+    hahaOAuthService.setFetchAccountUuidFn()
     if (originalConfigDir === undefined) delete process.env.CLAUDE_CONFIG_DIR
     else process.env.CLAUDE_CONFIG_DIR = originalConfigDir
 
@@ -626,7 +631,7 @@ describe('ConversationService', () => {
       accessToken: 'haha-fresh-token',
       refreshToken: 'haha-refresh-xxx',
       expiresAt: Date.now() + 30 * 60_000,
-      scopes: ['user:inference'],
+      scopes: ['user:inference', 'user:profile'],
       subscriptionType: 'max',
     })
 
@@ -635,6 +640,31 @@ describe('ConversationService', () => {
 
     expect(env.CLAUDE_CODE_ENTRYPOINT).toBe('claude-desktop')
     expect(env.CLAUDE_CODE_OAUTH_TOKEN).toBe('haha-fresh-token')
+    // The CLI cannot read the account off an env-injected token, so the host
+    // hands it over for metadata.user_id.
+    expect(env.CLAUDE_CODE_ACCOUNT_UUID).toBe('account-uuid-from-profile')
+  })
+
+  test('buildChildEnv does not inherit another account uuid from the parent env', async () => {
+    const originalAccountUuid = process.env.CLAUDE_CODE_ACCOUNT_UUID
+    process.env.CLAUDE_CODE_ACCOUNT_UUID = 'inherited-parent-account'
+    try {
+      const ccHahaDir = path.join(tmpDir, 'cc-haha')
+      await fs.mkdir(ccHahaDir, { recursive: true })
+      await fs.writeFile(
+        path.join(ccHahaDir, 'settings.json'),
+        JSON.stringify({ env: { ANTHROPIC_AUTH_TOKEN: 'custom-provider-token' } }),
+        'utf-8',
+      )
+
+      const service = new ConversationService() as any
+      const env = (await service.buildChildEnv('/tmp')) as Record<string, string>
+
+      expect(env.CLAUDE_CODE_ACCOUNT_UUID).toBeUndefined()
+    } finally {
+      if (originalAccountUuid === undefined) delete process.env.CLAUDE_CODE_ACCOUNT_UUID
+      else process.env.CLAUDE_CODE_ACCOUNT_UUID = originalAccountUuid
+    }
   })
 
   test('sendMessage updates a running official OAuth CLI token before the user turn', async () => {

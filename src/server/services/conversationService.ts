@@ -2146,6 +2146,7 @@ export class ConversationService {
     delete cleanEnv.CC_HAHA_SESSION_COLLABORATION_TOKEN
     delete cleanEnv.CC_HAHA_SESSION_ID
     delete cleanEnv.CLAUDE_CODE_OAUTH_TOKEN
+    delete cleanEnv.CLAUDE_CODE_ACCOUNT_UUID
     delete cleanEnv.CC_HAHA_OPENAI_FAST_MODE
     if (options?.resumeInterruptedTurn === false) {
       delete cleanEnv.CLAUDE_CODE_RESUME_INTERRUPTED_TURN
@@ -2366,6 +2367,8 @@ export class ConversationService {
       const token = await hahaOAuthService.ensureFreshAccessToken()
       if (token) {
         env.CLAUDE_CODE_OAUTH_TOKEN = token
+        const accountUuid = await hahaOAuthService.getAccountUuid(token)
+        if (accountUuid) env.CLAUDE_CODE_ACCOUNT_UUID = accountUuid
       }
     } catch (err) {
       console.error(

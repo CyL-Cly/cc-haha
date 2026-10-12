@@ -3530,6 +3530,8 @@ describe('WebSocket Chat Integration', () => {
       scopes: ['user:inference'],
       subscriptionType: 'pro',
     })
+    // Starting the CLI looks the account up through the profile endpoint.
+    hahaOAuthService.setFetchAccountUuidFn(async () => 'account-uuid-from-profile')
     const settingsService = new SettingsService()
     const previousSettings = await settingsService.getUserSettings()
     await settingsService.updateUserSettings({ model: 'opus[1m]' })
@@ -3581,6 +3583,7 @@ describe('WebSocket Chat Integration', () => {
       conversationService.startSession = originalStartSession
       conversationService.stopSession(sessionId)
       await hahaOAuthService.deleteTokens()
+      hahaOAuthService.setFetchAccountUuidFn()
       await fs.writeFile(
         path.join(tmpDir, 'settings.json'),
         JSON.stringify(previousSettings, null, 2),

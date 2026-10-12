@@ -6,6 +6,7 @@ import {
   getIsInteractive,
   setIsInteractive,
 } from '../../bootstrap/state.js'
+import { CLAUDE_CODE_COMPAT_VERSION } from '../../constants/claudeCodeCompatibility.js'
 import { enableConfigs } from '../../utils/config.js'
 import { get3PModelCapabilityOverride } from '../../utils/model/modelSupportOverrides.js'
 import { buildProviderManagedEnv } from '../../server/services/providerRuntimeEnv.js'
@@ -850,8 +851,16 @@ for (const disableAdaptive of [false, true]) {
     expect(requests[0]?.max_tokens).toBe(128_000)
     expect(requests[0]?.output_config).toEqual({ effort: 'medium' })
     expect(requestHeaders[0]?.get('anthropic-beta')).not.toContain('thinking-binding-controls-2026-08-01')
-    expect(requestHeaders[0]?.get('user-agent')).toContain('claude-cli/2.1.281')
-    expect(JSON.stringify(requests[0]?.system)).toContain('cc_version=2.1.281')
+    expect(requestHeaders[0]?.get('user-agent')).toContain(
+      `claude-cli/${CLAUDE_CODE_COMPAT_VERSION} (external, cli`,
+    )
+    expect(JSON.stringify(requests[0]?.system)).toContain(
+      `cc_version=${CLAUDE_CODE_COMPAT_VERSION}`,
+    )
+    expect(JSON.stringify(requests[0]?.system)).toContain('cc_entrypoint=cli;')
+    // The SDK release the Claude Code CLI ships (2.1.288 uses 0.128.0); its
+    // stainless headers are part of the request's client identity.
+    expect(requestHeaders[0]?.get('x-stainless-package-version')).toBe('0.128.0')
   }, 10_000)
 }
 

@@ -58,7 +58,7 @@ import {
   splitSysPromptPrefix,
   toolToAPISchema,
 } from "../../utils/api.js";
-import { getOauthAccountInfo } from "../../utils/auth.js";
+import { getOauthAccountUuid } from "../../utils/auth.js";
 import {
   getBedrockExtraBodyParamsBetas,
   getMergedBetas,
@@ -611,7 +611,7 @@ export function getAPIMetadata() {
       ...extra,
       device_id: getOrCreateUserID(),
       // Only include OAuth account UUID when actively using OAuth authentication
-      account_uuid: getOauthAccountInfo()?.accountUuid ?? "",
+      account_uuid: getOauthAccountUuid(),
       session_id: getSessionId(),
     }),
   };

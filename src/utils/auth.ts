@@ -1660,6 +1660,24 @@ export function getOauthAccountInfo(): AccountInfo | undefined {
 }
 
 /**
+ * Account UUID reported in request metadata (`metadata.user_id`).
+ *
+ * A host that owns the OAuth token (the desktop server) injects it as
+ * CLAUDE_CODE_ACCOUNT_UUID. That takes precedence over `oauthAccount`: a token
+ * delivered through CLAUDE_CODE_OAUTH_TOKEN has no profile scope, so the CLI
+ * never populates `oauthAccount` itself, and the config file may describe a
+ * different account (for example the one a terminal CLI is logged in to).
+ */
+export function getOauthAccountUuid(): string {
+  if (!isAnthropicAuthEnabled()) return ''
+  return (
+    process.env.CLAUDE_CODE_ACCOUNT_UUID?.trim() ||
+    getGlobalConfig().oauthAccount?.accountUuid ||
+    ''
+  )
+}
+
+/**
  * Checks if overage/extra usage provisioning is allowed for this organization.
  * This mirrors the logic in apps/claude-ai `useIsOverageProvisioningAllowed` hook as closely as possible.
  */
