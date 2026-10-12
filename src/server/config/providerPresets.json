@@ -317,8 +317,7 @@
     },
     "needsApiKey": true,
     "websiteUrl": "https://www.apismart.ai",
-    "apiKeyUrl": "https://www.apismart.ai",
-    "featured": true,
+    "deprecated": true,
     "authStrategy": "api_key",
     "modelContextWindows": {
       "deepseek-v4-pro-0813": 1000000,

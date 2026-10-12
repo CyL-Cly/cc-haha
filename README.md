@@ -64,16 +64,6 @@ cc-haha 是一个**桌面端 Claude Code 工作台**：多会话与全局搜索�
         感谢 <a href="https://aruhub.com/sign-up?aff=Z54g">AruHub</a> 对本项目的赞助！AruHub 专注为开发者提供长期稳定的主力 API 上游服务。面向 Codex / Claude Code 等高频 AI Coding 场景，提供 GPT 企业分组官方接口、Claude 稳定企业分组，适合长时间持续调用；同时覆盖 GPT、Claude 等主流模型。Image 2 / 2.5 全天稳定供应，低至 0.04 元/张。按量付费，支持企业大用量、开发票及退款。通过 <a href="https://aruhub.com/sign-up?aff=Z54g">专属链接</a>注册即送 1 美元全模型通用额度，不限制模型使用。
       </td>
     </tr>
-    <tr>
-      <td align="center" valign="middle">
-        <a href="https://www.apismart.ai">
-          <img src="docs/images/sponsors/apismart-logo.png" width="180" alt="ApiSmart">
-        </a>
-      </td>
-      <td valign="middle">
-        感谢 <a href="https://www.apismart.ai">ApiSmart</a> 赞助本项目！ApiSmart 通过单一 API 提供对主流 AI 模型的统一访问。只需一个 API Key，即可通过兼容 OpenAI 的接口连接大语言模型、图像模型和视频模型。轻松切换模型、简化账单管理，并通过智能路由和自动故障转移提升可靠性。
-      </td>
-    </tr>
   </tbody>
 </table>
 
