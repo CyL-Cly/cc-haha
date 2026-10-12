@@ -4522,6 +4522,7 @@ function runHeadlessStreaming(
 }
 
 export { runHeadlessStreaming as __runHeadlessStreamingForTests }
+export { loadInitialMessages as __loadInitialMessagesForTests }
 
 /**
  * Creates a CanUseToolFn that incorporates a custom permission prompt tool.
