@@ -1397,6 +1397,18 @@ export const zh: Record<TranslationKey, string> = {
   'settings.grokOfficialLogin.copyLinkFailed': '無法複製授權連結。',
   'settings.grokOfficialLogin.errorPrefix': 'Grok OAuth 錯誤:',
 
+  // Settings > Official Login Risk Dialog
+  'settings.officialLoginRisk.title': '登入前請確認帳號風險',
+  'settings.officialLoginRisk.levelLabel': '封號風險',
+  'settings.officialLoginRisk.level.high': '較高',
+  'settings.officialLoginRisk.level.medium': '中等',
+  'settings.officialLoginRisk.level.low': '相對較低',
+  'settings.officialLoginRisk.claude.body': 'Claude 對第三方軟體使用 OAuth 登入管控最嚴格,透過本應用登入你的 Claude 帳號,有被限制或封禁的風險。',
+  'settings.officialLoginRisk.grok.body': 'Grok 對第三方軟體使用 OAuth 登入管控一般,透過本應用登入你的 Grok 帳號,仍有被限制或封禁的風險。',
+  'settings.officialLoginRisk.chatgpt.body': 'ChatGPT 對第三方軟體使用 OAuth 登入相對寬鬆,但仍不能排除帳號被限制或封禁的可能。',
+  'settings.officialLoginRisk.advice': '第三方軟體使用這種方式登入都有封號風險,建議慎用,請自行評估後再繼續。',
+  'settings.officialLoginRisk.confirm': '我已了解,繼續登入',
+
   // Settings > Providers
   'settings.providers.title': '模型管理',
   'settings.providers.description': '設定模型、API 端點與存取憑證。',

@@ -1397,6 +1397,18 @@ Row 9, all 8 cells: continuing from straight down, turning left through lower-le
   'settings.grokOfficialLogin.copyLinkFailed': 'Unable to copy authorization link.',
   'settings.grokOfficialLogin.errorPrefix': 'Grok OAuth error: ',
 
+  // Settings > Official Login Risk Dialog
+  'settings.officialLoginRisk.title': 'Review the account risk before signing in',
+  'settings.officialLoginRisk.levelLabel': 'Ban risk',
+  'settings.officialLoginRisk.level.high': 'High',
+  'settings.officialLoginRisk.level.medium': 'Medium',
+  'settings.officialLoginRisk.level.low': 'Relatively low',
+  'settings.officialLoginRisk.claude.body': 'Claude is the strictest about third-party apps using OAuth sign-in. Signing in to your Claude account through this app may get the account restricted or banned.',
+  'settings.officialLoginRisk.grok.body': 'Grok is moderately strict about third-party apps using OAuth sign-in. Signing in to your Grok account through this app can still get the account restricted or banned.',
+  'settings.officialLoginRisk.chatgpt.body': 'ChatGPT is relatively lenient about third-party apps using OAuth sign-in, but the account could still be restricted or banned.',
+  'settings.officialLoginRisk.advice': 'Signing in this way through any third-party app carries a risk of account bans. Use it with caution and decide for yourself before continuing.',
+  'settings.officialLoginRisk.confirm': 'I understand, continue',
+
   // Settings > Providers
   'settings.providers.title': 'Model Management',
   'settings.providers.description': 'Configure models, API endpoints, and credentials.',

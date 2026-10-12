@@ -1400,6 +1400,18 @@ export const kr: Record<TranslationKey, string> = {
   'settings.grokOfficialLogin.copyLinkFailed': '승인 링크를 복사할 수 없습니다.',
   'settings.grokOfficialLogin.errorPrefix': 'Grok OAuth 오류: ',
 
+  // Settings > Official Login Risk Dialog
+  'settings.officialLoginRisk.title': '로그인 전에 계정 위험을 확인하세요',
+  'settings.officialLoginRisk.levelLabel': '계정 정지 위험',
+  'settings.officialLoginRisk.level.high': '높음',
+  'settings.officialLoginRisk.level.medium': '보통',
+  'settings.officialLoginRisk.level.low': '상대적으로 낮음',
+  'settings.officialLoginRisk.claude.body': 'Claude는 서드파티 앱의 OAuth 로그인을 가장 엄격하게 관리합니다. 이 앱으로 Claude 계정에 로그인하면 계정이 제한되거나 정지될 수 있습니다.',
+  'settings.officialLoginRisk.grok.body': 'Grok은 서드파티 앱의 OAuth 로그인을 보통 수준으로 관리합니다. 이 앱으로 Grok 계정에 로그인해도 계정이 제한되거나 정지될 수 있습니다.',
+  'settings.officialLoginRisk.chatgpt.body': 'ChatGPT는 서드파티 앱의 OAuth 로그인에 상대적으로 관대하지만, 계정이 제한되거나 정지될 가능성을 배제할 수는 없습니다.',
+  'settings.officialLoginRisk.advice': '서드파티 앱에서 이 방식으로 로그인하면 어느 서비스든 계정 정지 위험이 있습니다. 신중히 사용하고 직접 판단한 뒤 계속하세요.',
+  'settings.officialLoginRisk.confirm': '이해했으며 계속합니다',
+
   // Settings > Providers
   'settings.providers.title': '모델 관리',
   'settings.providers.description': '모델, API 엔드포인트 및 인증 정보를 설정합니다.',

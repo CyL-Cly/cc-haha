@@ -1396,6 +1396,18 @@ export const zh: Record<TranslationKey, string> = {
   'settings.grokOfficialLogin.copyLinkFailed': '无法复制授权链接。',
   'settings.grokOfficialLogin.errorPrefix': 'Grok OAuth 错误:',
 
+  // Settings > Official Login Risk Dialog
+  'settings.officialLoginRisk.title': '登录前请确认账号风险',
+  'settings.officialLoginRisk.levelLabel': '封号风险',
+  'settings.officialLoginRisk.level.high': '较高',
+  'settings.officialLoginRisk.level.medium': '中等',
+  'settings.officialLoginRisk.level.low': '相对较低',
+  'settings.officialLoginRisk.claude.body': 'Claude 对第三方软件使用 OAuth 登录管控最严格,通过本应用登录你的 Claude 账号,有被限制或封禁的风险。',
+  'settings.officialLoginRisk.grok.body': 'Grok 对第三方软件使用 OAuth 登录管控一般,通过本应用登录你的 Grok 账号,仍有被限制或封禁的风险。',
+  'settings.officialLoginRisk.chatgpt.body': 'ChatGPT 对第三方软件使用 OAuth 登录相对宽松,但仍不能排除账号被限制或封禁的可能。',
+  'settings.officialLoginRisk.advice': '第三方软件使用这种方式登录都有封号风险,建议慎用,请自行评估后再继续。',
+  'settings.officialLoginRisk.confirm': '我已了解,继续登录',
+
   // Settings > Providers
   'settings.providers.title': '模型管理',
   'settings.providers.description': '配置模型、API 接口与访问凭证。',

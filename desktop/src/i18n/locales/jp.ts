@@ -1398,6 +1398,18 @@ export const jp: Record<TranslationKey, string> = {
   'settings.grokOfficialLogin.copyLinkFailed': '承認リンクをコピーできません。',
   'settings.grokOfficialLogin.errorPrefix': 'Grok OAuth エラー: ',
 
+  // Settings > Official Login Risk Dialog
+  'settings.officialLoginRisk.title': 'サインイン前にアカウントのリスクをご確認ください',
+  'settings.officialLoginRisk.levelLabel': 'アカウント停止のリスク',
+  'settings.officialLoginRisk.level.high': '高い',
+  'settings.officialLoginRisk.level.medium': '中程度',
+  'settings.officialLoginRisk.level.low': '比較的低い',
+  'settings.officialLoginRisk.claude.body': 'Claude はサードパーティ製アプリによる OAuth サインインを最も厳しく管理しています。このアプリ経由で Claude アカウントにサインインすると、アカウントが制限または停止される可能性があります。',
+  'settings.officialLoginRisk.grok.body': 'Grok はサードパーティ製アプリによる OAuth サインインを中程度に管理しています。このアプリ経由で Grok アカウントにサインインしても、アカウントが制限または停止される可能性があります。',
+  'settings.officialLoginRisk.chatgpt.body': 'ChatGPT はサードパーティ製アプリによる OAuth サインインに比較的寛容ですが、アカウントが制限または停止される可能性は否定できません。',
+  'settings.officialLoginRisk.advice': 'サードパーティ製アプリでこの方法のサインインを行うと、いずれもアカウント停止のリスクがあります。慎重にご利用のうえ、ご自身で判断してから続行してください。',
+  'settings.officialLoginRisk.confirm': '理解したうえで続行',
+
   // Settings > Providers
   'settings.providers.title': 'モデル管理',
   'settings.providers.description': 'モデル、API エンドポイント、認証情報を設定します。',
