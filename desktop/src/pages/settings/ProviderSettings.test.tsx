@@ -6,6 +6,7 @@ import { ApiError } from '../../api/client'
 import { getDesktopHost } from '../../lib/desktopHost'
 import { useProviderStore } from '../../stores/providerStore'
 import { useSettingsStore } from '../../stores/settingsStore'
+import { BUNDLED_PROVIDER_PRESETS } from '../../config/providerPresets'
 import type { SavedProvider } from '../../types/provider'
 import { ProviderSettings } from './ProviderSettings'
 
@@ -27,6 +28,90 @@ const savedProviders: SavedProvider[] = ([
   apiFormat: 'anthropic',
   models: { main: model, haiku: model, sonnet: model, opus: model },
 }))
+
+describe('image generation protocol settings', () => {
+  let originalPresets = useProviderStore.getState().presets
+  beforeEach(() => {
+    originalPresets = useProviderStore.getState().presets
+    useProviderStore.setState({ presets: BUNDLED_PROVIDER_PRESETS })
+    useSettingsStore.setState({ locale: 'en' })
+    vi.spyOn(useSettingsStore.getState(), 'fetchAll').mockResolvedValue()
+    vi.spyOn(providersApi, 'list').mockResolvedValue({ providers: [], activeId: null })
+    vi.spyOn(providersApi, 'getSettings').mockResolvedValue({})
+    vi.spyOn(providersApi, 'updateSettings').mockResolvedValue({ ok: true })
+  })
+
+  afterEach(() => {
+    cleanup()
+    vi.restoreAllMocks()
+    useProviderStore.setState({ presets: originalPresets })
+  })
+
+  it.each(['gemini_native', 'xai_images'] as const)('keeps saved %s image protocol when editing other image fields', async (protocol) => {
+    const provider: SavedProvider = {
+      ...savedProviders[0]!, id: 'saved-image-provider',
+      imageGeneration: { model: 'image-fixture', protocol, baseUrl: 'https://images.example.test/v1', apiKey: 'fake-image-key' },
+    }
+    vi.mocked(providersApi.list).mockResolvedValue({ providers: [provider], activeId: null })
+    const update = vi.spyOn(providersApi, 'update').mockResolvedValue({ provider })
+    render(<ProviderSettings />)
+    fireEvent.click(within(await screen.findByTestId('provider-saved-image-provider')).getByRole('button', { name: 'Edit' }))
+    const dialog = within(screen.getByRole('dialog'))
+    fireEvent.change(dialog.getByRole('textbox', { name: /Image model/ }), { target: { value: 'image-fixture-updated' } })
+    fireEvent.click(dialog.getByRole('button', { name: 'Save' }))
+    await waitFor(() => expect(update).toHaveBeenCalledWith(provider.id, expect.objectContaining({
+      imageGeneration: { model: 'image-fixture-updated', protocol, baseUrl: 'https://images.example.test/v1', apiKey: 'fake-image-key' },
+    })))
+  })
+
+  it('defaults an older image configuration to OpenAI-compatible Images', async () => {
+    const provider: SavedProvider = { ...savedProviders[0]!, id: 'old-images', imageGeneration: { model: 'old-image-model' } }
+    vi.mocked(providersApi.list).mockResolvedValue({ providers: [provider], activeId: null })
+    const update = vi.spyOn(providersApi, 'update').mockResolvedValue({ provider })
+    render(<ProviderSettings />)
+    fireEvent.click(within(await screen.findByTestId('provider-old-images')).getByRole('button', { name: 'Edit' }))
+    const dialog = within(screen.getByRole('dialog'))
+    expect(dialog.getByRole('combobox', { name: 'Image API protocol' })).toHaveValue('openai_images')
+    fireEvent.click(dialog.getByRole('button', { name: 'Save' }))
+    await waitFor(() => expect(update).toHaveBeenCalledWith(provider.id, expect.objectContaining({
+      imageGeneration: { model: 'old-image-model', protocol: 'openai_images' },
+    })))
+  })
+
+  it('saves a newly selected image protocol independently from the chat protocol', async () => {
+    const create = vi.spyOn(providersApi, 'create').mockImplementation(async (input) => ({
+      provider: { ...input, id: 'new-images', apiFormat: input.apiFormat ?? 'anthropic' },
+    }))
+    render(<ProviderSettings />)
+    fireEvent.click(await screen.findByRole('button', { name: /Add Model/ }))
+    const dialog = within(screen.getByRole('dialog'))
+    fireEvent.click(dialog.getByRole('button', { name: 'AruHub' }))
+    fireEvent.change(dialog.getAllByPlaceholderText('sk-...')[0]!, { target: { value: 'fake-new-key' } })
+    fireEvent.click(dialog.getByRole('switch', { name: 'Enable image generation' }))
+    fireEvent.change(dialog.getByRole('combobox', { name: 'Image API protocol' }), { target: { value: 'gemini_native' } })
+    fireEvent.change(dialog.getByRole('textbox', { name: /Image model/ }), { target: { value: 'gemini-image-fixture' } })
+    fireEvent.click(dialog.getByRole('button', { name: 'Add' }))
+    await waitFor(() => expect(create).toHaveBeenCalledWith(expect.objectContaining({
+      apiFormat: 'anthropic', imageGeneration: { model: 'gemini-image-fixture', protocol: 'gemini_native' },
+    })))
+  })
+
+  it('applies the selected preset image protocol and resets to the default when switching presets', async () => {
+    useProviderStore.setState({ presets: BUNDLED_PROVIDER_PRESETS.map((preset) => preset.id === 'aruhub'
+      ? { ...preset, defaultImageGeneration: { model: 'grok-image-fixture', protocol: 'xai_images' as const } }
+      : preset) })
+    render(<ProviderSettings />)
+    fireEvent.click(await screen.findByRole('button', { name: /Add Model/ }))
+    const dialog = within(screen.getByRole('dialog'))
+    fireEvent.click(dialog.getByRole('button', { name: 'AruHub' }))
+    expect(dialog.getByRole('combobox', { name: 'Image API protocol' })).toHaveValue('xai_images')
+    expect(dialog.getByRole('textbox', { name: /Image model/ })).toHaveValue('grok-image-fixture')
+    fireEvent.click(dialog.getByRole('button', { name: 'Atlas Cloud' }))
+    expect(dialog.getByRole('switch', { name: 'Enable image generation' })).not.toBeChecked()
+    fireEvent.click(dialog.getByRole('switch', { name: 'Enable image generation' }))
+    expect(dialog.getByRole('combobox', { name: 'Image API protocol' })).toHaveValue('openai_images')
+  })
+})
 
 describe('active sponsor providers', () => {
   beforeEach(() => {

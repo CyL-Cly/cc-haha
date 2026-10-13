@@ -17,6 +17,7 @@ import {
   IMAGE_GENERATION_MODEL_ENV_KEY,
   IMAGE_GENERATION_PROVIDER_ID_ENV_KEY,
   IMAGE_GENERATION_PROVIDER_KIND_ENV_KEY,
+  IMAGE_GENERATION_PROTOCOL_ENV_KEY,
 } from '../../services/imageGeneration/config.js'
 import { PROVIDER_PRESETS } from '../config/providerPresets.js'
 import type {
@@ -78,6 +79,7 @@ export const MANAGED_PROVIDER_ENV_KEYS = [
   IMAGE_GENERATION_BASE_URL_ENV_KEY,
   IMAGE_GENERATION_API_KEY_ENV_KEY,
   IMAGE_GENERATION_MODEL_ENV_KEY,
+  IMAGE_GENERATION_PROTOCOL_ENV_KEY,
 ] as const
 
 const AUTH_ENV_KEYS = new Set(['ANTHROPIC_API_KEY', 'ANTHROPIC_AUTH_TOKEN'])
@@ -191,9 +193,12 @@ export function normalizeImageGeneration(
 ): SavedProvider['imageGeneration'] | undefined {
   const model = value?.model.trim()
   if (!model) return undefined
+  const { model: _model, baseUrl: _baseUrl, apiKey: _apiKey, protocol, ...rest } = value!
   const baseUrl = value?.baseUrl?.trim()
   const apiKey = value?.apiKey?.trim()
   return {
+    ...rest,
+    protocol: protocol ?? 'openai_images',
     model,
     ...(baseUrl ? { baseUrl } : {}),
     ...(apiKey ? { apiKey } : {}),
@@ -259,6 +264,7 @@ function buildImageGenerationManagedEnv(
     [IMAGE_GENERATION_BASE_URL_ENV_KEY]: imageGeneration.baseUrl ?? provider.baseUrl,
     [IMAGE_GENERATION_API_KEY_ENV_KEY]: imageGeneration.apiKey ?? provider.apiKey,
     [IMAGE_GENERATION_MODEL_ENV_KEY]: imageGeneration.model,
+    [IMAGE_GENERATION_PROTOCOL_ENV_KEY]: imageGeneration.protocol ?? 'openai_images',
   }
 }
 

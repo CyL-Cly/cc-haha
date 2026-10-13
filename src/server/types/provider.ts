@@ -13,6 +13,7 @@ export const GROK_OFFICIAL_PROVIDER_ID = 'grok-official'
 export const PROVIDER_TOOL_SEARCH_OPT_IN_SCHEMA_VERSION = 4
 export const PROVIDER_REQUEST_COMPATIBILITY_SCHEMA_VERSION = 5
 export const PROVIDER_OFFICIAL_MODEL_SETTINGS_SCHEMA_VERSION = 6
+export const PROVIDER_IMAGE_PROTOCOL_SCHEMA_VERSION = 7
 export const BUILT_IN_PROVIDER_IDS = [
   CLAUDE_OFFICIAL_PROVIDER_ID,
   OPENAI_OFFICIAL_PROVIDER_ID,
@@ -97,10 +98,11 @@ export const RequestCompatibilitySchema = z.object({
 export type RequestCompatibility = z.infer<typeof RequestCompatibilitySchema>
 
 export const ImageGenerationConfigSchema = z.object({
+  protocol: z.enum(['openai_images', 'gemini_native', 'xai_images']).optional(),
   model: z.string().trim().min(1),
   baseUrl: z.string().trim().optional(),
   apiKey: z.string().trim().optional(),
-})
+}).passthrough()
 
 export const SavedProviderSchema = z.object({
   id: z.string(),

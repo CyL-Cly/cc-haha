@@ -544,6 +544,7 @@ describe('ProviderService', () => {
       }))
 
       expect(provider.imageGeneration).toEqual({
+        protocol: 'openai_images',
         model: 'image-model',
         baseUrl: 'https://images.example.test/v1',
         apiKey: 'image-secret',
@@ -551,6 +552,30 @@ describe('ProviderService', () => {
       const config = await readProvidersConfig()
       expect((config.providers as Array<{ imageGeneration?: unknown }>)[0]?.imageGeneration)
         .toEqual(provider.imageGeneration)
+    })
+
+    test('persists and updates the image protocol without losing future image settings', async () => {
+      const svc = new ProviderService()
+      const provider = await svc.addProvider(sampleInput({
+        imageGeneration: {
+          protocol: 'gemini_native', model: 'gemini-image-model', futureSetting: { keep: true },
+          baseUrl: 'https://images.example.test', apiKey: 'old-image-secret',
+        },
+      }))
+      expect(provider.imageGeneration?.protocol).toBe('gemini_native')
+      const updated = await svc.updateProvider(provider.id, {
+        imageGeneration: { protocol: 'xai_images', model: 'grok-image-model' },
+      })
+      expect(updated.imageGeneration).toEqual({
+        protocol: 'xai_images', model: 'grok-image-model', futureSetting: { keep: true },
+      })
+      expect((await svc.getProvider(provider.id)).imageGeneration).toEqual(updated.imageGeneration)
+      const modelOnlyUpdate = await svc.updateProvider(provider.id, {
+        imageGeneration: { model: 'another-image-model' },
+      })
+      expect(modelOnlyUpdate.imageGeneration).toEqual({
+        protocol: 'xai_images', model: 'another-image-model', futureSetting: { keep: true },
+      })
     })
   })
 

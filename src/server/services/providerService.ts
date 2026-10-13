@@ -368,7 +368,12 @@ export class ProviderService {
 
     const existing = index.providers[idx]
     const imageGeneration = input.imageGeneration
-      ? normalizeImageGeneration(input.imageGeneration)
+      ? normalizeImageGeneration({
+        ...existing.imageGeneration,
+        ...input.imageGeneration,
+        baseUrl: input.imageGeneration.baseUrl,
+        apiKey: input.imageGeneration.apiKey,
+      })
       : input.imageGeneration
     const updated: SavedProvider = {
       ...existing,

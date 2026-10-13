@@ -1222,6 +1222,7 @@ function ProviderFormModal({ open, onClose, mode, provider, presets, browserMode
   const [imageGeneration, setImageGeneration] = useState<ImageGenerationFormValue>({
     enabled: Boolean(initialImageGeneration),
     model: initialImageGeneration?.model ?? '',
+    protocol: initialImageGeneration?.protocol ?? 'openai_images',
     baseUrl: provider?.imageGeneration?.baseUrl ?? '',
     apiKey: provider?.imageGeneration?.apiKey ?? '',
   })
@@ -1358,6 +1359,7 @@ function ProviderFormModal({ open, onClose, mode, provider, presets, browserMode
     setImageGeneration({
       enabled: Boolean(preset.defaultImageGeneration),
       model: preset.defaultImageGeneration?.model ?? '',
+      protocol: preset.defaultImageGeneration?.protocol ?? 'openai_images',
       baseUrl: '',
       apiKey: '',
     })
@@ -1720,6 +1722,7 @@ function ProviderFormModal({ open, onClose, mode, provider, presets, browserMode
     const storedImageGeneration = imageGeneration.enabled
       ? {
           model: imageGeneration.model.trim(),
+          protocol: imageGeneration.protocol,
           ...(imageGeneration.baseUrl.trim() ? { baseUrl: imageGeneration.baseUrl.trim() } : {}),
           ...(imageGeneration.apiKey.trim() ? { apiKey: imageGeneration.apiKey.trim() } : {}),
         }

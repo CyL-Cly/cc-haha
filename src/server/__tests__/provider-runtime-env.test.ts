@@ -84,6 +84,7 @@ describe('providerRuntimeEnv', () => {
         CC_HAHA_OPENAI_OAUTH_PROVIDER: '1',
         OPENAI_CODEX_OAUTH_FILE: path.join(tmpDir, 'stale-openai-oauth.json'),
         ANTHROPIC_MODEL: 'stale-openai-model',
+        CC_HAHA_IMAGE_PROTOCOL: 'gemini_native',
         DISABLE_AUTOUPDATER: '1',
       },
       tmpDir,
@@ -105,6 +106,7 @@ describe('providerRuntimeEnv', () => {
     expect(env.OPENAI_CODEX_OAUTH_FILE).toBeUndefined()
     expect(env.ANTHROPIC_API_KEY).toBeUndefined()
     expect(env.ANTHROPIC_AUTH_TOKEN).toBeUndefined()
+    expect(env.CC_HAHA_IMAGE_PROTOCOL).toBeUndefined()
   })
 
   test('routes custom image generation through its own optional credentials', async () => {
@@ -138,6 +140,25 @@ describe('providerRuntimeEnv', () => {
       CC_HAHA_IMAGE_BASE_URL: 'https://images.example.test/v1',
       CC_HAHA_IMAGE_API_KEY: 'image-secret',
       CC_HAHA_IMAGE_MODEL: 'upstream-image-model',
+      CC_HAHA_IMAGE_PROTOCOL: 'openai_images',
+    })
+  })
+
+  test.each(['gemini_native', 'xai_images'])('routes the saved image protocol %s independently of chat format', async protocol => {
+    await writeJson(path.join(tmpDir, 'cc-haha', 'providers.json'), {
+      activeId: 'provider-images',
+      providers: [{
+        id: 'provider-images', presetId: 'custom', name: 'Images',
+        apiKey: 'fixture-key', baseUrl: 'https://images.example.test', apiFormat: 'anthropic',
+        models: { main: 'chat-model', haiku: '', sonnet: '', opus: '' },
+        imageGeneration: { protocol, model: 'image-model' },
+      }],
+    })
+    expect(readActiveProviderManagedEnv(tmpDir)).toMatchObject({
+      CC_HAHA_IMAGE_PROVIDER_KIND: 'openai_images',
+      CC_HAHA_IMAGE_PROTOCOL: protocol,
+      CC_HAHA_IMAGE_BASE_URL: 'https://images.example.test',
+      CC_HAHA_IMAGE_API_KEY: 'fixture-key',
     })
   })
 
@@ -166,6 +187,7 @@ describe('providerRuntimeEnv', () => {
       CC_HAHA_IMAGE_BASE_URL: 'https://stale.example.test/v1',
       CC_HAHA_IMAGE_API_KEY: 'stale-secret',
       CC_HAHA_IMAGE_MODEL: 'stale-model',
+      CC_HAHA_IMAGE_PROTOCOL: 'gemini_native',
     }, tmpDir)
 
     expect(env.CC_HAHA_IMAGE_PROVIDER_KIND).toBeUndefined()
@@ -173,6 +195,7 @@ describe('providerRuntimeEnv', () => {
     expect(env.CC_HAHA_IMAGE_BASE_URL).toBeUndefined()
     expect(env.CC_HAHA_IMAGE_API_KEY).toBeUndefined()
     expect(env.CC_HAHA_IMAGE_MODEL).toBeUndefined()
+    expect(env.CC_HAHA_IMAGE_PROTOCOL).toBeUndefined()
   })
 
   test('keeps Claude Code effort capabilities for an unlisted custom model', async () => {
