@@ -1,0 +1,3 @@
+# This embedded prompt retains the frozen Source bytes, including two trailing
+# spaces. Keep its diff visible; prompt_source_test.go verifies exact output.
+backend/internal/compaction/prompts/control.txt whitespace=-blank-at-eol
