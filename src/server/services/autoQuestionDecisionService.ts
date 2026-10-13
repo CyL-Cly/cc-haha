@@ -1,5 +1,4 @@
 import { normalizeAnthropicBaseUrl } from '../../services/api/anthropicBaseUrl.js'
-import { getOauthConfig, OAUTH_BETA_HEADER } from '../../constants/oauth.js'
 import { OPENAI_CODEX_API_ENDPOINT } from '../../services/openaiAuth/client.js'
 import { resolveOpenAICodexModel } from '../../services/openaiAuth/models.js'
 import { buildGrokIdentityHeaders, GROK_CLI_API_ENDPOINT } from '../../services/grokAuth/fetch.js'
@@ -10,8 +9,6 @@ import { openaiResponsesStreamToAnthropicResponse } from '../proxy/streaming/ope
 import type { ProviderAuthStrategy } from '../types/provider.js'
 import { hahaOpenAIOAuthService } from './hahaOpenAIOAuthService.js'
 import { hahaGrokOAuthService } from './hahaGrokOAuthService.js'
-import { hahaOAuthService } from './hahaOAuthService.js'
-import { resolveClaudeOfficialRuntimeModel } from './claudeOfficialRuntime.js'
 import {
   getNetworkProxyFetchOptions,
   loadNetworkSettings,
@@ -165,7 +162,12 @@ async function askSmallModel({
   signal,
 }: AutoQuestionDecisionInput): Promise<string | null> {
   if (providerId === null) {
-    return askClaudeOfficial(questions, conversationText, signal)
+    // Claude Official. The subscription token is only ever presented to
+    // Anthropic by the Claude Code CLI itself: its User-Agent, system prefix,
+    // billing header and body signature are part of that identity, and a
+    // request built here by hand can carry none of them. Without an answer the
+    // question simply stays with the user.
+    return null
   }
   const provider = await new ProviderService().getProvider(providerId)
   if (signal.aborted) return null
@@ -199,31 +201,6 @@ async function askSmallModel({
   const url = `${normalizeAnthropicBaseUrl(provider.baseUrl.replace(/\/+$/, ''))}/v1/messages`
   const authStrategy = provider.authStrategy ?? getPresetAuthStrategy(provider.presetId)
   return askAnthropic(url, buildAnthropicHeaders(apiKey, authStrategy), body, networkSettings, requestSignal)
-}
-
-async function askClaudeOfficial(
-  questions: AutoQuestion[],
-  conversationText: string,
-  signal: AbortSignal,
-): Promise<string | null> {
-  const model = await resolveClaudeOfficialRuntimeModel('haiku')
-  if (!model || signal.aborted) return null
-  const token = await hahaOAuthService.ensureFreshAccessToken()
-  if (!token || signal.aborted) return null
-  const networkSettings = await loadNetworkSettings()
-  if (signal.aborted) return null
-  const url = `${normalizeAnthropicBaseUrl(getOauthConfig().BASE_API_URL)}/v1/messages`
-  return askAnthropic(url, {
-    'Content-Type': 'application/json',
-    'anthropic-version': '2023-06-01',
-    'anthropic-beta': OAUTH_BETA_HEADER,
-    Authorization: `Bearer ${token}`,
-  }, {
-    model,
-    max_tokens: MAX_OUTPUT_TOKENS,
-    system: 'You are a constrained choice assistant. Return only the requested JSON object. Never invent options.',
-    messages: [{ role: 'user', content: buildModelPrompt(questions, conversationText) }],
-  }, networkSettings, AbortSignal.any([signal, AbortSignal.timeout(MODEL_TIMEOUT_MS)]))
 }
 
 function buildAnthropicHeaders(apiKey: string, authStrategy: ProviderAuthStrategy): Record<string, string> {

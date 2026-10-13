@@ -498,6 +498,82 @@ public enum AXTree {
         return live
     }
 
+    /// Inspect the existing snapshot without refreshing it, enabling enhanced
+    /// AX, changing focus, emitting input or creating fallback locators. Raw
+    /// array positions are used only to explain a rejection, never for actions.
+    static func locatorDiagnostic(pid: pid_t, index: Int) throws -> AXTreeLocatorDiagnostic {
+        guard let session = sessions[pid],
+              let expected = session.locators[index],
+              let element = session.elements.first(where: { $0.index == index }) else {
+            throw CUError("stale_element", "No snapshot element \(index); call get_app_state")
+        }
+        let rootKind: String
+        switch expected.root {
+        case .window: rootKind = "window"
+        case .menuBar: rootKind = "menu_bar"
+        case .unverifiableWindow: rootKind = "unverifiable_window"
+        }
+        let currentIdentity = currentProcessIdentity(pid: pid)
+        let identityMatches = session.processIdentity.isProven
+            && currentIdentity?.isProven == true
+            && currentIdentity == session.processIdentity
+        var currentRootProven = false
+        var currentRefetchable = false
+        var firstRejection: AXLocatorStepDiagnostic?
+        var resolution = "current_process_unproven"
+        if identityMatches {
+            let app = AXUIElementCreateApplication(pid)
+            AXUIElementSetMessagingTimeout(app, messagingTimeout)
+            if let root = currentRoot(pid: pid, app: app, locator: expected.root) {
+                currentRootProven = true
+                if let path = expected.path, let live = walk(root: root, path: path) {
+                    currentRefetchable = expected.isActionRefetchable
+                        && session.reconciliationKeys[index]?.isActionRefetchable == true
+                        && expected.fingerprint.matches(fingerprint(of: live))
+                    resolution = currentRefetchable ? "refetchable" : "current_fingerprint_changed"
+                } else {
+                    resolution = expected.path == nil ? "snapshot_path_unproven" : "current_path_changed"
+                }
+                var current = root
+                // Diagnostic work is bounded independently from action policy.
+                // A long elided wrapper chain cannot turn this into an AX crawl.
+                for (depth, ordinal) in element.path.prefix(64).enumerated() {
+                    let children = walkChildren(of: current)
+                    let fingerprints = children.map(fingerprint(of:))
+                    if let failure = AXLocatorStepDiagnostic.rejectedStep(
+                        depth: depth,
+                        selectedIndex: ordinal,
+                        fingerprints: fingerprints,
+                        topologyAt: { child in
+                            guard children.indices.contains(child) else { return nil }
+                            return walkChildren(of: children[child]).map(fingerprint(of:))
+                        }
+                    ) {
+                        firstRejection = failure
+                        break
+                    }
+                    current = children[ordinal]
+                }
+                if firstRejection == nil && element.path.count > 64 {
+                    resolution = "diagnostic_path_limit"
+                }
+            } else {
+                resolution = rootKind == "unverifiable_window"
+                    ? "snapshot_root_unproven" : "current_root_changed"
+            }
+        }
+        return AXTreeLocatorDiagnostic(
+            snapshotID: String(session.snapshotID), elementID: index,
+            rootKind: rootKind, rawPath: element.path,
+            storedPathPresent: expected.path != nil, storedPathLength: expected.path?.count,
+            snapshotActionRefetchable: expected.isActionRefetchable,
+            reconciliationActionRefetchable: session.reconciliationKeys[index]?.isActionRefetchable == true,
+            processIdentityMatches: identityMatches, currentRootProven: currentRootProven,
+            currentRefetchable: currentRefetchable, currentResolution: resolution,
+            firstCurrentRejectedStep: firstRejection
+        )
+    }
+
     /// The flat record the latest `appState` assigned to `index` (nil if stale).
     public static func record(pid: pid_t, index: Int) -> Element? {
         sessions[pid]?.elements.first(where: { $0.index == index })

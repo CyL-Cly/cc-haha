@@ -35,6 +35,7 @@ enum HelperClientPolicy {
         "ping", "shutdown", "overlay_show", "overlay_hide", "turn_end",
         "check_permissions", "input_monitor_state", "focus_monitor_state", "held_input_state",
         "last_injection_state",
+        "locator_diagnostic",
     ]
 
     static func isDaemonCommandAllowed(_ command: String) -> Bool {

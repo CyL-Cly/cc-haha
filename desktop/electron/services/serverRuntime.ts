@@ -1,5 +1,7 @@
 import path from 'node:path'
 import { randomBytes } from 'node:crypto'
+import { homedir } from 'node:os'
+import { countExternalMigrationProcesses } from '../../../src/server/migrationInventory'
 import {
   appendHostDiagnostic,
   clearProxyEnv,
@@ -25,6 +27,7 @@ import {
   writeLastServerPort,
   type SidecarChild,
 } from './sidecarManager'
+import { runStorageRelocationWorker, type StorageRelocationRequest } from './storageRelocationWorker'
 import { readDesktopTerminalConfig, resolveDesktopTerminalShell } from './terminal'
 import {
   SystemProxyBridge,
@@ -44,6 +47,8 @@ type ServerRuntimeOptions = {
 }
 
 type ServerRuntimeDeps = {
+  fetch: typeof fetch
+  killSidecar: typeof killSidecar
   appendHostDiagnostic: typeof appendHostDiagnostic
   now: () => number
   preferredServerPorts: typeof preferredServerPorts
@@ -56,6 +61,8 @@ type ServerRuntimeDeps = {
 }
 
 const DEFAULT_SERVER_RUNTIME_DEPS: ServerRuntimeDeps = {
+  fetch: (...args) => fetch(...args),
+  killSidecar,
   appendHostDiagnostic,
   now: Date.now,
   preferredServerPorts,
@@ -139,6 +146,11 @@ export class ElectronServerRuntime {
   private adapterRestartPromise: Promise<void> | null = null
   private shutdownWaiters = 0
   private closed = false
+  private migrationActive = false
+  private migrationQuiescence: Promise<void> | null = null
+  private migrationQuiesced = false
+  private migrationSourceDir: string | null = null
+  private readonly inactiveAdapters = new WeakSet<SidecarChild>()
 
   constructor(options: ServerRuntimeOptions) {
     this.onServerUnavailable = options.onServerUnavailable
@@ -190,7 +202,95 @@ export class ElectronServerRuntime {
     return this.server?.url ?? null
   }
 
+  getOwnedProcessIds(): number[] {
+    return [this.server?.child, this.startingServer?.child, ...this.adapters]
+      .map(child => child?.pid).filter((pid): pid is number => typeof pid === 'number' && pid > 0)
+  }
+
+  async getMigrationPreview(): Promise<{ activeTasks: number; externalProcesses: number }> {
+    if (this.migrationQuiesced) {
+      return { activeTasks: 0, externalProcesses: await countExternalMigrationProcesses([], this.migrationSourceDir!) }
+    }
+    return await this.requestMigrationControl('preview', 'GET') as { activeTasks: number; externalProcesses: number }
+  }
+
+  async relocateManagedData(request: StorageRelocationRequest, signal: AbortSignal): Promise<void> {
+    if (!this.migrationQuiesced) throw new Error('Runtime must quiesce before relocating managed data')
+    await runStorageRelocationWorker({ desktopRoot: this.desktopRoot, request, env: this.baseEnv, signal })
+  }
+
+  async validateMigrationStartup(): Promise<void> {
+    const result = await this.requestMigrationControl('validate', 'GET')
+    if (result.valid !== true) throw new Error('Migrated data failed runtime validation')
+  }
+
+  async activateAfterMigrationValidation(): Promise<void> {
+    const result = await this.requestMigrationControl('activate', 'POST')
+    if (result.activated !== true) throw new Error('Migration runtime activation failed')
+    delete this.baseEnv.CC_HAHA_MIGRATION_VALIDATION
+    this.sidecarEnvPromise = null
+    if (this.server) await this.startAdaptersSidecars(this.server.url, undefined, this.server)
+  }
+
+  quiesceForMigration(): Promise<void> {
+    if (this.migrationQuiescence) return this.migrationQuiescence
+    if (!this.server || this.startingServer || this.startPromise) return Promise.reject(new Error('Server startup must finish before migration'))
+    this.migrationActive = true
+    this.migrationSourceDir = (this.baseEnv.CLAUDE_CONFIG_DIR ?? path.join(homedir(), '.claude')).normalize('NFC')
+    this.migrationQuiescence = this.quiesceForMigrationOnce()
+    return this.migrationQuiescence
+  }
+
+  private async quiesceForMigrationOnce(): Promise<void> {
+    const server = this.server!
+    const result = await this.requestMigrationControl('quiesce', 'POST', server.url)
+    if (result.quiesced !== true) throw new Error('Server did not confirm safe migration shutdown')
+    await Promise.all([...server.adapterChildren].map(child => quiesceAdapterForMigration(child, this.localAccessToken, () => this.inactiveAdapters.has(child))))
+    const exited = waitForSidecarExit(server.child, SERVER_SHUTDOWN_TIMEOUT_MS)
+    // Clear ownership before termination so exit listeners cannot restart the server.
+    this.onServerUnavailable?.()
+    ++this.lifecycleGeneration
+    this.server = null
+    this.adapters = []
+    server.adapterChildren.splice(0)
+    this.deps.killSidecar(server.child, process.platform === 'win32')
+    if (!await exited) throw new Error('Server process did not exit after migration shutdown')
+    this.migrationQuiesced = true
+    this.stopSystemProxyBridge()
+  }
+
+  async resumeAfterMigration(): Promise<void> {
+    if (this.migrationActive && this.server) {
+      const result = await this.requestMigrationControl('recover', 'POST')
+      if (result.quiesced !== true) throw new Error('Source runtime did not confirm safe recovery shutdown')
+      await Promise.all([...this.server.adapterChildren].map(child => quiesceAdapterForMigration(child, this.localAccessToken, () => this.inactiveAdapters.has(child))))
+    }
+    if (this.server || this.startingServer || this.adapters.length > 0) await this.stopAllAndWait()
+    this.migrationActive = false
+    this.migrationQuiescence = null
+    this.migrationQuiesced = false
+    this.migrationSourceDir = null
+    this.sidecarEnvPromise = null
+    this.startupError = null
+    this.restartBlockedUntil = 0
+    this.restartAfterExit = false
+    await this.startServer()
+  }
+
+  private async requestMigrationControl(path: string, method: 'GET' | 'POST', url = this.server?.url): Promise<Record<string, unknown>> {
+    if (!url) throw new Error('Server is unavailable')
+    const response = await this.deps.fetch(`${url}/api/runtime/migration/${path}`, {
+      method,
+      headers: { Authorization: `Bearer ${this.localAccessToken}` },
+      signal: AbortSignal.timeout(60_000),
+    })
+    const result = await response.json() as Record<string, unknown>
+    if (!response.ok) throw new Error(typeof result.error === 'string' ? result.error : 'Migration runtime control failed')
+    return result
+  }
+
   restartAdaptersSidecars(): Promise<void> {
+    if (this.migrationActive || this.baseEnv.CC_HAHA_MIGRATION_VALIDATION === '1') return Promise.reject(new Error('Data migration is in progress'))
     if (this.adapterRestartPromise) return this.adapterRestartPromise
     const operation = this.restartAdaptersSidecarsOnce()
     const tracked = operation.finally(() => {
@@ -220,12 +320,12 @@ export class ElectronServerRuntime {
       starting.fail(new Error('server startup stopped'))
       if (!starting.childStopped) {
         starting.childStopped = true
-        killSidecar(starting.child, sync)
+        this.deps.killSidecar(starting.child, sync)
       }
     }
     this.stopAdaptersSidecars(sync)
     if (this.server) {
-      killSidecar(this.server.child, sync)
+      this.deps.killSidecar(this.server.child, sync)
       this.server = null
     }
     this.stopSystemProxyBridge()
@@ -250,10 +350,12 @@ export class ElectronServerRuntime {
   private assertStartAllowed(): void {
     if (this.closed) throw new Error('server runtime closed')
     if (this.shutdownWaiters > 0) throw new Error('server shutdown in progress')
+    if (this.migrationActive) throw new Error('Data migration is in progress')
   }
 
   private async drainSidecars(timeoutMs: number): Promise<void> {
     const serverChildren = new Set<SidecarChild>()
+    for (const child of this.adapters) serverChildren.add(child)
     if (this.startingServer) serverChildren.add(this.startingServer.child)
     if (this.server) serverChildren.add(this.server.child)
     const exitWaits = new Map(
@@ -269,12 +371,13 @@ export class ElectronServerRuntime {
     if (stillRunning.length === 0) return
 
     for (const child of stillRunning) {
-      if (process.platform === 'win32') killSidecar(child, true)
+      if (process.platform === 'win32') this.deps.killSidecar(child, true)
       else child.kill('SIGKILL')
     }
-    await Promise.all(
+    const forced = await Promise.all(
       stillRunning.map(child => waitForSidecarExit(child, SERVER_FORCE_EXIT_TIMEOUT_MS)),
     )
+    if (forced.some(exited => !exited)) throw new Error('Runtime processes did not exit')
   }
 
   private async startServerAfterDelay(generation: number, delayMs: number): Promise<string> {
@@ -319,7 +422,7 @@ export class ElectronServerRuntime {
         startState.failurePromise,
       ])
       if (startState.failure) throw startState.failure
-      this.deps.writeLastServerPort(port, this.baseEnv)
+      if (this.baseEnv.CC_HAHA_MIGRATION_VALIDATION !== '1') this.deps.writeLastServerPort(port, this.baseEnv)
       this.server = {
         url,
         child,
@@ -329,10 +432,12 @@ export class ElectronServerRuntime {
       const activeServer = this.server
       this.startupError = null
       this.stopAdaptersSidecars()
-      await Promise.race([
-        this.startAdaptersSidecars(url, startState, activeServer),
-        startState.failurePromise,
-      ])
+      if (this.baseEnv.CC_HAHA_MIGRATION_VALIDATION !== '1') {
+        await Promise.race([
+          this.startAdaptersSidecars(url, startState, activeServer),
+          startState.failurePromise,
+        ])
+      }
       if (startState.failure) throw startState.failure
       this.onServerReady?.()
       return url
@@ -342,7 +447,7 @@ export class ElectronServerRuntime {
         if (this.server?.child === startState.child) this.server = null
         if (!startState.childStopped) {
           startState.childStopped = true
-          killSidecar(startState.child)
+          this.deps.killSidecar(startState.child)
         }
       }
       if (startState?.failure) {
@@ -366,7 +471,7 @@ export class ElectronServerRuntime {
     startState?: ServerStartState,
     activeServer?: ActiveServer,
   ): Promise<void> {
-    const baseEnv = this.withLocalAccessToken(await this.resolveSidecarBaseEnv())
+    const baseEnv: NodeJS.ProcessEnv = { ...this.withLocalAccessToken(await this.resolveSidecarBaseEnv()), CC_HAHA_MIGRATION_CONTROL: '1' }
     const bridgeUrl = baseEnv.CC_HAHA_SYSTEM_PROXY_URL
     const env = bridgeUrl
       ? withAdapterProxyBridgeEnv(baseEnv, bridgeUrl)
@@ -400,7 +505,7 @@ export class ElectronServerRuntime {
           env,
         }))
         if (!isCurrentGeneration()) {
-          killSidecar(child)
+          this.deps.killSidecar(child)
           break
         }
         this.captureLogs(child, `claude-adapters:${label}`)
@@ -417,7 +522,7 @@ export class ElectronServerRuntime {
     this.removeOwnedAdapters(this.server?.adapterChildren, children)
     this.removeOwnedAdapters(this.startingServer?.adapterChildren, children)
     for (const child of children) {
-      killSidecar(child, sync)
+      this.deps.killSidecar(child, sync)
     }
   }
 
@@ -453,7 +558,18 @@ export class ElectronServerRuntime {
     onExit?: (code: number | null, signal: NodeJS.Signals | null) => void,
     onError?: (error: Error) => void,
   ) {
+    let adapterControlBuffer = ''
     child.stdout.on('data', chunk => {
+      if (label.startsWith('claude-adapters:')) {
+        adapterControlBuffer = (adapterControlBuffer + String(chunk)).slice(-16_384)
+        const lines = adapterControlBuffer.split('\n')
+        adapterControlBuffer = lines.pop() ?? ''
+        for (const entry of lines) {
+          try {
+            if (JSON.parse(entry)?.type === 'migration_adapter_inactive') this.inactiveAdapters.add(child)
+          } catch { /* Platform log output is not a control marker. */ }
+        }
+      }
       const line = String(chunk).trimEnd()
       if (!line) return
       console.log(`[${label}] ${line}`)
@@ -509,6 +625,10 @@ export class ElectronServerRuntime {
     const active = this.server?.child === child
     const starting = this.startingServer?.child === child
     if (!active && !starting) return
+    if (this.migrationActive) {
+      if (active) this.server = null
+      return
+    }
     this.onServerUnavailable?.()
     const failedServer = active ? this.server : null
     if (active) {
@@ -571,7 +691,7 @@ export class ElectronServerRuntime {
     for (const child of children.splice(0)) {
       const index = this.adapters.indexOf(child)
       if (index >= 0) this.adapters.splice(index, 1)
-      killSidecar(child, sync)
+      this.deps.killSidecar(child, sync)
     }
   }
 
@@ -625,6 +745,58 @@ export class ElectronServerRuntime {
     }
     return env
   }
+}
+
+async function quiesceAdapterForMigration(child: SidecarChild, token: string, isInactive: () => boolean): Promise<void> {
+  if (child.exitCode != null || child.signalCode != null) return
+  if (!child.stdin) throw new Error('Adapter has no graceful migration control channel')
+  const requestId = randomBytes(16).toString('hex')
+  const exited = waitForSidecarExit(child, SERVER_SHUTDOWN_TIMEOUT_MS)
+  let buffer = ''
+  let remove = () => {}
+  let failControl = () => {}
+  const acknowledged = isInactive() ? Promise.resolve(true) : new Promise<boolean>(resolve => {
+    const finish = (value: boolean) => {
+      remove()
+      resolve(value)
+    }
+    // A credential-gated sidecar can close stdin before its inactive marker
+    // reaches stdout. Keep waiting for that marker and positive process exit.
+    failControl = () => {}
+    const onData = (chunk: Buffer) => {
+      buffer = (buffer + chunk.toString()).slice(-16_384)
+      const lines = buffer.split('\n')
+      buffer = lines.pop() ?? ''
+      for (const line of lines) {
+        try {
+          const message = JSON.parse(line)
+          if (message.type === 'migration_adapter_inactive') finish(true)
+          if (message.requestId === requestId && message.type === 'migration_quiesced') finish(true)
+          if (message.requestId === requestId && message.type === 'migration_quiesce_failed') finish(false)
+        } catch { /* Ordinary sidecar logs are not control acknowledgements. */ }
+      }
+    }
+    const timer = setTimeout(() => finish(false), SERVER_SHUTDOWN_TIMEOUT_MS)
+    remove = () => {
+      clearTimeout(timer)
+      child.stdout.removeListener('data', onData)
+      child.stdin?.removeListener('error', failControl)
+    }
+    child.stdout.on('data', onData)
+    child.stdin!.on('error', failControl)
+  })
+  try {
+    if (!isInactive()) {
+      child.stdin.write(JSON.stringify({ type: 'migration_quiesce', requestId, token }) + '\n', error => {
+        if (error) failControl()
+      })
+    }
+  } catch {
+    failControl()
+  }
+  const [ack, didExit] = await Promise.all([acknowledged, exited])
+  remove()
+  if (!ack || !didExit || (child.exitCode != null && child.exitCode !== 0)) throw new Error('Adapter did not confirm a clean migration shutdown')
 }
 
 function waitForSidecarExit(child: SidecarChild, timeoutMs: number): Promise<boolean> {

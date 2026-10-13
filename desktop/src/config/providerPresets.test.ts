@@ -128,7 +128,22 @@ describe('bundled provider presets', () => {
 
   it('keeps active sponsors selectable and ordered like the README', () => {
     expect(selectableProviderPresets(BUNDLED_PROVIDER_PRESETS).filter((preset) => preset.featured).map((preset) => preset.id))
-      .toEqual(['aruhub', 'atlascloud', 'apismart'])
+      .toEqual(['aruhub', 'atlascloud'])
+  })
+
+  it('retires ApiSmart without removing what saved providers resolve from the preset', () => {
+    const preset = BUNDLED_PROVIDER_PRESETS.find((candidate) => candidate.id === 'apismart')
+
+    expect(preset?.deprecated).toBe(true)
+    expect(preset?.apiKeyUrl).toBeUndefined()
+    expect(preset?.promoText).toBeUndefined()
+    expect(preset?.featured).toBeUndefined()
+    expect(preset?.baseUrl).toBe('https://gw.apismart.ai/v1')
+    expect(preset?.apiFormat).toBe('openai_chat')
+    expect(preset?.defaultImageGeneration).toEqual({ model: 'doubao-seedream-5-0' })
+    expect(preset?.modelContextWindows).toBeDefined()
+    expect(selectableProviderPresets(BUNDLED_PROVIDER_PRESETS).map((candidate) => candidate.id))
+      .not.toContain('apismart')
   })
 
   it('keeps the retired 接口AI preset resolvable but not selectable', () => {

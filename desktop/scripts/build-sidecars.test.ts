@@ -372,6 +372,23 @@ describe('build-sidecars Windows x64 target mapping', () => {
     expect(launcher).not.toContain('--feature=TRANSCRIPT_CLASSIFIER')
   })
 
+  it('keeps the retained Tauri host and package permissions on the Go executable', () => {
+    const root = path.resolve(import.meta.dirname, '../src-tauri')
+    const config = JSON.parse(readFileSync(path.join(root, 'tauri.conf.json'), 'utf8'))
+    expect(config.bundle.externalBin).toEqual(['binaries/claude-sidecar-go'])
+    const capabilities = JSON.parse(readFileSync(path.join(root, 'capabilities/default.json'), 'utf8'))
+    const shellPermissions = capabilities.permissions.filter((entry: unknown) => typeof entry === 'object')
+    for (const permission of shellPermissions) {
+      for (const entry of permission.allow) expect(entry.name).toBe('binaries/claude-sidecar-go')
+    }
+    const rustHost = readFileSync(path.join(root, 'src/lib.rs'), 'utf8')
+    expect(rustHost).not.toContain('.sidecar("claude-sidecar")')
+    expect(rustHost).toContain('.sidecar("claude-sidecar-go")')
+    expect(rustHost).toMatch(/command\s*\.env\("CLAUDE_CLI_PATH", binary\)/)
+    expect(rustHost).toContain('claude-sidecar-go-x86_64-pc-windows-msvc.exe')
+    expect(rustHost).toContain('claude-sidecar-go-aarch64-pc-windows-msvc.exe')
+  })
+
   it('wires the opt-in compiled sidecar smoke into the native gate', () => {
     const desktopPackage = readJson(path.resolve(import.meta.dirname, '../package.json'))
     const rootPackage = readJson(path.resolve(import.meta.dirname, '../../package.json'))

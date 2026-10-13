@@ -301,8 +301,8 @@ fn dir_has_portable_data(dir: &Path) -> bool {
         WINDOW_STATE_FILE,
         TERMINAL_CONFIG_FILE,
     ]
-        .iter()
-        .any(|f| dir.join(f).is_file())
+    .iter()
+    .any(|f| dir.join(f).is_file())
         || dir.join("Cache").is_dir()
         || dir.join("EBWebView").is_dir()
         || dir.join("projects").is_dir()
@@ -419,7 +419,7 @@ struct StoredServerState {
 
 /// 与 ServerState 平级的 adapter 子进程状态。
 ///
-/// adapter sidecar（claude-sidecar adapters --telegram 等）的生命周期
+/// adapter sidecar（claude-sidecar-go adapters --telegram 等）的生命周期
 /// 跟 server 不同：它没有 HTTP 端口可探活，没配凭据时会自己干净退出，
 /// 而且需要支持运行时热重启 —— 用户在设置页保存 IM 凭据后，
 /// 前端会通过 invoke('restart_adapters_sidecar') 来重启它，让新凭据生效。
@@ -1763,6 +1763,42 @@ fn resolve_h5_dist_dir(app: &AppHandle, app_root: &Path) -> PathBuf {
     select_h5_dist_dir(resource_dir.as_deref(), app_root)
 }
 
+fn validate_go_backend(selected: Option<&str>) -> Result<(), String> {
+    match selected {
+        None | Some("go") => Ok(()),
+        Some(value) => Err(format!(
+            "The desktop backend is Go; CC_HAHA_BACKEND cannot select {value:?}"
+        )),
+    }
+}
+
+fn go_sidecar_command(app: &AppHandle) -> Result<tauri_plugin_shell::process::Command, String> {
+    let selected = std::env::var("CC_HAHA_BACKEND");
+    match &selected {
+        Ok(value) => validate_go_backend(Some(value))?,
+        Err(std::env::VarError::NotPresent) => validate_go_backend(None)?,
+        Err(_) => return Err("CC_HAHA_BACKEND must select Go".to_string()),
+    }
+    // Resolve the exact path through the shell plugin so SDK child processes use
+    // the same Go executable in development and packaged applications.
+    let resolved: StdCommand = app
+        .shell()
+        .sidecar("claude-sidecar-go")
+        .map_err(|err| format!("resolve Go sidecar: {err}"))?
+        .into();
+    let binary = resolved.get_program();
+    let mut command = app
+        .shell()
+        .sidecar("claude-sidecar-go")
+        .map_err(|err| format!("resolve Go sidecar: {err}"))?;
+    for (key, value) in terminal_environment(&default_shell(None)) {
+        command = command.env(key, value);
+    }
+    Ok(command
+        .env("CLAUDE_CLI_PATH", binary)
+        .env("CC_HAHA_BACKEND", "go"))
+}
+
 fn start_server_sidecar(app: &AppHandle) -> Result<ServerRuntime, String> {
     let bind_host = SERVER_BIND_HOST;
     let control_host = SERVER_CONTROL_HOST;
@@ -1784,19 +1820,13 @@ fn start_server_sidecar(app: &AppHandle) -> Result<ServerRuntime, String> {
         .to_string();
 
     // 单一合并 sidecar：第一个参数选 server / cli / adapters 模式。
-    let mut sidecar = app
-        .shell()
-        .sidecar("claude-sidecar")
-        .map_err(|err| format!("resolve sidecar: {err}"))?;
-    for (key, value) in terminal_environment(&default_shell(None)) {
-        sidecar = sidecar.env(key, value);
-    }
+    let mut sidecar = go_sidecar_command(app)?;
     if let Some(powershell_path) = read_agent_powershell_path_override() {
         sidecar = sidecar.env(CLAUDE_CODE_POWERSHELL_PATH_ENV, powershell_path);
     }
-    // Pass through CLAUDE_CONFIG_DIR so the sidecar (Node.js) uses the same
+    // Pass through CLAUDE_CONFIG_DIR so the Go sidecar uses the same
     // portable config directory. Also set XDG_CACHE_HOME to redirect the
-    // env-paths cache from %LOCALAPPDATA%\claude-cli-nodejs\ to alongside
+    // runtime cache from %LOCALAPPDATA%\claude-cli-nodejs\ to alongside
     // the portable config dir.
     if let Ok(config_dir) = std::env::var("CLAUDE_CONFIG_DIR") {
         let cache_dir = PathBuf::from(&config_dir).join("Cache");
@@ -1929,13 +1959,8 @@ fn start_adapters_sidecars(app: &AppHandle) -> Result<Vec<CommandChild>, String>
         ("qq", "--qq"),
         ("slack", "--slack"),
     ] {
-        let mut sidecar = app
-            .shell()
-            .sidecar("claude-sidecar")
+        let sidecar = go_sidecar_command(app)
             .map_err(|err| format!("resolve {label} adapter sidecar: {err}"))?;
-        for (key, value) in terminal_environment(&default_shell(None)) {
-            sidecar = sidecar.env(key, value);
-        }
         // Pass through CLAUDE_CONFIG_DIR for portable installs
         let mut sidecar_final = sidecar.env("ADAPTER_SERVER_URL", &server_ws_url);
         if let Ok(config_dir) = std::env::var("CLAUDE_CONFIG_DIR") {
@@ -2101,7 +2126,7 @@ fn kill_stale_unix_adapter_sidecars() {
         if pid == current_pid {
             continue;
         }
-        if !command.contains("claude-sidecar") || !command.contains(" adapters") {
+        if !command.contains("claude-sidecar-go") || !command.contains(" adapters") {
             continue;
         }
 
@@ -2112,9 +2137,9 @@ fn kill_stale_unix_adapter_sidecars() {
 #[cfg(target_os = "windows")]
 fn kill_windows_sidecars() {
     for image_name in [
-        "claude-sidecar-x86_64-pc-windows-msvc.exe",
-        "claude-sidecar-aarch64-pc-windows-msvc.exe",
-        "claude-sidecar.exe",
+        "claude-sidecar-go-x86_64-pc-windows-msvc.exe",
+        "claude-sidecar-go-aarch64-pc-windows-msvc.exe",
+        "claude-sidecar-go.exe",
     ] {
         let _ = StdCommand::new("taskkill")
             .args(["/F", "/T", "/IM", image_name])
@@ -2132,11 +2157,22 @@ mod tests {
         normalize_terminal_bash_path, parse_env_block, parse_h5_fixed_port,
         reserve_browser_safe_port, reserve_local_port_with_preference,
         resolve_agent_powershell_path_override, resolve_desktop_terminal_shell,
-        resolve_terminal_cwd, run_notification_bridge, select_h5_dist_dir, DesktopTerminalConfig,
-        StoredServerState, StoredWindowState, TerminalHostPlatform, SERVER_BIND_HOST,
-        SERVER_CONTROL_HOST,
+        resolve_terminal_cwd, run_notification_bridge, select_h5_dist_dir, validate_go_backend,
+        DesktopTerminalConfig, StoredServerState, StoredWindowState, TerminalHostPlatform,
+        SERVER_BIND_HOST, SERVER_CONTROL_HOST,
     };
     use std::{collections::HashMap, fs, net::TcpListener};
+
+    #[test]
+    fn go_backend_selection_rejects_legacy_or_ambiguous_overrides() {
+        assert!(validate_go_backend(None).is_ok());
+        assert!(validate_go_backend(Some("go")).is_ok());
+        for value in ["typescript", "", "Go", "go ", "auto"] {
+            assert!(validate_go_backend(Some(value))
+                .unwrap_err()
+                .contains("backend is Go"));
+        }
+    }
 
     #[test]
     fn window_state_rejects_too_small_sizes() {
@@ -2313,10 +2349,8 @@ mod tests {
     #[test]
     fn terminal_cwd_defaults_to_portable_config_dir_when_present() {
         let original = std::env::var_os("CLAUDE_CONFIG_DIR");
-        let dir = std::env::temp_dir().join(format!(
-            "cchh-terminal-portable-cwd-{}",
-            std::process::id()
-        ));
+        let dir =
+            std::env::temp_dir().join(format!("cchh-terminal-portable-cwd-{}", std::process::id()));
         fs::create_dir_all(&dir).expect("create portable config dir");
         std::env::set_var("CLAUDE_CONFIG_DIR", &dir);
 
@@ -2334,10 +2368,8 @@ mod tests {
 
     #[test]
     fn portable_data_detection_includes_cli_state_dirs() {
-        let root = std::env::temp_dir().join(format!(
-            "cchh-portable-data-detect-{}",
-            std::process::id()
-        ));
+        let root =
+            std::env::temp_dir().join(format!("cchh-portable-data-detect-{}", std::process::id()));
         let skills = root.join("skills");
         fs::create_dir_all(&skills).expect("create skills dir");
 
@@ -2454,7 +2486,10 @@ mod tests {
             None
         );
         // Out of range, wrong type, missing, or null all fall back to None.
-        assert_eq!(parse_h5_fixed_port(r#"{"h5Access":{"fixedPort":80}}"#), None);
+        assert_eq!(
+            parse_h5_fixed_port(r#"{"h5Access":{"fixedPort":80}}"#),
+            None
+        );
         assert_eq!(
             parse_h5_fixed_port(r#"{"h5Access":{"fixedPort":70000}}"#),
             None

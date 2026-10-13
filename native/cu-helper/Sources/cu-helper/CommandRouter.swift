@@ -255,6 +255,16 @@ public final class CommandRouter {
         case "get_app_state":
             return try await handleGetAppState(payload)
 
+        // Internal read-only diagnostic, absent from the model catalog. The
+        // same target/identity/epoch/membership checks still apply.
+        case "locator_diagnostic":
+            guard let handle = try elementHandle(payload) else {
+                throw CUError("bad_payload", "locator_diagnostic requires an opaque snapshot handle")
+            }
+            let target = try resolveTarget(payload)
+            try guardStaleness(pid: target.pid, handle: handle)
+            return try encode(AXTree.locatorDiagnostic(pid: target.pid, index: handle.index))
+
         // ── Computer-Use contract: AX-first actuation by index/coordinate ──
         case "click":
             return try await handleClick(payload)

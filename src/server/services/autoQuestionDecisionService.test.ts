@@ -228,18 +228,17 @@ describe('autoQuestionDecisionService', () => {
     expect(calls[0]!.headers.get('x-opencode-session')).toBe('session-auto-question')
   })
 
-  test('uses Claude Official OAuth Haiku when the session has no provider ID', async () => {
+  test('never presents the Claude Official OAuth token itself when the session has no provider ID', async () => {
+    // A hand-built request cannot carry the Claude Code CLI's identity
+    // (User-Agent, system prefix, billing header, body signature), so the
+    // subscription token must not leave through this path at all.
     await hahaOAuthService.saveTokens({
       accessToken: 'fake-claude-token', refreshToken: 'fake-refresh-token',
       expiresAt: Date.now() + 60 * 60_000, scopes: ['user:inference'], subscriptionType: 'pro',
     })
-    const calls: Array<{ url: string; headers: Headers; body: Record<string, unknown> }> = []
-    globalThis.fetch = (async (input, init) => {
-      calls.push({
-        url: String(input),
-        headers: new Headers(init?.headers),
-        body: JSON.parse(String(init?.body)) as Record<string, unknown>,
-      })
+    const calls: string[] = []
+    globalThis.fetch = (async (input) => {
+      calls.push(String(input))
       return Response.json({ content: [{ type: 'text', text:
         '{"answers":[{"questionIndex":0,"optionLabels":["Markdown"]}]}' }] })
     }) as typeof fetch
@@ -247,12 +246,8 @@ describe('autoQuestionDecisionService', () => {
     expect(await decideAutoQuestionAnswers({
       questions: [undecided], conversationText: '', providerId: null,
       signal: new AbortController().signal,
-    })).toEqual({ 'Which format?': 'Markdown' })
-    expect(calls).toHaveLength(1)
-    expect(calls[0]!.url).toBe('https://api.anthropic.com/v1/messages')
-    expect(calls[0]!.headers.get('authorization')).toBe('Bearer fake-claude-token')
-    expect(calls[0]!.headers.get('anthropic-beta')).toBe('oauth-2025-04-20')
-    expect(calls[0]!.body.model).toBe('claude-haiku-4-5')
+    })).toBeNull()
+    expect(calls).toEqual([])
   })
 
   test('uses ChatGPT Official OAuth through its Responses endpoint', async () => {

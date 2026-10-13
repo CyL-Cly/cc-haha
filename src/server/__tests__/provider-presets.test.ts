@@ -51,7 +51,7 @@ describe('provider presets API', () => {
     const sponsors = presets.filter((preset: { featured?: boolean }) => preset.featured)
     expect(sponsors[0]).toMatchObject({
       id: 'aruhub',
-      baseUrl: 'https://direct.aruhub.com:8443',
+      baseUrl: 'https://agent.aruhub.com',
       apiFormat: 'anthropic',
       authStrategy: 'api_key',
       apiKeyUrl: 'https://aruhub.com/sign-up?aff=Z54g',
@@ -77,7 +77,7 @@ describe('provider presets API', () => {
 
   // ApiSmart /v1/models and live calls verified these exact IDs on 2026-09-09.
   // The unsuffixed names in its docs return 503 provider_not_available.
-  test('exposes ApiSmart with its live-verified Chat Completions defaults and sponsor link', async () => {
+  test('keeps retired ApiSmart resolvable with its live-verified Chat Completions defaults but off the sponsor row', async () => {
     const { req, url, segments } = makeRequest('GET', '/api/providers/presets')
     const response = await handleProvidersApi(req, url, segments)
     const { presets } = await response.json()
@@ -94,10 +94,15 @@ describe('provider presets API', () => {
         sonnet: 'deepseek-v4-pro-0813',
         opus: 'deepseek-v4-pro-0813',
       },
-      apiKeyUrl: 'https://www.apismart.ai',
       websiteUrl: 'https://www.apismart.ai',
-      featured: true,
+      deprecated: true,
     })
+    const apismart = presets.find((preset: { id: string }) => preset.id === 'apismart')
+    expect(apismart.apiKeyUrl).toBeUndefined()
+    expect(apismart.promoText).toBeUndefined()
+    expect(apismart.featured).toBeUndefined()
+    expect(presets.filter((preset: { featured?: boolean }) => preset.featured).map((preset: { id: string }) => preset.id))
+      .not.toContain('apismart')
   })
 
   test('GET /api/providers/presets returns the configured presets', async () => {
