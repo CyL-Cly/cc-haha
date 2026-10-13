@@ -126,9 +126,49 @@ describe('bundled provider presets', () => {
       .not.toContain(id)
   })
 
-  it('keeps active sponsors selectable and ordered like the README', () => {
+  it('keeps active sponsors selectable with Modelflare between AruHub and Atlas Cloud', () => {
     expect(selectableProviderPresets(BUNDLED_PROVIDER_PRESETS).filter((preset) => preset.featured).map((preset) => preset.id))
-      .toEqual(['aruhub', 'atlascloud'])
+      .toEqual(['aruhub', 'modelflare', 'atlascloud'])
+  })
+
+  it('updates AruHub to its published Claude 5.5 IDs while keeping the Haiku fallback', () => {
+    const preset = BUNDLED_PROVIDER_PRESETS.find((candidate) => candidate.id === 'aruhub')
+
+    expect(preset?.defaultModels).toEqual({
+      main: 'claude-opus-5-5',
+      haiku: 'claude-sonnet-5-5',
+      sonnet: 'claude-sonnet-5-5',
+      opus: 'claude-opus-5-5',
+    })
+  })
+
+  it('bundles Modelflare with its signup link, sponsor badges and Claude 5.5 context windows', () => {
+    const preset = BUNDLED_PROVIDER_PRESETS.find((candidate) => candidate.id === 'modelflare')
+
+    expect(preset).toMatchObject({
+      name: 'Modelflare',
+      baseUrl: 'https://modelflare.dev',
+      apiFormat: 'anthropic',
+      authStrategy: 'auth_token',
+      apiKeyUrl: 'https://modelflare.dev/sign-up?utm_source=github&utm_campaign=cchaha',
+      featured: true,
+      isNew: true,
+      needsApiKey: true,
+      defaultModels: {
+        main: 'claude-opus-5-5',
+        haiku: 'claude-haiku-5-5',
+        sonnet: 'claude-sonnet-5-5',
+        opus: 'claude-opus-5-5',
+      },
+      modelContextWindows: {
+        'claude-opus-5-5': 1000000,
+        'claude-sonnet-5-5': 1000000,
+        'claude-haiku-5-5': 1000000,
+      },
+    })
+    expect(preset && presetMatchesBaseUrl(preset, ' HTTPS://MODELFLARE.DEV/ ')).toBe(true)
+    expect(selectableProviderPresets(BUNDLED_PROVIDER_PRESETS).map((candidate) => candidate.id))
+      .toContain('modelflare')
   })
 
   it('retires ApiSmart without removing what saved providers resolve from the preset', () => {

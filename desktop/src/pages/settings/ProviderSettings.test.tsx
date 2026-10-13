@@ -58,8 +58,8 @@ describe('active sponsor providers', () => {
     expect(within(dialog.getByRole('button', { name: 'Atlas Cloud' })).queryByLabelText('Sponsor')).not.toBeInTheDocument()
     fireEvent.click(sponsor)
     expect(dialog.getByDisplayValue('https://agent.aruhub.com')).toBeInTheDocument()
-    expect(dialog.getAllByDisplayValue('claude-opus-5')).toHaveLength(2)
-    expect(dialog.getAllByDisplayValue('claude-sonnet-5')).toHaveLength(2)
+    expect(dialog.getAllByDisplayValue('claude-opus-5-5')).toHaveLength(2)
+    expect(dialog.getAllByDisplayValue('claude-sonnet-5-5')).toHaveLength(2)
     const offer = dialog.getByRole('button', { name: /注册即送 1 美元全模型通用额度/ })
     fireEvent.click(offer)
     expect(open).toHaveBeenCalledWith('https://aruhub.com/sign-up?aff=Z54g')
@@ -77,7 +77,63 @@ describe('active sponsor providers', () => {
       apiFormat: 'anthropic',
       authStrategy: 'api_key',
       apiKey: 'fake-aruhub-key',
-      models: { main: 'claude-opus-5', haiku: 'claude-sonnet-5', sonnet: 'claude-sonnet-5', opus: 'claude-opus-5' },
+      models: { main: 'claude-opus-5-5', haiku: 'claude-sonnet-5-5', sonnet: 'claude-sonnet-5-5', opus: 'claude-opus-5-5' },
+    })))
+  })
+
+  it('adds Modelflare from the second sponsor pill with badges, model discovery and Claude 5.5 defaults', async () => {
+    const create = vi.spyOn(providersApi, 'create').mockImplementation(async (input) => ({
+      provider: { ...input, id: 'saved-modelflare', apiFormat: input.apiFormat ?? 'anthropic' },
+    }))
+    const fetchModels = vi.spyOn(providersApi, 'fetchModels').mockResolvedValue({
+      ok: true,
+      endpoint: 'https://modelflare.dev/v1/models',
+      models: [
+        { id: 'claude-opus-5-5', ownedBy: 'anthropic' },
+        { id: 'claude-sonnet-5-5', ownedBy: 'anthropic' },
+        { id: 'claude-haiku-5-5', ownedBy: 'anthropic' },
+      ],
+    })
+    const open = vi.spyOn(getDesktopHost().shell, 'open').mockResolvedValue()
+    render(<ProviderSettings />)
+    fireEvent.click(await screen.findByRole('button', { name: /Add Model/ }))
+    const dialog = within(screen.getByRole('dialog'))
+    const sponsor = dialog.getByRole('button', { name: 'Modelflare' })
+    expect(sponsor.previousElementSibling).toBe(dialog.getByRole('button', { name: 'AruHub' }))
+    expect(sponsor.nextElementSibling).toBe(dialog.getByRole('button', { name: 'Atlas Cloud' }))
+    expect(within(sponsor).getByText('New')).toBeInTheDocument()
+    expect(within(sponsor).getByLabelText('Sponsor')).toBeInTheDocument()
+    expect(dialog.queryByRole('button', { name: 'ApiSmart' })).not.toBeInTheDocument()
+
+    fireEvent.click(sponsor)
+    expect(dialog.getByDisplayValue('https://modelflare.dev')).toBeInTheDocument()
+    expect(dialog.getAllByDisplayValue('claude-opus-5-5')).toHaveLength(2)
+    expect(dialog.getByDisplayValue('claude-sonnet-5-5')).toBeInTheDocument()
+    expect(dialog.getByDisplayValue('claude-haiku-5-5')).toBeInTheDocument()
+    expect(dialog.getByRole('button', { name: 'Fetch models' })).toBeDisabled()
+    fireEvent.click(dialog.getByRole('button', { name: /Get API Key/ }))
+    expect(open).toHaveBeenCalledWith('https://modelflare.dev/sign-up?utm_source=github&utm_campaign=cchaha')
+
+    fireEvent.change(dialog.getAllByPlaceholderText('sk-...')[0]!, { target: { value: 'fake-modelflare-key' } })
+    fireEvent.click(dialog.getByRole('button', { name: 'Fetch models' }))
+    await waitFor(() => expect(fetchModels).toHaveBeenCalledWith({
+      baseUrl: 'https://modelflare.dev', apiKey: 'fake-modelflare-key',
+    }))
+    await dialog.findByText(/Model list loaded \(3\)/)
+    fireEvent.click(dialog.getByRole('button', { name: 'Add' }))
+    await waitFor(() => expect(create).toHaveBeenCalledWith(expect.objectContaining({
+      presetId: 'modelflare',
+      baseUrl: 'https://modelflare.dev',
+      apiFormat: 'anthropic',
+      authStrategy: 'auth_token',
+      apiKey: 'fake-modelflare-key',
+      models: {
+        main: 'claude-opus-5-5', haiku: 'claude-haiku-5-5',
+        sonnet: 'claude-sonnet-5-5', opus: 'claude-opus-5-5',
+      },
+      modelContextWindows: {
+        'claude-opus-5-5': 1000000, 'claude-sonnet-5-5': 1000000, 'claude-haiku-5-5': 1000000,
+      },
     })))
   })
 

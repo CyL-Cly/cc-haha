@@ -1699,7 +1699,7 @@ function ProviderFormModal({ open, onClose, mode, provider, presets, browserMode
     >
       {preset.id === 'aruhub' && <img src={aruhubLogo} alt="" className="size-4 rounded-[var(--radius-sm)] object-contain" />}
       {presetLabel(preset)}
-      {preset.id === 'aruhub' && <Star size={12} className="fill-[var(--color-warning)] text-[var(--color-warning)]" aria-label={t('settings.providers.sponsor')} />}
+      {(preset.id === 'aruhub' || preset.id === 'modelflare') && <Star size={12} className="fill-[var(--color-warning)] text-[var(--color-warning)]" aria-label={t('settings.providers.sponsor')} />}
       {preset.isNew && (
         <Badge tone="warning" size="xs" className="absolute -right-1 -top-2">
           {t('settings.providers.new')}
