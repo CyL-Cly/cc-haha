@@ -14,10 +14,11 @@ order: 2
 在仓库根目录运行：
 
 ```bash
-bun run src/server/index.ts
+bun run build:cli
+./bin/claude-haha server --host 127.0.0.1 --port 3456
 ```
 
-默认监听 `127.0.0.1:3456`。确认服务就绪：
+本例监听 `127.0.0.1:3456`。确认服务就绪：
 
 ```bash
 curl http://127.0.0.1:3456/health
@@ -36,14 +37,18 @@ curl http://127.0.0.1:3456/health
 
 ## 启动参数
 
-| 参数 | 环境变量 | 默认值 | 说明 |
-|------|----------|--------|------|
-| `--host <host>` | `SERVER_HOST` | `127.0.0.1` | 监听地址 |
-| `--port <port>` | `SERVER_PORT` | `3456` | HTTP 和 WebSocket 端口 |
-| `--cli-path <path>` | `CLAUDE_CLI_PATH` | 自动解析 | 指定 Server 拉起的 CLI |
-| `--auth-required` | `SERVER_AUTH_REQUIRED=1` | 关闭 | 对能力接口强制显式鉴权 |
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `--host <host>` | `127.0.0.1` | 监听地址 |
+| `--port <port>` | `3000` | HTTP 和 WebSocket 共用端口；`0` 由系统选择 |
+| `--app-root <path>` | 无 | 桌面资源根目录 |
+| `--h5-dist <path>` | 自动解析 | 包含 `index.html` 的 React 构建目录 |
+| `--model <id>` | 当前配置 | 默认模型 ID |
+| `--permission-mode <mode>` | 当前配置 | 默认工具权限模式 |
 
-命令行的 host 和 port 优先于环境变量。开发时建议保留回环地址；`0.0.0.0` 只表示接受外部连接，并不会自动完成 H5 授权、TLS 或反向代理配置。
+上面的示例显式使用 `3456`。当前 Go 入口不接受原 TypeScript Server 的 `--cli-path` 或 `--auth-required` 参数，也不以 `SERVER_PORT` 设置监听端口；Agent 会话由 Go 工厂在进程内构造。配置位置由 `HOME`（Windows 为 `USERPROFILE`）和 `CLAUDE_CONFIG_DIR` 决定。桌面 Host 会传入本地访问令牌 `CC_HAHA_LOCAL_ACCESS_TOKEN`，自定义本机客户端需使用同一令牌。
+
+开发时保留回环地址；`0.0.0.0` 不会自动配置 H5 授权、TLS 或反向代理。
 
 ## 提供 H5 页面
 
@@ -53,14 +58,14 @@ curl http://127.0.0.1:3456/health
 cd desktop
 bun run build
 cd ..
-bun run src/server/index.ts
+./bin/claude-haha server --host 127.0.0.1 --port 3456 --h5-dist ./desktop/dist
 ```
 
 Server 会自动查找仓库的 `desktop/dist`。从其他目录启动时，用绝对路径指定构建产物：
 
 ```bash
-CLAUDE_H5_DIST_DIR=/absolute/path/to/desktop/dist \
-  bun run /absolute/path/to/src/server/index.ts
+/absolute/path/to/bin/claude-haha server --host 127.0.0.1 --port 3456 \
+  --h5-dist /absolute/path/to/desktop/dist
 ```
 
 | 变量 | 说明 |
@@ -82,7 +87,7 @@ Server 根据请求来源和能力路径决定是否允许访问：
 | 直接回环请求 | 仅当客户端地址、Host 和 Origin 都是本机，且没有反向代理跟踪头时视为本机可信 |
 | H5 关闭时的远程能力请求 | 拒绝 `/api`、`/proxy`、`/ws` 和文件能力 |
 | H5 开启时的远程能力请求 | 要求有效 H5 Token，并校验浏览器 Origin |
-| `--auth-required` / `SERVER_AUTH_REQUIRED=1` | 即使 H5 未开启，也对能力接口要求显式认证 |
+| 本地访问令牌 | 桌面控制与敏感能力使用 `CC_HAHA_LOCAL_ACCESS_TOKEN`；H5 Token 不能代替本地凭据 |
 
 “连接来自 `127.0.0.1`”本身不足以证明是本机用户。反向代理必须保留公开 `Host`，或传递 `Forwarded`、`X-Forwarded-*`、`X-Real-IP`、`Via` 中至少一种，让 Server 能区分反代流量和直接回环流量。
 
@@ -91,8 +96,7 @@ Server 根据请求来源和能力路径决定是否允许访问：
 - REST、协议代理和文件接口：`Authorization: Bearer <token>`
 - 浏览器 WebSocket：`/ws/<session-id>?token=<token>`
 
-H5 模式使用设置页生成的 H5 Token。显式 `--auth-required` 模式也能接受与服务端 `ANTHROPIC_API_KEY` 相同的 Bearer Token，但不建议为了远程访问暴露模型密钥；优先启用 H5 并使用独立 Token。
-
+H5 模式使用设置页生成的 H5 Token；桌面 Host 和本地控制客户端使用独立的本地访问令牌。不要把模型 API 密钥作为公开远程访问凭据。
 CORS 只限制浏览器读取响应，不是身份认证。非浏览器客户端不会因为 CORS 而安全。
 
 ## HTTP 接口范围
@@ -107,7 +111,7 @@ CORS 只限制浏览器读取响应，不是身份认证。非浏览器客户端
 - 诊断、Doctor、活动统计、记忆和 traces；
 - H5 访问控制。
 
-具体请求与响应以 `src/server/api/` 的当前处理器为准。内部 `/sdk/<session-id>` WebSocket 是 Server 为自己拉起的 Claude CLI 使用的通道，不是第三方客户端 API。
+具体请求与响应以 `backend/internal/server/` 的处理器和 `desktop/src/api/` 的消费者为准。内部 `/sdk/<session-id>` 是兼容运行时协议，不能作为第三方客户端 API 使用。
 
 `/proxy/*` 是 Provider 的协议转换入口，包含运行时认证和模型路由状态。不要把它当成通用的、无状态 OpenAI 代理公开出去。
 
@@ -127,7 +131,7 @@ ws://127.0.0.1:3456/ws/<session-id>
 - `sync_state`、`prewarm_session`
 - `ping`
 
-服务端会发送连接与会话状态、文本增量、思考、工具调用与结果、权限请求、重试/降级状态、错误、任务/团队更新和 `pong`。完整字段以 `src/server/ws/events.ts` 为准。
+服务端会发送连接与会话状态、文本增量、思考、工具调用与结果、权限请求、重试/降级状态、错误、任务/团队更新和 `pong`。事件投影以 `backend/internal/application/projection.go` 和 `desktop/src/api/websocket.ts` 为准。
 
 桌面客户端每 30 秒发送一次 ping；等待 pong 10 秒后会主动重连。重连退避上限为 30 秒，并不会在固定次数后永久停止。自定义客户端应能重复连接、重新同步状态，并忽略未知的新增消息字段。
 
@@ -146,7 +150,7 @@ ws://127.0.0.1:3456/ws/<session-id>
 
 | 现象 | 检查 |
 |------|------|
-| 端口无法监听 | `SERVER_PORT` 是否被占用；是否传入了有效数字 |
+| 端口无法监听 | `--port` 是否被占用；是否传入了有效数字 |
 | `/health` 正常但 API 为 `403` | 请求被判定为远程，而 H5 尚未启用 |
 | API 或 WebSocket 为 `401` | H5 Token 过期、缺失，或 WebSocket 没有 query token |
 | 浏览器提示 CORS | 当前页面的精确 Origin 是否在 H5 允许列表 |

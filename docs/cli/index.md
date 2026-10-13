@@ -9,7 +9,7 @@ order: 0
 
 CLI 和桌面的本地服务使用同一套 Go Agent 实现，桌面界面仍使用 React。本文介绍当前源码的原生入口；已经安装的桌面应用需要重新构建或安装包含这些更改的版本才会更新。
 
-当前 Go 实现仍在迁移。普通默认工具目录已接入，基本开发运行无需显式指定工具；部分条件功能和交互入口仍未完成，遇到未迁移能力会返回错误。下面的命令用于运行已实现的路径。
+原生 CLI 提供交互式 TUI、print 模式、工具、会话、Skills、插件、MCP 和账号命令。两个入口构造同一套 Agent 执行图。构建、确定性回归和真实模型检查分别验证不同边界；源码说明不代表某个发行包或 Benchmark 已通过验收。
 
 ## 构建原生 CLI
 
@@ -52,11 +52,7 @@ export ANTHROPIC_MODEL='provider-model'
 
 原生入口不会自动加载仓库的 `.env`。请通过终端环境或进程管理器传入变量。认证头和接口配置说明见 [环境变量](./env.md)。
 
-当前原生工具执行需要关闭尚未迁移的遥测路径：
-
-```bash
-export DISABLE_TELEMETRY=1
-```
+需要关闭非必要流量时，可设置 `DISABLE_TELEMETRY=1` 或 `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1`。
 
 ## 启动终端或脚本模式
 
@@ -84,7 +80,7 @@ node scripts/cli/launch.cjs -p 'Summarize this project'
 ./bin/claude-haha --resume SESSION_ID --fork-session -p '根据已有历史继续分析' --output-format json
 ```
 
-将 `SESSION_ID` 换成实际 ID；JSON 结果的 `session_id` 是新 fork 的 ID，下一次使用它恢复。目前不要将 `--session-id` 和 `--resume` 一起使用。桌面消息的 fork/branch API 已接入同一历史恢复链，原生界面验收记录见迁移计划。测试历史副本时，应使用独立的 `HOME`、`CLAUDE_CONFIG_DIR` 和工作目录。
+将 `SESSION_ID` 换成实际 ID；JSON 结果的 `session_id` 是新 fork 的 ID，下一次使用它恢复。目前不要将 `--session-id` 和 `--resume` 一起使用。桌面消息的 fork/branch API 已接入同一历史恢复链，两个入口使用同一历史恢复实现。测试历史副本时，应使用独立的 `HOME`、`CLAUDE_CONFIG_DIR` 和工作目录。
 
 ## 账号状态与 Agent 列表
 
@@ -99,7 +95,7 @@ node scripts/cli/launch.cjs -p 'Summarize this project'
 
 `auth status` 默认返回 JSON，已认证时退出码为 0，未认证时为 1。`--text` 返回可读文本。`agents` 列出当前配置中发现的 Agent，包括用户、项目、插件与内置定义。
 
-退出账号时使用 `auth logout`；处理 OpenAI 凭据使用 `auth logout --openai`。退出命令会实际更新对应凭据和配置。CLI 的 `auth login` 浏览器登录与登录后安装流程仍在迁移，当前尚不可用。
+退出账号时使用 `auth logout`；处理 OpenAI 凭据使用 `auth logout --openai`。退出命令会实际更新对应凭据和配置。使用 `auth login` 进入浏览器账号登录流程，该操作需要访问所选账号服务商。账号回归使用隔离的 loopback OAuth 端点，不使用真实账号。
 
 ## 安装到自己的 PATH
 
@@ -132,7 +128,7 @@ CLI 和桌面共用配置路径。开发及测试时可用 `CLAUDE_CONFIG_DIR` �
 
 ## IM 适配器入口
 
-桌面端在设置 → IM 中管理绑定、配对和适配器进程。当前 Go 原生消息运行时支持 Telegram、Slack、微信、企业微信、QQ、钉钉和飞书；这些入口通过同一个本地服务使用 Agent、会话恢复和工具权限。
+桌面端在设置 → IM 中管理绑定、配对和适配器进程。当前 Go 原生消息运行时支持 Telegram、Slack、微信、企业微信、QQ、钉钉、飞书和 WhatsApp；这些入口通过同一个本地服务使用 Agent、会话恢复和工具权限。
 
 需要单独调试进程时，构建原生 CLI 后执行：
 

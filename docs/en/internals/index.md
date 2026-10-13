@@ -10,19 +10,18 @@ order: 0
 cc-haha looks like one desktop app, but it is five pieces of code that each run on their own. Before reading source or opening a PR, get the boundaries straight — every other page in this section lives inside one of them.
 
 ```text
-desktop/src/          Frontend — React + Zustand. Draws the UI, touches no native capability.
-desktop/electron/     Desktop shell — Electron main process: windows, updates, terminals, native preview.
-src/server/           Local server — REST + WebSocket on Bun.serve, shared by desktop and phone.
-src/                  CLI core — agent loop, tool system, permissions, memory, skills.
-adapters/             IM bridges — one sidecar per platform, all wired back to the same sessions.
+desktop/src/                 React + Zustand UI calling Go over HTTP/WebSocket
+desktop/electron/            Electron host: windows, terminal, native capabilities, Go sidecar
+backend/internal/server/     Go REST, WebSocket, sessions, access control
+backend/internal/application/  Shared Agent factory and desktop projection
+backend/internal/clibootstrap/  Agent bootstrap, tools, permissions, skills, execution graph
+backend/internal/tui/        Native Go interactive terminal
+backend/internal/imruntime/  Eight Go IM integrations and their shared session bridge
 ```
 
-Three facts are worth holding onto:
+Desktop, H5, and IM clients access sessions through the same Go server. The server constructs Agent sessions in process with `application.DesktopFactory`; the terminal CLI uses the same `MainPrint` graph. Go executes model requests, tools, and permissions. React and the Electron host own the interface and native capabilities.
 
-- **The CLI core is the only thing that executes.** Every desktop session makes the server spawn a CLI subprocess; every button in the frontend eventually becomes a message sent to it.
-- **The local server is the only entry point.** Desktop, mobile H5, and IM adapters share one REST and WebSocket surface — they differ only in how much they are trusted.
-- **Electron is the current desktop path.** `desktop/src-tauri/` keeps packaging assets and historical code as a rollback option; it is not the runtime.
-
+`src/`, `adapters/`, and `desktop/sidecars/claude-sidecar.ts` retain the TypeScript reference implementation for source comparison and deterministic differential tests. The desktop business sidecar build targets `backend/cmd/claude-haha`. Electron is the current host; the Tauri tree retains native assets and compatibility entry points.
 ## How the CLI core is layered
 
 ![The layered structure of the CLI core](../../images/01-overall-architecture.png)

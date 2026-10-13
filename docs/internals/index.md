@@ -10,19 +10,18 @@ order: 0
 cc-haha 看着是一个桌面应用，实际是五块可以各自独立运行的代码拼起来的。想读源码或者提 PR，先把这五块的边界分清楚，后面每一篇都会落在其中一块里。
 
 ```text
-desktop/src/          前端 —— React + Zustand，只画界面，不碰系统能力
-desktop/electron/     桌面壳 —— Electron 主进程，管窗口、更新、终端、原生预览
-src/server/           本地 Server —— Bun.serve 的 REST + WebSocket，桌面端和手机端共用
-src/                  CLI 内核 —— Agent 循环、工具系统、权限、记忆、Skills
-adapters/             IM 接入 —— 每个平台一个独立 sidecar，桥回同一套会话
+desktop/src/                 React + Zustand 界面，通过 HTTP/WebSocket 调用 Go 服务
+desktop/electron/            Electron Host，管理窗口、终端、原生能力和 Go sidecar
+backend/internal/server/     Go 本地 REST、WebSocket、会话和访问控制
+backend/internal/application/  CLI / 桌面会话共用的 Agent 工厂与投影
+backend/internal/clibootstrap/  Agent 初始化、工具、权限、Skills 和主执行图
+backend/internal/tui/        Go 交互式终端
+backend/internal/imruntime/  八个平台的 Go IM 接入与共享会话桥
 ```
 
-三条事实值得先记住：
+桌面端、H5 和 IM 通过同一个 Go Server 访问会话。Server 在进程内使用 `application.DesktopFactory` 创建 Agent 会话；终端 CLI 使用同一套 `MainPrint` 执行图。模型请求、工具与权限处理在 Go 中执行，React 和 Electron Host 负责界面与系统能力。
 
-- **CLI 内核是唯一执行方**。桌面端每开一个会话，Server 就拉起一个 CLI 子进程；前端点的每个按钮最后都变成发给它的一条消息。
-- **本地 Server 是唯一入口**。桌面端、手机 H5、IM adapter 走的是同一套 REST 与 WebSocket，只是鉴权等级不同。
-- **Electron 是当前桌面主路径**，`desktop/src-tauri/` 只保留打包资源和历史代码作回滚，不是运行时。
-
+`src/`、`adapters/` 和 `desktop/sidecars/claude-sidecar.ts` 保留 TypeScript 原实现，供源码对照和确定性差分测试使用；桌面的业务 sidecar 构建目标是 `backend/cmd/claude-haha`。Electron 是当前桌面主路径，Tauri 目录保留原生资源和兼容入口。
 ## CLI 内核怎么分层
 
 ![CLI 内核的整体分层](../images/01-overall-architecture.png)

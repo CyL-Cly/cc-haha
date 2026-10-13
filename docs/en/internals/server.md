@@ -14,10 +14,11 @@ The local server is the runtime boundary between Desktop, the H5 browser client,
 From the repository root:
 
 ```bash
-bun run src/server/index.ts
+bun run build:cli
+./bin/claude-haha server --host 127.0.0.1 --port 3456
 ```
 
-It listens on `127.0.0.1:3456` by default. Check readiness with:
+This example listens on `127.0.0.1:3456`. Check readiness with:
 
 ```bash
 curl http://127.0.0.1:3456/health
@@ -36,14 +37,18 @@ Response shape:
 
 ## Startup options
 
-| Option | Environment variable | Default | Description |
-|--------|----------------------|---------|-------------|
-| `--host <host>` | `SERVER_HOST` | `127.0.0.1` | Listen address |
-| `--port <port>` | `SERVER_PORT` | `3456` | HTTP and WebSocket port |
-| `--cli-path <path>` | `CLAUDE_CLI_PATH` | Automatically resolved | CLI started by the server |
-| `--auth-required` | `SERVER_AUTH_REQUIRED=1` | Off | Require explicit authentication for capability endpoints |
+| Option | Default | Purpose |
+|---|---|---|
+| `--host <host>` | `127.0.0.1` | Listener address |
+| `--port <port>` | `3000` | Shared HTTP/WebSocket port; `0` asks the OS |
+| `--app-root <path>` | Unset | Desktop resource root |
+| `--h5-dist <path>` | Resolved from resources | React build directory containing `index.html` |
+| `--model <id>` | Current configuration | Default model ID |
+| `--permission-mode <mode>` | Current configuration | Default tool permission mode |
 
-Command-line host and port values take precedence over environment variables. Keep the loopback address for development. Listening on `0.0.0.0` accepts external connections but does not configure H5 authorization, TLS, or a reverse proxy.
+The examples explicitly use port `3456`. The Go entry does not accept the old TypeScript server’s `--cli-path` or `--auth-required` flags, or use `SERVER_PORT` to select a port. It constructs Agent sessions in process with the Go factory. `HOME` (`USERPROFILE` on Windows) and `CLAUDE_CONFIG_DIR` select configuration storage. The desktop host provides `CC_HAHA_LOCAL_ACCESS_TOKEN`; a custom local client needs the same token.
+
+Keep loopback binding for local development. `0.0.0.0` does not configure H5 access, TLS, or a reverse proxy.
 
 ## Serve the H5 client
 
@@ -53,14 +58,14 @@ For a source launch, build the Desktop web assets first:
 cd desktop
 bun run build
 cd ..
-bun run src/server/index.ts
+./bin/claude-haha server --host 127.0.0.1 --port 3456 --h5-dist ./desktop/dist
 ```
 
 The server automatically finds `desktop/dist` in the repository. When starting from another directory, provide the absolute build path:
 
 ```bash
-CLAUDE_H5_DIST_DIR=/absolute/path/to/desktop/dist \
-  bun run /absolute/path/to/src/server/index.ts
+/absolute/path/to/bin/claude-haha server --host 127.0.0.1 --port 3456 \
+  --h5-dist /absolute/path/to/desktop/dist
 ```
 
 | Variable | Description |
@@ -82,7 +87,7 @@ The server classifies the source of each request before granting access to a cap
 | Direct loopback request | Trusted only when client address, Host, and Origin are local and no proxy-trace header is present |
 | Remote capability request while H5 is disabled | Denied for `/api`, `/proxy`, `/ws`, and file capabilities |
 | Remote capability request while H5 is enabled | Requires a valid H5 token and an allowed browser Origin |
-| `--auth-required` / `SERVER_AUTH_REQUIRED=1` | Requires explicit authentication for capability endpoints even when H5 is disabled |
+| Local access token | Desktop control and sensitive capabilities use `CC_HAHA_LOCAL_ACCESS_TOKEN`; an H5 token cannot replace it |
 
 A TCP peer address of `127.0.0.1` does not prove that the end user is local. A reverse proxy must preserve the public `Host` or send at least one of `Forwarded`, `X-Forwarded-*`, `X-Real-IP`, or `Via`, allowing the server to distinguish proxied traffic from direct loopback traffic.
 
@@ -91,8 +96,7 @@ A TCP peer address of `127.0.0.1` does not prove that the end user is local. A r
 - REST, provider proxy, and file endpoints: `Authorization: Bearer <token>`
 - Browser WebSocket: `/ws/<session-id>?token=<token>`
 
-H5 mode uses the token generated in Settings. Explicit `--auth-required` mode can also accept a bearer token equal to the server's `ANTHROPIC_API_KEY`, but exposing a model credential for remote access is discouraged. Prefer H5 with its separate token.
-
+H5 uses the token generated in Settings. The desktop host and local control clients use an independent local access token. Keep model API keys separate from public remote access credentials.
 CORS restricts browser access to responses; it is not authentication. It does not make a non-browser client safe.
 
 ## HTTP API surface
@@ -107,7 +111,7 @@ Business REST APIs live under `/api/*` and cover:
 - diagnostics, Doctor, activity statistics, memory, and traces;
 - H5 access control.
 
-For exact request and response shapes, use the current handlers under `src/server/api/`. The internal `/sdk/<session-id>` WebSocket is used by the Claude CLI process started by the server; it is not a third-party client API.
+For exact requests and responses, use handlers under `backend/internal/server/` and their consumers in `desktop/src/api/`. The internal `/sdk/<session-id>` supports the runtime compatibility protocol; it is not a third-party client API.
 
 `/proxy/*` is the provider protocol-translation boundary and depends on runtime authentication and model-routing state. Do not expose it as a general-purpose stateless OpenAI proxy.
 
@@ -127,7 +131,7 @@ Common client messages include:
 - `sync_state` and `prewarm_session`;
 - `ping`.
 
-The server sends connection and session state, text deltas, thinking, tool calls and results, permission requests, retry or fallback state, errors, task or team updates, and `pong`. Use `src/server/ws/events.ts` as the complete field contract.
+The server sends connection and session state, text deltas, thinking, tool calls and results, permission requests, retry or fallback state, errors, task or team updates, and `pong`. Use `backend/internal/application/projection.go` and `desktop/src/api/websocket.ts` for event production and consumption.
 
 The Desktop client sends a ping every 30 seconds and reconnects if no pong arrives within 10 seconds. Reconnect delay is capped at 30 seconds; it does not stop permanently after a fixed number of attempts. A custom client should reconnect, resynchronize state, and ignore unknown fields added to future messages.
 
@@ -146,7 +150,7 @@ For remote use:
 
 | Symptom | Check |
 |---------|-------|
-| Port does not bind | Whether `SERVER_PORT` is occupied and contains a valid number |
+| Port does not bind | Whether `--port` is occupied and contains a valid number |
 | `/health` works but an API returns `403` | The request is classified as remote while H5 is disabled |
 | API or WebSocket returns `401` | H5 token is missing or stale, or the WebSocket lacks a query token |
 | Browser reports CORS | The page's exact Origin is in the H5 allowed-origin list |

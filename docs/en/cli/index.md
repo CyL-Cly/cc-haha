@@ -9,7 +9,7 @@ order: 0
 
 The CLI and desktop local server share the Go Agent implementation; the desktop interface still uses React. This page describes the native entry points in the current source. An installed desktop app needs a new build or release containing these changes before it updates.
 
-The Go implementation is still being migrated. The ordinary default tool catalog is connected, so basic development runs do not need explicit tools. Some conditional features and interactive entry points remain unfinished. Unported capabilities return an error. The commands below use implemented paths.
+The native CLI provides the interactive TUI, print mode, tools, sessions, skills, plugins, MCP, and account commands. Both entries construct the same Agent graph. A build, deterministic regression, and a real provider check establish different facts; source documentation does not certify a release or benchmark result.
 
 ## Build the native CLI
 
@@ -52,11 +52,7 @@ export ANTHROPIC_MODEL='provider-model'
 
 The native entry does not automatically load the repository `.env`. Pass variables through your terminal environment or process manager. See [Environment variables](./env.md) for authentication headers and endpoint configuration.
 
-Native tool execution currently requires disabling the telemetry path that has not yet been migrated:
-
-```bash
-export DISABLE_TELEMETRY=1
-```
+Use `DISABLE_TELEMETRY=1` or `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1` to disable non-essential traffic when needed.
 
 ## Run terminal or script mode
 
@@ -84,7 +80,7 @@ Use `--resume` from the original working directory and the same configuration di
 ./bin/claude-haha --resume SESSION_ID --fork-session -p 'Continue the analysis using the existing history' --output-format json
 ```
 
-Replace `SESSION_ID` with the actual ID. The JSON result's `session_id` identifies the new fork; resume that ID on the next run. Currently, do not combine `--session-id` with `--resume`. The desktop message fork/branch API uses the same history restoration chain; native UI validation is recorded in the migration plan. Use a separate `HOME`, `CLAUDE_CONFIG_DIR`, and workspace when testing copied histories.
+Replace `SESSION_ID` with the actual ID. The JSON result's `session_id` identifies the new fork; resume that ID on the next run. Currently, do not combine `--session-id` with `--resume`. The desktop message fork/branch API uses the same history restoration chain; both entries use the same transcript restoration implementation. Use a separate `HOME`, `CLAUDE_CONFIG_DIR`, and workspace when testing copied histories.
 
 ## Account status and Agent listing
 
@@ -99,7 +95,7 @@ These commands read the current CLI configuration and credentials without making
 
 `auth status` returns JSON by default and exits with 0 when authenticated or 1 otherwise. `--text` returns readable text. `agents` lists discovered user, project, plugin and built-in Agent definitions.
 
-Use `auth logout` to clear the Anthropic account state, or `auth logout --openai` to handle OpenAI credentials. These commands update the corresponding stored credentials and configuration. The CLI `auth login` browser flow and post-login installation are still being migrated and are currently unavailable.
+Use `auth logout` to clear the Anthropic account state, or `auth logout --openai` to handle OpenAI credentials. These commands update the corresponding stored credentials and configuration. Use `auth login` for the browser account flow; access to the selected account provider is required. Account tests use isolated loopback OAuth endpoints, not real accounts.
 
 ## Install on your PATH
 
