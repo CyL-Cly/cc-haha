@@ -15,6 +15,10 @@ describe('evaluateChangePolicy', () => {
     'scripts/pr/go-dependencies.ts',
     'scripts/pr/go-platforms.ts',
     'scripts/pr/run-go-matrix.ts',
+    'scripts/perf/go-main-paired-benchmark.ts',
+    'scripts/perf/go-main-paired-benchmark-core.ts',
+    'scripts/perf/go-main-paired-benchmark-evidence.ts',
+    'scripts/perf/go-main-source-live.ts',
     'scripts/quality-gate/agent-flow/fixtures/workspace/src/notes.md',
     'contracts/session.json',
   ])('routes cross-process Go contracts without relying on JS imports: %s', file => {
@@ -108,7 +112,7 @@ describe('evaluateChangePolicy', () => {
       'docs/index.md',
       'site/src/App.tsx',
       'README.md',
-      'README.zh-CN.md',
+      'README.en.md',
     ])
 
     expect(result.blocked).toBe(false)
@@ -482,6 +486,28 @@ describe('evaluateChangePolicy dependent-file widening', () => {
     ]).checks.agentFlow).toBe(false)
   })
 
+  test('selects the mock-LLM agent lane for any runtime source change', () => {
+    // The lane runs the real CLI agent loop, so a change anywhere in the runtime can
+    // break it — not only the server/WebSocket paths the mock-CLI lane watches.
+    const toolChange = evaluateChangePolicy(['src/tools/BashTool/BashTool.tsx', 'src/tools/BashTool/BashTool.test.ts'])
+    expect(toolChange.checks.agentE2e).toBe(true)
+    expect(toolChange.checks.agentFlow).toBe(false)
+
+    for (const harness of [
+      'scripts/quality-gate/mock-llm/scriptedModel.ts',
+      'scripts/quality-gate/agent-flow/live.ts',
+      'scripts/quality-gate/sandbox.ts',
+      'bun.lock',
+    ]) {
+      expect(evaluateChangePolicy([harness]).checks.agentE2e, harness).toBe(true)
+    }
+
+    // Desktop-only, docs-only, and agent instruction edits stay out of it.
+    expect(evaluateChangePolicy(['desktop/src/pages/Settings.tsx', 'desktop/src/pages/Settings.test.tsx']).checks.agentE2e).toBe(false)
+    expect(evaluateChangePolicy(['docs/guide/install.md']).checks.agentE2e).toBe(false)
+    expect(evaluateChangePolicy(['src/AGENTS.md']).checks.agentE2e).toBe(false)
+  })
+
   test('ignores dependents that are already part of the diff', () => {
     const result = evaluateChangePolicy(
       ['desktop/src/lib/a.ts', 'desktop/src/lib/a.test.ts'],
@@ -492,4 +518,47 @@ describe('evaluateChangePolicy dependent-file widening', () => {
     expect(result.checks.desktop).toBe(true)
     expect(result.checks.desktopNative).toBe(false)
   })
+})
+
+test.each([
+  'scripts/quality-gate/goBackend.ts',
+  'scripts/quality-gate/goBackend.test.ts',
+  'scripts/quality-gate/go-parity/native-team-supervisor-helpers.fixture.ts',
+  'backend/internal/trajectory/service.go',
+  'backend/internal/promptsnapshot/service_test.go',
+  'backend/internal/imageinput/unsupported.go',
+  'backend/internal/modelyield/native_stream_watchdog.go',
+  'backend/internal/streamhistory/early_end.go',
+])('native runtime and fixture changes retain Go, parity, and changed coverage: %s', file => {
+  const selection = evaluateChangePolicy([file], ['allow-cli-core-change'])
+  expect(selection.checks.go).toBe(true)
+  expect(selection.checks.goParity).toBe(true)
+  expect(selection.checks.coverage).toBe(true)
+})
+
+test.each(['backend/internal/whatsappcompat/device_state.go', 'scripts/quality-gate/go-persistence.ts', 'scripts/quality-gate/persistence-upgrade.ts'])('native persisted compatibility changes retain the dedicated persistence lane: %s', file => {
+  const result = evaluateChangePolicy([file])
+  expect(result.checks.go).toBe(true)
+  expect(result.checks.goParity).toBe(true)
+  expect(result.checks.persistence).toBe(true)
+})
+
+test.each([
+  'desktop/src/components/settings/ConnectorsTab.tsx',
+  'desktop/src/api/trajectory.ts',
+  'desktop/src/types/trajectory.ts',
+  'desktop/electron/main.ts',
+  'desktop/scripts/build-go-server.ts',
+  'adapters/wechat/index.ts',
+  'adapters/common/session-recovery.ts',
+])('cross-process consumers cannot escape the Go runtime gates: %s', file => {
+  const selection = evaluateChangePolicy([file], [])
+  expect(selection.checks.go).toBe(true)
+  expect(selection.checks.goParity).toBe(true)
+})
+
+test('generic performance scripts do not require Go environments or invoke live runs', () => {
+  const generic = evaluateChangePolicy(['scripts/perf/session-open-benchmark.ts'])
+  expect(generic.checks.policy).toBe(true)
+  expect(generic.checks.go).toBe(false)
 })

@@ -44,24 +44,24 @@ for (const row of input.rows) {
  local.backgroundAgentTask(id, () => current, rootSetAppState)
  let oldReturned = false
  // Native async-iterator I/O is an external primitive. The entire actual
- // business promotion branch, real task helpers/finalizer and one-second race
+ // business promotion branch and real task helpers/finalizer
  // below execute unchanged from AgentTool source; no production TS fallback.
  const original = (async function* () {
-  try { await sleep(row.pendingMs); event('old-pending-yield'); yield { type: 'assistant', message: { content: [{ type: 'text', text: 'lost pending value' }] } } }
+  try { await sleep(row.pendingMs); event('old-pending-yield'); yield { type: 'assistant', uuid: 'physical-pending-message', message: { role: 'assistant', usage: { input_tokens: 2, output_tokens: 3 }, content: [{ type: 'text', text: 'native pending response' }] } } }
   finally { event('old-finally-start'); await sleep(row.finallyMs); event('old-finally-done'); if (row.finallyReject) throw new Error('native close rejected') }
  })()
  const next = original.next()
- const agentIterator = { return(value: any) { event('iterator-return-called'); return original.return(value).finally(() => { oldReturned = true }) } }
+ const agentIterator = { next() { event('iterator-next-called'); return original.next() }, return(value: any) { event('iterator-return-called'); return original.return(value).finally(() => { oldReturned = true }) } }
  let background: Promise<any> | undefined
  let complete: () => void = () => {}
  const backgroundDone = new Promise<void>(resolve => { complete = resolve })
  const context: any = {
   raceResult: { type: 'background' }, foregroundTaskId: id,
-  toolUseContext: { getAppState: () => current, setAppState: rootSetAppState, toolUseId: 'source-promotion-card', options: { tools: [{ name: 'Read' }] } },
+  toolUseContext: { abortController: new AbortController(), getAppState: () => current, setAppState: rootSetAppState, toolUseId: 'source-promotion-card', options: { tools: [{ name: 'Read' }] } },
   isLocalAgentTask: local.isLocalAgentTask, wasBackgrounded: false, syncAgentContext: { agentType: 'subagent', agentId: id }, syncAgentId: id,
   stopForegroundSummarization: () => event('foreground-summary-stop'),
   runWithAgentContext(context: any, callback: any) { background = runWithAgentContext(context, callback).finally(complete); return background },
-  agentIterator, sleep, rootSetAppState, selectedAgent, asAgentId,
+  agentIterator, nextMessagePromise: next, abortFromParent() {}, releaseSubagentSlot() { event('release-slot') }, slotTransferred: false, sleep, rootSetAppState, selectedAgent, asAgentId,
   agentMessages: [], metadata: { prompt: 'Original prompt', agentType: 'general-purpose', resolvedAgentModel: 'fixture-model', startTime: Date.now(), isBuiltInAgent: true, isAsync: false },
   runAgentParams: { promptMessages: [{ uuid: 'original-prompt-uuid' }], override: { agentId: id } },
   async *runAgent(params: any) {

@@ -141,4 +141,4 @@ observation.clients = clients
 observation.keyLookups = keyLookups
 observation.yieldedAfter = yielded.map(value => JSON.stringify(value))
 observation.historyAfter = history.map(value => JSON.stringify(value))
-process.stdout.write(JSON.stringify({ observation: { ...observation, ...(input.toolDefinitions ? { promptCalls } : {}) }, sourceOnly: { capabilities, pairingEvidence, sdk: '0.80.0', runtime: { platform: process.platform, arch: process.arch, version: process.version } } }))
+process.stdout.write(JSON.stringify({ observation: { ...observation, ...(input.toolDefinitions ? { promptCalls } : {}) }, sourceOnly: { capabilities, pairingEvidence, sdk: '0.128.0', runtime: { platform: process.platform, arch: process.arch, version: process.version } } }))

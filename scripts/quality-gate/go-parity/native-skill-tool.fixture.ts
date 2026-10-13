@@ -8,7 +8,7 @@ const writeJSON = (value: unknown) => new Promise<void>((resolve, reject) => pro
 const home = assertDisposableFixtureHome(input.homeDir, 'Native Skill tool')
 if (process.env.CC_HAHA_NATIVE_SKILL_TOOL_FIXTURE !== '1' || process.env.NODE_ENV !== 'production') throw new Error('Unowned Skill tool fixture')
 const hasResourcePeer = !!(input.resourceMentions || input.resourceToolCalls || input.resourceParallel)
-const capabilities = await installClientFixtureCapabilities(home, { ...(hasResourcePeer ? {loopbackFetchOrigin: new URL(input.mcpURL).origin} : {}), absentPaths: [...absentManagedSettingsFixturePaths(), ...(hasResourcePeer ? ['/home/claude/.claude/remote/.session_ingress_token'] : []), ...(input.models || input.calls || input.slashes || input.bundles || input.flow || input.fileMentions || hasResourcePeer ? ['/home/claude/.claude/remote/.api_key', '/home/claude/.claude/remote/.oauth_token'] : []), ...(input.calls || input.slashes || input.flow || input.fileMentions || hasResourcePeer ? [join(dirname(process.execPath), 'rg'), '/usr/bin/rg', '/bin/rg'] : [])] })
+const capabilities = await installClientFixtureCapabilities(home, { ...(hasResourcePeer ? {loopbackFetchOrigin: new URL(input.mcpURL).origin} : {}), absentPaths: [...absentManagedSettingsFixturePaths(), ...(input.disableSlashCommands ? input.slashes.map((text: string) => '/' + text.slice(1).split(' ')[0]) : []), ...(hasResourcePeer ? ['/home/claude/.claude/remote/.session_ingress_token'] : []), ...(input.models || input.calls || input.slashes || input.bundles || input.flow || input.fileMentions || hasResourcePeer ? ['/home/claude/.claude/remote/.api_key', '/home/claude/.claude/remote/.oauth_token'] : []), ...(input.calls || input.slashes || input.flow || input.fileMentions || hasResourcePeer ? [join(dirname(process.execPath), 'rg'), '/usr/bin/rg', '/bin/rg'] : [])] })
 if (input.models || input.calls || input.slashes || input.bundles || input.flow || input.fileMentions || hasResourcePeer) {
   // The sole replaced boundary is the absent native keychain-prefetch result.
   // Direct credentials still go through the original model/auth/settings code.
@@ -199,11 +199,11 @@ if (input.permissions || input.resourcePermissions || input.usages || input.mode
     const { getEmptyToolPermissionContext } = await import('../../../src/Tool')
     const { getCommands } = await import('../../../src/commands')
     const { processSlashCommand } = await import('../../../src/utils/processUserInput/processSlashCommand')
-    const context: any = { getAppState: () => ({ toolPermissionContext: getEmptyToolPermissionContext(), mcp: { commands: [] }, effortValue: 'high' }), setAppState: () => { throw new Error('Unexpected Skill state setter') }, abortController: new AbortController(), options: { commands: await getCommands(cwd), tools: [SkillTool], agents: [], agentDefinitions: {activeAgents: []}, mainLoopModel: 'opus[1m]' }, messages: [] }
+    const context: any = { getAppState: () => ({ toolPermissionContext: getEmptyToolPermissionContext(), mcp: { commands: [] }, effortValue: 'high' }), setAppState: () => { throw new Error('Unexpected Skill state setter') }, abortController: new AbortController(), options: { commands: input.disableSlashCommands ? [] : await getCommands(cwd), tools: [SkillTool], agents: [], agentDefinitions: {activeAgents: []}, mainLoopModel: 'opus[1m]' }, messages: [] }
     const slashes = []
     for (const text of input.slashes) {
       const result = await processSlashCommand(text, [], [], [], context, () => { throw new Error('Unexpected JSX local command') })
-      slashes.push({ messages: result.messages.map((m: any) => { const {uuid,timestamp,...rest}=m; return rest }), shouldQuery: result.shouldQuery, model: result.model, effort: result.effort, allowedTools: result.allowedTools })
+      slashes.push({ messages: result.messages.map((m: any) => { const {uuid,timestamp,...rest}=m; return rest }), shouldQuery: result.shouldQuery, ...(input.disableSlashCommands ? {resultText:result.resultText} : {}), model: result.model, effort: result.effort, allowedTools: result.allowedTools })
     }
     await writeJSON({ slashes, capabilities })
     process.exit(0)

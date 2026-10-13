@@ -183,4 +183,5 @@ observation.clients = clients
 observation.keyLookups = keyLookups
 observation.yieldedAfter = input.layer === 'creation' ? [...observation.notices] : yielded.map(value => JSON.stringify(value))
 observation.historyAfter = history.map(value => JSON.stringify(value))
-process.stdout.write(JSON.stringify({ observation, sourceOnly: { capabilities, pairingEvidence, queryTerminal, sdk: '0.80.0', runtime: { platform: process.platform, arch: process.arch, version: process.version } } }))
+const { VERSION: sdkVersion } = await import('@anthropic-ai/sdk/version')
+process.stdout.write(JSON.stringify({ observation, sourceOnly: { capabilities, pairingEvidence, queryTerminal, sdk: sdkVersion, runtime: { platform: process.platform, arch: process.arch, version: process.version } } }))

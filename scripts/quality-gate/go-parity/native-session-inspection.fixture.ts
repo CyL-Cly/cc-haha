@@ -7,6 +7,7 @@ const input = JSON.parse(await new Response(Bun.stdin.stream()).text())
 const home = assertDisposableFixtureHome(input.home, 'Session inspection transcript')
 if (process.env.CC_HAHA_SESSION_INSPECTION_FIXTURE !== '1') throw new Error('Unowned session inspection fixture')
 const absentPaths = absentManagedSettingsFixturePaths()
+absentPaths.push('/home/claude/.claude/remote/.api_key', '/home/claude/.claude/remote/.oauth_token')
 absentPaths.push(join(dirname(process.execPath), 'rg'), '/usr/bin/rg', '/bin/rg')
 for (let path = dirname(home); ; path = dirname(path)) {
   for (const name of ['.git', '.claude/skills', '.claude/commands', '.agents/skills', '.agents/commands']) absentPaths.push(join(path, name))

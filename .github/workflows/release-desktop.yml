@@ -752,6 +752,16 @@ jobs:
           path: desktop/build-artifacts/electron/latest*.yml
           if-no-files-found: ignore
 
+      - name: Stage final Go CLI release asset
+        run: bun run scripts/cli/stage-release.ts ${{ matrix.target_triple }} artifacts/cli-release
+
+      - name: Upload Go CLI release artifacts for final publish
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-release-artifacts-go-cli-${{ matrix.label }}
+          path: artifacts/cli-release/*
+          if-no-files-found: error
+
       - name: Upload release artifacts for final publish
         uses: actions/upload-artifact@v4
         with:
@@ -849,6 +859,9 @@ jobs:
           path: artifacts/release-assets
           merge-multiple: true
 
+      - name: Generate complete Go CLI release manifest
+        run: bun run scripts/cli/release-manifest.ts artifacts/release-assets ${{ steps.version.outputs.value }}
+
       - name: Validate complete release asset set
         shell: bash
         env:
@@ -873,6 +886,13 @@ jobs:
             "Claude-Code-Haha-${APP_VERSION}-win-x64.exe.blockmap"
             "Claude-Code-Haha-${APP_VERSION}-win-arm64.exe"
             "Claude-Code-Haha-${APP_VERSION}-win-arm64.exe.blockmap"
+            "claude-haha-darwin-amd64"
+            "claude-haha-darwin-arm64"
+            "claude-haha-linux-amd64"
+            "claude-haha-linux-arm64"
+            "claude-haha-windows-amd64.exe"
+            "claude-haha-windows-arm64.exe"
+            "claude-haha-cli-manifest.json"
           )
 
           missing=()
@@ -929,6 +949,7 @@ jobs:
             artifacts/release-assets/**/*.deb
             artifacts/release-assets/**/*.rpm
             artifacts/release-assets/**/*.blockmap
+            artifacts/release-assets/**/claude-haha-*
             artifacts/update-metadata-standard/*.yml
             desktop/scripts/install-macos-unsigned.sh
 

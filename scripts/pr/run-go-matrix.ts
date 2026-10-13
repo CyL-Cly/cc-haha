@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os'
 import { isAbsolute, join, resolve } from 'node:path'
 import { GO_PLATFORMS, goSourceSnapshot, scanGoSources, type GoPlatformEvidence, type GoSourceScope } from './go-platforms'
 import { collectGoChangedLines, createGoTestEnvironment, type GoDeclarationEvidence } from './run-go-tests'
+import { collectCorpusSnapshot } from '../quality-gate/go-parity/manifest'
 
 type Changed = Array<{ file: string; lines: number[] }>
 type Coverage = {
@@ -14,6 +15,7 @@ export type GoMatrixInput = {
   schemaVersion: number; status: string; scope: string; allTargets: string
   platform?: GoPlatformEvidence; sources?: GoSourceScope
   sourceSnapshot?: ReturnType<typeof goSourceSnapshot>; changed?: Changed
+  repositoryInputs?: Awaited<ReturnType<typeof collectCorpusSnapshot>>
   packages: string[]; packagesWithoutTestFiles?: string[]
   unit?: { packages: string[]; passedTests: number; noTestPackages?: string[] }
   race?: { packages: string[]; passedTests: number; noTestPackages?: string[] }
@@ -25,7 +27,7 @@ const isProduction = (file: string) => file.startsWith('backend/') && file.endsW
 const equal = (left: unknown, right: unknown) => JSON.stringify(left) === JSON.stringify(right)
 
 export function evaluateGoPlatformClosure(reports: GoMatrixInput[], expected: {
-  minimumPercent: number; sourceSnapshot: ReturnType<typeof goSourceSnapshot>; goSources: string[]; changed: Changed
+  minimumPercent: number; sourceSnapshot: ReturnType<typeof goSourceSnapshot>; repositoryInputs: Awaited<ReturnType<typeof collectCorpusSnapshot>>; goSources: string[]; changed: Changed
 }) {
   const failures: string[] = []
   const evidence = new Map<string, GoMatrixInput>()
@@ -42,6 +44,7 @@ export function evaluateGoPlatformClosure(reports: GoMatrixInput[], expected: {
     if (report.schemaVersion !== 1 || report.status !== 'passed' || report.scope !== 'current-target' || report.allTargets !== 'not-run' || report.failures?.length !== 0) fail('current-target checks did not pass with the expected report schema')
     if (report.platform?.native !== true) fail('missing actual native execution evidence')
     if (!equal(report.sourceSnapshot, expected.sourceSnapshot) || !equal(report.changed, expected.changed)) fail('source/threshold snapshot or changed-line coordinates differ from the final diff')
+    if (!equal(report.repositoryInputs, expected.repositoryInputs)) fail('repository input bytes, Source fixtures or dependency locks differ from the final diff')
     if (!report.sources || !equal([...report.sources.formatted].sort(), sources)) fail('formatting did not inventory every backend Go source')
     if (report.sources) {
       const sets = [report.sources.active, report.sources.excluded, report.sources.unknown]
@@ -114,6 +117,7 @@ if (import.meta.main) {
     const result = evaluateGoPlatformClosure(reportFiles(resolve(directory)).map(path => JSON.parse(readFileSync(path, 'utf8'))), {
       minimumPercent: thresholds.changedLines?.minimumPercent ?? Number.NaN,
       sourceSnapshot: goSourceSnapshot(root, scanGoSources(join(root, 'backend'))),
+      repositoryInputs: await collectCorpusSnapshot(root, createGoTestEnvironment(home)),
       goSources: scanGoSources(join(root, 'backend')).map(path => `backend/${path.slice(join(root, 'backend').length + 1).replace(/\\/g, '/')}`),
       changed: [...changed].sort(([a], [b]) => a.localeCompare(b)).map(([file, lines]) => ({ file, lines: [...lines].sort((a, b) => a - b) })),
     })

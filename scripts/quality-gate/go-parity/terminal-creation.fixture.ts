@@ -69,4 +69,5 @@ const rows = input.cases.map(item => {
   const result = item.factoryOptions ? createAssistantAPIErrorMessage(item.factoryOptions as any) : getAssistantMessageFromError(selected, 'deepseek-flash')
   return { name: item.name, result: JSON.stringify(result), allocations: [...allocations], uuidCalls: calls }
 })
-process.stdout.write(JSON.stringify({ rows, sourceOnly: { capabilities, bun: Bun.version, revision: Bun.revision, sdk: '0.80.0', boundary: 'actual exported mapper/shared factory; complete query caller remains separate' } }))
+const { VERSION: sdkVersion } = await import('@anthropic-ai/sdk/version')
+process.stdout.write(JSON.stringify({ rows, sourceOnly: { capabilities, bun: Bun.version, revision: Bun.revision, sdk: sdkVersion, boundary: 'actual exported mapper/shared factory; complete query caller remains separate' } }))

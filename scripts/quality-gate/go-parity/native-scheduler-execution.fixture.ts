@@ -32,7 +32,9 @@ spyOn(SessionService.prototype,'appendSessionMetadata').mockImplementation(async
 const child=join(input.homeDir,'scheduled-child.ts'),capture=join(input.homeDir,'input.json')
 // This private physical subprocess is the Source scheduler's lower execution
 // boundary. It derives stream output from the actual input; it is not live-model evidence.
-writeFileSync(child, `import {writeFileSync} from 'node:fs';const payload=JSON.parse(await new Response(Bun.stdin.stream()).text());writeFileSync(${JSON.stringify(capture)},JSON.stringify(payload));const prompt=payload.message.content[0].text;console.log(JSON.stringify({type:'assistant',message:{content:[{type:'thinking',thinking:'hidden'},{type:'text',text:'  child:'+prompt+'  '},{type:'tool_use',name:'Read',input:{}}]}}));console.log(JSON.stringify({type:'result',result:'child:'+prompt}));console.error('error:'+prompt);process.exit(Number(process.argv.at(-1)));`)
+// MAIN intentionally leaves stdin open until the terminal result. The lower
+// CLI boundary must consume an NDJSON user frame, rather than waiting for EOF.
+writeFileSync(child, `import {writeFileSync} from 'node:fs';const reader=Bun.stdin.stream().getReader();const decoder=new TextDecoder();let text='';while(!text.includes('\\n')){const row=await reader.read();if(row.done)throw new Error('missing scheduled user frame');text+=decoder.decode(row.value,{stream:true})}reader.releaseLock();const payload=JSON.parse(text.slice(0,text.indexOf('\\n')));writeFileSync(${JSON.stringify(capture)},JSON.stringify(payload));const prompt=payload.message.content[0].text;console.log(JSON.stringify({type:'assistant',message:{content:[{type:'thinking',thinking:'hidden'},{type:'text',text:'  child:'+prompt+'  '},{type:'tool_use',name:'Read',input:{}}]}}));console.log(JSON.stringify({type:'result',result:'child:'+prompt}));console.error('error:'+prompt);process.exit(Number(process.argv.at(-1)));`)
 process.env.CLAUDE_CLI_PATH=child
 process.env.CC_HAHA_LOCAL_INDEX='off'
 ;(Bun as any).spawn=(args:any, options:any)=>{

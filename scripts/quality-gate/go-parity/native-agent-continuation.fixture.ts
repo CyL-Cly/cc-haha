@@ -119,8 +119,8 @@ function findMetadata(node: any) {
 }
 findMetadata(runAgentAST)
 if (!metadataExpression) throw new Error('Actual runAgent metadata expression unavailable')
-const projectMetadata = new Function('resolvePersistedAgentType', 'persistedAgentType', 'agentDefinition', 'model', 'worktreePath', 'description', 'spawningToolUseId', 'ownerAgentId', 'workflow', `return ${metadataExpression}`)
-const metadata = (input.metadata ?? []).map((row: any) => projectMetadata(runAgentModule.resolvePersistedAgentType, row.persistedAgentType, { agentType: row.runtimeAgentType }, row.model, row.worktreePath, row.description, row.toolUseId, row.ownerAgentId, undefined))
+const projectMetadata = new Function('resolvePersistedAgentType', 'persistedAgentType', 'agentDefinition', 'model', 'worktreePath', 'description', 'spawningToolUseId', 'ownerAgentId', 'workflow', 'extraMetadata', `return ${metadataExpression}`)
+const metadata = (input.metadata ?? []).map((row: any) => projectMetadata(runAgentModule.resolvePersistedAgentType, row.persistedAgentType, { agentType: row.runtimeAgentType }, row.model, row.worktreePath, row.description, row.toolUseId, row.ownerAgentId, undefined, row.extraMetadata))
 const replacement = await import('../../../src/utils/toolResultStorage')
 const inactiveReplacements = (input.replacementRecords ?? []).map((records: any[]) => replacement.reconstructForSubagentResume(undefined, [], records) ?? null)
 process.stdout.write(JSON.stringify({ states, foregrounds, autoDelays, transcripts, schemas, parsers, messages, owners, models, metadata, inactiveReplacements, capabilities: { blocked: capabilities.blocked } }) + '\n')

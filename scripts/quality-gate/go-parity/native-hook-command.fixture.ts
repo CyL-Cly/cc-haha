@@ -156,7 +156,7 @@ else if(input.hookRules) {
 }
 else if(input.pathSafety) {
   const { parse }=await import('acorn')
-  const {join,resolve,sep}=await import('node:path')
+  const {join,resolve,sep,win32,posix}=await import('node:path')
   const source=new Bun.Transpiler({loader:'ts'}).transformSync(await Bun.file(new URL('../../../src/utils/permissions/filesystem.ts',import.meta.url)).text())
   const ast:any=parse(source,{ecmaVersion:'latest',sourceType:'module'})
   const names=new Set(['normalizeCaseForComparison','isClaudeSettingsPath','isClaudeConfigFilePath','isUncPath','isDangerousFilePathToAutoEdit','hasSuspiciousWindowsPathPattern','checkPathSafetyForAutoEdit'])
@@ -169,9 +169,22 @@ else if(input.pathSafety) {
   let uncBody=''
   for(let node of readonlyAST.body){if(node.type==='ExportNamedDeclaration')node=node.declaration;if(node?.type==='FunctionDeclaration'&&node.id.name==='containsVulnerableUncPath')uncBody=readonlyCode.slice(node.start,node.end)}
   if(!uncBody)throw new Error('Actual UNC Source unavailable')
+  const extract = (code:string, names:string[]) => {
+    const tree:any=parse(code,{ecmaVersion:'latest',sourceType:'module'})
+    return names.map(name=>{let found:any;for(let node of tree.body){if(node.type==='ExportNamedDeclaration')node=node.declaration;if(node?.type==='FunctionDeclaration'&&node.id.name===name)found=node}if(!found)throw new Error('Missing actual Windows safety dependency '+name);return code.slice(found.start,found.end)}).join('\n')
+  }
+  const pathSource=new Bun.Transpiler({loader:'ts'}).transformSync(await Bun.file(new URL('../../../src/utils/path.ts',import.meta.url)).text())
+  const windowsSource=new Bun.Transpiler({loader:'ts'}).transformSync(await Bun.file(new URL('../../../src/utils/windowsPaths.ts',import.meta.url)).text())
+  const windowsAST:any=parse(windowsSource,{ecmaVersion:'latest',sourceType:'module'})
+  const conversions=[]
+  for(let node of windowsAST.body){if(node.type==='ExportNamedDeclaration')node=node.declaration;if(node?.type==='VariableDeclaration'&&node.declarations.some((d:any)=>['windowsPathToPosixPath','posixPathToWindowsPath'].includes(d.id.name)))conversions.push(windowsSource.slice(node.start,node.end))}
+  if(conversions.length!==2)throw new Error('Missing actual Windows safety conversions')
+  const windowsDependencies=conversions.join('\n')+'\n'+extract(pathSource,['expandPath','containsPathTraversal'])+'\n'+extract(source,['relativePath','pathInWorkingPath'])
   const rows=[]
   for(const profile of input.pathSafety){const cwd=profile.cwd;const expandPath=(path:string)=>resolve(cwd,path);const paths=profile.forms;const pathInWorkingPath=(path:string,root:string)=>{const norm=(s:string)=>resolve(cwd,s).replace(/^\/private\/var\//,'/var/').replace(/^\/private\/tmp(\/|$)/,'/tmp$1').toLowerCase();const p=norm(path),r=norm(root);return p===r||p.startsWith(r+sep)}
-    const production=new Function('expandPath','sep','join','getOriginalCwd','getSettingsPaths','getPlatform','getPathsForPermissionCheck','pathInWorkingPath',`${constants.join('\n')}\n${uncBody}\n${bodies.join('\n')}\nreturn checkPathSafetyForAutoEdit`)(expandPath,sep,join,()=>cwd,()=>profile.settingsPaths,()=>profile.platform,()=>paths,pathInWorkingPath)
+    const production=profile.platform==='windows'
+      ?new Function('sep','join','normalize','isAbsolute','resolve','posix','homedir','getCwd','getFsImplementation','memoizeWithLRU','getOriginalCwd','getSettingsPaths','getPlatform','getPathsForPermissionCheck',`${constants.join('\n')}\n${uncBody}\n${windowsDependencies}\n${bodies.join('\n')}\nreturn checkPathSafetyForAutoEdit`)(win32.sep,win32.join,win32.normalize,win32.isAbsolute,win32.resolve,posix,()=>profile.home??cwd,()=>cwd,()=>({cwd:()=>cwd}),(fn:unknown)=>fn,()=>cwd,()=>profile.settingsPaths,()=>profile.platform,()=>paths)
+      :new Function('expandPath','sep','join','getOriginalCwd','getSettingsPaths','getPlatform','getPathsForPermissionCheck','pathInWorkingPath',`${constants.join('\n')}\n${uncBody}\n${bodies.join('\n')}\nreturn checkPathSafetyForAutoEdit`)(expandPath,sep,join,()=>cwd,()=>profile.settingsPaths,()=>profile.platform,()=>paths,pathInWorkingPath)
     rows.push(production(profile.path,paths,{allowUncPath:profile.allowUNC}))
   }
   process.stdout.write(JSON.stringify({rows}))

@@ -53,7 +53,7 @@ async function observe(item: typeof requestRetryCases[number], kind: 'source' | 
           { operation: 'openSync', path: managed }, { operation: 'readdirSync', path: dropIn },
         ])
         expect(result.sourceOnly.pairingEvidence).toHaveLength(1)
-        expect(result.sourceOnly.sdk).toBe('0.80.0')
+        expect(result.sourceOnly.sdk).toBe('0.128.0')
       }
       const server = await host.settled()
       const observation = { ...result.observation, server }
@@ -63,7 +63,7 @@ async function observe(item: typeof requestRetryCases[number], kind: 'source' | 
       for (const [index, request] of observation.requests.entries()) {
         const wire = host.wireRequests[index]
         expect({ path: wire.path, body: wire.body }).toEqual({ path: request.path, body: request.body })
-        expect(request.headers.find(([name]: string[]) => name === 'x-stainless-package-version')?.[1]).toBe('0.80.0')
+        expect(request.headers.find(([name]: string[]) => name === 'x-stainless-package-version')?.[1]).toBe('0.128.0')
         const received = new Headers(wire.headers)
         for (const [name, value] of request.headers) expect(received.get(name), `${kind} socket header ${name}`).toBe(value)
       }

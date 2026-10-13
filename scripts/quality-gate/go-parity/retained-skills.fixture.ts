@@ -51,4 +51,5 @@ for (const row of input.rows) {
   }
   observations.push({ name: row.name, before, after: JSON.stringify(original), reordered, output: output === null ? null : (output as unknown[]).map(message => JSON.stringify(message)), error, trace: [...trace] })
 }
-process.stdout.write(JSON.stringify({ observations, sourceOnly: { capabilities, errorStacks, sdk: '0.80.0', bun: Bun.version, revision: Bun.revision, profile: 'retained original payload; exported normalizer then actual pairing' } }))
+const { VERSION: sdkVersion } = await import('@anthropic-ai/sdk/version')
+process.stdout.write(JSON.stringify({ observations, sourceOnly: { capabilities, errorStacks, sdk: sdkVersion, bun: Bun.version, revision: Bun.revision, profile: 'retained original payload; exported normalizer then actual pairing' } }))

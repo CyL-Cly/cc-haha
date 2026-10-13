@@ -32,6 +32,7 @@ export type ChangePolicyResult = {
     providerContract: boolean
     chatContract: boolean
     agentFlow: boolean
+    agentE2e: boolean
     persistence: boolean
     policy: boolean
     docs: boolean
@@ -125,6 +126,12 @@ const chatContractPrefixes = [
  * session lifecycle, WebSocket framing, tool permission round-trips, reconnect
  * replay, and the mock runtime that stands in for a provider.
  */
+const agentE2eHarnessPaths = [
+  'scripts/quality-gate/mock-llm/', 'scripts/quality-gate/agent-flow/',
+  'scripts/quality-gate/goBackend', 'scripts/quality-gate/backendLaunch',
+  'scripts/quality-gate/sandbox.ts', 'preload.ts', 'package.json', 'bun.lock',
+]
+
 const agentFlowPrefixes = [
   'src/server/api/sessions',
   'src/server/services/conversationService',
@@ -180,7 +187,7 @@ const policyExactPaths = new Set([
 
 const docsExactPaths = new Set([
   'README.md',
-  'README.zh-CN.md',
+  'README.en.md',
   'package.json',
   'package-lock.json',
   '.github/workflows/deploy-docs.yml',
@@ -218,10 +225,14 @@ const goContractPrefixes = [
   'scripts/quality-gate/agent-flow/',
   'scripts/quality-gate/baseline/fixtures/',
   'scripts/quality-gate/backendLaunch',
+  'scripts/quality-gate/goBackend',
+  'scripts/quality-gate/go-persistence',
+  'scripts/quality-gate/persistence-upgrade',
   'scripts/pr/run-go-tests',
   'scripts/pr/go-dependencies',
   'scripts/pr/go-platforms',
   'scripts/pr/run-go-matrix',
+  'scripts/perf/go-main-',
 ]
 
 function isGoContractPath(path: string) {
@@ -230,10 +241,10 @@ function isGoContractPath(path: string) {
 
 const goReferencePrefixes = [
   'src/',
-  'desktop/src/api/websocket',
-  'desktop/src/api/sessions',
-  'adapters/common/http-client',
-  'adapters/common/ws-bridge',
+  'desktop/src/',
+  'desktop/electron/',
+  'desktop/scripts/',
+  'adapters/',
 ]
 
 function isGoReferencePath(path: string) {
@@ -423,6 +434,10 @@ export function evaluateChangePolicy(
   const touchesProviderContract = touchesGoContracts || selectionFiles.some((file) => startsWithAny(file, providerContractPrefixes))
   const touchesChatContract = touchesGoContracts || selectionFiles.some((file) => startsWithAny(file, chatContractPrefixes))
   const touchesAgentFlow = touchesGoContracts || selectionFiles.some((file) => startsWithAny(file, agentFlowPrefixes))
+  const touchesAgentE2e = touchesGoContracts || selectionFiles.some(file => (
+    (file.startsWith('src/') && isExecutableSourcePath(file) && !isAgentInstructionPath(file)) ||
+    startsWithAny(file, agentE2eHarnessPaths)
+  ))
   const touchesPersistence = touchesGoContracts || selectionFiles.some((file) => startsWithAny(file, persistencePrefixes))
   const touchesPolicy = files.some((file) => (
     startsWithAny(file, policyPrefixes) ||
@@ -473,6 +488,7 @@ export function evaluateChangePolicy(
       providerContract: touchesProviderContract,
       chatContract: touchesChatContract,
       agentFlow: touchesAgentFlow,
+      agentE2e: touchesAgentE2e,
       persistence: touchesPersistence,
       policy: touchesPolicy,
       docs: touchesDocs,
@@ -518,7 +534,7 @@ function formatSummary(result: ChangePolicyResult) {
     'PR change policy',
     `  Areas: ${result.areas.length ? result.areas.join(', ') : 'none'}`,
     `  Labels: ${result.labels.length ? result.labels.join(', ') : 'none'}`,
-    `  Checks: desktop=${result.checks.desktop}, server=${result.checks.server}, go=${result.checks.go}, goParity=${result.checks.goParity}, adapters=${result.checks.adapters}, desktopNative=${result.checks.desktopNative}, providerContract=${result.checks.providerContract}, chatContract=${result.checks.chatContract}, agentFlow=${result.checks.agentFlow}, persistence=${result.checks.persistence}, policy=${result.checks.policy}, docs=${result.checks.docs}, coverage=${result.checks.coverage}`,
+    `  Checks: desktop=${result.checks.desktop}, server=${result.checks.server}, go=${result.checks.go}, goParity=${result.checks.goParity}, adapters=${result.checks.adapters}, desktopNative=${result.checks.desktopNative}, providerContract=${result.checks.providerContract}, chatContract=${result.checks.chatContract}, agentFlow=${result.checks.agentFlow}, agentE2e=${result.checks.agentE2e}, persistence=${result.checks.persistence}, policy=${result.checks.policy}, docs=${result.checks.docs}, coverage=${result.checks.coverage}`,
   ]
 
   if (result.cliCoreFiles.length > 0) {
@@ -572,6 +588,7 @@ function writeGithubOutputs(result: ChangePolicyResult) {
     provider_contract_checks: String(result.checks.providerContract),
     chat_contract_checks: String(result.checks.chatContract),
     agent_flow_checks: String(result.checks.agentFlow),
+    agent_e2e_checks: String(result.checks.agentE2e),
     persistence_checks: String(result.checks.persistence),
     policy_checks: String(result.checks.policy),
     docs_checks: String(result.checks.docs),

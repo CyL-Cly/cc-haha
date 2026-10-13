@@ -25,6 +25,8 @@ e2e-*.png
 
 # Local/generated artifacts
 artifacts/
+# Reproducible local audit output; retain the script and Markdown handoff.
+.agents/plans/go-current-surface-inventory-*.json
 /bin/native/
 __pycache__/
 *.pyc

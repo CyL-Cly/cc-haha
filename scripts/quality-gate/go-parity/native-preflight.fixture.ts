@@ -1,7 +1,7 @@
 import { assertDisposableFixtureHome } from './fixture-guard'
 import { absentManagedSettingsFixturePaths, installClientFixtureCapabilities } from './client-options-capabilities'
 
-const input = JSON.parse(await new Response(Bun.stdin.stream()).text()) as { homeDir: string; scenarios: Array<{ name: string; model: string; env?: Record<string, string>; history?: unknown[] }> }
+const input = JSON.parse(await new Response(Bun.stdin.stream()).text()) as { homeDir: string; scenarios: Array<{ name: string; model: string; env?: Record<string, string>; history?: unknown[]; sdkBetas?: string[] }> }
 assertDisposableFixtureHome(input.homeDir, 'Native preflight')
 if (process.env.CC_HAHA_NATIVE_PREFLIGHT_FIXTURE !== '1' || process.env.NODE_ENV !== 'production') throw new Error('Native preflight requires isolated production profile')
 const allowed = new Set(['CLAUDE_CODE_MODEL_CONTEXT_WINDOWS', 'CLAUDE_CODE_MAX_OUTPUT_TOKENS', 'CLAUDE_CODE_PROVIDER_MAX_OUTPUT_TOKENS', 'CLAUDE_CODE_AUTO_COMPACT_WINDOW', 'CLAUDE_AUTOCOMPACT_PCT_OVERRIDE', 'CLAUDE_CODE_DISABLE_1M_CONTEXT', ...['FABLE', 'OPUS', 'SONNET', 'HAIKU'].map(tier => `ANTHROPIC_DEFAULT_${tier}_MODEL`)])
@@ -21,6 +21,7 @@ const observations = []
 for (const scenario of input.scenarios) {
   for (const name of allowed) delete process.env[name]
   Object.assign(process.env, scenario.env ?? {})
+  state.setSdkBetas(scenario.sdkBetas ?? [])
   const history = scenario.history ?? []
   const projected = stripSignatureBlocksAfterModelChange(history as Parameters<typeof stripSignatureBlocksAfterModelChange>[0], scenario.model)
   observations.push({ scenario, observation: { effective: getEffectiveContextWindowSize(scenario.model), threshold: getAutoCompactThreshold(scenario.model), history: projected, sameInputArray: projected === history } })

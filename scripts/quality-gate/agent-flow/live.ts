@@ -148,15 +148,18 @@ export function describeLiveTarget(target: ResolvedLiveTarget, scenarioCount: nu
   ].join('\n')
 }
 
-type LiveContext = {
+export type LiveContext = {
   baseUrl: string
   workRoot: string
   artifactDir: string
   target: ResolvedLiveTarget
+  stepTimeoutMs: number
   createSession(): Promise<string>
   openSocket(sessionId: string): Promise<SessionSocket>
   pinRuntime(socket: SessionSocket): void
 }
+
+export type LiveScenarioRunner = (ctx: LiveContext) => Promise<void>
 
 export type LiveEffortField = {
   path: string
@@ -247,13 +250,13 @@ function assistantTextCount(socket: SessionSocket) {
   return socket.messages.filter((message) => message.type === 'content_start').length
 }
 
-const runners: Record<string, (ctx: LiveContext) => Promise<void>> = {
+export const LIVE_SCENARIO_RUNNERS: Record<string, LiveScenarioRunner> = {
   async 'live-first-turn'(ctx) {
     const sessionId = await ctx.createSession()
     const socket = await ctx.openSocket(sessionId)
     try {
       ctx.pinRuntime(socket)
-      const turn = await runTurn(socket, 'Reply with a single short sentence confirming you are ready.', LIVE_STEP_TIMEOUT_MS)
+      const turn = await runTurn(socket, 'Reply with a single short sentence confirming you are ready.', ctx.stepTimeoutMs)
       const streamed = turn.filter((message) => message.type === 'content_delta' && String(message.text ?? '').trim())
       if (streamed.length === 0) {
         throw new Error(`no assistant text streamed; saw ${turn.map((m) => m.type).join(', ')}`)
@@ -277,7 +280,7 @@ const runners: Record<string, (ctx: LiveContext) => Promise<void>> = {
 
       const request = await socket.waitFor(
         (message) => message.type === 'permission_request',
-        LIVE_STEP_TIMEOUT_MS,
+        ctx.stepTimeoutMs,
         'permission_request',
         start,
       )
@@ -285,7 +288,7 @@ const runners: Record<string, (ctx: LiveContext) => Promise<void>> = {
         throw new Error('the file appeared before the permission request was answered')
       }
       socket.send({ type: 'permission_response', requestId: request.requestId, allowed: true, rule: 'agent-flow-live' })
-      await socket.waitFor((m) => m.type === 'message_complete', LIVE_STEP_TIMEOUT_MS, 'message_complete', start)
+      await socket.waitFor((m) => m.type === 'message_complete', ctx.stepTimeoutMs, 'message_complete', start)
 
       if (!existsSync(target)) {
         throw new Error(`approved write never landed. Tool was ${request.toolName}`)
@@ -311,12 +314,12 @@ const runners: Record<string, (ctx: LiveContext) => Promise<void>> = {
 
       const request = await socket.waitFor(
         (message) => message.type === 'permission_request',
-        LIVE_STEP_TIMEOUT_MS,
+        ctx.stepTimeoutMs,
         'permission_request',
         start,
       )
       socket.send({ type: 'permission_response', requestId: request.requestId, allowed: false, rule: 'agent-flow-live' })
-      await socket.waitFor((m) => m.type === 'message_complete', LIVE_STEP_TIMEOUT_MS, 'message_complete', start)
+      await socket.waitFor((m) => m.type === 'message_complete', ctx.stepTimeoutMs, 'message_complete', start)
 
       if (existsSync(target)) {
         throw new Error('a denied write still reached the disk')
@@ -335,12 +338,12 @@ const runners: Record<string, (ctx: LiveContext) => Promise<void>> = {
         type: 'user_message',
         content: 'Count from 1 to 300, writing each number on its own line. Do not stop early.',
       })
-      await socket.waitFor((m) => m.type === 'content_delta', LIVE_STEP_TIMEOUT_MS, 'first content_delta', start)
+      await socket.waitFor((m) => m.type === 'content_delta', ctx.stepTimeoutMs, 'first content_delta', start)
 
-      socket.send({ type: 'stop' })
+      socket.send({ type: 'stop_generation' })
       await socket.waitFor(
         (m) => m.type === 'message_complete' || m.type === 'session_state_changed',
-        LIVE_STEP_TIMEOUT_MS,
+        ctx.stepTimeoutMs,
         'stream to settle after stop',
         start,
       )
@@ -364,7 +367,7 @@ const runners: Record<string, (ctx: LiveContext) => Promise<void>> = {
     let second: SessionSocket | null = null
     try {
       ctx.pinRuntime(first)
-      await runTurn(first, 'Reply with one short sentence.', LIVE_STEP_TIMEOUT_MS)
+      await runTurn(first, 'Reply with one short sentence.', ctx.stepTimeoutMs)
       const before = assistantTextCount(first)
       first.close()
 
@@ -385,7 +388,7 @@ const runners: Record<string, (ctx: LiveContext) => Promise<void>> = {
     const socket = await ctx.openSocket(sessionId)
     try {
       ctx.pinRuntime(socket)
-      await runTurn(socket, 'Reply with one short sentence.', LIVE_STEP_TIMEOUT_MS)
+      await runTurn(socket, 'Reply with one short sentence.', ctx.stepTimeoutMs)
       const seen = assistantTextCount(socket)
 
       const response = await fetch(`${ctx.baseUrl}/api/sessions/${sessionId}/messages`)
@@ -401,14 +404,21 @@ const runners: Record<string, (ctx: LiveContext) => Promise<void>> = {
   },
 }
 
-export async function executeLiveAgentFlow(options: {
+export type AgentFlowAgainstProviderOptions = {
   rootDir: string
   artifactDir: string
-  target: ResolvedLiveTarget
-  only?: string[]
+  label: string
+  seedProviders: boolean
+  stepTimeoutMs: number
+  scenarios: ReadonlyArray<{ id: string; title: string }>
+  runners: Record<string, LiveScenarioRunner>
   backendTarget?: BackendLaunchTarget
-}): Promise<LiveAgentFlowResult[]> {
-  const { rootDir, artifactDir, target } = options
+  resolveTarget(server: { baseUrl: string; configDir: string }): Promise<ResolvedLiveTarget>
+}
+
+/** Shared Go/Source runner; only the provider and explicit executable differ. */
+export async function executeAgentFlowAgainstProvider(options: AgentFlowAgainstProviderOptions): Promise<LiveAgentFlowResult[]> {
+  const { rootDir, artifactDir } = options
   const backendTarget = resolveBackendLaunchTarget(rootDir, options.backendTarget)
   mkdirSync(artifactDir, { recursive: true })
   const serverLogPath = join(artifactDir, 'server.log')
@@ -417,7 +427,7 @@ export async function executeLiveAgentFlow(options: {
 
   const port = await getPort()
   const baseUrl = `http://127.0.0.1:${port}`
-  const workRoot = await mkdtemp(join(tmpdir(), 'cc-haha-agent-flow-live-'))
+  const workRoot = await mkdtemp(join(tmpdir(), `cc-haha-${options.label}-`))
   cpSync(join(rootDir, FIXTURE), workRoot, { recursive: true })
 
   // Seeded, not shared: the sandbox gets a copy of the real provider config so the
@@ -425,17 +435,10 @@ export async function executeLiveAgentFlow(options: {
   // throwaway dir. CLAUDE_CLI_PATH is deliberately left alone — unlike the mock lane,
   // this one wants the real CLI.
   const sandbox = createQualityGateSandbox({
-    label: 'agent-flow-live',
-    seedProviders: true,
-    envOverrides: { CC_HAHA_DISABLE_TERMINAL_SHELL_ENV: '1' },
+    label: options.label,
+    seedProviders: options.seedProviders,
+    envOverrides: { CC_HAHA_DISABLE_TERMINAL_SHELL_ENV: '1', CI: '' },
   })
-  try {
-    applyLiveTargetSandboxOverrides(sandbox.configDir, target)
-  } catch (error) {
-    sandbox.cleanup()
-    rmSync(workRoot, { recursive: true, force: true })
-    throw error
-  }
 
   let server: BackendServer | undefined
   const pumps: Promise<void>[] = []
@@ -444,12 +447,15 @@ export async function executeLiveAgentFlow(options: {
     server = spawnBackendServer({ rootDir, port, sandbox, target: backendTarget })
     pumps.push(pipeToFile(server.stdout, serverLogPath), pipeToFile(server.stderr, serverLogPath))
     await server.waitUntilHealthy(60_000)
+    const target = await options.resolveTarget({ baseUrl, configDir: sandbox.configDir })
+    applyLiveTargetSandboxOverrides(sandbox.configDir, target)
 
     const ctx: LiveContext = {
       baseUrl,
       workRoot,
       artifactDir,
       target,
+      stepTimeoutMs: options.stepTimeoutMs,
       async createSession() {
         const response = await fetch(`${baseUrl}/api/sessions`, {
           method: 'POST',
@@ -475,14 +481,10 @@ export async function executeLiveAgentFlow(options: {
       },
     }
 
-    const selected = options.only?.length
-      ? LIVE_AGENT_FLOW_SCENARIOS.filter((scenario) => options.only!.includes(scenario.id))
-      : LIVE_AGENT_FLOW_SCENARIOS
-
-    for (const scenario of selected) {
+    for (const scenario of options.scenarios) {
       const started = Date.now()
       try {
-        await runners[scenario.id]!(ctx)
+        await options.runners[scenario.id]!(ctx)
         results.push({ id: scenario.id, title: scenario.title, status: 'passed', durationMs: Date.now() - started })
       } catch (error) {
         results.push({
@@ -512,4 +514,28 @@ export async function executeLiveAgentFlow(options: {
   }
 
   return results
+}
+
+
+export async function executeLiveAgentFlow(options: {
+  rootDir: string
+  artifactDir: string
+  target: ResolvedLiveTarget
+  only?: string[]
+  backendTarget?: BackendLaunchTarget
+}): Promise<LiveAgentFlowResult[]> {
+  const scenarios = options.only?.length
+    ? LIVE_AGENT_FLOW_SCENARIOS.filter(scenario => options.only!.includes(scenario.id))
+    : LIVE_AGENT_FLOW_SCENARIOS
+  return executeAgentFlowAgainstProvider({
+    rootDir: options.rootDir,
+    artifactDir: options.artifactDir,
+    backendTarget: options.backendTarget,
+    label: 'agent-flow-live',
+    seedProviders: true,
+    stepTimeoutMs: LIVE_STEP_TIMEOUT_MS,
+    scenarios,
+    runners: LIVE_SCENARIO_RUNNERS,
+    async resolveTarget() { return options.target },
+  })
 }

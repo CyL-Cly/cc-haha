@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSyn
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createHermeticGoEnvironment } from '../../pr/go-dependencies'
-import { collectCorpusSnapshot, runCorpusWithManifest } from './manifest'
+import { assertCorpusSnapshotFresh, collectCorpusSnapshot, runCorpusWithManifest } from './manifest'
 
 function fixture() {
   const root = mkdtempSync(join(tmpdir(), 'go-corpus-snapshot-test-'))
@@ -27,7 +27,7 @@ test.each(['resource', 'oracle', 'added', 'deleted', 'runtime', 'test-failure', 
         expect(options.env.GOPROXY).toBe('off')
         if (command.includes('--version')) return { exitCode: 0, stdout: '1.3.14\n', stderr: '' }
         if (command[0] === 'go') return { exitCode: 0, stdout: `go version ${scenario === 'runtime' && versions++ ? 'go1.25.8' : 'go1.25.7'} darwin/arm64\n`, stderr: '' }
-        if (command[0] === 'git') return { exitCode: 0, stdout: ['backend/query.go', 'backend/spec.json', 'oracle.test.ts', 'bun.lock', ...(scenario === 'added' && versions ? ['new.json'] : [])].filter(file => scenario !== 'deleted' || !versions || file !== 'bun.lock').join('\0') + '\0', stderr: '' }
+        if (command[0] === 'git') return { exitCode: 0, stdout: command.includes('--deleted') ? (scenario === 'deleted' && versions ? 'bun.lock\0' : '') : ['backend/query.go', 'backend/spec.json', 'oracle.test.ts', 'bun.lock', ...(scenario === 'added' && versions ? ['new.json'] : [])].join('\0') + '\0', stderr: '' }
         expect(command.slice(1, 3)).toEqual(['--no-env-file', 'test'])
         if (scenario === 'resource') writeFileSync(join(root, 'backend/spec.json'), '{"text":"after"}')
         if (scenario === 'oracle') writeFileSync(join(root, 'oracle.test.ts'), 'export const changed = true\n')
@@ -91,7 +91,7 @@ test('an unlisted corpus file or escaping Git inventory cannot become passing ev
       execute: async command => {
         if (command.includes('--version')) return { exitCode: 0, stdout: '1.3.14\n', stderr: '' }
         if (command[0] === 'go') return { exitCode: 0, stdout: 'go version go1.25.7 darwin/arm64', stderr: '' }
-        if (command[0] === 'git') return { exitCode: 0, stdout: 'backend/spec.json\0', stderr: '' }
+        if (command[0] === 'git') return { exitCode: 0, stdout: command.includes('--deleted') ? '' : 'backend/spec.json\0', stderr: '' }
         started = true
         return { exitCode: 0, stdout: '', stderr: '' }
       },
@@ -99,6 +99,49 @@ test('an unlisted corpus file or escaping Git inventory cannot become passing ev
     expect(report.status).toBe('failed')
     expect(report.failures[0]).toContain('missing from the repository input inventory')
     expect(started).toBe(false)
-    await expect(collectCorpusSnapshot(root, createHermeticGoEnvironment(home), async () => ({ exitCode: 0, stdout: '../outside.json\0', stderr: '' }))).rejects.toThrow('Invalid corpus input path')
+    await expect(collectCorpusSnapshot(root, createHermeticGoEnvironment(home), async command => ({ exitCode: 0, stdout: command.includes('--deleted') ? '' : '../outside.json\0', stderr: '' }))).rejects.toThrow('Invalid corpus input path')
+  } finally { rmSync(root, { recursive: true, force: true }); rmSync(home, { recursive: true, force: true }) }
+})
+
+test('actual Git tracked deletions leave current inputs and restoration invalidates freshness', async () => {
+  const root = fixture()
+  const home = mkdtempSync(join(tmpdir(), 'go-corpus-deletion-home-'))
+  try {
+    const env = createHermeticGoEnvironment(home)
+    for (const args of [['init', '-q'], ['add', 'backend/spec.json', 'oracle.test.ts']]) {
+      const child = Bun.spawn(['git', ...args], { cwd: root, env, stdin: 'ignore', stdout: 'pipe', stderr: 'pipe' })
+      const [exitCode, stderr] = await Promise.all([child.exited, new Response(child.stderr).text()])
+      expect(exitCode, stderr).toBe(0)
+    }
+    const original = await collectCorpusSnapshot(root, env)
+    rmSync(join(root, 'backend/spec.json'))
+    const deleted = await collectCorpusSnapshot(root, env)
+    expect(deleted.map(entry => entry.file)).not.toContain('backend/spec.json')
+    expect(() => assertCorpusSnapshotFresh(original, deleted)).toThrow('backend/spec.json')
+    writeFileSync(join(root, 'backend/spec.json'), '{"text":"before"}')
+    const restored = await collectCorpusSnapshot(root, env)
+    expect(restored).toEqual(original)
+    expect(() => assertCorpusSnapshotFresh(deleted, restored)).toThrow('backend/spec.json')
+  } finally { rmSync(root, { recursive: true, force: true }); rmSync(home, { recursive: true, force: true }) }
+})
+
+test('deletion metadata cannot hide restored inputs, symlinks, invalid paths or an unavailable inventory', async () => {
+  const root = fixture()
+  const home = mkdtempSync(join(tmpdir(), 'go-corpus-deletion-guard-'))
+  const env = createHermeticGoEnvironment(home)
+  const run = (names: string[], deleted: string[], deletionCode = 0) => async (command: string[]) => ({
+    exitCode: command.includes('--deleted') ? deletionCode : 0,
+    stdout: (command.includes('--deleted') ? deleted : names).join('\0') + '\0', stderr: '',
+  })
+  try {
+    const snapshot = await collectCorpusSnapshot(root, env, run(['backend/spec.json'], ['backend/spec.json']))
+    expect(snapshot[0]?.file).toBe('backend/spec.json')
+    symlinkSync(join(home, 'absent.json'), join(root, 'escape.json'))
+    await expect(collectCorpusSnapshot(root, env, run(['escape.json'], ['escape.json']))).rejects.toThrow('symlink')
+    await expect(collectCorpusSnapshot(root, env, run(['../missing.json'], ['../missing.json']))).rejects.toThrow('Invalid corpus input path')
+    await expect(collectCorpusSnapshot(root, env, run(['backend/spec.json'], ['missing.json']))).rejects.toThrow('missing from Git')
+    await expect(collectCorpusSnapshot(root, env, run(['backend/spec.json'], [], 1))).rejects.toThrow('Could not inventory deleted corpus inputs')
+    rmSync(join(root, 'backend/spec.json'))
+    await expect(collectCorpusSnapshot(root, env, run(['backend/spec.json'], []))).rejects.toThrow('ENOENT')
   } finally { rmSync(root, { recursive: true, force: true }); rmSync(home, { recursive: true, force: true }) }
 })

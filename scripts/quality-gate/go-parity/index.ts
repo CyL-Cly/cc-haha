@@ -4,6 +4,7 @@ import { runCorpusWithManifest } from './manifest'
 // The corpus expands with each migrated capability. Passing this lane only
 // proves cases that actually execute; it is not a full Harness Benchmark score.
 const corpus = [
+  './source-exports.test.ts',
   './trace.test.ts',
   './recovery.test.ts',
   './protocol.test.ts',
@@ -12,6 +13,7 @@ const corpus = [
   './client-options.test.ts',
   './client-descriptors.test.ts',
   './client-https-capability.test.ts',
+  './client-private-executable.test.ts',
   './tls-config.test.ts',
   './stream-history.test.ts',
   './stream-http.test.ts',

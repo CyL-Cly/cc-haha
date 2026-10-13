@@ -417,7 +417,7 @@ describe('offline Go checks', () => {
       } finally { rmSync(coverageOnlyHome, { recursive: true, force: true }) }
       const report = await runGoChecks({ rootDir: root, artifactDir: join(root, 'artifacts'), sourceEnvironment,
         execute: async (command, options) => {
-          if (command[0] === 'git') return { exitCode: 0, stderr: '', stdout: command.includes('merge-base') ? 'a'.repeat(40) : command.includes('ls-files') ? 'backend/query.go\0backend/third_party/libsignal-node/value.go\0backend/third_party/libsignal-node/unused/value.go\0' : '' }
+          if (command[0] === 'git') return { exitCode: 0, stderr: '', stdout: command.includes('--deleted') ? '' : command.includes('merge-base') ? 'a'.repeat(40) : command.includes('ls-files') ? 'backend/query.go\0backend/third_party/libsignal-node/value.go\0backend/third_party/libsignal-node/unused/value.go\0' : '' }
           const child = Bun.spawn(command, { ...options, stdout: 'pipe', stderr: 'pipe', stdin: 'ignore' })
           const [exitCode, stdout, stderr] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()])
           return { exitCode, stdout, stderr }
@@ -475,7 +475,7 @@ describe('offline Go checks', () => {
     }
   })
 
-  test.each(['format', 'empty-sources', 'build', 'empty-packages', 'empty-tests', 'coverage', 'resource-mutation', 'declarations', 'success'] as const)('does not turn incomplete evidence into a passing lane: %s', async scenario => {
+  test.each(['format', 'empty-sources', 'build', 'empty-packages', 'empty-tests', 'failed-test-receipts', 'coverage', 'resource-mutation', 'source-oracle-mutation', 'fixture-mutation', 'declarations', 'success'] as const)('does not turn incomplete evidence into a passing lane: %s', async scenario => {
     const root = tempRoot()
     const homes: string[] = []
     const commands: string[][] = []
@@ -491,6 +491,10 @@ describe('offline Go checks', () => {
       const declarationPath = join(root, 'backend/types.go')
       if (scenario === 'declarations') writeFileSync(declarationPath, 'package fixture\ntype Message struct { Content string }\n')
       writeFileSync(join(root, 'backend/spec.json'), '{"description":"before"}')
+      mkdirSync(join(root, 'src'), { recursive: true })
+      mkdirSync(join(root, 'scripts/quality-gate/go-parity'), { recursive: true })
+      writeFileSync(join(root, 'src/reference.ts'), 'export const reference = 1\n')
+      writeFileSync(join(root, 'scripts/quality-gate/go-parity/reference.fixture.ts'), 'export const fixture = 1\n')
       writeFileSync(join(root, 'scripts/quality-gate/coverage-thresholds.json'), JSON.stringify({ changedLines: { minimumPercent: 90 } }))
       const report = await runGoChecks({
         rootDir: root,
@@ -521,14 +525,22 @@ describe('offline Go checks', () => {
           }
           else if (command[1] === 'build' && scenario === 'build') return { exitCode: 1, stdout: '', stderr: 'fixture compiler error' }
           else if (command[1] === 'test') {
+            if (scenario === 'failed-test-receipts') return { exitCode: 1, stdout: [
+              JSON.stringify({ Action: 'output', Package: modulePath, Test: 'TestActualBrokenBoundary', Output: 'actual failure detail retained in the physical log' }),
+              JSON.stringify({ Action: 'fail', Package: modulePath, Test: 'TestActualBrokenBoundary' }),
+              JSON.stringify({ Action: 'fail', Package: modulePath }),
+            ].join('\n'), stderr: '' }
             if (scenario === 'resource-mutation' && command.includes('-race')) writeFileSync(join(root, 'backend/spec.json'), '{"description":"after"}')
+            if (scenario === 'source-oracle-mutation' && command.includes('-race')) writeFileSync(join(root, 'src/reference.ts'), 'export const reference = 2\n')
+            if (scenario === 'fixture-mutation' && command.includes('-race')) writeFileSync(join(root, 'scripts/quality-gate/go-parity/reference.fixture.ts'), 'export const fixture = 2\n')
             stdout = scenario === 'empty-tests' ? JSON.stringify({ Action: 'pass', Package: modulePath }) : passingEvents
             const profile = command.find(arg => arg.startsWith('-coverprofile='))
             if (profile) writeFileSync(profile.slice('-coverprofile='.length), scenario === 'coverage' ? 'mode: atomic\n' : `mode: atomic\n${modulePath}/query.go:3.1,3.9 1 1\n`)
           }
           else if (command[1] === 'run') stdout = JSON.stringify([{ file: 'backend/types.go', sha256: createHash('sha256').update(readFileSync(declarationPath)).digest('hex'), declarationOnly: true, compilerCounters: 0, declarations: { imports: 0, types: 1, constants: 0, variables: 0 }, executable: [] }])
           else if (command.includes('merge-base')) stdout = 'a'.repeat(40)
-          else if (scenario === 'declarations' && command.includes('ls-files')) stdout = 'backend/types.go\0'
+          else if (command.includes('--cached')) stdout = ['backend/query.go', 'src/reference.ts', 'scripts/quality-gate/go-parity/reference.fixture.ts'].join('\0') + '\0'
+          else if (scenario === 'declarations' && command.includes('ls-files') && !command.includes('--deleted')) stdout = 'backend/types.go\0'
           return { exitCode: 0, stdout, stderr: '' }
         },
       })
@@ -558,6 +570,15 @@ describe('offline Go checks', () => {
         expect(commands.some(command => command[1] === 'build')).toBe(false)
       }
       if (scenario === 'resource-mutation') expect(report.failures[0]).toContain('module inputs or thresholds changed')
+      if (scenario === 'failed-test-receipts') {
+        expect(report.failures[0]).toContain('2 failed test/package receipts')
+        expect(report.failures[0]).toContain('TestActualBrokenBoundary')
+        expect(report.failures[0]).toContain('Complete physical output: checks.log')
+        expect(report.failures[0]).not.toContain('actual failure detail retained in the physical log')
+        expect(readFileSync(join(root, 'artifacts/checks.log'), 'utf8')).toContain('actual failure detail retained in the physical log')
+        expect(report.race).toBeUndefined()
+      }
+      if (scenario === 'source-oracle-mutation' || scenario === 'fixture-mutation') expect(report.failures[0]).toContain('Corpus inputs changed')
       expect(readFileSync(sourcePath, 'utf8')).toBe(originalSource)
       expect(JSON.parse(readFileSync(join(root, 'artifacts/report.json'), 'utf8')).status).toBe(report.status)
       expect(homes.length).toBeGreaterThan(0)

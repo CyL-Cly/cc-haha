@@ -124,6 +124,7 @@ const expected = {
   minimumPercent: 90,
   goSources: ['query.go', 'command_unix.go', 'command_windows.go'].map(file => `backend/${file}`).sort(),
   sourceSnapshot: ['query.go', 'command_unix.go', 'command_windows.go'].map(file => ({ file: `backend/${file}`, sha256: 'a'.repeat(64) })),
+  repositoryInputs: ['src/reference.ts', 'scripts/quality-gate/go-parity/reference.fixture.ts', 'bun.lock'].map(file => ({ file, sha256: 'a'.repeat(64) })),
   changed: ['command_unix.go', 'command_windows.go', 'query.go'].map(file => ({ file: `backend/${file}`, lines: [2, 3] })),
 }
 
@@ -136,7 +137,7 @@ function reports(): GoMatrixInput[] {
       schemaVersion: 1, status: 'passed', scope: 'current-target', allTargets: 'not-run',
       platform: { target: rule.target, toolchain: 'go1.25.7', native: true, race: rule.race ? 'required' : 'unsupported', ...(!rule.race ? { reason: 'Go 1.25.7 unsupported windows/arm64' } : {}) },
       sources: { active, excluded, unknown: [], formatted: expected.goSources },
-      sourceSnapshot: expected.sourceSnapshot, changed: expected.changed, packages: ['fixture'], unit: evidence,
+      sourceSnapshot: expected.sourceSnapshot, repositoryInputs: expected.repositoryInputs, changed: expected.changed, packages: ['fixture'], unit: evidence,
       ...(rule.race ? { race: evidence } : {}), failures: [],
       changedLines: { minimumPercent: 90, covered: 4, total: 4, pct: 100, failures: [], files: active.map(file => ({ file, covered: 2, total: 2, missing: [] })), skipped: excluded.map(file => ({ file, reason: 'Required on another supported native target' })) },
     }
@@ -204,7 +205,7 @@ describe('all-target Go coverage closure', () => {
     expect(evaluateGoPlatformClosure(absentRaceCompile, expected).status).toBe('failed')
   })
 
-  test.each(['missing-target', 'duplicate-target', 'crosscompile', 'no-unit', 'no-race', 'fake-arm-race', 'below', 'lower-minimum', 'stale', 'unformatted', 'missing-mapping', 'zero-exclusion', 'never-active', 'counts'] as const)('rejects incomplete or misleading evidence: %s', scenario => {
+  test.each(['missing-target', 'duplicate-target', 'crosscompile', 'no-unit', 'no-race', 'fake-arm-race', 'below', 'lower-minimum', 'stale', 'stale-source-fixture', 'missing-source-fixture', 'unformatted', 'missing-mapping', 'zero-exclusion', 'never-active', 'counts'] as const)('rejects incomplete or misleading evidence: %s', scenario => {
     const input = structuredClone(reports())
     if (scenario === 'missing-target') input.pop()
     if (scenario === 'duplicate-target') input.push(input[0])
@@ -215,6 +216,8 @@ describe('all-target Go coverage closure', () => {
     if (scenario === 'below') { input[0].changedLines!.covered = 2; input[0].changedLines!.pct = 50; input[0].changedLines!.files[0].covered = 0; input[0].changedLines!.files[0].missing = [2, 3] }
     if (scenario === 'lower-minimum') input[0].changedLines!.minimumPercent = 80
     if (scenario === 'stale') input[0].sourceSnapshot![0].sha256 = 'b'.repeat(64)
+    if (scenario === 'stale-source-fixture') input[0].repositoryInputs![1].sha256 = 'b'.repeat(64)
+    if (scenario === 'missing-source-fixture') input[0].repositoryInputs = undefined
     if (scenario === 'unformatted') input[0].sources!.formatted.pop()
     if (scenario === 'missing-mapping') input[0].changedLines!.files.pop()
     if (scenario === 'zero-exclusion') input[0].changedLines!.files.push({ file: input[0].sources!.excluded[0], total: 0, covered: 0, missing: [] })

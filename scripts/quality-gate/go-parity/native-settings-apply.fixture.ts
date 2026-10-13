@@ -1,4 +1,6 @@
 import { parse } from 'acorn'
+import { mkdirSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { assertDisposableFixtureHome } from './fixture-guard'
 import { absentManagedSettingsFixturePaths, installClientFixtureCapabilities } from './client-options-capabilities'
 assertDisposableFixtureHome(process.env.HOME, 'Native settings apply')
@@ -8,7 +10,12 @@ await import('../../../preload')
 const input = JSON.parse(await new Response(Bun.stdin.stream()).text())
 const { applyPermissionUpdate, applyPermissionUpdates } = await import('../../../src/utils/permissions/PermissionUpdate')
 const { permissionRuleValueFromString } = await import('../../../src/utils/permissions/permissionRuleParser')
-const { createDisabledBypassPermissionsContext } = await import('../../../src/utils/permissions/permissionSetup')
+const { createDisabledBypassPermissionsContext, reconcileAutoModePermissionsAfterSettingsChange } = await import('../../../src/utils/permissions/permissionSetup')
+const config = await import('../../../src/utils/config')
+const { resetSettingsCache } = await import('../../../src/utils/settings/settingsCache')
+const { _resetForTesting } = await import('../../../src/utils/permissions/autoModeState')
+mkdirSync(join(process.env.HOME!, '.claude'), {recursive:true})
+config.enableConfigs()
 const source = new Bun.Transpiler({ loader: 'ts' }).transformSync(await Bun.file(new URL('../../../src/utils/permissions/permissions.ts', import.meta.url)).text())
 const ast: any = parse(source, { ecmaVersion: 'latest', sourceType: 'module' })
 const nodes = ast.body.map((node: any) => node.type === 'ExportNamedDeclaration' ? node.declaration : node)
@@ -19,6 +26,9 @@ const extracts = ['convertRulesToUpdates', 'syncPermissionRulesFromDisk'].map(na
 }).join('\n')
 const outputs = []
 for (const row of input.rows) {
+  writeFileSync(join(process.env.HOME!, '.claude/settings.json'),JSON.stringify(row.settings))
+  resetSettingsCache()
+  _resetForTesting()
   const sync = new Function('shouldAllowManagedPermissionRulesOnly', 'applyPermissionUpdate', 'applyPermissionUpdates', 'SETTING_SOURCES', extracts + '\nreturn syncPermissionRulesFromDisk')(() => row.policy?.allowManagedPermissionRulesOnly === true, applyPermissionUpdate, applyPermissionUpdates, ['userSettings', 'projectSettings', 'localSettings', 'flagSettings', 'policySettings'])
   const rules = []
   for (const source of ['userSettings', 'projectSettings', 'localSettings', 'flagSettings', 'policySettings']) {
@@ -29,6 +39,7 @@ for (const row of input.rows) {
   }
   let context = sync(row.context, rules)
   if (context.isBypassPermissionsModeAvailable && row.settings.permissions?.disableBypassPermissionsMode === 'disable') context = createDisabledBypassPermissionsContext(context)
+  context = reconcileAutoModePermissionsAfterSettingsChange(context,rules)
   outputs.push(context)
 }
 process.stdout.write(JSON.stringify(outputs))

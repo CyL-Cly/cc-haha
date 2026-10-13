@@ -8,6 +8,7 @@ import { StringDecoder } from 'node:string_decoder'
 import { parseChangedLinesFromDiff } from '../quality-gate/coverage'
 import { createHermeticGoEnvironment, goDependencyLock, hydrateGoDependencies, parseGoJsonStream } from './go-dependencies'
 import { collectGoSourceScope, goControlledModules, goNativeTarget, goPlatformEvidence, goSourceDirectories, goSourceSnapshot, scanGoSources, type GoControlledModule, type GoSourceScope } from './go-platforms'
+import { assertCorpusSnapshotFresh, collectCorpusSnapshot } from '../quality-gate/go-parity/manifest'
 
 type CommandResult = { exitCode: number; stdout: string; stderr: string }
 type CommandOptions = { cwd: string; env: Record<string, string> }
@@ -327,6 +328,21 @@ async function runCommand(command: string[], options: CommandOptions): Promise<C
   return { exitCode, stdout, stderr }
 }
 
+function commandFailureDetail(command: string[], result: CommandResult): string {
+  if (command[0] === 'go' && command[1] === 'test') {
+    const failures: string[] = []
+    for (const line of result.stdout.split(/\r?\n/)) {
+      if (!line.startsWith('{')) continue
+      try {
+        const event = JSON.parse(line) as { Action?: string; Package?: string; Test?: string }
+        if (event.Action === 'fail') failures.push(`${event.Package ?? 'unknown package'}${event.Test ? ` ${event.Test}` : ''}`)
+      } catch { /* The complete physical output remains in checks.log. */ }
+    }
+    if (failures.length) return `${failures.length} failed test/package receipts:\n${failures.join('\n')}\nComplete physical output: checks.log${result.stderr ? `\n${result.stderr.slice(0, 12000)}` : ''}`
+  }
+  return result.stderr || result.stdout
+}
+
 export async function collectGoChangedLines(
   rootDir: string,
   env: Record<string, string>,
@@ -388,6 +404,7 @@ export async function runGoChecks(options: {
     platform: undefined as ReturnType<typeof goPlatformEvidence> | undefined,
     sources: undefined as GoSourceScope | undefined,
     sourceSnapshot: undefined as ReturnType<typeof goSourceSnapshot> | undefined,
+    repositoryInputs: undefined as Awaited<ReturnType<typeof collectCorpusSnapshot>> | undefined,
     changed: undefined as Array<{ file: string; lines: number[] }> | undefined,
     packages: [] as string[],
     controlledModules: [] as GoControlledModule[],
@@ -407,12 +424,16 @@ export async function runGoChecks(options: {
     appendFileSync(logPath, `$ ${command.join(' ')}\n`)
     const result = await execute(command, { cwd, env })
     appendFileSync(logPath, `${result.stdout}${result.stderr}\n`)
-    if (result.exitCode !== 0) throw new Error(`${command.join(' ')} exited ${result.exitCode}: ${result.stderr || result.stdout}`)
+    if (result.exitCode !== 0) throw new Error(`${command.join(' ')} exited ${result.exitCode}: ${commandFailureDetail(command, result)}`)
     return result.stdout
   }
   try {
     if (!existsSync(join(cwd, 'go.mod'))) throw new Error('Missing backend/go.mod; the selected Go lane cannot be skipped')
     report.dependencies = await hydrateGoDependencies(rootDir, env, { execute, sourceEnvironment: options.sourceEnvironment ?? process.env })
+    // Actual Source oracles are launched from Go tests, but their fixtures,
+    // TypeScript modules and locks are outside backend/. Freeze their bytes
+    // alongside the Go compiler snapshot rather than trusting an import graph.
+    report.repositoryInputs = await collectCorpusSnapshot(rootDir, env, execute)
     // Hydration verifies the pinned replacement identity and complete fork tree.
     // Cover selection alone does not execute a nested replacement module.
     // Discover and check each pinned controlled module as an explicit test root.
@@ -465,6 +486,7 @@ export async function runGoChecks(options: {
     report.declarations = [...declarations.values()]
     report.changedLines = evaluateGoChangedCoverage(changed, coverage, thresholds.changedLines?.minimumPercent ?? Number.NaN, report.sources, declarations)
     if (JSON.stringify(goSourceSnapshot(rootDir, scanGoSources(cwd))) !== JSON.stringify(report.sourceSnapshot)) throw new Error('Go module inputs or thresholds changed while checks were running; rerun for fresh evidence')
+    assertCorpusSnapshotFresh(report.repositoryInputs, await collectCorpusSnapshot(rootDir, env, execute))
     report.failures.push(...report.changedLines.failures)
     if (report.failures.length === 0) report.status = 'passed'
   } catch (error) {
@@ -480,6 +502,7 @@ export async function runGoChecks(options: {
       ...(report.unit?.noTestPackages ?? []).map(name => `Compiled without test files (not a passing test): ${name}`),
       `Actual test roots: ${report.testTargets.join(', ') || 'not established'}`,
       `Coverage instrumentation: ${report.coveragePackages.join(', ') || 'not established'}`,
+      `Repository input bytes (including Source oracles, fixtures and locks): ${report.repositoryInputs?.length ?? 'not established'}; before/after freshness required`,
       ...report.controlledModules.map(module => `Controlled dependency module: ${module.path} ${module.version} -> ${module.directory}; explicit native test root and parent consumers supply actual coverage counters`),
       `Go coverage: ${report.coverage ? `${report.coverage.pct.toFixed(2)}% (${report.coverage.covered}/${report.coverage.total})` : 'not measured'}`,
       `Changed executable lines: ${report.changedLines?.pct == null ? 'none measured' : `${report.changedLines.pct.toFixed(2)}% (${report.changedLines.covered}/${report.changedLines.total})`}; minimum: ${report.changedLines?.minimumPercent ?? 'unavailable'}%`,

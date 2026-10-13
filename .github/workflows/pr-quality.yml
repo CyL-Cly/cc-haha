@@ -30,6 +30,7 @@ jobs:
       provider_contract_checks: ${{ steps.policy.outputs.provider_contract_checks }}
       chat_contract_checks: ${{ steps.policy.outputs.chat_contract_checks }}
       agent_flow_checks: ${{ steps.policy.outputs.agent_flow_checks }}
+      agent_e2e_checks: ${{ steps.policy.outputs.agent_e2e_checks }}
       persistence_checks: ${{ steps.policy.outputs.persistence_checks }}
       policy_checks: ${{ steps.policy.outputs.policy_checks }}
       docs_checks: ${{ steps.policy.outputs.docs_checks }}
@@ -348,6 +349,36 @@ jobs:
           path: artifacts/agent-flow/
           retention-days: 7
 
+  agent-e2e-checks:
+    name: agent-e2e-checks
+    needs: scope-plan
+    if: needs.scope-plan.outputs.agent_e2e_checks == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache: false
+      - name: Install root dependencies
+        run: bun install --frozen-lockfile
+      - name: Prepare pinned Go dependencies (setup network only)
+        run: bun run prepare:go
+      - name: Run Go agent loop against the loopback model
+        run: bun run check:agent-e2e
+      - name: Upload Go agent E2E artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-e2e
+          path: artifacts/agent-e2e/
+          retention-days: 7
+
   adapter-checks:
     name: adapter-checks
     needs: scope-plan
@@ -502,6 +533,7 @@ jobs:
       - provider-contract-checks
       - chat-contract-checks
       - agent-flow-checks
+      - agent-e2e-checks
       - adapter-checks
       - desktop-native-checks
       - macos-swift-checks
@@ -549,6 +581,7 @@ jobs:
           require_selected "provider-contract-checks" "${{ needs.scope-plan.outputs.provider_contract_checks }}" "${{ needs.provider-contract-checks.result }}"
           require_selected "chat-contract-checks" "${{ needs.scope-plan.outputs.chat_contract_checks }}" "${{ needs.chat-contract-checks.result }}"
           require_selected "agent-flow-checks" "${{ needs.scope-plan.outputs.agent_flow_checks }}" "${{ needs.agent-flow-checks.result }}"
+          require_selected "agent-e2e-checks" "${{ needs.scope-plan.outputs.agent_e2e_checks }}" "${{ needs.agent-e2e-checks.result }}"
           require_selected "adapter-checks" "${{ needs.scope-plan.outputs.adapter_checks }}" "${{ needs.adapter-checks.result }}"
           require_selected "desktop-native-checks" "${{ needs.scope-plan.outputs.desktop_native_checks }}" "${{ needs.desktop-native-checks.result }}"
           require_selected "macos-swift-checks" "${{ needs.scope-plan.outputs.desktop_native_checks }}" "${{ needs.macos-swift-checks.result }}"

@@ -6,6 +6,7 @@ import { syncBuiltinESMExports } from 'node:module'
 import { spyOn } from 'bun:test'
 import { assertDisposableFixtureHome } from './fixture-guard'
 import { absentManagedSettingsFixturePaths, installClientFixtureCapabilities } from './client-options-capabilities'
+import { exposeSourceBindings } from './source-exports'
 
 const input = JSON.parse(await new Response(Bun.stdin.stream()).text())
 const originalSpawn = children.spawn, originalBunSpawn = Bun.spawn.bind(Bun)
@@ -48,11 +49,32 @@ if (input.realPaneBinary) {
 await import('../../../preload')
 const bootstrap = await import('../../../src/bootstrap/state')
 bootstrap.setCwdState(input.homeDir); bootstrap.setOriginalCwd(input.homeDir)
-const bindingNames = ['getAgentNameToPoll', 'randomUUID', 'TEAMMATE_MESSAGE_TAG', 'sendNotification', 'findToolByName', 'getAllBaseTools', 'isInProcessTeammateTask', 'findInProcessTeammateTaskId', 'handlePlanApprovalResponse', 'createAssistantMessage', 'permissionModeFromString', 'toExternalPermissionMode', 'applyPermissionUpdate', 'jsonStringify', 'logForDebugging', 'isInsideTmux', 'ensureBackendsRegistered', 'getBackendByType', 'TEAM_LEAD_NAME', 'getLeaderToolUseConfirmQueue', 'sendPermissionResponseViaMailbox', 'readTeamFileAsync', 'removeTeammateFromTeamFile', 'setMemberMode', 'unassignTeammateTasks', 'getAgentName', 'isPlanModeRequired', 'isTeamLead', 'isTeammate', 'isInProcessTeammate', 'getTrustedShutdownApproval', 'isModeSetRequest', 'isPermissionRequest', 'isPermissionResponse', 'isPlanApprovalRequest', 'isPlanApprovalResponse', 'isSandboxPermissionRequest', 'isSandboxPermissionResponse', 'isShutdownApproved', 'isShutdownRequest', 'isTeamPermissionUpdate', 'isTrustedTeamLeaderMessage', 'markMessagesAsRead', 'markMessagesAsReadByPredicate', 'readUnreadMessages', 'writeToMailbox', 'hasPermissionCallback', 'hasSandboxPermissionCallback', 'processMailboxPermissionResponse', 'processSandboxPermissionResponse']
+let bindingNames: string[] = []
+function moduleBindings(source: string): string[] {
+  const js = new Bun.Transpiler({ loader: 'ts' }).transformSync(source)
+  const ast: any = parse(js, { ecmaVersion: 'latest', sourceType: 'module' })
+  const names = new Set<string>()
+  const pattern = (node: any) => {
+    if (!node) return
+    if (node.type === 'Identifier') names.add(node.name)
+    else if (node.type === 'ObjectPattern') node.properties.forEach((entry: any) => pattern(entry.value ?? entry.argument))
+    else if (node.type === 'ArrayPattern') node.elements.forEach(pattern)
+    else if (node.type === 'AssignmentPattern') pattern(node.left)
+    else if (node.type === 'RestElement') pattern(node.argument)
+  }
+  for (const top of ast.body) {
+    const node = top.type === 'ExportNamedDeclaration' ? top.declaration : top
+    if (!node) continue
+    if (node.type === 'ImportDeclaration') node.specifiers.forEach((entry: any) => pattern(entry.local))
+    else if (node.type === 'FunctionDeclaration' || node.type === 'ClassDeclaration') pattern(node.id)
+    else if (node.type === 'VariableDeclaration') node.declarations.forEach((entry: any) => pattern(entry.id))
+  }
+  return [...names]
+}
 Bun.plugin({ name: 'actual-interactive-inbox-private-bindings', setup(build) {
-  build.onLoad({ filter: /\/useInboxPoller\.ts$/ }, async args => ({ contents: `${await Bun.file(args.path).text()}\nexport const fixtureInboxBindings = { ${bindingNames.join(', ')} }`, loader: 'ts' }))
-  build.onLoad({ filter: /\/attachments\.ts$/ }, async args => ({ contents: `${await Bun.file(args.path).text()}\nexport { getTeammateMailboxAttachments }`, loader: 'ts' }))
-  build.onLoad({ filter: /\/UserTeammateMessage\.tsx$/ }, async args => ({ contents: `${await Bun.file(args.path).text()}\nexport { parseTeammateMessages, TEAMMATE_MSG_REGEX }`, loader: 'tsx' }))
+  build.onLoad({ filter: /\/useInboxPoller\.ts$/ }, async args => { const source = await Bun.file(args.path).text(); bindingNames = moduleBindings(source); return { contents: `${source}\nexport const fixtureInboxBindings = { ${bindingNames.join(', ')} }`, loader: 'ts' } })
+  build.onLoad({ filter: /\/attachments\.ts$/ }, async args => ({ contents: exposeSourceBindings(await Bun.file(args.path).text(), ['getTeammateMailboxAttachments']), loader: 'ts' }))
+  build.onLoad({ filter: /\/UserTeammateMessage\.tsx$/ }, async args => ({ contents: exposeSourceBindings(await Bun.file(args.path).text(), ['parseTeammateMessages', 'TEAMMATE_MSG_REGEX'], 'tsx'), loader: 'tsx' }))
 } })
 const hook: any = await import('../../../src/hooks/useInboxPoller')
 const attachments: any = await import('../../../src/utils/attachments')
@@ -69,16 +91,18 @@ const teammateUI: any = await import('../../../src/components/messages/UserTeamm
 const xml = (input.xml ?? []).map(teammateUI.parseTeammateMessages)
 const source = new Bun.Transpiler({ loader: 'ts' }).transformSync(await Bun.file(new URL('../../../src/hooks/useInboxPoller.ts', import.meta.url)).text())
 const ast = parse(source, { ecmaVersion: 'latest', sourceType: 'module' })
-let pollBody: any
+let pollBody: any, pollInboxBody: any
 function walk(node: any) {
   if (!node || typeof node !== 'object') return
   if (node.type === 'VariableDeclarator' && node.id?.name === 'poll') pollBody = node.init.arguments[0].body
+  if (node.type === 'VariableDeclarator' && node.id?.name === 'pollInbox') pollInboxBody = node.init.arguments[0].body
   for (const value of Object.values(node)) { if (Array.isArray(value)) value.forEach(walk); else if (value && typeof value === 'object') walk(value) }
 }
 walk(ast)
-if (!pollBody) throw new Error('Actual useInboxPoller callback changed')
+if (!pollBody || !pollInboxBody) throw new Error('Actual useInboxPoller callbacks changed')
 const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
-const poll = new AsyncFunction(...bindingNames, 'enabled', 'store', 'setAppState', 'isLoading', 'focusedInputDialog', 'terminal', 'onSubmitTeammateMessage', source.slice(pollBody.start + 1, pollBody.end - 1))
+const pollInbox = new AsyncFunction(...bindingNames, 'enabled', 'store', 'setAppState', 'isLoading', 'focusedInputDialog', 'terminal', 'onSubmitTeammateMessage', source.slice(pollInboxBody.start + 1, pollInboxBody.end - 1))
+const poll = new AsyncFunction('pollInFlightRef', 'pollInbox', source.slice(pollBody.start + 1, pollBody.end - 1))
 const cleanMessages = (messages: any[]) => messages.map(({ id, read, ...row }) => ({ ...row, ...(read === undefined ? {} : { read }) }))
 const parsed = (input.parsers ?? []).map((text: string) => {
   const values = ['isPermissionRequest', 'isPermissionResponse', 'isSandboxPermissionRequest', 'isSandboxPermissionResponse', 'isShutdownRequest', 'isShutdownApproved', 'isTeamPermissionUpdate', 'isModeSetRequest', 'isPlanApprovalRequest', 'isPlanApprovalResponse'].map(name => ({ name, value: (mailbox as any)[name](text) })).filter(row => row.value !== null)
@@ -106,7 +130,7 @@ for (let index = 0; index < (input.rows ?? []).length; index++) {
   const store = createStore(state)
   let permissionQueue: any[] = []
   bridge.registerLeaderToolUseConfirmQueue((update: any) => { permissionQueue = update(permissionQueue) })
-  await poll(...bindingNames.map(name => hook.fixtureInboxBindings[name]), true, store, store.setState, true, undefined, async () => {}, () => false)
+  await poll({ current: false }, () => pollInbox(...bindingNames.map(name => hook.fixtureInboxBindings[name]), true, store, store.setState, true, undefined, async () => {}, () => false))
   if (row.resolvePermissions) for (const request of permissionQueue) request.onAllow(request.input, [])
   // Join the actual fire-and-forget filesystem producers through their physical
   // receipts, instead of assuming that a fixed delay settles Source writes.

@@ -27,7 +27,8 @@ for (const row of input.cases) {
   try {
     if (row.kind === 'notify') await service.action(team, 'return', { ...plan, expectedRevision: plan.revision, requestId: 'human-request' })
     else {
-      const approved = await service.approve(team, { ...plan, expectedRevision: plan.revision, requestId: 'human-request' })
+      const options = row.kind === 'leader_failed' || row.kind === 'leader_started' ? { startLeader: async () => { calls.push('startLeader'); if (row.kind === 'leader_failed') throw new Error('actual leader start rejected') } } : {}
+      const approved = await service.approve(team, { ...plan, expectedRevision: plan.revision, requestId: 'human-request' }, options)
       await service.launches.get(approved.planId)
       if (row.kind === 'retry') throw new Error('unused')
       if (row.kind === 'lost_launching') await store.mutateTeamPlan(team, { ...approved, expectedRevision: (await store.readTeamPlan(team))!.revision }, (v: any) => ({ ...v, state: 'launching' }))

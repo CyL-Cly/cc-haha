@@ -91,6 +91,9 @@ describe('feature quality contract', () => {
     expect(packageJson.scripts?.['check:provider-contract']).toBe('bun run scripts/pr/run-provider-contract-tests.ts')
     expect(packageJson.scripts?.['check:chat-contract']).toBe('bun run scripts/pr/run-chat-contract-tests.ts')
     expect(packageJson.scripts?.['check:policy']).toContain('bun test ./scripts/')
+    // CLI integration tests execute the native launcher. Rebuild its ignored
+    // artifact first so previous generated binaries cannot hide regressions.
+    expect(packageJson.scripts?.['check:server']).toBe('bun run build:cli && bun run scripts/pr/run-server-tests.ts')
     expect(packageJson.scripts?.['check:native']).toContain('electron:package:dir')
     expect(packageJson.scripts?.['check:native']).toContain('electron:package:dir --config.electronDist=node_modules/electron/dist')
     expect(packageJson.scripts?.['check:native']).toContain('test:package-smoke:current')

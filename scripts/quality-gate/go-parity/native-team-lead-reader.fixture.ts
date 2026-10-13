@@ -23,7 +23,7 @@ walk(ast)
 if (!cleanup || !format) throw new Error('Actual print leader consumer changed')
 const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
 const processApprovals = new AsyncFunction('partitioned','teamName','refreshedState','isShutdownApproved','logForDebugging','removeTeammateFromTeamFile','unassignTeammateTasks','setAppState',source.slice(cleanup.start, cleanup.end))
-const formatMessages = new Function('partitioned','TEAMMATE_MESSAGE_TAG',`return (${source.slice(format.start, format.end)})`)
+const formatMessages = new Function('partitioned','TEAMMATE_MESSAGE_TAG','formatTeammateMessages',`return (${source.slice(format.start, format.end)})`)
 const rows = []
 for (let index = 0; index < input.rows.length; index++) {
   const row = input.rows[index], team = `actual-reader-${index}`
@@ -32,10 +32,16 @@ for (let index = 0; index < input.rows.length; index++) {
   for (const message of row.messages) await mailbox.writeToMailbox('team-lead', message, team)
   let current: any = { teamContext: row.snapshot }
   const unread = await mailbox.readUnreadMessages('team-lead', team)
-  if (unread.length) await mailbox.markMessagesAsRead('team-lead', team)
+  if (unread.length) {
+    if (typeof (mailbox as any).claimMailboxMessages === 'function') {
+      const claimed = await mailbox.claimMailboxMessages('team-lead', team, unread)
+      if (claimed === undefined) throw new Error('Actual Source claim failed')
+      unread.splice(0, unread.length, ...claimed)
+    } else await (mailbox as any).markMessagesAsRead('team-lead', team)
+  }
   const partition = partitionLeadMailboxMessages(unread)
   await processApprovals(partition,team,current,mailbox.isShutdownApproved,()=>{},helpers.removeTeammateFromTeamFile,tasks.unassignTeammateTasks,(update:any)=>{current=update(current)})
   const snapshot = await tasks.readTaskListSnapshot(team)
-  rows.push({ partition, context: current.teamContext, formatted: partition.remaining.length ? formatMessages(partition,'teammate-message') : null, mailbox: await mailbox.readMailbox('team-lead',team), members: (await helpers.readTeamFileAsync(team))?.members, tasks: snapshot.tasks, revision:snapshot.revision })
+  rows.push({ partition, context: current.teamContext, formatted: partition.remaining.length ? formatMessages(partition,'teammate-message',mailbox.formatTeammateMessages) : null, mailbox: await mailbox.readMailbox('team-lead',team), members: (await helpers.readTeamFileAsync(team))?.members, tasks: snapshot.tasks, revision:snapshot.revision })
 }
 process.stdout.write(JSON.stringify({ rows, capabilities }))

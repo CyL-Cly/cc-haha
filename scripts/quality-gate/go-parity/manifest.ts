@@ -16,12 +16,20 @@ async function execute(command: string[], options: Parameters<Runner>[1]): Promi
   return { exitCode, stdout, stderr }
 }
 
-function inputPath(root: string, file: string) {
+function inputPath(root: string, file: string, deleted = false): string | null {
   if (!file || isAbsolute(file) || file.includes('\0') || file.split(/[\\/]/).some(part => !part || part === '.' || part === '..' || part === '.git')) throw new Error(`Invalid corpus input path: ${file}`)
   let path = root
   for (const component of file.split('/')) {
     path = join(path, component)
-    if (lstatSync(path).isSymbolicLink()) throw new Error(`Corpus input cannot follow a symlink: ${file}`)
+    try {
+      if (lstatSync(path).isSymbolicLink()) throw new Error(`Corpus input cannot follow a symlink: ${file}`)
+    } catch (error) {
+      // Git's cached inventory retains tracked deletions. Only a deletion
+      // confirmed by Git and physically absent may leave the current-input
+      // inventory; a restored file must still be hashed at this endpoint.
+      if (deleted && (error as NodeJS.ErrnoException).code === 'ENOENT') return null
+      throw error
+    }
   }
   if (!lstatSync(path).isFile() || !realpathSync(path).startsWith(`${realpathSync(root)}${sep}`)) throw new Error(`Corpus input is not a regular repository file: ${file}`)
   return path
@@ -31,9 +39,22 @@ export async function collectCorpusSnapshot(rootDir: string, env: Record<string,
   const root = resolve(rootDir)
   const result = await run(['git', '-c', 'core.quotePath=false', 'ls-files', '--cached', '--others', '--exclude-standard', '-z'], { cwd: root, env })
   if (result.exitCode !== 0) throw new Error(`Could not inventory corpus inputs: ${result.stderr}`)
+  const deletionResult = await run(['git', '-c', 'core.quotePath=false', 'ls-files', '--deleted', '-z'], { cwd: root, env })
+  if (deletionResult.exitCode !== 0) throw new Error(`Could not inventory deleted corpus inputs: ${deletionResult.stderr}`)
+  const deleted = new Set(deletionResult.stdout.split('\0').filter(Boolean))
   const names = [...new Set(result.stdout.split('\0').filter(Boolean))].sort()
   if (!names.length) throw new Error('Corpus input inventory is empty')
-  return names.map(file => ({ file, sha256: createHash('sha256').update(readFileSync(inputPath(root, file))).digest('hex') }))
+  for (const file of deleted) {
+    if (!names.includes(file)) throw new Error(`Deleted corpus input is missing from Git's cached inventory: ${file}`)
+    inputPath(root, file, true)
+  }
+  const snapshot: Digest[] = []
+  for (const file of names) {
+    const path = inputPath(root, file, deleted.has(file))
+    if (path !== null) snapshot.push({ file, sha256: createHash('sha256').update(readFileSync(path)).digest('hex') })
+  }
+  if (!snapshot.length) throw new Error('Corpus input inventory contains no present regular files')
+  return snapshot
 }
 
 export function assertCorpusSnapshotFresh(before: Digest[], after: Digest[]) {

@@ -51,7 +51,7 @@ async function observe(item: typeof streamAbortCases[number], kind: 'source' | '
       expect(code, stderr + stdout).toBe(0)
       expect(stderr).toBe('')
       const result = JSON.parse(kind === 'source' ? stdout : stdout.split('STREAM_ABORT_RESULT:')[1].split('\n')[0])
-      if (kind === 'source') { expect(result.sourceOnly.capabilities.blocked).toEqual([]); expect(result.sourceOnly.capabilities.secureReads).toEqual(['read']); expect(result.sourceOnly.sdk).toBe('0.80.0') }
+      if (kind === 'source') { expect(result.sourceOnly.capabilities.blocked).toEqual([]); expect(result.sourceOnly.capabilities.secureReads).toEqual(['read']); expect(result.sourceOnly.sdk).toBe('0.128.0') }
       expect(server.requests).toBe(1)
       expect(server.closedModelConnections).toBe(1)
       expect(server.closedTCP).toBe(server.acceptedTCP)

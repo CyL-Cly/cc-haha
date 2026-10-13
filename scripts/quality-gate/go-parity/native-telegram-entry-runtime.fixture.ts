@@ -17,6 +17,7 @@ let nextSession = 0
 let nextMessage = 0
 let active = 'private-provider'
 let currentModel = 'private-model'
+let responseOverrides = input.responses ?? {}
 const connections = new Map<string, any>()
 const botInfo = { id: 999, is_bot: true, username: 'private_test_bot', first_name: 'Private' }
 const reply = (result: any) => Response.json({ ok: true, result })
@@ -35,6 +36,8 @@ const peer = Bun.serve<{ id: string }>({ hostname: '127.0.0.1', port: 0, async f
   }
   const body = request.method === 'POST' || request.method === 'PUT' ? await request.text() : ''
   http.push({ method: request.method, path: url.pathname + url.search, authorization: request.headers.get('authorization'), ...(body ? { body: JSON.parse(body) } : {}) })
+  const override = responseOverrides[`${request.method} ${url.pathname}${url.search}`]
+  if (override) return override.raw !== undefined ? new Response(override.raw, { status: override.status }) : Response.json(override.body, { status: override.status })
   if (url.pathname === '/api/sessions' && request.method === 'POST') return Response.json({ sessionId: `private-session-${++nextSession}` })
   if (url.pathname === '/api/sessions/recent-projects') return Response.json({ projects: input.projects })
   if (url.pathname === '/api/sessions') return Response.json({ sessions: input.sessions, total: input.sessions.length })
@@ -63,6 +66,7 @@ const rows = []
 try {
   for (const action of input.actions) {
     if (action.now !== undefined) now = action.now
+    if (action.responses) responseOverrides = action.responses
     if (action.update) await entry.bot.handleUpdate(action.update)
     if (action.event) await entry.handleServerMessage('42', action.event)
     await new Promise(resolve => setTimeout(resolve, 15))

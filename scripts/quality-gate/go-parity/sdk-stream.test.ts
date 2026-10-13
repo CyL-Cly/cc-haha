@@ -28,7 +28,7 @@ async function record(scenario: SDKStreamScenario, kind: 'typescript' | 'go' = '
       expect(raw).toBeDefined()
       const parsed = JSON.parse(raw!)
       if (kind === 'typescript') {
-        expect(parsed.sdkVersion).toBe('0.80.0')
+        expect(parsed.sdkVersion).toBe('0.128.0')
         expect(parsed.engineVersion).toBe('1.3.14')
         expect(parsed.capabilities).toEqual({ blocked: [], secureReads: [], absentReads: [] })
       }
@@ -44,7 +44,7 @@ async function record(scenario: SDKStreamScenario, kind: 'typescript' | 'go' = '
   } finally { child?.kill(); if (child) await child.exited; await rm(home, { recursive: true, force: true }) }
 }
 
-describe('SDK 0.80.0 actual raw dispatch Source self replay', () => {
+describe('SDK 0.128.0 actual raw dispatch Source self replay', () => {
   for (const scenario of sdkStreamScenarios) test(scenario.name, async () => {
     const first = await record(scenario)
     assertTraceEqual(first.trace, (await record(scenario)).trace)
@@ -89,7 +89,7 @@ describe('SDK Source pre-import isolation guards', () => {
   })
 })
 
-describe('SDK 0.80.0 actual raw dispatch Go parity', () => {
+describe('SDK 0.128.0 actual raw dispatch Go parity', () => {
   beforeAll(async () => {
     buildHome = await mkdtemp(join(allocationRoot, 'sdk-stream-build-'))
     executable = join(buildHome, process.platform === 'win32' ? 'provider.test.exe' : 'provider.test')

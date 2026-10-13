@@ -291,6 +291,21 @@ describe('PR quality workflow', () => {
     // secrets, no live provider.
     expect(steps.some((step) => String(step.run ?? '').includes('secrets'))).toBe(false)
   })
+
+  test('keeps the native Go Agent E2E selected failure blocking and prepares only pinned dependencies', () => {
+    const workflow = readFileSync('.github/workflows/pr-quality.yml', 'utf8')
+    const jobs = workflowJobs(workflow)
+    const job = jobs['agent-e2e-checks']
+    expect(job.if).toBe("needs.scope-plan.outputs.agent_e2e_checks == 'true'")
+    expect(job['continue-on-error']).not.toBe(true)
+    expect(jobs['pr-quality-gate'].needs).toContain('agent-e2e-checks')
+    expect(workflow).toContain('require_selected "agent-e2e-checks" "${{ needs.scope-plan.outputs.agent_e2e_checks }}" "${{ needs.agent-e2e-checks.result }}"')
+    expect(job.steps?.find(step => step.uses === 'actions/setup-go@v5')?.with?.['go-version-file']).toBe('backend/go.mod')
+    expect(job.steps?.some(step => step.run === 'bun run prepare:go')).toBe(true)
+    expect(job.steps?.some(step => step.run === 'bun run check:agent-e2e')).toBe(true)
+    expect(workflow).not.toContain('schedule:')
+    expect(job.steps?.some(step => JSON.stringify(step).includes('secrets.'))).toBe(false)
+  })
 })
 
 describe('full quality workflow', () => {

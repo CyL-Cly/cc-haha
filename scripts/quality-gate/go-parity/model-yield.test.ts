@@ -63,7 +63,7 @@ async function observe(item: HTTPSRequestCase, kind: 'source' | 'go' = 'source')
         const [managed, dropIn] = absentManagedSettingsFixturePaths()
         expect(result.sourceOnly.capabilities.absentReads).toEqual([{ operation: 'lstatSync', path: managed }, { operation: 'lstatSync', path: managed }, { operation: 'openSync', path: managed }, { operation: 'readdirSync', path: dropIn }])
         expect(result.sourceOnly.pairingEvidence).toHaveLength(1)
-        expect(result.sourceOnly.sdk).toBe('0.80.0')
+        expect(result.sourceOnly.sdk).toBe('0.128.0')
         if (item.layer === 'creation') expect(result.sourceOnly.queryTerminal.yielded.at(-1)).toContain('isApiErrorMessage')
       }
       if (kind === 'source' && item.layer === 'creation') {

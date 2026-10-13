@@ -61,7 +61,7 @@ const { VERSION } = await import('@anthropic-ai/sdk/version')
 const { createSystemAPIErrorMessage } = await import('../../../src/utils/messages')
 const { getRetryDelay } = await import('../../../src/services/api/withRetry')
 const pinnedRevision = '0d9b296af33f2b851fcbf4df3e9ec89751734ba4'
-if (VERSION !== '0.80.0' || Bun.version !== '1.3.14' || Bun.revision !== pinnedRevision) throw new Error('HTTP metadata requires pinned SDK/runtime')
+if (VERSION !== '0.128.0' || Bun.version !== '1.3.14' || Bun.revision !== pinnedRevision) throw new Error('HTTP metadata requires pinned MAIN SDK/runtime')
 spyOn(Math, 'random').mockReturnValue(0)
 const RealDate = Date
 globalThis.Date = class extends RealDate {

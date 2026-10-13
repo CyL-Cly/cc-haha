@@ -73,5 +73,5 @@ try {
       },
     })) yields.push(JSON.stringify(event))
   })
-  process.stdout.write(JSON.stringify({ observation: { fetches, normalizedHistory, historyBefore: before, historyAfter: history.map(message => JSON.stringify(message)), uuidCalls, previousRequestID }, sourceOnly: { wireRequests, yields, capabilities, lastMainRequestID: bootstrap.getLastMainRequestId(), runtime: { platform: process.platform, arch: process.arch, version: process.version }, sdk: '0.80.0', profile: 'direct-relay-no-experiments' } }))
+  process.stdout.write(JSON.stringify({ observation: { fetches, normalizedHistory, historyBefore: before, historyAfter: history.map(message => JSON.stringify(message)), uuidCalls, previousRequestID }, sourceOnly: { wireRequests, yields, capabilities, lastMainRequestID: bootstrap.getLastMainRequestId(), runtime: { platform: process.platform, arch: process.arch, version: process.version }, sdk: '0.128.0', profile: 'direct-relay-no-experiments' } }))
 } finally { server.stop(true) }

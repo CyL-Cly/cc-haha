@@ -39,6 +39,7 @@ try {
   const { toolToAPISchema } = await import('../../../src/utils/api')
   const { clearToolSchemaCache, getToolSchemaCache } = await import('../../../src/utils/toolSchemaCache')
   const { getEmptyToolPermissionContext } = await import('../../../src/Tool')
+  const { VERSION: sdkVersion } = await import('@anthropic-ai/sdk/version')
   const native = { Read: FileReadTool, Edit: FileEditTool, Write: FileWriteTool, Glob: GlobTool, Grep: GrepTool }
   const promptCalls: Record<string, number> = {}
   const wrapped = new WeakSet<object>()
@@ -84,5 +85,5 @@ try {
       records.push({ schemas: schemas.map(value => JSON.stringify(value)), promptCalls: { ...promptCalls }, cacheSize: getToolSchemaCache().size, parsed })
     }
   }
-  process.stdout.write(JSON.stringify({ observation: { records, fetches }, sourceOnly: { capabilities, sdk: '0.80.0', runtime: { platform: process.platform, arch: process.arch, version: process.version }, profile: 'actual-native-tool-definitions' } }))
+  process.stdout.write(JSON.stringify({ observation: { records, fetches }, sourceOnly: { capabilities, sdk: sdkVersion, runtime: { platform: process.platform, arch: process.arch, version: process.version }, profile: 'actual-native-tool-definitions' } }))
 } finally { server.stop(true) }

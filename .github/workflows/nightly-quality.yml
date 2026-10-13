@@ -100,6 +100,7 @@ jobs:
           name: nightly-quality
           path: |
             artifacts/agent-flow/
+            artifacts/agent-e2e/
             artifacts/desktop-ui-smoke/
             artifacts/coverage/
             artifacts/go-checks/

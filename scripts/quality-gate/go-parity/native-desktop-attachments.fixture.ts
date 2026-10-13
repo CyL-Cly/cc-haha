@@ -5,6 +5,7 @@ import { assertDisposableFixtureHome } from './fixture-guard'
 const input = await Bun.stdin.json()
 const home = assertDisposableFixtureHome(input.homeDir, 'Desktop attachment producer')
 if (process.env.CC_HAHA_DESKTOP_ATTACHMENTS_FIXTURE !== '1' || process.env.NODE_ENV !== 'production' || !Array.isArray(input.cases)) throw new Error('Unowned desktop attachment fixture')
+const { resolveRelocatedAttachmentPath } = await import('../../../src/utils/storageRelocations')
 const source = fs.readFileSync(new URL('../../../src/server/services/conversationService.ts', import.meta.url), 'utf8')
 const start = source.indexOf('  private async buildUserContent(')
 const end = source.indexOf('  private getSdkTokenFromUrl(', start)
@@ -13,12 +14,22 @@ if (start < 0 || end < 0) throw new Error('Original desktop attachment productio
 // live provider, Node worker, or developer configuration is involved.
 const code = new Bun.Transpiler({ loader: 'ts' }).transformSync('class AttachmentSource {\n' + source.slice(start, end) + '\n}\n')
 let sequence = 0
-const Source = new Function('fs', 'os', 'path', 'crypto', 'maybeResizeAndDownsampleImageBuffer', 'createImageMetadataText', 'logError', code + '; return AttachmentSource')(
+const Source = new Function('fs', 'os', 'path', 'crypto', 'maybeResizeAndDownsampleImageBuffer', 'createImageMetadataText', 'logError', 'resolveRelocatedAttachmentPath', code + '; return AttachmentSource')(
   fs, os, path, { randomUUID: () => '00000000-0000-4000-8000-' + String(++sequence).padStart(12, '0') },
   () => { throw new Error('Image transforms require a separate native producer fixture') },
-  () => { throw new Error('Unexpected image metadata') }, () => {},
+  () => { throw new Error('Unexpected image metadata') }, () => {}, resolveRelocatedAttachmentPath,
 )
 const service = new Source()
+if (input.mode === 'failure') {
+  const row = input.cases[0]
+  try {
+    const blocks = await service.buildUserContent(row.content, row.sessionId, row.attachments)
+    process.stdout.write(JSON.stringify({ error: null, blocks }) + '\n')
+  } catch (error) {
+    process.stdout.write(JSON.stringify({ error: error instanceof Error ? error.message : String(error) }) + '\n')
+  }
+  process.exit(0)
+}
 const results = []
 for (const row of input.cases) {
   if ((row.attachments ?? []).some((attachment: any) => service.shouldInlineImageAttachment(attachment))) throw new Error('Image scenario must use the actual image producer fixture')

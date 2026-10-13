@@ -29,17 +29,19 @@ const source = new Bun.Transpiler({ loader: 'ts' }).transformSync(await Bun.file
 const ast: any = parse(source, { ecmaVersion: 'latest', sourceType: 'module' })
 const declarations = ast.body.map((node: any) => node.type === 'ExportNamedDeclaration' ? node.declaration : node)
 const unique = declarations.find((node: any) => node?.type === 'FunctionDeclaration' && node.id.name === 'generateUniqueTeammateName')
+const pick = declarations.find((node:any)=>node?.type==='FunctionDeclaration' && node.id.name==='pickUniqueTeammateName')
+const pickUniqueTeammateName=new Function(`${source.slice(pick.start,pick.end)}; return pickUniqueTeammateName`)()
 const handler = declarations.find((node: any) => node?.type === 'FunctionDeclaration' && node.id.name === 'handleSpawnInProcess')
 if (!unique || !handler) throw new Error('Original native teammate spawn declarations changed')
 const generateUniqueTeammateName = new Function('readTeamFileAsync', `${source.slice(unique.start, unique.end)}; return generateUniqueTeammateName`)(helpers.readTeamFileAsync)
-const make = new Function('resolveTeammateModel','generateUniqueTeammateName','sanitizeAgentName','formatAgentId','assignTeammateColor','isCustomAgent','isPluginAgent','logForDebugging','spawnInProcessTeammate','startInProcessTeammate','TEAM_LEAD_NAME','getCwd','mutateTeamFileAsync', `${source.slice(handler.start, handler.end)}; return handleSpawnInProcess`)
+const make = new Function('pickUniqueTeammateName','resolveTeammateModel','generateUniqueTeammateName','sanitizeAgentName','formatAgentId','assignTeammateColor','isCustomAgent','isPluginAgent','logForDebugging','spawnInProcessTeammate','startInProcessTeammate','TEAM_LEAD_NAME','getCwd','mutateTeamFileAsync', `${source.slice(handler.start, handler.end)}; return handleSpawnInProcess`)
 const rows = []
 for (const row of input.rows) {
   clearTeammateColors()
   await helpers.writeTeamFileAsync(row.team.name, row.team)
   let current: any = { mainLoopModel: row.leaderModel, tasks: {}, teamContext: row.teamContext }
   let launched: any
-  const run = make(resolveTeammateModel,generateUniqueTeammateName,sanitizeAgentName,formatAgentId,assignTeammateColor,isCustomAgent,isPluginAgent,logForDebugging,spawnInProcessTeammate,(config: any) => { launched = config },'team-lead',getCwd,helpers.mutateTeamFileAsync)
+  const run = make(pickUniqueTeammateName,resolveTeammateModel,generateUniqueTeammateName,sanitizeAgentName,formatAgentId,assignTeammateColor,isCustomAgent,isPluginAgent,logForDebugging,spawnInProcessTeammate,(config: any) => { launched = config },'team-lead',getCwd,helpers.mutateTeamFileAsync)
   const result = await run(row.input, { options:{agentDefinitions:{activeAgents:row.definitions ?? []}}, messages:[{hugeOriginalHistory:true}], toolUseId:row.toolUseId, getAppState:()=>current,setAppState:(update:any)=>{current=update(current)} })
   const task: any = Object.values(current.tasks)[0]
   for (const key of ['abortController','unregisterCleanup']) delete task[key]

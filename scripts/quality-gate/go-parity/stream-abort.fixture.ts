@@ -63,4 +63,5 @@ for (;;) {
 observation.aborted = controller.signal.aborted
 observation.yieldedAfter = values.map(value => JSON.stringify(value))
 observation.historyAfter = history.map(value => JSON.stringify(value))
-process.stdout.write(JSON.stringify({ observation, sourceOnly: { capabilities, sdk: '0.80.0', boundary: 'actual single-model generator; no outer-query/hooks/SDK writer claim' } }))
+const { VERSION: sdkVersion } = await import('@anthropic-ai/sdk/version')
+process.stdout.write(JSON.stringify({ observation, sourceOnly: { capabilities, sdk: sdkVersion, boundary: 'actual single-model generator; no outer-query/hooks/SDK writer claim' } }))
