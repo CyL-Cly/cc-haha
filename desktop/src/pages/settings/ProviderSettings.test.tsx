@@ -13,7 +13,14 @@ import { ProviderSettings } from './ProviderSettings'
 vi.mock('../../components/settings/ClaudeOfficialLogin', () => ({ ClaudeOfficialLogin: () => null }))
 vi.mock('../../components/settings/ChatGPTOfficialLogin', () => ({ ChatGPTOfficialLogin: () => null }))
 vi.mock('../../components/settings/GrokOfficialLogin', () => ({ GrokOfficialLogin: () => null }))
-vi.mock('../../components/settings/OfficialProviderModelSettings', () => ({ OfficialProviderModelSettings: () => null }))
+vi.mock('../../components/settings/DeepSeekAccountLogin', () => ({
+  DeepSeekAccountLogin: () => <div data-testid="deepseek-account-login-stub" />,
+}))
+vi.mock('../../components/settings/OfficialProviderModelSettings', () => ({
+  OfficialProviderModelSettings: ({ providerId }: { providerId: string }) => (
+    <div data-testid="official-model-settings" data-provider-id={providerId} />
+  ),
+}))
 
 const savedProviders: SavedProvider[] = ([
   ['xuanshuapi', '玄枢API', 'https://www.xuanshuapi.com', 'claude-sonnet-5'],
@@ -287,6 +294,60 @@ describe('active sponsor providers', () => {
     const dialog = within(screen.getByRole('dialog'))
     expect(dialog.getByRole('button', { name: 'Atlas Cloud' })).toBeInTheDocument()
     expect(dialog.queryByRole('button', { name: 'ApiSmart' })).not.toBeInTheDocument()
+  })
+})
+
+describe('built-in DeepSeek Account provider', () => {
+  beforeEach(() => {
+    useSettingsStore.setState({ locale: 'en' })
+    vi.spyOn(useSettingsStore.getState(), 'fetchAll').mockResolvedValue()
+    vi.spyOn(useSettingsStore.getState(), 'setModel').mockResolvedValue()
+    vi.spyOn(providersApi, 'getSettings').mockResolvedValue({})
+    vi.spyOn(providersApi, 'getOfficialModels').mockResolvedValue({
+      models: { main: 'deepseek-v4-pro[1m]', haiku: 'deepseek-v4-flash', sonnet: 'deepseek-v4-pro[1m]', opus: 'deepseek-v4-pro[1m]' },
+    })
+    useProviderStore.setState({
+      providers: [], activeId: null, hasLoadedProviders: false, isLoading: false,
+      providerOrder: ['claude-official', 'openai-official', 'grok-official', 'deepseek-account'],
+    })
+  })
+
+  afterEach(() => {
+    cleanup()
+    vi.restoreAllMocks()
+  })
+
+  it('lists the account provider, activates it and then shows its login and model mapping', async () => {
+    let activeId: string | null = null
+    vi.spyOn(providersApi, 'list').mockImplementation(async () => ({ providers: [], activeId }))
+    const activate = vi.spyOn(providersApi, 'activate').mockImplementation(async (id) => {
+      activeId = id
+      return { ok: true }
+    })
+
+    render(<ProviderSettings />)
+
+    const card = await screen.findByTestId('deepseek-account-provider')
+    expect(within(card).getByText('DeepSeek Account')).toBeInTheDocument()
+    expect(within(card).getByText(/no API key required/)).toBeInTheDocument()
+    expect(within(card).queryByTestId('deepseek-account-login-stub')).not.toBeInTheDocument()
+
+    fireEvent.click(within(card).getByRole('button', { name: /DeepSeek Account/ }))
+
+    await waitFor(() => expect(activate).toHaveBeenCalledWith('deepseek-account'))
+    expect(await within(card).findByTestId('deepseek-account-login-stub')).toBeInTheDocument()
+    expect(within(card).getByTestId('official-model-settings')).toHaveAttribute('data-provider-id', 'deepseek-account')
+    expect(within(card).getByText('Default')).toBeInTheDocument()
+  })
+
+  it('shows no account login for the browser (phone) settings view', async () => {
+    vi.spyOn(providersApi, 'list').mockResolvedValue({ providers: [], activeId: 'deepseek-account' })
+
+    render(<ProviderSettings browserMode />)
+
+    const card = await screen.findByTestId('deepseek-account-provider')
+    expect(within(card).getByText('DeepSeek Account')).toBeInTheDocument()
+    expect(within(card).queryByTestId('deepseek-account-login-stub')).not.toBeInTheDocument()
   })
 })
 

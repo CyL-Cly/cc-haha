@@ -11,7 +11,7 @@ order: 6
 
 ## 服务商
 
-管理模型接入。支持 Claude 官方、ChatGPT 官方、Grok 官方三种账号登录（不需要 API 密钥），也支持填 API 密钥接入任意 Anthropic / OpenAI 兼容的服务商。
+管理模型接入。支持 Claude 官方、ChatGPT 官方、Grok 官方、DeepSeek 账号四种账号登录（不需要 API 密钥），也支持填 API 密钥接入任意 Anthropic / OpenAI 兼容的服务商。
 
 第一次用必须来这里，之后基本不用动。详细步骤见[连接模型服务](../start/models.md)。
 

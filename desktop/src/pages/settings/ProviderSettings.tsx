@@ -54,6 +54,7 @@ import { normalizeProviderBaseUrl, presetMatchesBaseUrl, selectableProviderPrese
 import { ClaudeOfficialLogin } from '../../components/settings/ClaudeOfficialLogin'
 import { ChatGPTOfficialLogin } from '../../components/settings/ChatGPTOfficialLogin'
 import { GrokOfficialLogin } from '../../components/settings/GrokOfficialLogin'
+import { DeepSeekAccountLogin } from '../../components/settings/DeepSeekAccountLogin'
 import { OfficialProviderModelSettings } from '../../components/settings/OfficialProviderModelSettings'
 import { CcSwitchImportModal } from '../../components/settings/CcSwitchImportModal'
 import { ModelIdCombobox } from '../../components/settings/ModelIdCombobox'
@@ -62,6 +63,7 @@ import { compatibilityForm, invalidCompatibilityNumber, parseCompatibilityForm, 
 import { ProviderImageGenerationFields, type ImageGenerationFormValue } from '../../components/settings/ProviderImageGenerationFields'
 import { BUILT_IN_PROVIDER_IDS, CLAUDE_OFFICIAL_PROVIDER_ID, OPENAI_OFFICIAL_PROVIDER_ID } from '../../constants/openaiOfficialProvider'
 import { GROK_OFFICIAL_PROVIDER_ID } from '../../constants/grokOfficialProvider'
+import { DEEPSEEK_ACCOUNT_PROVIDER_ID } from '../../constants/deepseekAccountProvider'
 import { ApiError, getBaseUrl } from '../../api/client'
 import { getDesktopHost } from '../../lib/desktopHost'
 import { API_KEY_JSON_PLACEHOLDER, maskSettingsJsonSecrets, restoreSettingsJsonSecrets, stripProviderSettingsJsonEnv } from '../../lib/providerSettingsJson'
@@ -92,6 +94,7 @@ type ProviderListItem =
   | { id: typeof CLAUDE_OFFICIAL_PROVIDER_ID; kind: 'claude-official' }
   | { id: typeof OPENAI_OFFICIAL_PROVIDER_ID; kind: 'openai-official' }
   | { id: typeof GROK_OFFICIAL_PROVIDER_ID; kind: 'grok-official' }
+  | { id: typeof DEEPSEEK_ACCOUNT_PROVIDER_ID; kind: 'deepseek-account' }
   | { id: string; kind: 'saved'; provider: SavedProvider }
 
 /** Row labels for the model-mapping form, in `MODEL_SLOTS` order. */
@@ -148,6 +151,7 @@ function buildProviderListItems(
     [CLAUDE_OFFICIAL_PROVIDER_ID, { id: CLAUDE_OFFICIAL_PROVIDER_ID, kind: 'claude-official' }],
     [OPENAI_OFFICIAL_PROVIDER_ID, { id: OPENAI_OFFICIAL_PROVIDER_ID, kind: 'openai-official' }],
     [GROK_OFFICIAL_PROVIDER_ID, { id: GROK_OFFICIAL_PROVIDER_ID, kind: 'grok-official' }],
+    [DEEPSEEK_ACCOUNT_PROVIDER_ID, { id: DEEPSEEK_ACCOUNT_PROVIDER_ID, kind: 'deepseek-account' }],
     ...savedItems,
   ])
 
@@ -164,6 +168,8 @@ function providerItemTestId(item: ProviderListItem): string {
       return 'openai-official-provider'
     case 'grok-official':
       return 'grok-official-provider'
+    case 'deepseek-account':
+      return 'deepseek-account-provider'
     case 'saved':
       return `provider-${item.provider.id}`
   }
@@ -273,6 +279,7 @@ export function ProviderSettings({ browserMode = false }: { browserMode?: boolea
   const isClaudeOfficialActive = hasLoadedProviders && activeId === null
   const isOpenAIOfficialActive = hasLoadedProviders && activeId === OPENAI_OFFICIAL_PROVIDER_ID
   const isGrokOfficialActive = hasLoadedProviders && activeId === GROK_OFFICIAL_PROVIDER_ID
+  const isDeepSeekAccountActive = hasLoadedProviders && activeId === DEEPSEEK_ACCOUNT_PROVIDER_ID
 
   return (
     <div className="min-w-0">
@@ -378,6 +385,30 @@ export function ProviderSettings({ browserMode = false }: { browserMode?: boolea
                       <div className="flex flex-col">
                         <GrokOfficialLogin />
                         <OfficialProviderModelSettings providerId={GROK_OFFICIAL_PROVIDER_ID} />
+                      </div>
+                    ) : null}
+                  />
+                )
+              }
+
+              if (item.kind === 'deepseek-account') {
+                return (
+                  <SortableProviderCard
+                    browserMode={browserMode}
+                    key={item.id}
+                    item={item}
+                    isActive={isDeepSeekAccountActive}
+                    dragLabel={t('settings.providers.dragToReorder')}
+                    onActivate={!isDeepSeekAccountActive ? () => handleActivate(DEEPSEEK_ACCOUNT_PROVIDER_ID) : undefined}
+                    title={t('settings.providers.deepseekAccountName')}
+                    subtitle={t('settings.providers.deepseekAccountDesc')}
+                    badges={isDeepSeekAccountActive ? (
+                      <Badge tone="brand">{t('settings.providers.default')}</Badge>
+                    ) : null}
+                    details={!browserMode && isDeepSeekAccountActive ? (
+                      <div className="flex flex-col">
+                        <DeepSeekAccountLogin />
+                        <OfficialProviderModelSettings providerId={DEEPSEEK_ACCOUNT_PROVIDER_ID} />
                       </div>
                     ) : null}
                   />

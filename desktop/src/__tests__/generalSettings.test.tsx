@@ -2325,6 +2325,7 @@ describe('Settings > Providers tab', () => {
       'openai-official-provider',
       'claude-official-provider',
       'grok-official-provider',
+      'deepseek-account-provider',
     ])
   })
 
@@ -2340,6 +2341,7 @@ describe('Settings > Providers tab', () => {
       'claude-official-provider',
       'openai-official-provider',
       'grok-official-provider',
+      'deepseek-account-provider',
     ])
   })
 

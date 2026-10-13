@@ -237,7 +237,7 @@ describe('ProviderService', () => {
       expect(result).toEqual({
         providers: [],
         activeId: null,
-        providerOrder: ['claude-official', 'openai-official', 'grok-official'],
+        providerOrder: ['claude-official', 'openai-official', 'grok-official', 'deepseek-account'],
       })
     })
 
@@ -252,7 +252,7 @@ describe('ProviderService', () => {
       expect(result).toEqual({
         providers: [],
         activeId: null,
-        providerOrder: ['claude-official', 'openai-official', 'grok-official'],
+        providerOrder: ['claude-official', 'openai-official', 'grok-official', 'deepseek-account'],
       })
       expect(files.some((name) => name.startsWith('providers.json.invalid-'))).toBe(true)
     })
@@ -848,6 +848,7 @@ describe('ProviderService', () => {
           'claude-official',
           'openai-official',
           'grok-official',
+          'deepseek-account',
         ])
       })
 
@@ -921,6 +922,89 @@ describe('ProviderService', () => {
           source: 'none',
           activeProvider: 'Grok Official',
         })
+      })
+    })
+
+    describe('DeepSeek Account provider', () => {
+      test('is a built-in Anthropic-compatible provider on the deepseek preset models', async () => {
+        const svc = new ProviderService()
+        const provider = await svc.getProvider('deepseek-account')
+
+        expect(provider).toMatchObject({
+          id: 'deepseek-account',
+          presetId: 'deepseek',
+          name: 'DeepSeek Account',
+          apiKey: '',
+          apiFormat: 'anthropic',
+          baseUrl: 'https://api.deepseek.com/anthropic',
+          runtimeKind: 'deepseek_oauth',
+        })
+        expect(provider.models.main).toBe('deepseek-v4-pro[1m]')
+        expect(provider.models.haiku).toBe('deepseek-v4-flash')
+      })
+
+      test('activation writes account markers and never an API key or bearer token', async () => {
+        const svc = new ProviderService()
+        await svc.activateProvider('grok-official')
+        await svc.activateProvider('deepseek-account')
+
+        const config = await readProvidersConfig()
+        const env = (await readSettings()).env as Record<string, string>
+        expect(config.activeId).toBe('deepseek-account')
+        expect(env.CC_HAHA_DEEPSEEK_OAUTH_PROVIDER).toBe('1')
+        expect(env.DEEPSEEK_OAUTH_FILE).toBe(
+          path.join(tmpDir, 'cc-haha', 'deepseek-oauth.json'),
+        )
+        expect(env.ANTHROPIC_BASE_URL).toBe('https://api.deepseek.com/anthropic')
+        expect(env.ANTHROPIC_MODEL).toBe('deepseek-v4-pro[1m]')
+        expect(env.ANTHROPIC_AUTH_TOKEN).toBeUndefined()
+        expect(env.ANTHROPIC_API_KEY).toBe('deepseek-oauth-dummy-key')
+        // The previously active OAuth provider's markers are cleared.
+        expect(env.CC_HAHA_GROK_OAUTH_PROVIDER).toBeUndefined()
+        expect(env.GROK_OAUTH_FILE).toBeUndefined()
+      })
+
+      test('does not leak into proxy routing and reports auth from its own grant file', async () => {
+        const svc = new ProviderService()
+        await svc.activateProvider('deepseek-account')
+        await expect(svc.getProviderForProxy()).resolves.toBeNull()
+        await expect(svc.getProviderForProxy('deepseek-account')).resolves.toBeNull()
+
+        await expect(svc.checkAuthStatus()).resolves.toMatchObject({
+          hasAuth: false,
+          source: 'none',
+          activeProvider: 'DeepSeek Account',
+        })
+
+        await fs.writeFile(
+          path.join(tmpDir, 'cc-haha', 'deepseek-oauth.json'),
+          JSON.stringify({
+            token: 'dsh_test_account_token',
+            issuer: 'https://platform.deepseek.com',
+            deviceId: 'device-1',
+          }),
+          'utf-8',
+        )
+        await expect(svc.checkAuthStatus()).resolves.toMatchObject({
+          hasAuth: true,
+          source: 'deepseek-oauth',
+          activeProvider: 'DeepSeek Account',
+        })
+      })
+
+      test('keeps the model mapping a user saved for the built-in provider', async () => {
+        const svc = new ProviderService()
+        await svc.updateOfficialProviderModels('deepseek-account', {
+          main: 'deepseek-v4-flash',
+          haiku: 'deepseek-v4-flash',
+          sonnet: 'deepseek-v4-flash',
+          opus: 'deepseek-v4-flash',
+        })
+        await svc.activateProvider('deepseek-account')
+
+        const env = (await readSettings()).env as Record<string, string>
+        expect(env.ANTHROPIC_MODEL).toBe('deepseek-v4-flash')
+        expect(env.ANTHROPIC_DEFAULT_OPUS_MODEL).toBe('deepseek-v4-flash')
       })
     })
 
@@ -1191,6 +1275,7 @@ describe('ProviderService', () => {
         'claude-official',
         a.id,
         'grok-official',
+        'deepseek-account',
       ])
 
       expect(result.providerOrder).toEqual([
@@ -1199,6 +1284,7 @@ describe('ProviderService', () => {
         'claude-official',
         a.id,
         'grok-official',
+        'deepseek-account',
       ])
       expect(result.providers.map((p) => p.id)).toEqual([b.id, a.id])
 
@@ -1209,6 +1295,7 @@ describe('ProviderService', () => {
         'claude-official',
         a.id,
         'grok-official',
+        'deepseek-account',
       ])
 
       const config = await readProvidersConfig()
@@ -1218,6 +1305,7 @@ describe('ProviderService', () => {
         'claude-official',
         a.id,
         'grok-official',
+        'deepseek-account',
       ])
     })
 
@@ -3428,6 +3516,7 @@ describe('Providers API', () => {
       'claude-official',
       'openai-official',
       'grok-official',
+      'deepseek-account',
     ])
   })
 

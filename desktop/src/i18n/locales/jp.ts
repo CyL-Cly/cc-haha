@@ -1398,6 +1398,19 @@ export const jp: Record<TranslationKey, string> = {
   'settings.grokOfficialLogin.copyLinkFailed': '承認リンクをコピーできません。',
   'settings.grokOfficialLogin.errorPrefix': 'Grok OAuth エラー: ',
 
+  // Settings > DeepSeek Account Login
+  'settings.deepseekAccountLogin.intro': 'ブラウザで DeepSeek プラットフォームのアカウントにサインインすると、DeepSeek モデルを利用できます。利用料金はアカウント残高から差し引かれ、API キーは不要です。',
+  'settings.deepseekAccountLogin.loginButton': 'DeepSeek でサインイン',
+  'settings.deepseekAccountLogin.loginStarting': 'サインインを開始中...',
+  'settings.deepseekAccountLogin.logoutButton': 'サインアウト',
+  'settings.deepseekAccountLogin.logoutProcessing': 'サインアウト中...',
+  'settings.deepseekAccountLogin.loggedInPrefix': 'サインイン中:',
+  'settings.deepseekAccountLogin.accountUnknown': 'DeepSeek アカウント',
+  'settings.deepseekAccountLogin.openBrowserFailed': 'ブラウザを開けません。承認リンクをコピーして手動で開いてください。',
+  'settings.deepseekAccountLogin.copyAuthorizeUrl': '承認リンクをコピー',
+  'settings.deepseekAccountLogin.copyLinkFailed': '承認リンクをコピーできません。',
+  'settings.deepseekAccountLogin.errorPrefix': 'DeepSeek サインインエラー: ',
+
   // Settings > Official Login Risk Dialog
   'settings.officialLoginRisk.title': 'サインイン前にアカウントのリスクをご確認ください',
   'settings.officialLoginRisk.levelLabel': 'アカウント停止のリスク',
@@ -1406,6 +1419,7 @@ export const jp: Record<TranslationKey, string> = {
   'settings.officialLoginRisk.level.low': '比較的低い',
   'settings.officialLoginRisk.claude.body': 'Claude はサードパーティ製アプリによる OAuth サインインを最も厳しく管理しています。このアプリ経由で Claude アカウントにサインインすると、アカウントが制限または停止される可能性があります。',
   'settings.officialLoginRisk.grok.body': 'Grok はサードパーティ製アプリによる OAuth サインインを中程度に管理しています。このアプリ経由で Grok アカウントにサインインしても、アカウントが制限または停止される可能性があります。',
+  'settings.officialLoginRisk.deepseek.body': 'サードパーティ製クライアントで DeepSeek アカウントを使用すると、プラットフォームの利用規約に違反し、アカウントが制限される可能性があります。',
   'settings.officialLoginRisk.chatgpt.body': 'ChatGPT はサードパーティ製アプリによる OAuth サインインに比較的寛容ですが、アカウントが制限または停止される可能性は否定できません。',
   'settings.officialLoginRisk.advice': 'サードパーティ製アプリでこの方法のサインインを行うと、いずれもアカウント停止のリスクがあります。慎重にご利用のうえ、ご自身で判断してから続行してください。',
   'settings.officialLoginRisk.confirm': '理解したうえで続行',
@@ -1429,6 +1443,8 @@ export const jp: Record<TranslationKey, string> = {
   'settings.providers.officialModelsSaveError': 'OAuth モデルマッピングを保存できませんでした。',
   'settings.providers.grokOfficialName': 'Grok 公式',
   'settings.providers.grokOfficialDesc': 'xAI アカウントによる公式 Grok OAuth — API キー不要',
+  'settings.providers.deepseekAccountName': 'DeepSeek アカウント',
+  'settings.providers.deepseekAccountDesc': 'DeepSeek プラットフォームのアカウントでサインイン — API キー不要',
   'settings.providers.connected': '接続済み ({latency}ms)',
   'settings.providers.failed': '失敗: {error}',
   'settings.providers.connectivityOk': '① 接続 ({latency}ms)',

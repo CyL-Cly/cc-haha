@@ -1593,6 +1593,33 @@ describe('Models API', () => {
     expect(body.model).toMatchObject({ id: 'grok-4.5', name: 'Grok 4.5' })
   })
 
+  it('GET /api/models lists the DeepSeek preset models when DeepSeek Account is active', async () => {
+    const providerSvc = new ProviderService()
+    await providerSvc.activateProvider('deepseek-account')
+
+    const { req, url, segments } = makeRequest('GET', '/api/models')
+    const res = await handleModelsApi(req, url, segments)
+    const body = await res.json() as {
+      models: Array<{ id: string }>
+      provider: { id: string; name: string }
+    }
+    expect(body.provider).toEqual({ id: 'deepseek-account', name: 'DeepSeek Account' })
+    expect(body.models.map((model) => model.id)).toEqual(
+      expect.arrayContaining(['deepseek-v4-pro[1m]', 'deepseek-v4-flash']),
+    )
+  })
+
+  it('persists and reads a DeepSeek Account model from managed settings', async () => {
+    const providerSvc = new ProviderService()
+    await providerSvc.activateProvider('deepseek-account')
+    const put = makeRequest('PUT', '/api/models/current', { modelId: 'deepseek-v4-flash' })
+    expect((await handleModelsApi(put.req, put.url, put.segments)).status).toBe(200)
+
+    const get = makeRequest('GET', '/api/models/current')
+    const body = await (await handleModelsApi(get.req, get.url, get.segments)).json()
+    expect(body.model).toMatchObject({ id: 'deepseek-v4-flash' })
+  })
+
   it('GET /api/effort should return default effort level', async () => {
     const { req, url, segments } = makeRequest('GET', '/api/effort')
     const res = await handleModelsApi(req, url, segments)

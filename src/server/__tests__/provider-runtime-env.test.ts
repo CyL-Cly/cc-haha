@@ -109,6 +109,41 @@ describe('providerRuntimeEnv', () => {
     expect(env.CC_HAHA_IMAGE_PROTOCOL).toBeUndefined()
   })
 
+  test('exports DeepSeek Account as a credential-only variant of the DeepSeek API runtime', async () => {
+    await writeJson(path.join(tmpDir, 'cc-haha', 'providers.json'), {
+      activeId: 'deepseek-account',
+      providers: [],
+      providerOrder: ['claude-official', 'openai-official', 'grok-official'],
+    })
+
+    const env = mergeActiveProviderManagedEnv(
+      {
+        ANTHROPIC_AUTH_TOKEN: 'stale-token',
+        CC_HAHA_GROK_OAUTH_PROVIDER: '1',
+        GROK_OAUTH_FILE: path.join(tmpDir, 'stale-grok-oauth.json'),
+        DISABLE_AUTOUPDATER: '1',
+      },
+      tmpDir,
+    )
+
+    expect(env).toMatchObject({
+      CC_HAHA_DEEPSEEK_OAUTH_PROVIDER: '1',
+      DEEPSEEK_OAUTH_FILE: path.join(tmpDir, 'cc-haha', 'deepseek-oauth.json'),
+      ANTHROPIC_BASE_URL: 'https://api.deepseek.com/anthropic',
+      ANTHROPIC_API_KEY: 'deepseek-oauth-dummy-key',
+      ANTHROPIC_MODEL: 'deepseek-v4-pro[1m]',
+      ANTHROPIC_DEFAULT_HAIKU_MODEL: 'deepseek-v4-flash',
+      DISABLE_AUTOUPDATER: '1',
+    })
+    expect(env.ANTHROPIC_AUTH_TOKEN).toBeUndefined()
+    expect(env.CC_HAHA_GROK_OAUTH_PROVIDER).toBeUndefined()
+    expect(env.GROK_OAUTH_FILE).toBeUndefined()
+    expect(JSON.parse(env.CLAUDE_CODE_MODEL_CONTEXT_WINDOWS!)).toMatchObject({
+      'deepseek-v4-flash': 1000000,
+    })
+    expect(activeProviderNeedsProxy(tmpDir)).toBe(false)
+  })
+
   test('routes custom image generation through its own optional credentials', async () => {
     await writeJson(path.join(tmpDir, 'cc-haha', 'providers.json'), {
       activeId: 'provider-images',

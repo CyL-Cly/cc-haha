@@ -1400,6 +1400,19 @@ export const kr: Record<TranslationKey, string> = {
   'settings.grokOfficialLogin.copyLinkFailed': '승인 링크를 복사할 수 없습니다.',
   'settings.grokOfficialLogin.errorPrefix': 'Grok OAuth 오류: ',
 
+  // Settings > DeepSeek Account Login
+  'settings.deepseekAccountLogin.intro': '브라우저에서 DeepSeek 플랫폼 계정으로 로그인하면 DeepSeek 모델을 사용할 수 있습니다. 사용량은 계정 잔액에서 차감되며 API 키는 필요하지 않습니다.',
+  'settings.deepseekAccountLogin.loginButton': 'DeepSeek으로 로그인',
+  'settings.deepseekAccountLogin.loginStarting': '로그인 시작 중...',
+  'settings.deepseekAccountLogin.logoutButton': '로그아웃',
+  'settings.deepseekAccountLogin.logoutProcessing': '로그아웃 중...',
+  'settings.deepseekAccountLogin.loggedInPrefix': '로그인 계정:',
+  'settings.deepseekAccountLogin.accountUnknown': 'DeepSeek 계정',
+  'settings.deepseekAccountLogin.openBrowserFailed': '브라우저를 열 수 없습니다. 승인 링크를 복사하여 수동으로 여세요.',
+  'settings.deepseekAccountLogin.copyAuthorizeUrl': '승인 링크 복사',
+  'settings.deepseekAccountLogin.copyLinkFailed': '승인 링크를 복사할 수 없습니다.',
+  'settings.deepseekAccountLogin.errorPrefix': 'DeepSeek 로그인 오류: ',
+
   // Settings > Official Login Risk Dialog
   'settings.officialLoginRisk.title': '로그인 전에 계정 위험을 확인하세요',
   'settings.officialLoginRisk.levelLabel': '계정 정지 위험',
@@ -1408,6 +1421,7 @@ export const kr: Record<TranslationKey, string> = {
   'settings.officialLoginRisk.level.low': '상대적으로 낮음',
   'settings.officialLoginRisk.claude.body': 'Claude는 서드파티 앱의 OAuth 로그인을 가장 엄격하게 관리합니다. 이 앱으로 Claude 계정에 로그인하면 계정이 제한되거나 정지될 수 있습니다.',
   'settings.officialLoginRisk.grok.body': 'Grok은 서드파티 앱의 OAuth 로그인을 보통 수준으로 관리합니다. 이 앱으로 Grok 계정에 로그인해도 계정이 제한되거나 정지될 수 있습니다.',
+  'settings.officialLoginRisk.deepseek.body': '서드파티 클라이언트로 DeepSeek 계정을 사용하면 플랫폼 약관을 위반할 수 있으며 계정이 제한될 수 있습니다.',
   'settings.officialLoginRisk.chatgpt.body': 'ChatGPT는 서드파티 앱의 OAuth 로그인에 상대적으로 관대하지만, 계정이 제한되거나 정지될 가능성을 배제할 수는 없습니다.',
   'settings.officialLoginRisk.advice': '서드파티 앱에서 이 방식으로 로그인하면 어느 서비스든 계정 정지 위험이 있습니다. 신중히 사용하고 직접 판단한 뒤 계속하세요.',
   'settings.officialLoginRisk.confirm': '이해했으며 계속합니다',
@@ -1431,6 +1445,8 @@ export const kr: Record<TranslationKey, string> = {
   'settings.providers.officialModelsSaveError': 'OAuth 모델 매핑을 저장할 수 없습니다.',
   'settings.providers.grokOfficialName': 'Grok 공식',
   'settings.providers.grokOfficialDesc': 'xAI 계정을 통한 공식 Grok OAuth — API 키 불필요',
+  'settings.providers.deepseekAccountName': 'DeepSeek 계정',
+  'settings.providers.deepseekAccountDesc': 'DeepSeek 플랫폼 계정으로 로그인 — API 키 불필요',
   'settings.providers.connected': '연결됨 ({latency}ms)',
   'settings.providers.failed': '실패: {error}',
   'settings.providers.connectivityOk': '① 연결 ({latency}ms)',

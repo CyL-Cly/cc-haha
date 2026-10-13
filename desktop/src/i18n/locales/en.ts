@@ -1397,6 +1397,19 @@ Row 9, all 8 cells: continuing from straight down, turning left through lower-le
   'settings.grokOfficialLogin.copyLinkFailed': 'Unable to copy authorization link.',
   'settings.grokOfficialLogin.errorPrefix': 'Grok OAuth error: ',
 
+  // Settings > DeepSeek Account Login
+  'settings.deepseekAccountLogin.intro': 'Sign in with your DeepSeek platform account in the browser to use DeepSeek models. Usage is billed to your account balance, and no API key is needed.',
+  'settings.deepseekAccountLogin.loginButton': 'Sign in with DeepSeek',
+  'settings.deepseekAccountLogin.loginStarting': 'Starting sign-in...',
+  'settings.deepseekAccountLogin.logoutButton': 'Sign out',
+  'settings.deepseekAccountLogin.logoutProcessing': 'Signing out...',
+  'settings.deepseekAccountLogin.loggedInPrefix': 'Signed in as',
+  'settings.deepseekAccountLogin.accountUnknown': 'DeepSeek account',
+  'settings.deepseekAccountLogin.openBrowserFailed': 'Unable to open browser. Copy the authorization link and open it manually.',
+  'settings.deepseekAccountLogin.copyAuthorizeUrl': 'Copy authorization link',
+  'settings.deepseekAccountLogin.copyLinkFailed': 'Unable to copy authorization link.',
+  'settings.deepseekAccountLogin.errorPrefix': 'DeepSeek sign-in error: ',
+
   // Settings > Official Login Risk Dialog
   'settings.officialLoginRisk.title': 'Review the account risk before signing in',
   'settings.officialLoginRisk.levelLabel': 'Ban risk',
@@ -1405,6 +1418,7 @@ Row 9, all 8 cells: continuing from straight down, turning left through lower-le
   'settings.officialLoginRisk.level.low': 'Relatively low',
   'settings.officialLoginRisk.claude.body': 'Claude is the strictest about third-party apps using OAuth sign-in. Signing in to your Claude account through this app may get the account restricted or banned.',
   'settings.officialLoginRisk.grok.body': 'Grok is moderately strict about third-party apps using OAuth sign-in. Signing in to your Grok account through this app can still get the account restricted or banned.',
+  'settings.officialLoginRisk.deepseek.body': 'Using a DeepSeek account through a third-party client may violate the platform terms and could lead to the account being restricted.',
   'settings.officialLoginRisk.chatgpt.body': 'ChatGPT is relatively lenient about third-party apps using OAuth sign-in, but the account could still be restricted or banned.',
   'settings.officialLoginRisk.advice': 'Signing in this way through any third-party app carries a risk of account bans. Use it with caution and decide for yourself before continuing.',
   'settings.officialLoginRisk.confirm': 'I understand, continue',
@@ -1428,6 +1442,8 @@ Row 9, all 8 cells: continuing from straight down, turning left through lower-le
   'settings.providers.officialModelsSaveError': 'Could not save the OAuth model mapping.',
   'settings.providers.grokOfficialName': 'Grok Official',
   'settings.providers.grokOfficialDesc': 'Official Grok OAuth via your xAI account — no API key required',
+  'settings.providers.deepseekAccountName': 'DeepSeek Account',
+  'settings.providers.deepseekAccountDesc': 'Sign in with your DeepSeek platform account — no API key required',
   'settings.providers.connected': 'Connected ({latency}ms)',
   'settings.providers.failed': 'Failed: {error}',
   'settings.providers.connectivityOk': '① Connectivity ({latency}ms)',

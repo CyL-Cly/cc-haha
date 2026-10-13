@@ -1396,6 +1396,19 @@ export const zh: Record<TranslationKey, string> = {
   'settings.grokOfficialLogin.copyLinkFailed': '无法复制授权链接。',
   'settings.grokOfficialLogin.errorPrefix': 'Grok OAuth 错误:',
 
+  // Settings > DeepSeek Account Login
+  'settings.deepseekAccountLogin.intro': '在浏览器中使用 DeepSeek 开放平台账号登录,即可使用 DeepSeek 模型。用量从账号余额中扣费,无需 API 密钥。',
+  'settings.deepseekAccountLogin.loginButton': '登录 DeepSeek',
+  'settings.deepseekAccountLogin.loginStarting': '正在启动登录...',
+  'settings.deepseekAccountLogin.logoutButton': '退出登录',
+  'settings.deepseekAccountLogin.logoutProcessing': '正在退出...',
+  'settings.deepseekAccountLogin.loggedInPrefix': '已登录',
+  'settings.deepseekAccountLogin.accountUnknown': 'DeepSeek 账号',
+  'settings.deepseekAccountLogin.openBrowserFailed': '无法打开浏览器。请复制授权链接并手动打开。',
+  'settings.deepseekAccountLogin.copyAuthorizeUrl': '复制授权链接',
+  'settings.deepseekAccountLogin.copyLinkFailed': '无法复制授权链接。',
+  'settings.deepseekAccountLogin.errorPrefix': 'DeepSeek 登录错误:',
+
   // Settings > Official Login Risk Dialog
   'settings.officialLoginRisk.title': '登录前请确认账号风险',
   'settings.officialLoginRisk.levelLabel': '封号风险',
@@ -1404,6 +1417,7 @@ export const zh: Record<TranslationKey, string> = {
   'settings.officialLoginRisk.level.low': '相对较低',
   'settings.officialLoginRisk.claude.body': 'Claude 对第三方软件使用 OAuth 登录管控最严格,通过本应用登录你的 Claude 账号,有被限制或封禁的风险。',
   'settings.officialLoginRisk.grok.body': 'Grok 对第三方软件使用 OAuth 登录管控一般,通过本应用登录你的 Grok 账号,仍有被限制或封禁的风险。',
+  'settings.officialLoginRisk.deepseek.body': '通过第三方客户端使用 DeepSeek 账号,可能违反平台服务条款,账号有被限制的风险。',
   'settings.officialLoginRisk.chatgpt.body': 'ChatGPT 对第三方软件使用 OAuth 登录相对宽松,但仍不能排除账号被限制或封禁的可能。',
   'settings.officialLoginRisk.advice': '第三方软件使用这种方式登录都有封号风险,建议慎用,请自行评估后再继续。',
   'settings.officialLoginRisk.confirm': '我已了解,继续登录',
@@ -1427,6 +1441,8 @@ export const zh: Record<TranslationKey, string> = {
   'settings.providers.officialModelsSaveError': '无法保存 OAuth 模型映射。',
   'settings.providers.grokOfficialName': 'Grok 官方',
   'settings.providers.grokOfficialDesc': '通过 xAI 账号完成 Grok 官方 OAuth — 无需 API 密钥',
+  'settings.providers.deepseekAccountName': 'DeepSeek 账号',
+  'settings.providers.deepseekAccountDesc': '使用 DeepSeek 开放平台账号登录 — 无需 API 密钥',
   'settings.providers.connected': '已连接 ({latency}ms)',
   'settings.providers.failed': '失败: {error}',
   'settings.providers.connectivityOk': '① 连通 ({latency}ms)',

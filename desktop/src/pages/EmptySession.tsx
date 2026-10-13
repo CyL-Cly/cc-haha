@@ -39,6 +39,10 @@ import {
 } from '../components/chat/SlashCommandMenu'
 import { useMobileViewport } from '../hooks/useMobileViewport'
 import { GROK_OFFICIAL_PROVIDER_ID } from '../constants/grokOfficialProvider'
+import {
+  DEEPSEEK_ACCOUNT_PROVIDER_ID,
+  buildDeepSeekAccountProvider,
+} from '../constants/deepseekAccountProvider'
 import { OPENAI_OFFICIAL_PROVIDER_ID } from '../constants/openaiOfficialProvider'
 import { isDesktopRuntime } from '../lib/desktopRuntime'
 import {
@@ -420,8 +424,13 @@ export function EmptySession({ initialWorkDir = '' }: EmptySessionProps = {}) {
           providers,
           currentModel?.id,
         )
+      // The DeepSeek account provider is built in, so it is not in the saved
+      // list, but it resolves effort exactly like a saved DeepSeek provider.
       const activeCustomProvider = defaultActiveProviderSelection
-        ? providers.find((provider) => provider.id === defaultActiveProviderSelection.providerId)
+        ? providers.find((provider) => provider.id === defaultActiveProviderSelection.providerId) ??
+          (defaultActiveProviderSelection.providerId === DEEPSEEK_ACCOUNT_PROVIDER_ID
+            ? buildDeepSeekAccountProvider()
+            : undefined)
         : undefined
       const defaultRuntimeSelection = defaultActiveProviderSelection && activeCustomProvider
         ? normalizeRuntimeSelection(

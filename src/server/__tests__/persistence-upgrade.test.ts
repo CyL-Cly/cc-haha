@@ -199,7 +199,7 @@ describe('persistent storage upgrade migrations', () => {
     }
     expect(migrated.schemaVersion).toBe(CURRENT_PROVIDER_INDEX_SCHEMA_VERSION)
     expect(migrated.activeId).toBe('provider-1')
-    expect(migrated.providerOrder).toEqual(['provider-1', 'claude-official', 'openai-official', 'grok-official'])
+    expect(migrated.providerOrder).toEqual(['provider-1', 'claude-official', 'openai-official', 'grok-official', 'deepseek-account'])
     expect(migrated.activeProviderId).toBeUndefined()
     expect(migrated.rootFutureField).toEqual({ keep: true })
     expect(migrated.providers?.[0]?.extraFutureField).toBe('keep-me')
@@ -219,6 +219,43 @@ describe('persistent storage upgrade migrations', () => {
     }
     expect(rewritten.rootFutureField).toEqual({ keep: true })
     expect(rewritten.providers?.[0]?.extraFutureField).toBe('keep-me')
+  })
+
+  test('keeps DeepSeek Account active and its model mapping across a provider index upgrade', async () => {
+    const ccHahaDir = path.join(tempDir, 'cc-haha')
+    await fs.mkdir(ccHahaDir, { recursive: true })
+    await fs.writeFile(
+      path.join(ccHahaDir, 'providers.json'),
+      JSON.stringify({
+        schemaVersion: 4,
+        activeId: 'deepseek-account',
+        providers: [],
+        providerOrder: ['claude-official', 'openai-official', 'grok-official', 'deepseek-account'],
+        officialProviderModels: {
+          'deepseek-account': {
+            main: 'deepseek-v4-flash',
+            haiku: 'deepseek-v4-flash',
+            sonnet: 'deepseek-v4-flash',
+            opus: 'deepseek-v4-flash',
+          },
+        },
+      }, null, 2),
+      'utf-8',
+    )
+
+    const report = await ensurePersistentStorageUpgraded()
+
+    expect(report.failures).toEqual([])
+    const migrated = JSON.parse(
+      await fs.readFile(path.join(ccHahaDir, 'providers.json'), 'utf-8'),
+    ) as {
+      activeId: string | null
+      officialProviderModels: Record<string, { main: string }>
+    }
+    // Falling back to null here silently switched the user to Claude Official
+    // on the next start while the managed env still pointed at DeepSeek.
+    expect(migrated.activeId).toBe('deepseek-account')
+    expect(migrated.officialProviderModels['deepseek-account']?.main).toBe('deepseek-v4-flash')
   })
 
   test('upgrades a version 2 provider fixture without inventing image credentials', async () => {
@@ -324,7 +361,7 @@ describe('persistent storage upgrade migrations', () => {
             opus: 'chat-model',
           },
         }],
-        providerOrder: ['provider-current', 'claude-official', 'openai-official', 'grok-official'],
+        providerOrder: ['provider-current', 'claude-official', 'openai-official', 'grok-official', 'deepseek-account'],
         officialProviderModels: {},
       }, null, 2),
       'utf-8',
@@ -386,7 +423,7 @@ describe('persistent storage upgrade migrations', () => {
       }>
     }
     expect(migrated.activeId).toBe('legacy-provider')
-    expect(migrated.providerOrder).toEqual(['legacy-provider', 'claude-official', 'openai-official', 'grok-official'])
+    expect(migrated.providerOrder).toEqual(['legacy-provider', 'claude-official', 'openai-official', 'grok-official', 'deepseek-account'])
     expect(migrated.providers?.[0]).toMatchObject({
       id: 'legacy-provider',
       presetId: 'custom',
@@ -454,7 +491,7 @@ describe('persistent storage upgrade migrations', () => {
       providers?: unknown[]
     }
     expect(current.activeId).toBeNull()
-    expect(current.providerOrder).toEqual(['claude-official', 'openai-official', 'grok-official'])
+    expect(current.providerOrder).toEqual(['claude-official', 'openai-official', 'grok-official', 'deepseek-account'])
     expect(current.providers).toEqual([])
   })
 

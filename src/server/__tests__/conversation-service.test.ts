@@ -1393,6 +1393,43 @@ describe('ConversationService', () => {
     expect(env.ANTHROPIC_BASE_URL).toBeUndefined()
   })
 
+  test('buildChildEnv builds the DeepSeek account env for a session-scoped selection over another active provider', async () => {
+    const ccHahaDir = path.join(tmpDir, 'cc-haha')
+    await fs.mkdir(ccHahaDir, { recursive: true })
+    await fs.writeFile(
+      path.join(ccHahaDir, 'providers.json'),
+      JSON.stringify({ activeId: 'grok-official', providers: [], providerOrder: [] }),
+    )
+    await fs.writeFile(
+      path.join(ccHahaDir, 'settings.json'),
+      JSON.stringify({
+        env: {
+          CC_HAHA_GROK_OAUTH_PROVIDER: '1',
+          GROK_OAUTH_FILE: '/stale/grok.json',
+          ANTHROPIC_MODEL: 'grok-4.5',
+          ANTHROPIC_AUTH_TOKEN: 'stale-token',
+        },
+      }),
+    )
+    const service = new ConversationService() as any
+    const env = (await service.buildChildEnv('/tmp', undefined, {
+      providerId: 'deepseek-account',
+      model: 'deepseek-v4-flash',
+    })) as Record<string, string>
+
+    expect(env.CC_HAHA_DEEPSEEK_OAUTH_PROVIDER).toBe('1')
+    expect(env.DEEPSEEK_OAUTH_FILE).toBe(path.join(tmpDir, 'cc-haha', 'deepseek-oauth.json'))
+    expect(env.ANTHROPIC_BASE_URL).toBe('https://api.deepseek.com/anthropic')
+    expect(env.ANTHROPIC_MODEL).toBe('deepseek-v4-flash')
+    expect(env.CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST).toBe('1')
+    expect(env.ANTHROPIC_AUTH_TOKEN).toBeUndefined()
+    // The account grant never reaches the child; the fetch layer reads the file.
+    expect(JSON.stringify(env)).not.toContain('dsh_')
+    expect(env.CC_HAHA_GROK_OAUTH_PROVIDER).toBeUndefined()
+    expect(env.GROK_OAUTH_FILE).toBeUndefined()
+    expect(env.CC_HAHA_OPENAI_OAUTH_PROVIDER).toBeUndefined()
+  })
+
   test('buildChildEnv passes OpenAI-native effort without leaking Claude effort state', async () => {
     const originalEffort = process.env.CC_HAHA_OPENAI_REASONING_EFFORT
     process.env.CC_HAHA_OPENAI_REASONING_EFFORT = 'stale-parent-effort'

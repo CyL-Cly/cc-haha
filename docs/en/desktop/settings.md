@@ -11,7 +11,7 @@ Click **Settings** at the bottom of the sidebar. For your first session, connect
 
 ## Providers
 
-Model access. Sign in to Claude, ChatGPT, or Grok with an account (no API key required), or add any Anthropic- or OpenAI-compatible service with an API key.
+Model access. Sign in to Claude, ChatGPT, Grok, or DeepSeek with an account (no API key required), or add any Anthropic- or OpenAI-compatible service with an API key.
 
 You'll come here once during setup and rarely again. Full steps in [Connecting a model](../start/models.md).
 

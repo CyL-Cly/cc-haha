@@ -10,6 +10,7 @@
 
 import { SettingsService } from '../services/settingsService.js'
 import { ProviderService } from '../services/providerService.js'
+import type { SavedProvider } from '../types/provider.js'
 import { attributionHeaderEnvForModel } from '../services/attributionHeaderPolicy.js'
 import { ApiError, errorResponse } from '../middleware/errorHandler.js'
 import { hasOpenAIAuthLogin } from '../../utils/auth.js'
@@ -35,6 +36,7 @@ import {
   isGrokOfficialProviderId,
 } from '../services/grokOfficialProvider.js'
 import { hahaGrokOAuthService } from '../services/hahaGrokOAuthService.js'
+import { isDeepSeekAccountProviderId } from '../services/deepseekAccountProvider.js'
 import { resolveClaudeOfficialRuntimeModel } from '../services/claudeOfficialRuntime.js'
 import {
   getPresetDefaultEnv,
@@ -325,6 +327,22 @@ export async function handleModelsApi(
   }
 }
 
+// The DeepSeek account provider is built in (not in the saved list) but is a
+// plain Anthropic-compatible model mapping, so it takes the saved-provider path
+// instead of the catalog logic the Grok and OpenAI providers need.
+async function resolveActiveProvider(
+  providers: SavedProvider[],
+  activeId: string | null,
+): Promise<SavedProvider | null> {
+  if (!activeId) return null
+  const saved = providers.find((provider) => provider.id === activeId)
+  if (saved) return saved
+  if (isDeepSeekAccountProviderId(activeId)) {
+    return providerService.getProvider(activeId)
+  }
+  return null
+}
+
 // ─── Handlers ─────────────────────────────────────────────────────────────────
 
 async function handleModelsList(): Promise<Response> {
@@ -348,7 +366,7 @@ async function handleModelsList(): Promise<Response> {
     })
   }
 
-  const activeProvider = activeId ? providers.find((p) => p.id === activeId) : null
+  const activeProvider = await resolveActiveProvider(providers, activeId)
   if (activeProvider) {
     const modelList = buildProviderModelList(
       activeProvider.models,
@@ -373,7 +391,7 @@ async function handleCurrentModel(req: Request): Promise<Response> {
     const { providers, activeId } = await providerService.listProviders()
     const isOpenAIProviderActive = isOpenAIOfficialProviderId(activeId)
     const isGrokProviderActive = isGrokOfficialProviderId(activeId)
-    const activeProvider = activeId ? providers.find((p) => p.id === activeId) : null
+    const activeProvider = await resolveActiveProvider(providers, activeId)
     const settings = activeProvider || isOpenAIProviderActive || isGrokProviderActive
       ? await providerService.getManagedSettings()
       : await settingsService.getUserSettings()

@@ -23,6 +23,10 @@ import {
   GROK_OAUTH_PROVIDER_ENV_KEY,
 } from './grokOfficialProvider.js'
 import {
+  DEEPSEEK_OAUTH_FILE_ENV_KEY,
+  DEEPSEEK_OAUTH_PROVIDER_ENV_KEY,
+} from './deepseekAccountProvider.js'
+import {
   OPENAI_CODEX_REASONING_EFFORT_ENV_KEY,
   isOpenAIReasoningEffort,
 } from '../../services/openaiAuth/models.js'
@@ -2129,6 +2133,8 @@ export class ConversationService {
       'CC_HAHA_OPENAI_FAST_MODE',
       GROK_OAUTH_PROVIDER_ENV_KEY,
       GROK_OAUTH_FILE_ENV_KEY,
+      DEEPSEEK_OAUTH_PROVIDER_ENV_KEY,
+      DEEPSEEK_OAUTH_FILE_ENV_KEY,
       IMAGE_GENERATION_PROVIDER_KIND_ENV_KEY,
       IMAGE_GENERATION_PROVIDER_ID_ENV_KEY,
       IMAGE_GENERATION_BASE_URL_ENV_KEY,
@@ -2491,6 +2497,8 @@ export class ConversationService {
         OPENAI_CODEX_OAUTH_FILE_ENV_KEY,
         GROK_OAUTH_PROVIDER_ENV_KEY,
         GROK_OAUTH_FILE_ENV_KEY,
+        DEEPSEEK_OAUTH_PROVIDER_ENV_KEY,
+        DEEPSEEK_OAUTH_FILE_ENV_KEY,
         IMAGE_GENERATION_PROVIDER_KIND_ENV_KEY,
         IMAGE_GENERATION_PROVIDER_ID_ENV_KEY,
         IMAGE_GENERATION_BASE_URL_ENV_KEY,
@@ -2530,6 +2538,9 @@ export class ConversationService {
         return false
       }
       if (env[GROK_OAUTH_PROVIDER_ENV_KEY] === '1') {
+        return false
+      }
+      if (env[DEEPSEEK_OAUTH_PROVIDER_ENV_KEY] === '1') {
         return false
       }
       const hasProviderEnv = [
