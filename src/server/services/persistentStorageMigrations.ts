@@ -7,11 +7,11 @@ import { isOpenAIOfficialProviderId } from './openaiOfficialProvider.js'
 import { isGrokOfficialProviderId } from './grokOfficialProvider.js'
 import {
   BUILT_IN_PROVIDER_IDS,
-  PROVIDER_OFFICIAL_MODEL_SETTINGS_SCHEMA_VERSION,
+  PROVIDER_IMAGE_PROTOCOL_SCHEMA_VERSION,
   PROVIDER_TOOL_SEARCH_OPT_IN_SCHEMA_VERSION,
 } from '../types/provider.js'
 
-export const CURRENT_PROVIDER_INDEX_SCHEMA_VERSION = PROVIDER_OFFICIAL_MODEL_SETTINGS_SCHEMA_VERSION
+export const CURRENT_PROVIDER_INDEX_SCHEMA_VERSION = PROVIDER_IMAGE_PROTOCOL_SCHEMA_VERSION
 
 type MigrationReport = {
   migratedEntries: string[]
@@ -194,6 +194,18 @@ function migrateProvidersIndex(value: unknown): JsonObject {
     .map((provider) => sourceSchemaVersion < PROVIDER_TOOL_SEARCH_OPT_IN_SCHEMA_VERSION
       ? { ...provider, toolSearchEnabled: false }
       : provider)
+    .map((provider) => {
+      const imageGeneration = provider.imageGeneration
+      if (sourceSchemaVersion >= PROVIDER_IMAGE_PROTOCOL_SCHEMA_VERSION ||
+        !isRecord(imageGeneration) || typeof imageGeneration.model !== 'string' ||
+        !imageGeneration.model.trim() || imageGeneration.protocol !== undefined) {
+        return provider
+      }
+      return {
+        ...provider,
+        imageGeneration: { ...imageGeneration, protocol: 'openai_images' },
+      }
+    })
   const rawActiveId =
     typeof value.activeId === 'string'
       ? value.activeId

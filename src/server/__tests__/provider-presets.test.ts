@@ -12,6 +12,19 @@ import { resolveUpstreamHeaders } from '../proxy/upstreamHeaders.js'
 let tmpDir: string
 let originalConfigDir: string | undefined
 
+test.each(['gemini_native', 'xai_images'] as const)('keeps a preset image protocol %s through runtime configuration', protocol => {
+  const preset = ProviderPresetSchema.parse({
+    ...PROVIDER_PRESETS.find(p => p.id === 'apismart')!,
+    id: 'native-image-fixture', defaultImageGeneration: { model: 'fixture-image-alias', protocol },
+  })
+  const env = buildProviderManagedEnv({
+    id: 'fixture', name: 'Fixture', presetId: preset.id, apiKey: 'fake-key',
+    baseUrl: preset.baseUrl, apiFormat: preset.apiFormat, models: preset.defaultModels,
+    imageGeneration: preset.defaultImageGeneration,
+  })
+  expect(env.CC_HAHA_IMAGE_PROTOCOL).toBe(protocol)
+})
+
 beforeEach(async () => {
   tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'provider-presets-test-'))
   originalConfigDir = process.env.CLAUDE_CONFIG_DIR

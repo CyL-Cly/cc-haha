@@ -52,6 +52,7 @@ const PROVIDER_MANAGED_ENV_VARS = new Set([
   'CC_HAHA_IMAGE_BASE_URL',
   'CC_HAHA_IMAGE_API_KEY',
   'CC_HAHA_IMAGE_MODEL',
+  'CC_HAHA_IMAGE_PROTOCOL',
   // Model defaults — often set to provider-specific ID formats
   'ANTHROPIC_MODEL',
   'ANTHROPIC_DEFAULT_FABLE_MODEL',

@@ -29,8 +29,11 @@ export type Model1mSupport = {
 
 export type ModelContextWindows = Record<string, number>
 
+export type ImageGenerationProtocol = 'openai_images' | 'gemini_native' | 'xai_images'
+
 export type ImageGenerationConfig = {
   model: string
+  protocol?: ImageGenerationProtocol
   baseUrl?: string
   apiKey?: string
 }

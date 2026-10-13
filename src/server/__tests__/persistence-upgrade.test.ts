@@ -4,6 +4,8 @@ import * as os from 'os'
 import * as path from 'path'
 import { ProviderService } from '../services/providerService.js'
 import { SettingsService } from '../services/settingsService.js'
+import { readActiveProviderManagedEnv } from '../services/providerRuntimeEnv.js'
+import { getImageGenerationRuntimeConfig } from '../../services/imageGeneration/config.js'
 import {
   CURRENT_PROVIDER_INDEX_SCHEMA_VERSION,
   ensurePersistentStorageUpgraded,
@@ -31,6 +33,51 @@ describe('persistent storage upgrade migrations', () => {
     resetPersistentStorageMigrationsForTests()
     delete process.env.CLAUDE_CONFIG_DIR
     await fs.rm(tempDir, { recursive: true, force: true })
+  })
+
+  test('upgrades v6 image settings to an explicit protocol and preserves unknown fields on later edits', async () => {
+    const dir = path.join(tempDir, 'cc-haha')
+    const file = path.join(dir, 'providers.json')
+    await fs.mkdir(dir, { recursive: true })
+    const fixture = {
+      presetId: 'custom', name: 'Fixture', apiKey: 'fixture-key',
+      baseUrl: 'https://images.example.test', apiFormat: 'anthropic',
+      runtimeKind: 'anthropic_compatible', toolSearchEnabled: false,
+      models: { main: 'chat-model', haiku: 'chat-model', sonnet: 'chat-model', opus: 'chat-model' },
+    }
+    const legacy = {
+      schemaVersion: 6, activeId: 'legacy', futureRoot: { keep: true },
+      officialProviderModels: {},
+      providerOrder: ['legacy', 'native', 'future', 'claude-official', 'openai-official', 'grok-official'],
+      providers: [
+        { ...fixture, id: 'legacy', futureProvider: 'keep', imageGeneration: { model: 'image-model', futureImage: { keep: true } } },
+        { ...fixture, id: 'native', imageGeneration: { model: 'gemini-image', protocol: 'gemini_native' } },
+        { ...fixture, id: 'future', imageGeneration: { model: 'future-image', protocol: 'future_protocol' } },
+      ],
+    }
+    await fs.writeFile(file, JSON.stringify(legacy))
+    expect((await ensurePersistentStorageUpgraded()).failures).toEqual([])
+    const migrated = JSON.parse(await fs.readFile(file, 'utf8'))
+    expect(migrated.schemaVersion).toBeGreaterThan(6)
+    expect(migrated.schemaVersion).toBe(CURRENT_PROVIDER_INDEX_SCHEMA_VERSION)
+    expect(migrated.providers[0].imageGeneration).toEqual({ ...legacy.providers[0]!.imageGeneration, protocol: 'openai_images' })
+    expect(migrated.providers[1].imageGeneration.protocol).toBe('gemini_native')
+    expect(migrated.providers[2].imageGeneration.protocol).toBe('future_protocol')
+    const backups = (await listFiles(dir)).filter(name => name.startsWith('providers.json.bak-before-migration-'))
+    expect(backups).toHaveLength(1)
+    expect(JSON.parse(await fs.readFile(path.join(dir, backups[0]!), 'utf8'))).toEqual(legacy)
+    resetPersistentStorageMigrationsForTests()
+    expect((await ensurePersistentStorageUpgraded()).migratedEntries).toEqual([])
+    const service = new ProviderService()
+    await service.updateProvider('legacy', { name: 'Renamed' })
+    const rewritten = JSON.parse(await fs.readFile(file, 'utf8'))
+    expect(rewritten.futureRoot).toEqual({ keep: true })
+    expect(rewritten.providers[0].futureProvider).toBe('keep')
+    expect(rewritten.providers[0].imageGeneration.futureImage).toEqual({ keep: true })
+    await service.activateProvider('future')
+    const env = readActiveProviderManagedEnv(tempDir)
+    expect(env.CC_HAHA_IMAGE_PROTOCOL).toBe('future_protocol')
+    expect(getImageGenerationRuntimeConfig(env)).toBeNull()
   })
 
   test('upgrades legacy team preferences on read and preserves the original settings on save', async () => {
