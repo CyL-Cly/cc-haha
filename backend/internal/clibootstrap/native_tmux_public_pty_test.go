@@ -35,7 +35,10 @@ func TestActualPublicGoTmuxWorktreeClassicControlExistingPTYAndCleanup(t *testin
 	binary := filepath.Join(root, "native-tmux-cli")
 	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
 	defer cancel()
-	build := exec.CommandContext(ctx, goTool, "build", "-tags", "native_process_fixture", "-o", binary, "../../cmd/claude-haha")
+	build := exec.CommandContext(ctx, goTool, "build", "-p", "2", "-tags", "native_process_fixture", "-o", binary, "../../cmd/claude-haha")
+	// Compiler children may still hold the stdout pipe after the build parent
+	// is canceled. Bound that join so a fixture timeout reports a build failure.
+	build.WaitDelay = time.Second
 	build.Env = os.Environ()
 	if out, e := build.CombinedOutput(); e != nil {
 		t.Fatalf("actual public Go CLI build %v %.4000s", e, out)
@@ -51,6 +54,7 @@ func TestActualPublicGoTmuxWorktreeClassicControlExistingPTYAndCleanup(t *testin
 				t.Fatal(e)
 			}
 			cmd := exec.CommandContext(ctx, python, "testdata/tmux_public_pty.py", binary, owned, tmux, mode)
+			cmd.WaitDelay = time.Second
 			cmd.Env = []string{"HOME=" + owned, "TMPDIR=" + owned, "PATH=/usr/bin:/bin"}
 			out, e := cmd.CombinedOutput()
 			if e != nil {

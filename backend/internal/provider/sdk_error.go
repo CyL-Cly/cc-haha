@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 	"unicode/utf16"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
@@ -60,10 +61,25 @@ func sdkAPIError(status *int, data string, headers http.Header, httpFailure bool
 	} else if len(messageUnits) == 0 {
 		messageUnits = utf16.Encode([]rune("(no status code or body)"))
 	}
+	errorType := json.RawMessage(`null`)
+	if nested := sdkJSONTopLevelField(payload, "error"); len(nested) > 0 {
+		if selected := sdkJSONTopLevelField(nested, "type"); len(selected) > 0 && !bytes.Equal(bytes.TrimSpace(selected), []byte(`null`)) {
+			errorType = append(json.RawMessage(nil), selected...)
+		}
+	}
+	var workspaceID *string
+	for name, values := range headers {
+		if strings.EqualFold(name, "anthropic-workspace-id") {
+			value := strings.Join(values, ", ")
+			workspaceID = &value
+			break
+		}
+	}
 	return &SDKStreamError{
 		Kind: kind, Class: class, Name: "Error", Message: string(utf16.Decode(messageUnits)),
 		MessageJSON: protocol.QuoteJavaScriptUTF16(messageUnits), Status: status,
-		RequestID: sdkRequestID(headers), Payload: payload, RawData: data, Headers: headers.Clone(),
+		RequestID: sdkRequestID(headers), WorkspaceID: workspaceID, Type: errorType,
+		Payload: payload, RawData: data, Headers: headers.Clone(),
 	}
 }
 

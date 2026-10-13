@@ -5,11 +5,40 @@ import (
 	"errors"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/requestmapping"
+	"io"
 	"math"
 	"net/http"
 	"strconv"
 	"strings"
 )
+
+// The fallback consumer receives independently prepared params from the same
+// native request owner. Header and body leases settle before returning JSON.
+func (c *Anthropic) CreateNativePreparedJSON(ctx context.Context, prepared *MessagesRequest, timeoutMS float64, await OwnerAwait) (MessageResponse, error) {
+	copy := *c
+	copy.config.TimeoutMillis = &timeoutMS
+	exchange, cancel, err := copy.openPreparedResponse(ctx, prepared, true)
+	if err != nil {
+		return MessageResponse{}, sdkRequestError(err)
+	}
+	defer cancel()
+	defer exchange.Response.Body.Close()
+	var raw []byte
+	if copy.config.OwnerBodyIO != nil {
+		raw, err = copy.config.OwnerBodyIO.ReadFetchBody(exchange.Response.Body)
+	} else if await != nil {
+		raw, err = await(OwnerBodyRead, func(context.Context) ([]byte, error) { return io.ReadAll(exchange.Response.Body) })
+	} else {
+		return MessageResponse{}, errors.New("native JSON requires current body owner")
+	}
+	if err != nil {
+		return MessageResponse{}, err
+	}
+	if exchange.Response.StatusCode < 200 || exchange.Response.StatusCode >= 300 {
+		return MessageResponse{}, NewSDKResponseError(&exchange.Response.StatusCode, string(raw), exchange.OriginalHeaders, true)
+	}
+	return finishModelValidationJSON(raw, exchange.Response.StatusCode)
+}
 
 // CreateNativeSideQuery is the beta SDK nonstream consumer. It uses the same
 // signed encoder, native owner transport and original JSON/error parser.

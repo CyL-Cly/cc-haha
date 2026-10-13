@@ -37,6 +37,12 @@ func (s *Session) setCommands(commands []sdkhost.ControlCommand, notify bool) er
 	for _, command := range commands {
 		completions = append(completions, tui.Completion{Name: command.Name, Description: command.Description, Kind: command.Kind, ArgumentHint: command.ArgumentHint, RequiresArguments: command.RequiresArguments, ArgumentNames: append([]string(nil), command.ArgumentNames...), Hidden: command.Hidden})
 	}
+	if s.terminalInteractive && s.process != nil && !s.process.SlashCommandsDisabled() {
+		if s.process.NativeDoctorEnabled() {
+			completions = append(completions, tui.Completion{Name: "doctor", Description: "Diagnose and verify your Claude Code installation and settings", Kind: "local-jsx"})
+		}
+		completions = append(completions, tui.Completion{Name: "ide", Description: "Manage IDE integrations and show status", Kind: "local-jsx", ArgumentHint: "[open]"})
+	}
 	s.mu.Lock()
 	if s.closed {
 		s.mu.Unlock()

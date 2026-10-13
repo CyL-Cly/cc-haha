@@ -228,6 +228,10 @@ func (h *Host) nativePostToolHooks(ctx context.Context, scope *cooperative.Scope
 }
 
 func (h *Host) resolvePrintToolPermission(ctx context.Context, scope *cooperative.Scope, tool queryloop.RegisteredTool, in *protocol.JSONObject, call queryloop.JSONToolCallContext) (queryloop.ToolPermission, error) {
+	promptTool, err := h.resolveNativeMCPPermissionPrompt(scope)
+	if err != nil {
+		return queryloop.ToolPermission{}, err
+	}
 	if err := h.captureSkillCallOverrides(call.Opaque); err != nil {
 		return queryloop.ToolPermission{}, err
 	}
@@ -301,6 +305,10 @@ func (h *Host) resolvePrintToolPermission(ctx context.Context, scope *cooperativ
 		}
 		if permission.String("mode") == "dontAsk" {
 			return queryloop.ToolPermission{Behavior: "deny", Input: in, Message: quote(messages.DontAskRejectMessage(tool.Name)), DecisionReason: raw(protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quote("mode")}, protocol.JSONField{Name: "mode", Value: quote("dontAsk")}))}, nil
+		}
+		if promptTool != nil {
+			call.CancelModel = h.nativeSDKPermissionAbort
+			return h.callNativeMCPPermissionPrompt(ctx, scope, *promptTool, tool, in, call)
 		}
 		if h.options.Print.ResolvePermission == nil {
 			if h.options.Print.NativeProcess {

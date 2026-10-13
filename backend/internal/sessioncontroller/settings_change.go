@@ -6,10 +6,19 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/sdkpermissions"
 )
 
-func (c *Controller) ApplyNativeSettingsChange(scope *cooperative.Scope, settings *protocol.JSONObject, rules map[string]sdkpermissions.RuleSet) error {
+func (c *Controller) ApplyNativeSettingsChange(scope *cooperative.Scope, settings *protocol.JSONObject, rules map[string]sdkpermissions.RuleSet) (resultErr error) {
 	if c == nil || c.appState.permission == nil || !scope.BelongsTo(c.options.Bootstrap.Owner()) {
 		return cooperative.ErrRestricted
 	}
+	before, e := c.PlanModeContext(scope)
+	if e != nil {
+		return e
+	}
+	defer func() {
+		if resultErr == nil {
+			resultErr = c.observePermissionMode(scope, before.String("mode"))
+		}
+	}()
 	was, e := c.appState.permission.AutoModeActive(scope)
 	if e != nil {
 		return e

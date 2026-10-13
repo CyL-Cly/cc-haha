@@ -113,8 +113,8 @@ func TestActualDesktopTeamWorkerPrepareBarrierParentQuestionAndStop(t *testing.T
 	}
 	send(map[string]any{"type": "user_message", "content": "initialize the actual leader"})
 	receive("message_complete")
-	for receive("session_state").String("turnState") != "idle" {
-	}
+	requestDesktopSessionSync(t, ws)
+	assertDesktopIdleSnapshot(t, receive("session_state"))
 	names := []string{"Read", "Write", "AskUserQuestion", "TaskCreate", "TaskGet", "TaskList", "TaskUpdate"}
 	prepare := func(name string) string {
 		t.Helper()

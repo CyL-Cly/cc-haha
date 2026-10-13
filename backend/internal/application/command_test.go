@@ -196,6 +196,7 @@ func TestNativeCommandKeepsPermissionIntentAndDirectoryArguments(t *testing.T) {
 	}{
 		{flags: nil, mode: ""},
 		{flags: []string{"--permission-mode", "default"}, mode: "default"},
+		{flags: []string{"--permission-mode", "auto"}, mode: "auto"},
 		{flags: []string{"--dangerously-skip-permissions"}, skip: true},
 		{flags: []string{"--allow-dangerously-skip-permissions", "--permission-mode", "plan"}, mode: "plan", allow: true},
 		{flags: []string{"--add-dir", "/fixture/one", "/fixture/space directory"}, dirs: []string{"/fixture/one", "/fixture/space directory"}},
@@ -213,14 +214,14 @@ func TestNativeCommandKeepsPermissionIntentAndDirectoryArguments(t *testing.T) {
 	}
 }
 
-func TestNativeCommandPreservesHelpAndExplicitUnportedBoundaries(t *testing.T) {
+func TestNativeCommandPreservesHelpAndExplicitSDKFormatValidation(t *testing.T) {
 	help, result, err := ParseCommand([]string{"--help"}, "1.2.3", t.TempDir(), t.TempDir())
 	if err != nil || result.ExitCode != 0 || !strings.HasPrefix(result.Stdout, "Usage: claude") || help.Print {
 		t.Fatal(result, err)
 	}
-	_, _, err = ParseCommand([]string{"--print", "--thinking", "disabled", "--system-prompt", "test", "--tools", "Read", "--fallback-model", "unported", "hello"}, "1.2.3", t.TempDir(), t.TempDir())
-	if err == nil || !strings.Contains(err.Error(), "--fallback-model") {
-		t.Fatal("unported flag silently accepted", err)
+	_, _, err = ParseCommand([]string{"--print", "--thinking", "disabled", "--system-prompt", "test", "--tools", "Read", "--sdk-url", "ws://127.0.0.1/private", "--input-format", "text", "hello"}, "1.2.3", t.TempDir(), t.TempDir())
+	if err == nil || !strings.Contains(err.Error(), "--sdk-url") {
+		t.Fatal("explicit incompatible SDK format silently accepted", err)
 	}
 }
 
@@ -234,9 +235,9 @@ func TestNativeCommandUsesActualParserOptionMatchesAndKeepsDashValues(t *testing
 			t.Fatalf("parser value classified as unported flag: %v %+v", err, command)
 		}
 	}
-	_, _, err := ParseCommand([]string{"-pc", "--tools", "Read", "hello"}, "1.2.3", t.TempDir(), t.TempDir())
-	if err == nil || !strings.Contains(err.Error(), "--continue") {
-		t.Fatal("combined short option bypassed unported business boundary", err)
+	continued, _, err := ParseCommand([]string{"-pc", "--tools", "Read", "hello"}, "1.2.3", t.TempDir(), t.TempDir())
+	if err != nil || !continued.Arguments.Continue || !continued.Print {
+		t.Fatal("combined short option lost actual continue producer", err)
 	}
 }
 

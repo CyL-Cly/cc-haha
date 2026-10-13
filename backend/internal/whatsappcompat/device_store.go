@@ -431,13 +431,6 @@ func (n *NodeDeviceStore) UploadedPreKeyCount(ctx context.Context) (int, error) 
 	}
 	return count, nil
 }
-func (n *NodeDeviceStore) PutSenderKey(ctx context.Context, group, user string, value []byte) error {
-	return errors.New("original WhatsApp group sender-key conversion is not bound to the direct-message adapter")
-}
-func (n *NodeDeviceStore) GetSenderKey(ctx context.Context, group, user string) ([]byte, error) {
-	return nil, errors.New("original WhatsApp group sender-key conversion is not bound to the direct-message adapter")
-}
-
 func (n *NodeDeviceStore) PutDevice(ctx context.Context, d *store.Device) error {
 	n.mu.Lock()
 	defer n.mu.Unlock()

@@ -25,6 +25,7 @@ type Options struct {
 	HomeDir, WorkDir string
 	Stderr           io.Writer
 	Stdout           io.Writer
+	Stdin            io.Reader
 	StartFeishu      func(context.Context, Options) (Process, error)
 	StartWhatsApp    func(context.Context, Options) (Process, error)
 	StartTelegram    func(context.Context, Options) (Process, error)
@@ -159,6 +160,9 @@ func Run(ctx context.Context, args []string, options Options) (int, error) {
 	if err := ctx.Err(); err != nil {
 		return 1, err
 	}
+	if options.Environment["CC_HAHA_MIGRATION_VALIDATION"] == "1" {
+		return 1, errors.New("Data migration validation prohibits adapter startup")
+	}
 	invocation := Parse(args, options.Environment)
 	for _, warning := range invocation.Warnings {
 		fmt.Fprintln(options.Stderr, warning)
@@ -221,12 +225,17 @@ func Run(ctx context.Context, args []string, options Options) (int, error) {
 	processes := []Process{}
 	var waits sync.WaitGroup
 	done := make(chan error, len(adapters))
-	defer func() {
-		for _, process := range processes {
-			process.Close()
+	stopped := false
+	stop := func() error {
+		if stopped {
+			return nil
 		}
+		stopped = true
+		err := quiesceProcesses(context.Background(), processes)
 		waits.Wait()
-	}()
+		return err
+	}
+	defer func() { _ = stop() }()
 	for _, adapter := range adapters {
 		if !invocation.Enabled[adapter.flag] {
 			continue
@@ -291,8 +300,36 @@ func Run(ctx context.Context, args []string, options Options) (int, error) {
 		return 1, &CapabilityError{Adapter: adapter.label}
 	}
 	if len(processes) > 0 {
+		control := make(chan string, 1)
+		if env["CC_HAHA_MIGRATION_CONTROL"] == "1" && env["CC_HAHA_LOCAL_ACCESS_TOKEN"] != "" {
+			input := options.Stdin
+			if input == nil {
+				input = os.Stdin
+			}
+			go func() {
+				if requestID, err := migrationCommand(input, env["CC_HAHA_LOCAL_ACCESS_TOKEN"]); err == nil {
+					control <- requestID
+				}
+			}()
+		}
 		select {
 		case <-ctx.Done():
+			if err := stop(); err != nil {
+				return 1, err
+			}
+			return 0, nil
+		case requestID := <-control:
+			failure := stop()
+			output := options.Stdout
+			if output == nil {
+				output = options.Stderr
+			}
+			if err := migrationReply(output, requestID, failure); err != nil {
+				return 1, err
+			}
+			if failure != nil {
+				return 1, failure
+			}
 			return 0, nil
 		case err := <-done:
 			if err != nil {
@@ -300,6 +337,16 @@ func Run(ctx context.Context, args []string, options Options) (int, error) {
 			}
 			return 0, nil
 		}
+	}
+	if env["CC_HAHA_MIGRATION_CONTROL"] == "1" {
+		output := options.Stdout
+		if output == nil {
+			output = options.Stderr
+		}
+		if err := json.NewEncoder(output).Encode(map[string]string{"type": "migration_adapter_inactive"}); err != nil {
+			return 1, err
+		}
+		return 0, nil
 	}
 	fmt.Fprintln(options.Stderr, "[claude-sidecar] no adapter could be started — check credentials in env or ~/.claude/adapters.json")
 	return 1, nil

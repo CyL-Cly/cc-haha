@@ -21,6 +21,7 @@ type InteractiveInboxRead struct {
 	Permissions             LeadMailboxPartition
 	Regular, Plans, Removed []protocol.JSONObject
 	DeferShutdown           bool
+	Candidates              []json.RawMessage
 }
 
 // Read routes Source useInboxPoller's leader-side protocols against actual
@@ -35,7 +36,21 @@ func (l InteractiveInbox) Read(team string) (InteractiveInboxRead, error) {
 	if err != nil {
 		return result, err
 	}
+	candidates := []json.RawMessage{}
+	for _, v := range unread {
+		message := inboxObject(v)
+		if ShutdownApproved(message.String("text")) != nil && l.Config.ReadAsync(team) == nil {
+			result.DeferShutdown = true
+			continue
+		}
+		candidates = append(candidates, v)
+	}
+	unread, err = l.Mailbox.Claim("team-lead", team, candidates)
+	if err != nil {
+		return result, err
+	}
 	result.Unread = len(unread)
+	result.Candidates = unread
 	var trusted *protocol.JSONObject
 	trustedRead := false
 	for _, value := range unread {
@@ -100,11 +115,18 @@ func (l InteractiveInbox) Read(team string) (InteractiveInboxRead, error) {
 	return result, nil
 }
 
-func (l InteractiveInbox) MarkDelivered(team string, deferShutdown bool) error {
-	if deferShutdown {
-		return l.Mailbox.MarkMatching("team-lead", team, func(row protocol.JSONObject) bool { return ShutdownApproved(row.String("text")) == nil })
+func (l InteractiveInbox) MarkDelivered(team string, deferShutdown bool, candidates ...[]json.RawMessage) error {
+	if len(candidates) == 0 {
+		return errors.New("interactive delivery requires the immutable accepted mailbox batch")
 	}
-	return l.Mailbox.MarkAll("team-lead", team)
+	delivered := []json.RawMessage{}
+	for _, v := range candidates[0] {
+		if !deferShutdown || ShutdownApproved(inboxObject(v).String("text")) == nil {
+			delivered = append(delivered, v)
+		}
+	}
+	_, e := l.Mailbox.Claim("team-lead", team, delivered)
+	return e
 }
 
 func (l InteractiveInbox) RemoveApproved(team string, member protocol.JSONObject) (protocol.JSONObject, error) {

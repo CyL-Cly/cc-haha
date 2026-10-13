@@ -72,13 +72,13 @@ func TestInProcessSpawnTaskStateNamesModelAndPhysicalRosterAgainstActualSource(t
 		if err != nil {
 			t.Fatal(err)
 		}
+		identity, _ := original.Object("identity")
 		var now float64
 		_ = json.Unmarshal(original.Get("startTime"), &now)
-		expected, err := CreateState(StateOptions{ID: original.String("id"), Name: name, Team: team.String("name"), Prompt: input.String("prompt"), ParentSessionID: "11111111-1111-4111-8111-111111111111", Color: original.String("identityColor"), OutputFile: original.String("outputFile"), Model: quoted(model), ToolUseID: quoted("actual-spawn-use"), SpinnerVerb: original.Get("spinnerVerb"), PastTenseVerb: original.Get("pastTenseVerb"), PlanRequired: string(input.Get("plan_mode_required")) == "true", Now: now})
+		expected, err := CreateState(StateOptions{ResumableAgentID: identity.String("resumableAgentId"), ID: original.String("id"), Name: name, Team: team.String("name"), Prompt: input.String("prompt"), ParentSessionID: "11111111-1111-4111-8111-111111111111", Color: original.String("identityColor"), OutputFile: original.String("outputFile"), Model: quoted(model), ToolUseID: quoted("actual-spawn-use"), SpinnerVerb: original.Get("spinnerVerb"), PastTenseVerb: original.Get("pastTenseVerb"), PlanRequired: string(input.Get("plan_mode_required")) == "true", Now: now})
 		if err != nil {
 			t.Fatal(err)
 		}
-		identity, _ := original.Object("identity")
 		nativeIdentity, _ := expected.Object("identity")
 		nativeIdentity.Set("color", identity.Get("color"))
 		expected.Set("identity", rawJSON(nativeIdentity))

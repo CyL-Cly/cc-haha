@@ -21,7 +21,7 @@ func (m *MainPrint) initializeNativeSDKMCPState() error {
 
 func (m *MainPrint) nativeSDKMCPConfigurations(context.Context) (protocol.JSONObject, error) {
 	return sdkWorktreeOwnerCall(context.Background(), m, func(scope *cooperative.Scope) (protocol.JSONObject, error) {
-		return m.sdkMCPState.Configurations(scope)
+		return m.sdkMCPState.ConfigurationsForDiscovery(scope)
 	})
 }
 

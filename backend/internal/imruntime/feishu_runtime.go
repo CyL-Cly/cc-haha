@@ -39,6 +39,7 @@ type feishuRuntimeChat struct {
 	uploaded      map[string]json.RawMessage
 }
 type FeishuRuntime struct {
+	migration    *MigrationLifecycle
 	o            FeishuRuntimeOptions
 	API          *FeishuClient
 	Media        *FeishuMedia
@@ -61,6 +62,9 @@ type FeishuRuntime struct {
 }
 
 func NewFeishuRuntime(ctx context.Context, o FeishuRuntimeOptions) (*FeishuRuntime, error) {
+	if err := migrationRuntimeAvailable(o.Config); err != nil {
+		return nil, err
+	}
 	if o.Config.Err != nil {
 		return nil, o.Config.Err
 	}
@@ -107,17 +111,21 @@ func NewFeishuRuntime(ctx context.Context, o FeishuRuntimeOptions) (*FeishuRunti
 		}
 		c.CloseIdleConnections()
 	}
+	ctx, lifecycle := newMigrationContext(ctx)
 	ctx, cancel := context.WithCancel(ctx)
-	r := &FeishuRuntime{o: o, API: o.Client, ctx: ctx, cancel: cancel, chats: map[string]*feishuRuntimeChat{}}
-	r.Bridge = NewBridge(ctx, o.Config, o.SocketTLS, o.Log)
+	r := &FeishuRuntime{migration: lifecycle, o: o, API: o.Client, ctx: ctx, cancel: cancel, chats: map[string]*feishuRuntimeChat{}}
+	r.Bridge = NewBridge(ctx, o.Config, o.SocketTLS, o.Log, BridgeOptions{Now: o.Now})
 	r.Client = NewHTTPClient(o.Config, o.ServerHTTP)
 	r.Store = NewSessionStore(o.Config.ConfigDir)
+	r.Store.Lifecycle = lifecycle
 	r.Store.NowMillis = func() int64 { return o.Now().UnixMilli() }
 	r.Pairing = NewPairing(o.Config.ConfigDir, nil)
+	r.Pairing.Lifecycle = lifecycle
 	r.Pairing.NowMillis = r.Store.NowMillis
 	r.Dedup = NewMessageDedup(ctx)
 	r.Dedup.Now = o.Now
-	r.Attachments = NewAttachmentStore(o.Config.Home)
+	r.Attachments = NewConfiguredAttachmentStore(o.Config)
+	r.Attachments.Lifecycle = lifecycle
 	r.Attachments.Now = o.Now
 	r.Media = NewFeishuMedia(r.API, r.Attachments)
 	r.Dispatcher = NewFeishuDispatcher(o.EncryptKey, o.VerificationToken)
@@ -409,6 +417,11 @@ func (r *FeishuRuntime) detachCard(id string) *FeishuStreamingCard {
 	return card
 }
 func (r *FeishuRuntime) HandleMessage(event protocol.JSONObject) error {
+	done, admitted := r.migration.Admit()
+	if !admitted {
+		return nil
+	}
+	defer done(nil)
 	message := object(event.Get("message"))
 	sender := object(object(event.Get("sender")).Get("sender_id"))
 	mid, chat, user, content, kind := message.Get("message_id"), message.Get("chat_id"), sender.Get("open_id"), message.Get("content"), message.Get("message_type")

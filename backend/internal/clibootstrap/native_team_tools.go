@@ -126,7 +126,46 @@ func (m *MainPrint) nativeTeamBindings(scope *cooperative.Scope) (*builtintools.
 			return nil, err
 		}
 	}
-	return &builtintools.TeamBindings{TeamName: func(next *cooperative.Scope) (string, error) {
+	member, color := "team-lead", ""
+	if identity := m.nativeInProcessTeammateIdentity(); identity != nil {
+		member, color = identity.AgentName, identity.Color
+	} else if m.teamWorker != nil {
+		member = m.teamWorker.preset.Start.Name
+	}
+	plans := m.teamLeader.plans
+	directory := m.options.Native.Environment["CLAUDE_CONFIG_DIR"]
+	if directory == "" {
+		directory = filepath.Join(m.options.Native.Home, ".claude")
+	}
+	return &builtintools.TeamBindings{AgentName: func(next *cooperative.Scope) (string, error) {
+		if !next.BelongsTo(m.Owner) {
+			return "", cooperative.ErrRestricted
+		}
+		if member == "team-lead" {
+			return "", nil
+		}
+		return member, nil
+	}, TaskExecutionApproved: func(team, owner string) (bool, error) {
+		plan, e := plans.Read(team)
+		if e != nil || plan == nil {
+			return plan == nil && e == nil, e
+		}
+		return plans.IsApproved(team, owner)
+	}, TaskAssignmentError: func(next *cooperative.Scope, err error) {
+		_ = m.nativeLogError(context.WithValue(context.Background(), nativeOpenAIAuthScopeKey{}, next), err)
+	}, TaskAssigned: func(team string, task protocol.JSONObject) error {
+		mailbox, e := teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: directory, TaskStore: m.taskStore})
+		if e != nil {
+			return e
+		}
+		stamp := m.options.Native.Now().UTC().Format("2006-01-02T15:04:05.000Z")
+		assignment := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: rawMain("task_assignment")}, protocol.JSONField{Name: "taskId", Value: task.Get("id")}, protocol.JSONField{Name: "subject", Value: task.Get("subject")}, protocol.JSONField{Name: "description", Value: task.Get("description")}, protocol.JSONField{Name: "assignedBy", Value: rawMain(member)}, protocol.JSONField{Name: "timestamp", Value: rawMain(stamp)})
+		message := protocol.NewJSONObject(protocol.JSONField{Name: "from", Value: rawMain(member)}, protocol.JSONField{Name: "text", Value: rawMain(string(rawMain(assignment)))}, protocol.JSONField{Name: "timestamp", Value: rawMain(stamp)})
+		if color != "" {
+			message.Set("color", rawMain(color))
+		}
+		return mailbox.Write(task.String("owner"), team, message)
+	}, TeamName: func(next *cooperative.Scope) (string, error) {
 		if !next.BelongsTo(m.Owner) {
 			return "", cooperative.ErrRestricted
 		}
@@ -178,7 +217,41 @@ func (m *MainPrint) nativeTeamProposal(scope *cooperative.Scope, proposal *proto
 	if err != nil {
 		return leader, catalog, err
 	}
-	patch, err := teamworker.ResolveProposal(*proposal, catalog, leader, m.options.Native.Environment, m.nativeTeamParsedModel)
+	providerFuture, e := nativeSkillWork(m, scope, func() (map[string]bool, error) {
+		ids := map[string]bool{}
+		directory := m.options.Native.Environment["CLAUDE_CONFIG_DIR"]
+		if directory == "" {
+			directory = filepath.Join(m.options.Native.Home, ".claude")
+		}
+		path := filepath.Join(directory, "cc-haha", "providers.json")
+		if e := m.options.Native.check("Team provider suggestions", path); e != nil {
+			return nil, e
+		}
+		data, e := os.ReadFile(path)
+		if e != nil {
+			return ids, nil
+		}
+		var index protocol.JSONObject
+		if index.UnmarshalJSON(data) != nil {
+			return ids, nil
+		}
+		var providers []protocol.JSONObject
+		_ = json.Unmarshal(index.Get("providers"), &providers)
+		for _, provider := range providers {
+			if provider.IsObject() {
+				ids[provider.String("id")] = true
+			}
+		}
+		return ids, nil
+	})
+	if e != nil {
+		return leader, catalog, e
+	}
+	providers, e := providerFuture.Await(scope)
+	if e != nil {
+		return leader, catalog, e
+	}
+	patch, err := teamworker.ResolveProposal(*proposal, catalog, leader, m.options.Native.Environment, m.nativeTeamParsedModel, func(id string) bool { return providers[id] })
 	return leader, patch, err
 }
 

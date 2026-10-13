@@ -21,6 +21,7 @@ type Key struct {
 }
 
 type Entry struct {
+	Redacted              bool
 	TurnID                string
 	Kind                  string
 	Level                 string
@@ -46,11 +47,16 @@ const (
 	actionEditor
 	actionInvoke
 	actionModelPicker
+	actionIDEPicker
 	actionThinkingPicker
+	actionPluginHint
 	actionTeammate
+	actionMessageSelector
+	actionMessageSelection
 )
 
 type action struct {
+	messageSelection     MessageSelection
 	kind                 actionKind
 	input                Input
 	permission           string
@@ -58,6 +64,7 @@ type action struct {
 	text                 string
 	name                 string
 	modelPickerResult    ModelPickerResult
+	idePickerResult      IDEPickerResult
 	thinkingPickerResult ThinkingPickerResult
 	questionIndex        int
 	teammate             TeammateAction
@@ -66,6 +73,14 @@ type action struct {
 // State is changed only on the terminal event loop. Session callbacks do not
 // mutate it; the adapter sends ordered messages back through Bubble Tea.
 type State struct {
+	dreamClock                time.Time
+	BackgroundTasks           protocol.JSONObject
+	DreamDialog               *dreamDialogState
+	pluginHintPromptActive    bool
+	pluginHintTypingUntil     time.Time
+	PluginHint                *pluginHintState
+	permissionEditor          *permissionChoiceEditor
+	MessageSelector           *messageSelectorState
 	workflowKeywordEnabled    bool
 	workflowKeywordSuppressed bool
 	workflowKeywordActive     bool
@@ -115,6 +130,9 @@ type State struct {
 	pendingChord              []Keystroke
 	WorktreeExit              *worktreeDialog
 	ModelPicker               *modelPickerState
+	Doctor                    *DoctorPanel
+	IDEPicker                 *idePickerState
+	IDEOnboarding             *idePickerState
 	ThinkingPicker            *thinkingPickerState
 	question                  *questionState
 	exitFromCommand           bool
@@ -141,6 +159,7 @@ func (s *State) press(name string, now time.Time) bool {
 }
 
 func (s *State) Tick(now time.Time) {
+	s.dreamClock = now
 	if !s.notificationUntil.IsZero() && !now.Before(s.notificationUntil) {
 		s.Notification = ""
 		s.notificationUntil = time.Time{}
@@ -172,7 +191,7 @@ func (s *State) Paste(text string) {
 		}
 		return
 	}
-	if s.Closing || s.Editing || len(s.Permissions) != 0 || s.Transcript || s.ModelPicker != nil || s.ThinkingPicker != nil {
+	if s.Closing || s.Editing || len(s.Permissions) != 0 || s.Transcript || s.ModelPicker != nil || s.IDEPicker != nil || s.ThinkingPicker != nil {
 		return
 	}
 	if s.Searching {
@@ -339,18 +358,47 @@ func (s *State) EOF() []action {
 }
 
 func (s *State) HandleKey(key Key, now time.Time) []action {
+	if s.Doctor != nil {
+		return s.handleDoctorKey(key, now)
+	}
+	if s.IDEPicker != nil || s.ideOnboardingVisible() {
+		return s.handleIDEPickerKey(key, now)
+	}
+	before := s.Editor.Text()
+	defer func() {
+		if before != s.Editor.Text() {
+			s.pluginHintInputChanged(now)
+		}
+	}()
 	defer s.syncWorkflowKeyword(now)
 	if s.Closing || s.Editing {
 		return nil
 	}
 	s.Tick(now)
+	if handled, actions := s.handlePluginHintKey(key); handled {
+		return actions
+	}
+	if handled, actions := s.handleAutoConsentKey(key); handled {
+		return actions
+	}
+	if s.MessageSelector != nil {
+		return s.handleMessageSelectorBindings(key, now)
+	}
 	if s.ThinkingPicker != nil {
 		return s.handleThinkingPickerBindings(key, now)
 	}
 	if len(s.Permissions) > 0 && s.Permissions[0].ToolName == "AskUserQuestion" {
 		return s.handleQuestionBindings(key, now)
 	}
+	// Literal letters belong to the selected prefix input, including y/n and
+	// j/k. Confirmation shortcuts cannot turn typed rule content into approval.
+	if s.permissionEditableSelected() {
+		return s.handlePermissionChoiceEditorKey(key, now)
+	}
 	if len(s.Permissions) == 0 && s.ModelPicker == nil && s.WorktreeExit == nil && !s.Searching {
+		if handled, actions := s.handleDreamKey(key); handled {
+			return actions
+		}
 		if handled, actions := s.handleTeammateKey(key); handled {
 			return actions
 		}
@@ -483,6 +531,9 @@ func (s *State) handleKey(key Key, now time.Time) []action {
 	pendingImageSpace := s.pendingImageSpace
 	s.pendingImageSpace = false
 	s.Tick(now)
+	if s.IDEPicker != nil {
+		return s.handleIDEPickerKey(key, now)
+	}
 	if key.Name == "ctrl+z" {
 		return []action{{kind: actionSuspend}}
 	}
@@ -513,6 +564,9 @@ func (s *State) handleKey(key Key, now time.Time) []action {
 		if request.DisplayOnly {
 			return nil
 		}
+		if handled, actions := s.handlePermissionChoiceEditor(key); handled {
+			return actions
+		}
 		if len(request.Choices) > 0 {
 			switch key.Name {
 			case "up", "k":
@@ -524,6 +578,9 @@ func (s *State) handleKey(key Key, now time.Time) []action {
 			}
 			for i, choice := range request.Choices {
 				if (choice.Key != "" && key.Name == choice.Key) || (key.Name == "enter" && i == s.PermissionSelected) {
+					if choice.Editable {
+						return s.startPermissionChoiceEditor(request, i)
+					}
 					s.Permissions = s.Permissions[1:]
 					s.PermissionSelected = 0
 					return []action{{kind: actionPermission, permission: request.ID, decision: choice.Decision}}
@@ -627,6 +684,9 @@ func (s *State) handleKey(key Key, now time.Time) []action {
 			return s.cancel()
 		}
 		if s.press("esc", now) {
+			if s.Editor.Text() == "" {
+				return []action{{kind: actionMessageSelector}}
+			}
 			if strings.TrimSpace(s.Editor.Text()) != "" {
 				s.history = append(s.history, HistoryEntry{Display: s.Editor.Text(), PastedContents: clonePastes(s.PastedContents)})
 			}
@@ -745,6 +805,15 @@ func (s *State) handleKey(key Key, now time.Time) []action {
 }
 
 func (s *State) Apply(event Event) {
+	if event.Kind == DoctorOpened {
+		s.Doctor = &DoctorPanel{Text: event.Text}
+		s.pendingChord = nil
+		return
+	}
+	if event.Kind == IDEPickerOpened && event.IDEPicker != nil {
+		s.OpenIDEPicker(*event.IDEPicker)
+		return
+	}
 	if event.Kind == TeammateTurnStarted {
 		s.TeammateTurnID = event.TurnID
 		s.Status = "Working…"
@@ -771,7 +840,7 @@ func (s *State) Apply(event Event) {
 		s.updateCompletions()
 		return
 	}
-	if !event.Background && event.Kind != TeammateMessages && event.Kind != PermissionAsked && event.Kind != PermissionClosed && (event.TurnID != s.ActiveTurn || s.ActiveTurn == "") {
+	if !event.Background && event.Kind != MemorySaved && event.Kind != TeammateMessages && event.Kind != PermissionAsked && event.Kind != PermissionClosed && (event.TurnID != s.ActiveTurn || s.ActiveTurn == "") {
 		return
 	}
 	switch event.Kind {
@@ -784,7 +853,7 @@ func (s *State) Apply(event Event) {
 			}
 			s.Entries = append(s.Entries, Entry{TurnID: event.TurnID, Kind: "teammate", Text: teammateTranscriptText(row), Input: rawTeammatePresentation(row)})
 		}
-	case LocalCommandOutput:
+	case LocalCommandOutput, MemorySaved:
 		s.Entries = append(s.Entries, Entry{TurnID: event.TurnID, Kind: "local_output", Text: event.Text})
 	case LocalUserMessages:
 		if len(event.UserMessages) == 0 {
@@ -824,10 +893,10 @@ func (s *State) Apply(event Event) {
 			kind = "thinking"
 		}
 		last := len(s.Entries) - 1
-		if last >= 0 && s.Entries[last].TurnID == event.TurnID && s.Entries[last].Kind == kind {
+		if last >= 0 && s.Entries[last].TurnID == event.TurnID && s.Entries[last].Kind == kind && s.Entries[last].Redacted == event.Redacted {
 			s.Entries[last].Text += event.Text
 		} else {
-			s.Entries = append(s.Entries, Entry{TurnID: event.TurnID, Kind: kind, Text: event.Text})
+			s.Entries = append(s.Entries, Entry{TurnID: event.TurnID, Kind: kind, Text: event.Text, TranscriptOnly: event.Kind == ThinkingDelta, Redacted: event.Redacted})
 		}
 	case ToolStarted:
 		s.Entries = append(s.Entries, Entry{TurnID: event.TurnID, Kind: "tool", ToolID: event.ToolID, ToolName: event.ToolName, Text: toolInputPresentation(event.ToolName, event.Input), Input: append(json.RawMessage(nil), event.Input...), Running: true})
@@ -885,6 +954,7 @@ func (s *State) Apply(event Event) {
 					if i == 0 {
 						s.PermissionSelected = 0
 						s.question = nil
+						s.permissionEditor = nil
 					}
 					break
 				}

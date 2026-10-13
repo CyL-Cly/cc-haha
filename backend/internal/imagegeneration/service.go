@@ -15,6 +15,7 @@ import (
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/desktopoauth"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/storagerelocations"
 )
 
 type Request struct {
@@ -103,6 +104,13 @@ func (s *Service) Generate(parent context.Context, input protocol.JSONObject, co
 	}()
 	var paths []string
 	_ = json.Unmarshal(input.Get("referenced_image_paths"), &paths)
+	for i, path := range paths {
+		mapped, err := storagerelocations.Resolve(path, s.options.ConfigHome)
+		if err != nil {
+			return Output{}, err
+		}
+		paths[i] = mapped
+	}
 	var images []PreparedImage
 	var err error
 	if s.options.PrepareInputs != nil {

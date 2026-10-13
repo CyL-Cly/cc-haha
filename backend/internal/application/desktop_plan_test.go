@@ -122,8 +122,8 @@ func TestDesktopPlanApprovalUpdatesSamePermissionStateAndExecutesActualFiles(t *
 	}
 	send(map[string]any{"type": "permission_response", "requestId": permission.String("requestId"), "allowed": true, "permissionUpdates": []any{map[string]any{"type": "setMode", "mode": "acceptEdits", "destination": "session"}}})
 	receive("message_complete")
-	for state := receive("session_state"); state.String("turnState") != "idle"; state = receive("session_state") {
-	}
+	requestDesktopSessionSync(t, ws)
+	assertDesktopIdleSnapshot(t, receive("session_state"))
 	data, err := os.ReadFile(filepath.Join(work, "plan-result.txt"))
 	if err != nil || string(data) != "PLAN_DESKTOP_STATE_OK" {
 		t.Fatal("actual approved execution was not written", string(data), err)

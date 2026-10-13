@@ -13,6 +13,7 @@ import (
 
 type SessionOptions struct {
 	CanContinueRuntime            func() bool
+	OnRuntimeClosed               func(context.Context, LiveSession) error
 	SideChat                      *SideChatLaunch
 	TeamWorker                    *teamworker.Start
 	ID, WorkDir, PermissionMode   string

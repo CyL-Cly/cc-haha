@@ -14,6 +14,7 @@ import (
 	"unicode/utf16"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/localindex"
+	"github.com/NanmiCoder/cc-haha/backend/internal/promptsnapshot"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/storage"
 	"golang.org/x/text/collate"
@@ -36,29 +37,30 @@ type Options struct {
 	AfterScan    func(context.Context, string) error
 }
 type Service struct {
-	o              Options
-	ctx            context.Context
-	cancel         context.CancelFunc
-	mu             sync.Mutex
-	closed         bool
-	closing        bool
-	closeDone      chan struct{}
-	closeError     error
-	tails          map[string]chan struct{}
-	jobs           map[string]*projectionJob
-	backfill       map[string]bool
-	tasks          sync.WaitGroup
-	captures       sync.WaitGroup
-	settingsMu     sync.Mutex
-	indexMu        sync.Mutex
-	index          *Index
-	unavailable    bool
-	cooldown       time.Time
-	scanGate       chan struct{}
-	scanMu         sync.Mutex
-	scanWaiters    int
-	projectionGate chan struct{}
-	canonical      map[string]canonicalRevision
+	o               Options
+	ctx             context.Context
+	cancel          context.CancelFunc
+	mu              sync.Mutex
+	closed          bool
+	closing         bool
+	closeDone       chan struct{}
+	closeError      error
+	tails           map[string]chan struct{}
+	jobs            map[string]*projectionJob
+	backfill        map[string]bool
+	tasks           sync.WaitGroup
+	captures        sync.WaitGroup
+	settingsMu      sync.Mutex
+	indexMu         sync.Mutex
+	index           *Index
+	unavailable     bool
+	cooldown        time.Time
+	scanGate        chan struct{}
+	scanMu          sync.Mutex
+	scanWaiters     int
+	projectionGate  chan struct{}
+	canonical       map[string]canonicalRevision
+	PromptSnapshots *promptsnapshot.Service
 }
 type canonicalRevision struct {
 	fingerprint localindex.Fingerprint
@@ -102,7 +104,7 @@ func New(o Options) (*Service, error) {
 		o.Compare = func(a, b string) int { mu.Lock(); defer mu.Unlock(); return c.CompareString(a, b) }
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	return &Service{o: o, ctx: ctx, cancel: cancel, closeDone: make(chan struct{}), tails: map[string]chan struct{}{}, jobs: map[string]*projectionJob{}, backfill: map[string]bool{}, scanGate: make(chan struct{}, 1), projectionGate: make(chan struct{}, 1), canonical: map[string]canonicalRevision{}}, nil
+	return &Service{PromptSnapshots: promptsnapshot.New(o.Now, o.OnError), o: o, ctx: ctx, cancel: cancel, closeDone: make(chan struct{}), tails: map[string]chan struct{}{}, jobs: map[string]*projectionJob{}, backfill: map[string]bool{}, scanGate: make(chan struct{}, 1), projectionGate: make(chan struct{}, 1), canonical: map[string]canonicalRevision{}}, nil
 }
 func (s *Service) storageDir() string { return filepath.Join(s.o.Scope, "cc-haha", "traces") }
 func (s *Service) filePath(id string) string {
@@ -322,7 +324,14 @@ func (s *Service) appendEntry(ctx context.Context, id string, entry protocol.JSO
 
 func (s *Service) Drain(ctx context.Context) error {
 	done := make(chan struct{})
-	go func() { s.captures.Wait(); s.tasks.Wait(); close(done) }()
+	go func() {
+		s.captures.Wait()
+		s.tasks.Wait()
+		if s.PromptSnapshots != nil {
+			_ = s.PromptSnapshots.Drain(ctx)
+		}
+		close(done)
+	}()
 	select {
 	case <-done:
 		return nil
@@ -346,6 +355,9 @@ func (s *Service) Close(ctx context.Context) error {
 	s.cancel()
 	s.captures.Wait()
 	s.tasks.Wait()
+	if s.PromptSnapshots != nil {
+		_ = s.PromptSnapshots.Close(context.Background())
+	}
 	s.mu.Lock()
 	s.closed = true
 	s.mu.Unlock()

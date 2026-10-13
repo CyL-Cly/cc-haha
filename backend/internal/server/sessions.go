@@ -39,6 +39,7 @@ type sessionInfo struct {
 	RuntimeProviderID json.RawMessage `json:"runtimeProviderId,omitempty"`
 	RuntimeModelID    string          `json:"runtimeModelId,omitempty"`
 	EffortLevel       string          `json:"effortLevel,omitempty"`
+	OpenAIFastMode    *bool           `json:"openAIFastMode,omitempty"`
 	Path              string          `json:"-"`
 	teamWorker        bool
 	Metadata          json.RawMessage `json:"-"`
@@ -473,6 +474,9 @@ func (server *Server) sessionsHTTP(writer http.ResponseWriter, request *http.Req
 	}
 	if id == "batch-delete" {
 		return server.batchDeleteSessionsHTTP(writer, request)
+	}
+	if len(parts) > 3 && parts[3] == "trajectory" {
+		return server.trajectoryHTTP(writer, request, parts)
 	}
 	if len(parts) > 3 && parts[3] == "trace" {
 		return server.sessionTraceHTTP(writer, request, parts, server.options.Trace)

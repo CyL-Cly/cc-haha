@@ -17,6 +17,7 @@ import (
 // This core supplies the existing server bridge and stores to platform ports.
 // It does not own another agent or a platform transport.
 type platformRuntimeCore struct {
+	migration    *MigrationLifecycle
 	Config       Config
 	Bridge       *Bridge
 	ServerClient *HTTPClient
@@ -34,6 +35,9 @@ type platformRuntimeCore struct {
 }
 
 func newPlatformRuntimeCore(ctx context.Context, cfg Config, httpClient *http.Client, tlsConfig *tls.Config, log func(string), now func() time.Time) (*platformRuntimeCore, error) {
+	if err := migrationRuntimeAvailable(cfg); err != nil {
+		return nil, err
+	}
 	if cfg.Err != nil {
 		return nil, cfg.Err
 	}
@@ -64,17 +68,21 @@ func newPlatformRuntimeCore(ctx context.Context, cfg Config, httpClient *http.Cl
 		}
 		client.CloseIdleConnections()
 	}
+	ctx, lifecycle := newMigrationContext(ctx)
 	ctx, cancel := context.WithCancel(ctx)
-	r := &platformRuntimeCore{Config: cfg, ctx: ctx, cancel: cancel, HTTP: httpClient, TLS: tlsConfig, Log: log, Now: now}
-	r.Bridge = NewBridge(ctx, cfg, tlsConfig, log)
+	r := &platformRuntimeCore{migration: lifecycle, Config: cfg, ctx: ctx, cancel: cancel, HTTP: httpClient, TLS: tlsConfig, Log: log, Now: now}
+	r.Bridge = NewBridge(ctx, cfg, tlsConfig, log, BridgeOptions{Now: now})
 	r.ServerClient = NewHTTPClient(cfg, httpClient)
 	r.Store = NewSessionStore(cfg.ConfigDir)
+	r.Store.Lifecycle = lifecycle
 	r.Store.NowMillis = func() int64 { return now().UnixMilli() }
 	r.Pairing = NewPairing(cfg.ConfigDir, nil)
+	r.Pairing.Lifecycle = lifecycle
 	r.Pairing.NowMillis = r.Store.NowMillis
 	r.Dedup = NewMessageDedup(ctx)
 	r.Dedup.Now = now
-	r.Attachments = NewAttachmentStore(cfg.Home)
+	r.Attachments = NewConfiguredAttachmentStore(cfg)
+	r.Attachments.Lifecycle = lifecycle
 	r.Attachments.Now = now
 	return r, nil
 }

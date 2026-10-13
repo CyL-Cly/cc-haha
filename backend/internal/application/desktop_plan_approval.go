@@ -71,19 +71,23 @@ func (d *DesktopSession) approvePlanRuntime(ctx context.Context, message protoco
 		}
 		return d.planRuntimeFailure(e)
 	}
+	if next.ProviderID != nil && *next.ProviderID == "openai-official" && input["openAIFastMode"] == nil {
+		fast := d.currentOpenAIFastMode()
+		next.OpenAIFastMode = &fast
+	}
 	d.mu.Lock()
 	model := d.options.Arguments.Model
 	if selected := d.options.RuntimeSelection; selected != nil {
 		model = selected.ModelID
 	}
 	d.mu.Unlock()
-	if sameRuntimeProvider(provider, next.ProviderID) && model == next.ModelID && effort == next.EffortLevel {
+	if sameRuntimeProvider(provider, next.ProviderID) && model == next.ModelID && effort == next.EffortLevel && d.currentOpenAIFastMode() == selectionFast(next.Selection) {
 		d.mu.Lock()
 		d.rejectedRuntime = ""
 		d.mu.Unlock()
 		return d.finishOwnPlanApproval(ctx, message, expected)
 	}
-	canSwitch := sameRuntimeProvider(provider, next.ProviderID) && (next.EffortLevel == "" || next.EffortLevel == effort)
+	canSwitch := d.currentOpenAIFastMode() == selectionFast(next.Selection) && sameRuntimeProvider(provider, next.ProviderID) && (next.EffortLevel == "" || next.EffortLevel == effort)
 	if !canSwitch {
 		if d.sideChat {
 			d.rejectSideChatRestart("Open a new side chat to change provider or reasoning effort.")

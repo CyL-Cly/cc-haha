@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/NanmiCoder/cc-haha/backend/internal/settings"
 	"github.com/NanmiCoder/cc-haha/backend/internal/storage"
 )
 
@@ -72,6 +73,8 @@ func (server *Server) settingsHTTP(writer http.ResponseWriter, request *http.Req
 				err = e
 				if err == nil {
 					result["agentTeamsEnabled"], _ = json.Marshal(enabled)
+					result["autoUpdateEnabled"], _ = json.Marshal(settings.AutoUpdateEnabled(result))
+					result["maxConcurrentSubagents"], _ = json.Marshal(settings.MaxConcurrentSubagents(result))
 				}
 			}
 		case "project":

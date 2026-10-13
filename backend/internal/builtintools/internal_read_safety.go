@@ -9,7 +9,7 @@ import (
 // gate stays intact; only the same portable Source path predicate is reused.
 func (s *Service) readPathSafety(c protocol.JSONObject, path string) string {
 	allowUNC := s.options.Platform == "windows" && s.pathInAllowedWorkingPath(c, path)
-	forms := []string{path, resolved(path)}
+	forms := []string{path, s.permissionResolved(path)}
 	for _, form := range forms {
 		if !allowUNC && (strings.HasPrefix(form, `\\`) || strings.HasPrefix(form, "//")) {
 			return "unc"

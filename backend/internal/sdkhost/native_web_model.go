@@ -38,7 +38,7 @@ func (h *Host) applyWebFetchPromptOnProducer(ctx context.Context, scope *coopera
 	if err != nil {
 		return nil, err
 	}
-	input := requestretry.Input{Context: requestcontext.Context{History: []protocol.JSONObject{user}, SystemPrompt: []json.RawMessage{}, Tools: []protocol.JSONObject{}, Thinking: requestcontext.Thinking{Type: "disabled"}, Options: requestcontext.Options{Model: model, QuerySource: "web_fetch_apply", IsNonInteractiveSession: nonInteractive, EnablePromptCaching: &disabled}, Host: requestcontext.Host{Profile: requestcontext.NativeDirectRelayProfile, Env: h.requestEnvironment, DeviceID: deviceID, SessionID: h.webModelSessionID(), NativeToolDefinitions: &defs, SDKBetas: []string{}, TTLAllowlist: []string{}}}, Runtime: h.options.Runtime, ResolvedFastMode: &disabled}
+	input := requestretry.Input{Context: requestcontext.Context{History: []protocol.JSONObject{user}, SystemPrompt: []json.RawMessage{}, Tools: []protocol.JSONObject{}, Thinking: requestcontext.Thinking{Type: "disabled"}, Options: requestcontext.Options{Model: model, QuerySource: "web_fetch_apply", IsNonInteractiveSession: nonInteractive, EnablePromptCaching: &disabled}, Host: requestcontext.Host{Profile: requestcontext.NativeDirectRelayProfile, Env: h.requestEnvironment, DeviceID: deviceID, SessionID: h.webModelSessionID(), NativeToolDefinitions: &defs, SDKBetas: h.options.SDKBetas, Workload: h.options.Workload, TTLAllowlist: []string{}}}, Runtime: h.options.Runtime, ResolvedFastMode: &disabled}
 	var last json.RawMessage
 	err = h.consumeWebModel(ctx, scope, input, func(yield modelyield.Yield) error {
 		if yield.Update != nil && yield.Update.Envelope != nil {

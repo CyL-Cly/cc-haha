@@ -102,7 +102,7 @@ func normalizePet(raw json.RawMessage) object {
 }
 func normalizeVoice(raw json.RawMessage) object {
 	value, _ := parseObject(raw)
-	value.set("enabled", boolOr(value.get("enabled"), false))
+	value.set("enabled", boolOr(value.get("enabled"), true))
 	provider, valid := units(value.get("providerId"))
 	provider = trim(provider)
 	if !valid || len(provider) == 0 || len(provider) > 80 {

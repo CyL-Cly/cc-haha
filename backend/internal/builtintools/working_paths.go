@@ -31,11 +31,14 @@ func pathInWorkingPath(path, root string) bool {
 	if rel == "." || rel == "" {
 		return true
 	}
-	if regexp.MustCompile(`(?:^|[\\/])\.\.(?:[\\/]|$)`).MatchString(rel) {
+	if regexpTraversal.MatchString(rel) {
 		return false
 	}
 	return !filepath.IsAbs(rel)
 }
+
+var regexpTraversal = regexp.MustCompile(`(?:^|[\\/])\.\.(?:[\\/]|$)`)
+
 func (s *Service) pathInAllowedWorkingPath(c protocol.JSONObject, path string) bool {
 	roots := []string{s.options.CWD}
 	var dirs protocol.JSONObject
@@ -55,14 +58,14 @@ func (s *Service) pathInAllowedWorkingPath(c protocol.JSONObject, path string) b
 	}
 	working := []string{}
 	for _, root := range roots {
-		working = append(working, root, resolved(root))
+		working = append(working, root, s.permissionResolved(root))
 	}
 	// Every lexical/canonical target must be within some lexical/canonical
 	// working root. Symlinks escaping the whole root set still require approval.
-	for _, target := range []string{path, resolved(path)} {
+	for _, target := range []string{path, s.permissionResolved(path)} {
 		allowed := false
 		for _, root := range working {
-			if pathInWorkingPath(target, root) {
+			if s.workingPathContains(target, root) {
 				allowed = true
 				break
 			}

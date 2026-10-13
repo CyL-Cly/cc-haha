@@ -1,3 +1,5 @@
+//go:build !windows
+
 package clibootstrap
 
 import (
@@ -9,16 +11,12 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"runtime"
 	"syscall"
 	"testing"
 	"time"
 )
 
 func TestNativeMCPOrdinaryConcurrentFIFORequestsActualSource(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("actual FIFO fixture is Unix")
-	}
 	home, env := ordinaryFixture(t)
 	fifo := filepath.Join(home, "owned.fifo")
 	if e := syscall.Mkfifo(fifo, 0600); e != nil {

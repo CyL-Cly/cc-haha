@@ -16,18 +16,22 @@ import (
 // stays unaccepted until remaining builtin/bundled/dynamic guards are migrated.
 // Captured Source output is never a constructor input.
 type PrintRegistry struct {
-	catalog         PrintCatalog
-	commands        []printCommandDefinition
-	environment     func(string) string
-	discoveryErrors []string
-	prompts         []skillcommands.Definition
-	nativePrompts   bool
+	catalog               PrintCatalog
+	commands              []printCommandDefinition
+	environment           func(string) string
+	discoveryErrors       []string
+	prompts               []skillcommands.Definition
+	nativePrompts         bool
+	slashCommandsDisabled bool
 }
 
 // AgentGuideCommands carries the real prompt/local discriminant and Source
 // origin; the UI control projection intentionally omits those fields.
 func (s *PrintRegistry) AgentGuideCommands() []protocol.JSONObject {
 	out := []protocol.JSONObject{}
+	if s.slashCommandsDisabled {
+		return out
+	}
 	for _, command := range s.commands {
 		record := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quote(command.kind)}, protocol.JSONField{Name: "name", Value: commandStringJSON(command.rawName, command.name)}, protocol.JSONField{Name: "description", Value: commandStringJSON(command.rawDescription, command.description)})
 		if command.source != "" {
@@ -53,6 +57,7 @@ type protocolCommand struct {
 }
 type PrintRegistryOptions struct {
 	Interactive            bool
+	DisableSlashCommands   bool
 	CWD, Home              string
 	Stat                   func(string) (fs.FileInfo, error)
 	ReadDir                func(string) ([]fs.DirEntry, error)
@@ -82,7 +87,7 @@ func NewPrintRegistry(o PrintRegistryOptions) (*PrintRegistry, error) {
 		commands = filterHeadlessCommands(commands)
 	}
 	c.Commands = projectSystemCommands(commands)
-	s := &PrintRegistry{catalog: c, commands: commands, environment: o.Environment}
+	s := &PrintRegistry{catalog: c, commands: commands, environment: o.Environment, slashCommandsDisabled: o.DisableSlashCommands}
 	if o.NativePrompts != nil {
 		s.nativePrompts = true
 		s.ReplaceNativePrompts(*o.NativePrompts, o.Plugins, !o.Interactive)
@@ -159,6 +164,11 @@ func (s *PrintRegistry) Catalog() PrintCatalog {
 		}
 	}
 	c.Plugins = append([]json.RawMessage{}, c.Plugins...)
+	if s.slashCommandsDisabled {
+		c.Commands = []protocolCommand{}
+		c.Skills = []string{}
+		c.rawSkills = []json.RawMessage{}
+	}
 	return c
 }
 func (s *PrintRegistry) DiscoveryErrors() []string    { return append([]string{}, s.discoveryErrors...) }

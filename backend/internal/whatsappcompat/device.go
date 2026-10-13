@@ -63,7 +63,7 @@ func DeviceFromNodeCredentials(creds nodeObject) (*store.Device, error) {
 	if len(signature) != 64 {
 		return nil, errors.New("old WhatsApp signed prekey requires64byte signature")
 	}
-	device := &store.Device{NoiseKey: noise, IdentityKey: identity, SignedPreKey: &keys.PreKey{KeyPair: *pre, KeyID: uint32(nodeNumber(signed["keyId"])), Signature: (*[64]byte)(signature)}, RegistrationID: uint32(nodeNumber(creds["registrationId"])), AdvSecretKey: nodeBytes(creds["advSecretKey"])}
+	device := &store.Device{NoiseKey: noise, IdentityKey: identity, SignedPreKey: &keys.PreKey{KeyPair: *pre, KeyID: uint32(nodeNumber(signed["keyId"])), Signature: (*[64]byte)(signature)}, RegistrationID: uint32(nodeNumber(creds["registrationId"])), AdvSecretKey: nodeBytes(creds["advSecretKey"]), Platform: nodeString(creds["platform"])}
 	me := nodeObj(creds["me"])
 	if id := nodeString(me["id"]); id != "" {
 		jid, e := types.ParseJID(id)

@@ -16,6 +16,21 @@ func (h *Host) SetNativePermissionMode(scope *cooperative.Scope, mode string) er
 	return nil
 }
 
+func (h *Host) RestoreNativeRemotePermissionMode(scope *cooperative.Scope, mode string) error {
+	if h == nil || !scope.BelongsTo(h.options.Owner) || h.options.Print == nil || !h.options.Print.NativeProcess {
+		return cooperative.ErrRestricted
+	}
+	if err := h.options.Controller.RestoreRemotePermissionMode(scope, mode); err != nil {
+		return err
+	}
+	actual, err := h.options.Controller.PlanModeContext(scope)
+	if err != nil {
+		return err
+	}
+	h.permissionMode = actual.String("mode")
+	return nil
+}
+
 func (h *Host) EnterNativePlanMode(scope *cooperative.Scope) error {
 	if h == nil || !scope.BelongsTo(h.options.Owner) || h.options.Print == nil || !h.options.Print.NativeProcess {
 		return cooperative.ErrRestricted
@@ -53,6 +68,7 @@ func (h *Host) ReloadNativeSettings(scope *cooperative.Scope, rules map[string]s
 		return err
 	}
 	h.internalModelSettings = nil
+	h.clearInternalSettingsCertificate()
 	return h.initializePrintCatalog(scope)
 }
 

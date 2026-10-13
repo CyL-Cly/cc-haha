@@ -49,6 +49,21 @@ func TestDesktopImagesActualSourcePhysicalStagingMixedOrderAndFallback(t *testin
 	if err = os.WriteFile(inputPath, encoded.Bytes(), 0600); err != nil {
 		t.Fatal(err)
 	}
+	config := filepath.Join(home, ".claude")
+	oldRoot := filepath.Join(home, "previous-config")
+	movedImage := filepath.Join(config, "image-cache", "old-native-image.png")
+	for _, directory := range []string{filepath.Dir(movedImage), filepath.Join(config, "cc-haha")} {
+		if err = os.MkdirAll(directory, 0700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err = os.WriteFile(movedImage, encoded.Bytes(), 0600); err != nil {
+		t.Fatal(err)
+	}
+	relocation, _ := json.Marshal(map[string]any{"version": 1, "previousRoots": []string{oldRoot}})
+	if err = os.WriteFile(filepath.Join(config, "cc-haha", "storage-relocations.json"), relocation, 0600); err != nil {
+		t.Fatal(err)
+	}
 	attachments := []any{
 		[]any{map[string]any{"type": "image", "name": "汉字.PNG", "data": "data:image/png;base64," + base64.StdEncoding.EncodeToString(encoded.Bytes())}},
 		[]any{map[string]any{"type": "file", "path": inputPath}},
@@ -57,6 +72,7 @@ func TestDesktopImagesActualSourcePhysicalStagingMixedOrderAndFallback(t *testin
 		[]any{map[string]any{"type": "image", "path": filepath.Join(home, "missing.png")}},
 		[]any{map[string]any{"type": "image", "name": "odd", "data": "eA=="}},
 		[]any{map[string]any{"type": "folder", "path": inputPath, "isDirectory": true}},
+		[]any{map[string]any{"type": "image", "path": filepath.Join(oldRoot, "image-cache", "old-native-image.png")}},
 	}
 	rows := []map[string]any{}
 	for i, refs := range attachments {
@@ -114,5 +130,9 @@ func TestDesktopImagesActualSourcePhysicalStagingMixedOrderAndFallback(t *testin
 		if !equalJSON(a, b) {
 			t.Errorf("case%d physical staging Go%s Source%s", i, a, b)
 		}
+	}
+	retained, err := os.ReadFile(movedImage)
+	if err != nil || !bytes.Equal(retained, encoded.Bytes()) {
+		t.Fatal("relocated original image bytes changed", err)
 	}
 }

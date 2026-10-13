@@ -157,6 +157,7 @@ func (s *Service) executeNativeCommandStop(ctx context.Context, call Context, ev
 	stopReason := commandJSON("")
 	hasOutput := false
 	goalCompleted := false
+	goalBlockingCount := 0
 	goalContinuation := ""
 	var goalContinuationRaw json.RawMessage
 	feedback := func(text json.RawMessage) error {
@@ -304,6 +305,9 @@ func (s *Service) executeNativeCommandStop(ctx context.Context, call Context, ev
 				if e = feedback(blockingJSON); e != nil {
 					return decision, e
 				}
+				if goalstate.IsGoalPrompt(value.Command) {
+					goalBlockingCount++
+				}
 				if goalstate.IsGoalPrompt(value.Command) && goalContinuation == "" {
 					goalContinuation = value.BlockingError
 					goalContinuationRaw = blockingJSON
@@ -323,6 +327,10 @@ func (s *Service) executeNativeCommandStop(ctx context.Context, call Context, ev
 			if value.PreventContinuation && value.BlockingError != "" {
 				if e = feedback(blockingJSON); e != nil {
 					return decision, e
+				}
+
+				if goalstate.IsGoalPrompt(value.Command) {
+					goalBlockingCount++
 				}
 			}
 			if value.Payload != nil {
@@ -516,7 +524,18 @@ func (s *Service) executeNativeCommandStop(ctx context.Context, call Context, ev
 		}
 	}
 	if goalContinuation != "" {
-		text := commandStringConcat("<local-command-stdout>", goalstate.ContinuationOutputRawJSON(goalContinuationRaw))
+		output := goalstate.ContinuationOutputRawJSON(goalContinuationRaw)
+		if !decision.PreventContinuation && call.AgentID == "" && len(decision.BlockingMessages) > 0 && goalBlockingCount == len(decision.BlockingMessages) && s.options.Prompts != nil && s.options.Prompts.TeamWorkInProgress != nil {
+			pending, err := s.options.Prompts.TeamWorkInProgress(ctx, call)
+			if err != nil {
+				return decision, err
+			}
+			if pending {
+				output = goalstate.WaitingForTeamOutputRawJSON(goalContinuationRaw)
+				decision.BlockingMessages = []queryloop.Message{}
+			}
+		}
+		text := commandStringConcat("<local-command-stdout>", output)
 		units, _ := protocol.DecodeJavaScriptJSONString(text)
 		text = protocol.QuoteJavaScriptUTF16(append(units, utf16.Encode([]rune("</local-command-stdout>"))...))
 		record := b.Factory.CreateLocalCommandInput("")

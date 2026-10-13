@@ -107,22 +107,24 @@ func TestRuntimeCallbacksKeepFiniteAndMissingAuthorityGuards(t *testing.T) {
 }
 
 func TestNativeDontAskRequiresActualRuntimeAuthorityAndPassesModeUnchanged(t *testing.T) {
-	service, _, _, _, _ := testServices(t)
-	in := base(t)
-	in.Profile = NativeProcessProfile
-	in.PermissionMode = "dontAsk"
-	in.QuerySource = "hook_agent"
-	_, err := service.Run(context.Background(), in)
-	requireCap(t, err)
-	in.ResolveRuntimeModel = func(actual RuntimeModelInput) (string, error) {
-		if actual.PermissionMode != "dontAsk" || actual.MainLoopModel != in.MainLoopModel {
-			return "", errors.New("temporary hook mode/model lost")
+	for _, mode := range []string{"dontAsk", "auto"} {
+		service, _, _, _, _ := testServices(t)
+		in := base(t)
+		in.Profile = NativeProcessProfile
+		in.PermissionMode = mode
+		in.QuerySource = "hook_agent"
+		_, err := service.Run(context.Background(), in)
+		requireCap(t, err)
+		in.ResolveRuntimeModel = func(actual RuntimeModelInput) (string, error) {
+			if actual.PermissionMode != mode || actual.MainLoopModel != in.MainLoopModel {
+				return "", errors.New("temporary hook mode/model lost")
+			}
+			return actual.MainLoopModel, nil
 		}
-		return actual.MainLoopModel, nil
-	}
-	out, err := service.Run(context.Background(), in)
-	if err != nil || out.CurrentModel != in.MainLoopModel {
-		t.Fatal(out, err)
+		out, err := service.Run(context.Background(), in)
+		if err != nil || out.CurrentModel != in.MainLoopModel {
+			t.Fatal(out, err)
+		}
 	}
 }
 

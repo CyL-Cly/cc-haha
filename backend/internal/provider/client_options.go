@@ -17,6 +17,9 @@ import (
 // migration. Packaging supplies the source runtime identity for its platform.
 type SourceRuntime struct{ Platform, Arch, Version string }
 
+const SourceCompatibilityVersion = "2.1.288"
+const SourceSDKVersion = "0.128.0"
+
 // DirectClientInput starts after provider selection and fallback credential
 // lookup. This component never reads process env, settings, keychains, helper
 // commands or OAuth. It covers direct Anthropic-compatible construction only.
@@ -109,8 +112,10 @@ func ResolveDirectClientOptions(input DirectClientInput) DirectClientOptions {
 		env:            copyClientEnvironment(env), fetchEnvironment: input.FetchEnvironment, requestID: input.RequestID, injectRequestID: injectFirstPartyRequestID(env),
 	}
 	if token, exists := env["ANTHROPIC_AUTH_TOKEN"]; exists {
-		token = javascriptTrim(token) // SDK constructor readEnv, even for "".
-		options.AuthToken = &token
+		token = javascriptTrim(token)
+		if token != "" {
+			options.AuthToken = &token
+		}
 	}
 	if options.BaseURL == "" {
 		options.BaseURL = "https://api.anthropic.com"
@@ -125,11 +130,9 @@ func ResolveDirectClientOptions(input DirectClientInput) DirectClientOptions {
 	if userType == "" {
 		userType = "external"
 	}
-	entrypoint, exists := env["CLAUDE_CODE_ENTRYPOINT"]
-	if !exists {
-		entrypoint = "cli"
-	}
-	agent := "claude-cli/2.1.281 (" + userType + ", " + entrypoint
+	// Internal desktop identity controls OAuth and traces; upstream wire
+	// identity remains the CLI identity from the frozen reference version.
+	agent := "claude-cli/" + SourceCompatibilityVersion + " (" + userType + ", cli"
 	if version := env["CLAUDE_AGENT_SDK_VERSION"]; version != "" {
 		agent += ", agent-sdk/" + version
 	}
@@ -138,6 +141,16 @@ func ResolveDirectClientOptions(input DirectClientInput) DirectClientOptions {
 	}
 	if input.Workload != "" {
 		agent += ", workload/" + input.Workload
+	}
+	// SDK 0.128 also parses this environment itself before merging the CLI's
+	// validated defaults. Unlike the CLI parser it retains an empty name;
+	// the real Headers constructor subsequently reports that malformed input.
+	for _, line := range strings.Split(javascriptTrim(env["ANTHROPIC_CUSTOM_HEADERS"]), "\n") {
+		name, value, found := strings.Cut(line, ":")
+		name = javascriptTrim(name)
+		if found && name != "__proto__" {
+			set(name, javascriptTrim(value))
+		}
 	}
 	set("x-app", "cli")
 	set("User-Agent", agent+")")
@@ -240,7 +253,7 @@ func (options DirectClientOptions) StreamConfig() AnthropicConfig {
 	for _, entry := range [][2]string{
 		{"X-Stainless-Retry-Count", "0"},
 		{"X-Stainless-Lang", "js"},
-		{"X-Stainless-Package-Version", "0.80.0"},
+		{"X-Stainless-Package-Version", SourceSDKVersion},
 		{"X-Stainless-OS", sourceOS(options.runtime.Platform)},
 		{"X-Stainless-Arch", sourceArch(options.runtime.Arch)},
 		{"X-Stainless-Runtime", "node"},

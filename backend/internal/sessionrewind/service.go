@@ -11,8 +11,10 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"unicode/utf16"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/sessionprojection"
 )
 
 type Evidence struct {
@@ -62,6 +64,7 @@ type CodePreview struct {
 	stats        map[string]changeStats
 }
 type TurnCheckpoint struct {
+	StartedAt               *float64     `json:"startedAt,omitempty"`
 	Target                  Target       `json:"target"`
 	Conversation            Conversation `json:"conversation"`
 	Code                    CodePreview  `json:"code"`
@@ -226,6 +229,9 @@ func (s *Service) List(ctx context.Context, sessionID string, frozen bool) ([]Tu
 		checkpoint.Target = Target{text(turn.user, "id"), index, len(turns)}
 		checkpoint.Conversation = Conversation{len(evidence.Messages) - turn.activeIndex}
 		checkpoint.WorkDir = base
+		if started, valid, _ := sessionprojection.ParseDateUTC(utf16.Encode([]rune(text(turn.user, "timestamp")))); valid {
+			checkpoint.StartedAt = &started
+		}
 		result = append(result, checkpoint)
 	}
 	if err := ctx.Err(); err != nil {

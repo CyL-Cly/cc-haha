@@ -18,17 +18,19 @@ import (
 // needs the real Signal key producer; it cannot be replaced with random unsigned
 // credentials. Existing linked credentials do not need that producer to load.
 type WhatsAppAuthOptions struct {
+	Lifecycle       *MigrationLifecycle
 	InitializeCreds func() (protocol.JSONObject, error)
 	Warn            func(error)
 }
 type WhatsAppAuthStore struct {
-	Dir    string
-	mu     sync.Mutex
-	creds  protocol.JSONObject
-	queues sync.WaitGroup
-	tail   chan struct{}
-	closed bool
-	warn   func(error)
+	Lifecycle *MigrationLifecycle
+	Dir       string
+	mu        sync.Mutex
+	creds     protocol.JSONObject
+	queues    sync.WaitGroup
+	tail      chan struct{}
+	closed    bool
+	warn      func(error)
 }
 
 func HasWhatsAppAuth(dir string) bool {
@@ -60,7 +62,7 @@ func OpenWhatsAppAuthStore(dir string, o WhatsAppAuthOptions) (*WhatsAppAuthStor
 			return nil, e
 		}
 	}
-	s := &WhatsAppAuthStore{Dir: absolute, warn: o.Warn}
+	s := &WhatsAppAuthStore{Dir: absolute, warn: o.Warn, Lifecycle: o.Lifecycle}
 	s.tail = make(chan struct{})
 	close(s.tail)
 	data := s.read("creds.json")
@@ -130,12 +132,14 @@ func (s *WhatsAppAuthStore) QueueSaveCreds() (<-chan struct{}, error) {
 	next := make(chan struct{})
 	s.tail = next
 	s.queues.Add(1)
+	completed := s.Lifecycle.Track()
 	s.mu.Unlock()
 	go func() {
 		defer s.queues.Done()
 		defer close(next)
 		<-prior
 		e := s.saveCreds()
+		completed(e)
 		if e != nil && s.warn != nil {
 			s.warn(e)
 		}
@@ -198,7 +202,9 @@ func (s *WhatsAppAuthStore) GetKeys(category string, ids []string) (protocol.JSO
 	}
 	return out, nil
 }
-func (s *WhatsAppAuthStore) SetKeys(categories protocol.JSONObject) error {
+func (s *WhatsAppAuthStore) SetKeys(categories protocol.JSONObject) (failure error) {
+	done := s.Lifecycle.Track()
+	defer func() { done(failure) }()
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.closed {

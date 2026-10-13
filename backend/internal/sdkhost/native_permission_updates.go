@@ -12,11 +12,18 @@ func (h *Host) ApplyNativePermissionUpdates(scope *cooperative.Scope, data json.
 		return cooperative.ErrRestricted
 	}
 	updates := sdkpermissions.ParsePermissionUpdates(data)
+	before, e := h.options.Startup.GetInitialSettings()
+	if e != nil {
+		return e
+	}
 	var persist func(protocol.JSONObject) error
 	if h.options.Print.PersistPermission != nil {
 		persist = func(update protocol.JSONObject) error { return h.options.Print.PersistPermission(scope, update) }
 	}
 	if e := h.options.Controller.ApplySDKPermissionUpdates(scope, updates, persist); e != nil {
+		return e
+	}
+	if e := h.acceptInternalPermissionSettings(scope, before); e != nil {
 		return e
 	}
 	actual, e := h.options.Controller.PlanModeContext(scope)

@@ -106,6 +106,9 @@ func indexedSession(r protocol.JSONObject) protocol.JSONObject {
 			out.Set(f[0], r.Get(f[1]))
 		}
 	}
+	if fast := r.Get("openai_fast_mode"); string(fast) == "0" || string(fast) == "1" {
+		out.Set("openAIFastMode", raw(string(fast) == "1"))
+	}
 	if intValue(r.Get("runtime_provider_present")) == 1 {
 		out.Set("runtimeProviderId", r.Get("runtime_provider_id"))
 	}
@@ -460,4 +463,14 @@ func sortedKeys[T any](values map[string]T) []string {
 	}
 	sort.Strings(keys)
 	return keys
+}
+
+func fastModeBinding(value json.RawMessage) any {
+	if string(value) == "true" {
+		return 1
+	}
+	if string(value) == "false" {
+		return 0
+	}
+	return nil
 }

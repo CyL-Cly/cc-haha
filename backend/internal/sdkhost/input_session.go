@@ -5,6 +5,7 @@ import (
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/queryloop"
 	"github.com/NanmiCoder/cc-haha/backend/internal/requestretry"
 	"github.com/NanmiCoder/cc-haha/backend/internal/sessioncontroller"
 )
@@ -24,6 +25,7 @@ type inputTask struct {
 	wake           chan struct{}
 	drainRequested bool
 	cancelModel    context.CancelFunc
+	interruptModel context.CancelCauseFunc
 }
 
 func (task *inputTask) notify() {
@@ -44,6 +46,7 @@ func (task *inputTask) next(scope *cooperative.Scope) error {
 			task.notify()
 			return nil
 		}
+		task.input.completeRemoteInlineLifecycle(result.Value)
 		if result.Value.String("type") == "control_response" {
 			_, e := task.host.enqueue(scope, result.Value)
 			if e != nil {
@@ -84,6 +87,12 @@ func (task *inputTask) next(scope *cooperative.Scope) error {
 				return nil
 			case "set_model", "set_max_thinking_tokens":
 				err = task.host.sdkInferenceControl(scope, result.Value)
+			case "set_permission_mode":
+				if task.host.options.NativeSDKPermissionControl == nil {
+					err = cooperative.ErrRestricted
+				} else {
+					err = task.host.options.NativeSDKPermissionControl(scope, result.Value, task.host.enqueueSDKControl)
+				}
 			case "get_context_usage":
 				err = task.host.contextUsageControl(scope, result.Value)
 			case "get_session_usage":
@@ -124,6 +133,9 @@ func (task *inputTask) next(scope *cooperative.Scope) error {
 			}
 			if err == nil && admission.Historical {
 				task.host.options.OnPhase("lifecycle:completed")
+				if e := task.host.options.Controller.HistoricalCommandLifecycle(scope, result.Value.Get("uuid")); e != nil {
+					err = e
+				}
 			}
 			if err != nil {
 				task.failure, task.closed = err, true
@@ -132,6 +144,9 @@ func (task *inputTask) next(scope *cooperative.Scope) error {
 			}
 			if !admission.Duplicate {
 				task.drainRequested = true
+				if result.Value.String("priority") == "now" && task.interruptModel != nil {
+					task.interruptModel(queryloop.SubmitInterrupt)
+				}
 			}
 			task.notify()
 			if err = task.next(scope); err != nil {
@@ -175,6 +190,7 @@ func (h *Host) RunStream(scope *cooperative.Scope, modelContext context.Context,
 		}
 	}
 	task := &inputTask{host: h, input: input}
+	input.environmentUpdate = h.options.NativeSDKEnvironmentUpdate
 	input.allowStopTask = h.options.StopTask != nil
 	input.allowAgentMessage = h.options.SendAgentMessage != nil
 	input.allowSessionInbox = h.sessionInbox
@@ -250,14 +266,20 @@ func (h *Host) RunStream(scope *cooperative.Scope, modelContext context.Context,
 			}
 		}
 		run.setPhase("draining_commands")
-		turnContext, cancelModel := context.WithCancel(modelContext)
+		turnContext, interruptModel := context.WithCancelCause(modelContext)
+		cancelModel := func() { interruptModel(context.Canceled) }
 		task.cancelModel = cancelModel
+		task.interruptModel = interruptModel
 		h.nativeSDKPermissionAbort = cancelModel
 		err = h.consumeASK(scope, turnContext, initial, options)
+		if err == nil {
+			err = h.options.Controller.CompletedCommandLifecycle(scope)
+		}
 		retainHookSignal := err == nil && h.nativePermissionHooks.RetainTurnCancel(scope, cancelModel)
 		if !retainHookSignal {
 			cancelModel()
 			task.cancelModel = nil
+			task.interruptModel = nil
 			h.nativeSDKPermissionAbort = nil
 		}
 		if err != nil {

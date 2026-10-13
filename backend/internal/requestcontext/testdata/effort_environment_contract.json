@@ -38,7 +38,7 @@
             ],
             [
               "user-agent",
-              "claude-cli/2.1.281 (external, cli)"
+              "claude-cli/2.1.288 (external, cli)"
             ],
             [
               "x-api-key",
@@ -66,7 +66,7 @@
             ],
             [
               "x-stainless-package-version",
-              "0.80.0"
+              "0.128.0"
             ],
             [
               "x-stainless-retry-count",
@@ -85,7 +85,7 @@
               "600"
             ]
           ],
-          "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"01234567abcdefghijklmnopqrstuv\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.b51; cc_entrypoint=unknown; cch=6f8ba;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"output_config\":{\"effort\":\"high\"},\"stream\":true}"
+          "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"01234567abcdefghijklmnopqrstuv\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.288.b54; cc_entrypoint=cli; cch=eee1e;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"output_config\":{\"effort\":\"high\"},\"stream\":true}"
         }
       ],
       "normalizedHistory": [
@@ -105,12 +105,135 @@
       "previousRequestID": null
     },
     "sourceOnly": {
+      "wireRequests": [
+        {
+          "path": "/v1/messages?beta=true",
+          "method": "POST",
+          "headers": [
+            [
+              "accept",
+              "application/json"
+            ],
+            [
+              "accept-encoding",
+              "gzip, deflate, br, zstd"
+            ],
+            [
+              "anthropic-beta",
+              "effort-2025-11-24"
+            ],
+            [
+              "anthropic-dangerous-direct-browser-access",
+              "true"
+            ],
+            [
+              "anthropic-version",
+              "2023-06-01"
+            ],
+            [
+              "connection",
+              "keep-alive"
+            ],
+            [
+              "content-length",
+              "634"
+            ],
+            [
+              "content-type",
+              "application/json"
+            ],
+            [
+              "host",
+              "127.0.0.1:61612"
+            ],
+            [
+              "user-agent",
+              "claude-cli/2.1.288 (external, cli)"
+            ],
+            [
+              "x-api-key",
+              "offline-fixture-key"
+            ],
+            [
+              "x-app",
+              "cli"
+            ],
+            [
+              "x-claude-code-session-id",
+              "00000000-0000-4000-8000-000000000000"
+            ],
+            [
+              "x-stainless-arch",
+              "arm64"
+            ],
+            [
+              "x-stainless-lang",
+              "js"
+            ],
+            [
+              "x-stainless-os",
+              "MacOS"
+            ],
+            [
+              "x-stainless-package-version",
+              "0.128.0"
+            ],
+            [
+              "x-stainless-retry-count",
+              "0"
+            ],
+            [
+              "x-stainless-runtime",
+              "node"
+            ],
+            [
+              "x-stainless-runtime-version",
+              "v24.3.0"
+            ],
+            [
+              "x-stainless-timeout",
+              "600"
+            ]
+          ],
+          "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"01234567abcdefghijklmnopqrstuv\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.288.b54; cc_entrypoint=cli; cch=eee1e;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"output_config\":{\"effort\":\"high\"},\"stream\":true}"
+        }
+      ],
+      "yields": [
+        "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_start\",\"message\":{\"id\":\"response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"usage\":{\"input_tokens\":0,\"output_tokens\":0}}},\"ttftMs\":0}",
+        "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\"},\"usage\":{\"output_tokens\":0}}}",
+        "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_stop\"},\"decodeMs\":0}"
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "lastMainRequestID": "response-request",
       "runtime": {
         "platform": "darwin",
         "arch": "arm64",
         "version": "v24.3.0"
       },
-      "sdk": "0.80.0",
+      "sdk": "0.128.0",
       "profile": "direct-relay-no-experiments"
     }
   },
@@ -153,7 +276,7 @@
             ],
             [
               "user-agent",
-              "claude-cli/2.1.281 (external, cli)"
+              "claude-cli/2.1.288 (external, cli)"
             ],
             [
               "x-api-key",
@@ -181,7 +304,7 @@
             ],
             [
               "x-stainless-package-version",
-              "0.80.0"
+              "0.128.0"
             ],
             [
               "x-stainless-retry-count",
@@ -200,7 +323,7 @@
               "600"
             ]
           ],
-          "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"01234567abcdefghijklmnopqrstuv\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.b51; cc_entrypoint=unknown; cch=5469e;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"output_config\":{\"effort\":\"low\"},\"stream\":true}"
+          "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"01234567abcdefghijklmnopqrstuv\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.288.b54; cc_entrypoint=cli; cch=78fab;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"output_config\":{\"effort\":\"low\"},\"stream\":true}"
         }
       ],
       "normalizedHistory": [
@@ -220,12 +343,135 @@
       "previousRequestID": null
     },
     "sourceOnly": {
+      "wireRequests": [
+        {
+          "path": "/v1/messages?beta=true",
+          "method": "POST",
+          "headers": [
+            [
+              "accept",
+              "application/json"
+            ],
+            [
+              "accept-encoding",
+              "gzip, deflate, br, zstd"
+            ],
+            [
+              "anthropic-beta",
+              "effort-2025-11-24"
+            ],
+            [
+              "anthropic-dangerous-direct-browser-access",
+              "true"
+            ],
+            [
+              "anthropic-version",
+              "2023-06-01"
+            ],
+            [
+              "connection",
+              "keep-alive"
+            ],
+            [
+              "content-length",
+              "633"
+            ],
+            [
+              "content-type",
+              "application/json"
+            ],
+            [
+              "host",
+              "127.0.0.1:61641"
+            ],
+            [
+              "user-agent",
+              "claude-cli/2.1.288 (external, cli)"
+            ],
+            [
+              "x-api-key",
+              "offline-fixture-key"
+            ],
+            [
+              "x-app",
+              "cli"
+            ],
+            [
+              "x-claude-code-session-id",
+              "00000000-0000-4000-8000-000000000000"
+            ],
+            [
+              "x-stainless-arch",
+              "arm64"
+            ],
+            [
+              "x-stainless-lang",
+              "js"
+            ],
+            [
+              "x-stainless-os",
+              "MacOS"
+            ],
+            [
+              "x-stainless-package-version",
+              "0.128.0"
+            ],
+            [
+              "x-stainless-retry-count",
+              "0"
+            ],
+            [
+              "x-stainless-runtime",
+              "node"
+            ],
+            [
+              "x-stainless-runtime-version",
+              "v24.3.0"
+            ],
+            [
+              "x-stainless-timeout",
+              "600"
+            ]
+          ],
+          "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"01234567abcdefghijklmnopqrstuv\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.288.b54; cc_entrypoint=cli; cch=78fab;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"output_config\":{\"effort\":\"low\"},\"stream\":true}"
+        }
+      ],
+      "yields": [
+        "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_start\",\"message\":{\"id\":\"response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"usage\":{\"input_tokens\":0,\"output_tokens\":0}}},\"ttftMs\":0}",
+        "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\"},\"usage\":{\"output_tokens\":0}}}",
+        "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_stop\"},\"decodeMs\":0}"
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "lastMainRequestID": "response-request",
       "runtime": {
         "platform": "darwin",
         "arch": "arm64",
         "version": "v24.3.0"
       },
-      "sdk": "0.80.0",
+      "sdk": "0.128.0",
       "profile": "direct-relay-no-experiments"
     }
   },
@@ -268,7 +514,7 @@
             ],
             [
               "user-agent",
-              "claude-cli/2.1.281 (external, cli)"
+              "claude-cli/2.1.288 (external, cli)"
             ],
             [
               "x-api-key",
@@ -296,7 +542,7 @@
             ],
             [
               "x-stainless-package-version",
-              "0.80.0"
+              "0.128.0"
             ],
             [
               "x-stainless-retry-count",
@@ -315,7 +561,7 @@
               "600"
             ]
           ],
-          "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"01234567abcdefghijklmnopqrstuv\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.b51; cc_entrypoint=unknown; cch=6f8ba;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"output_config\":{\"effort\":\"high\"},\"stream\":true}"
+          "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"01234567abcdefghijklmnopqrstuv\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.288.b54; cc_entrypoint=cli; cch=eee1e;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"output_config\":{\"effort\":\"high\"},\"stream\":true}"
         }
       ],
       "normalizedHistory": [
@@ -335,12 +581,135 @@
       "previousRequestID": null
     },
     "sourceOnly": {
+      "wireRequests": [
+        {
+          "path": "/v1/messages?beta=true",
+          "method": "POST",
+          "headers": [
+            [
+              "accept",
+              "application/json"
+            ],
+            [
+              "accept-encoding",
+              "gzip, deflate, br, zstd"
+            ],
+            [
+              "anthropic-beta",
+              "effort-2025-11-24"
+            ],
+            [
+              "anthropic-dangerous-direct-browser-access",
+              "true"
+            ],
+            [
+              "anthropic-version",
+              "2023-06-01"
+            ],
+            [
+              "connection",
+              "keep-alive"
+            ],
+            [
+              "content-length",
+              "634"
+            ],
+            [
+              "content-type",
+              "application/json"
+            ],
+            [
+              "host",
+              "127.0.0.1:61643"
+            ],
+            [
+              "user-agent",
+              "claude-cli/2.1.288 (external, cli)"
+            ],
+            [
+              "x-api-key",
+              "offline-fixture-key"
+            ],
+            [
+              "x-app",
+              "cli"
+            ],
+            [
+              "x-claude-code-session-id",
+              "00000000-0000-4000-8000-000000000000"
+            ],
+            [
+              "x-stainless-arch",
+              "arm64"
+            ],
+            [
+              "x-stainless-lang",
+              "js"
+            ],
+            [
+              "x-stainless-os",
+              "MacOS"
+            ],
+            [
+              "x-stainless-package-version",
+              "0.128.0"
+            ],
+            [
+              "x-stainless-retry-count",
+              "0"
+            ],
+            [
+              "x-stainless-runtime",
+              "node"
+            ],
+            [
+              "x-stainless-runtime-version",
+              "v24.3.0"
+            ],
+            [
+              "x-stainless-timeout",
+              "600"
+            ]
+          ],
+          "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"01234567abcdefghijklmnopqrstuv\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.288.b54; cc_entrypoint=cli; cch=eee1e;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"output_config\":{\"effort\":\"high\"},\"stream\":true}"
+        }
+      ],
+      "yields": [
+        "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_start\",\"message\":{\"id\":\"response\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"fixture-model\",\"content\":[],\"usage\":{\"input_tokens\":0,\"output_tokens\":0}}},\"ttftMs\":0}",
+        "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\"},\"usage\":{\"output_tokens\":0}}}",
+        "{\"type\":\"stream_event\",\"event\":{\"type\":\"message_stop\"},\"decodeMs\":0}"
+      ],
+      "capabilities": {
+        "blocked": [],
+        "secureReads": [
+          "read"
+        ],
+        "absentReads": [
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "lstatSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "openSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.json"
+          },
+          {
+            "operation": "readdirSync",
+            "path": "/Library/Application Support/ClaudeCode/managed-settings.d"
+          }
+        ]
+      },
+      "lastMainRequestID": "response-request",
       "runtime": {
         "platform": "darwin",
         "arch": "arm64",
         "version": "v24.3.0"
       },
-      "sdk": "0.80.0",
+      "sdk": "0.128.0",
       "profile": "direct-relay-no-experiments"
     }
   }

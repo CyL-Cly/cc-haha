@@ -13,6 +13,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/modelaccounting"
 	"github.com/NanmiCoder/cc-haha/backend/internal/modelyield"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/provider"
 	"github.com/NanmiCoder/cc-haha/backend/internal/requestcontext"
 	"github.com/NanmiCoder/cc-haha/backend/internal/requestretry"
 	"github.com/NanmiCoder/cc-haha/backend/internal/sessionactivity"
@@ -89,10 +90,12 @@ type Backfill func(input *protocol.JSONObject) error
 // Yield has exactly one value. Emit is synchronous: the caller may suspend
 // here like Source's generator, before internal history or tools advance.
 type Yield struct {
-	RequestStart   bool
-	APIRetryNotice bool
-	Stream         *streamhistory.Update
-	Message        *Message
+	ModelFallbackWarning bool
+	RequestStart         bool
+	APIRetryNotice       bool
+	APIRetryError        *provider.SDKStreamError
+	Stream               *streamhistory.Update
+	Message              *Message
 }
 type Emit func(Yield) error
 type ControlledEmit func(Yield) (requestretry.NoticeAction, error)
@@ -126,7 +129,9 @@ type PreflightResult struct {
 }
 
 type Host struct {
-	Activity *sessionactivity.Tracker
+	ModelFallbackChanged func(context.Context, string) error
+	ModelDisplayName     func(string) (string, error)
+	Activity             *sessionactivity.Tracker
 	// Preflight resolves existing host context/compaction decisions. This slice
 	// does not implement those policies or invent an identity fallback.
 	Preflight func(context.Context, Round) ([]Message, error)
@@ -154,6 +159,10 @@ type Host struct {
 	AttachmentsAfterTools func(context.Context, Round) ([]Message, error)
 }
 type Options struct {
+	// NativeModelPresent distinguishes an actual Source string override ""
+	// from a missing model in the finite host contract.
+	NativeModelPresent     bool
+	FallbackModel          string
 	Profile                string
 	StreamingToolExecution bool
 	Model, QuerySource     string
@@ -175,7 +184,7 @@ func validate(ctx context.Context, options Options, host Host, emit ControlledEm
 	if options.Profile != SuccessfulToolRound || options.StreamingToolExecution {
 		return unsupported("resolved execution profile", ErrUnsupported)
 	}
-	if ctx == nil || options.Model == "" || options.QuerySource == "" || options.MaxTurns < 1 || options.UUID == nil || options.Now == nil || emit == nil || host.Request.Random == nil || host.Request.Sleep == nil || host.Request.Notice != nil {
+	if ctx == nil || options.Model == "" && !options.NativeModelPresent || options.QuerySource == "" || options.MaxTurns < 1 || options.UUID == nil || options.Now == nil || emit == nil || host.Request.Random == nil || host.Request.Sleep == nil || host.Request.Notice != nil {
 		return errors.New("query loop requires explicit model, query source, turn limit, original request host, clock and single consumer")
 	}
 	if (host.Preflight == nil) == (host.ResolvePreflight == nil) || host.ResolveModelInput == nil || (host.LookupBackfill == nil && host.LookupBackfillJSON == nil) || host.ExecuteBatch == nil || host.NormalizeToolResult == nil || host.PostSampling == nil || host.StopFailure == nil || host.AbortCleanup == nil || host.StopHooks == nil || host.PauseAfterTools == nil {
@@ -289,7 +298,7 @@ func RunControlled(ctx context.Context, initial []Message, options Options, host
 				return Outcome{}, err
 			}
 		}
-		assistants, uses, model, err := consume(ctx, input, options, host, emit, func() bool { return stopped })
+		assistants, uses, model, err := consumeWithModelFallback(ctx, input, options, host, emit, func() bool { return stopped })
 		if err != nil {
 			return Outcome{}, err
 		}
@@ -462,6 +471,7 @@ func consume(ctx context.Context, input requestretry.Input, options Options, hos
 			}
 			yield.Message = &Message{Record: record}
 			yield.APIRetryNotice = true
+			yield.APIRetryError = value.Notice.Error
 		} else if value.Control != nil {
 			yield.Message = &Message{Record: *value.Control}
 		} else if value.Update != nil {

@@ -3,6 +3,7 @@ package application
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -14,6 +15,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/server"
 	"golang.org/x/net/websocket"
 )
@@ -112,8 +114,10 @@ func TestActualDesktopStreamRetryThenApprovalToolsAndNextHuman(t *testing.T) {
 				}
 			case "message_complete":
 				completed++
+				requestDesktopSessionSync(t, ws)
 			case "session_state":
-				if m.String("turnState") == "idle" && completed == turn+1 {
+				if completed == turn+1 {
+					assertDesktopIdleSnapshot(t, m)
 					goto nextTurn
 				}
 			}
@@ -139,8 +143,39 @@ func TestActualDesktopStreamRetryThenApprovalToolsAndNextHuman(t *testing.T) {
 			if e != nil {
 				return e
 			}
-			if !bytes.Contains(b, []byte("ACTUAL_DESKTOP_RECOVERY")) || bytes.Contains(b, []byte("private failed stream")) || bytes.Contains(b, []byte("streaming_fallback")) {
-				t.Fatal("canonical history differs from actual successful execution")
+			if !bytes.Contains(b, []byte("ACTUAL_DESKTOP_RECOVERY")) {
+				t.Fatal("real successful artifact absent from canonical history")
+			}
+			// Actual MAIN QueryEngine keeps retry/recovery controls in mutable
+			// history. The next ASK persists them once; failed-attempt assistant
+			// output remains absent. See the physical Source consumer regression
+			// TestNativeRetryAndRecoveryActualQueryEngineOutputAndNextASKPersistence.
+			retries, recoveries := 0, 0
+			for _, line := range bytes.Split(b, []byte{'\n'}) {
+				if len(line) == 0 {
+					continue
+				}
+				var record protocol.JSONObject
+				if e := json.Unmarshal(line, &record); e != nil {
+					return e
+				}
+				if record.String("type") == "assistant" && bytes.Contains(line, []byte("private failed stream")) {
+					t.Fatal("failed model attempt entered assistant canonical history")
+				}
+				if record.String("type") == "system" {
+					switch record.String("subtype") {
+					case "api_error":
+						retries++
+					case "streaming_fallback":
+						recoveries++
+						if record.String("cause") != "stream_retry" || record.String("uuid") == "" {
+							t.Fatal("Source recovery identity/cause lost", string(line))
+						}
+					}
+				}
+			}
+			if retries != 1 || recoveries != 1 {
+				t.Fatal("Source next-ASK system controls not persisted once", retries, recoveries)
 			}
 		}
 		return walkErr

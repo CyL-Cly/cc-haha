@@ -14,6 +14,7 @@ import (
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/imageprocessing"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/storagerelocations"
 )
 
 type Options struct {
@@ -52,6 +53,14 @@ func Build(content, sessionID string, attachments json.RawMessage, o Options) (j
 	images := []protocol.JSONObject{}
 	metadata := []string{}
 	for _, ref := range refs {
+		if path := ref.String("path"); path != "" {
+			mapped, err := storagerelocations.Resolve(path, config)
+			if err != nil {
+				return nil, err
+			}
+			encoded, _ := json.Marshal(mapped)
+			ref.Set("path", encoded)
+		}
 		if inlineImage(ref) {
 			block, text, ok := materializeImage(ref, uploadDir, o)
 			if ok {

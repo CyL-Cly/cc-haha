@@ -2,6 +2,7 @@ package teamspawn
 
 import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/teamstore"
 	"regexp"
 )
 
@@ -15,12 +16,12 @@ func ParseInteractiveTeammateXML(text string) []protocol.JSONObject {
 		if match[1] == "" || match[4] == "" {
 			continue
 		}
-		row := protocol.NewJSONObject(protocol.JSONField{Name: "teammateId", Value: quoted(match[1])})
+		row := protocol.NewJSONObject(protocol.JSONField{Name: "teammateId", Value: quoted(teamstore.UnescapeXMLAttr(match[1]))})
 		if match[2] != "" {
-			row.Set("color", quoted(match[2]))
+			row.Set("color", quoted(teamstore.UnescapeXMLAttr(match[2])))
 		}
 		if match[3] != "" {
-			row.Set("summary", quoted(match[3]))
+			row.Set("summary", quoted(teamstore.UnescapeXMLAttr(match[3])))
 		}
 		row.Set("content", quoted(protocol.TrimJavaScriptString(match[4])))
 		rows = append(rows, row)

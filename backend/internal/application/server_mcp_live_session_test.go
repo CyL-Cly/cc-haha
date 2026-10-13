@@ -133,8 +133,10 @@ func TestActualMCPManagementToggleChangesNextDesktopInference(t *testing.T) {
 			}
 			if message.String("type") == "message_complete" {
 				seen = true
+				requestDesktopSessionSync(t, ws)
 			}
-			if seen && message.String("type") == "session_state" && message.String("turnState") == "idle" {
+			if seen && message.String("type") == "session_state" {
+				assertDesktopIdleSnapshot(t, message)
 				return
 			}
 		}

@@ -14,6 +14,7 @@ import (
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/desktopoauth"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/provider"
 	"github.com/NanmiCoder/cc-haha/backend/internal/webfetch"
 )
 
@@ -44,7 +45,7 @@ func (c *OAuthClient) request(ctx context.Context, method, address string, body 
 		return protocol.JSONObject{}, e
 	}
 	request.Header.Set("Accept", "application/json, text/plain, */*")
-	request.Header.Set("User-Agent", "axios/1.14.0")
+	request.Header.Set("User-Agent", "axios/1.15.2")
 	request.Header.Set("Accept-Encoding", "gzip, compress, deflate, br")
 	for _, h := range headers {
 		request.Header.Set(h[0], h[1])
@@ -90,7 +91,7 @@ func (c *OAuthClient) request(ctx context.Context, method, address string, body 
 }
 func authHeaders(token string) [][2]string { return [][2]string{{"Authorization", "Bearer " + token}} }
 func (c *OAuthClient) Profile(ctx context.Context, token string) *protocol.JSONObject {
-	headers := append(authHeaders(token), [2]string{"Content-Type", "application/json"})
+	headers := append(authHeaders(token), [2]string{"Content-Type", "application/json"}, [2]string{"User-Agent", "claude-code/" + provider.SourceCompatibilityVersion}, [2]string{"Cache-Control", "no-cache"})
 	profile, e := c.request(ctx, "GET", c.Config.BaseAPIURL+"/api/oauth/profile", nil, headers, 10*time.Second)
 	if e != nil {
 		return nil
@@ -192,17 +193,17 @@ func (c *OAuthClient) ExchangeOpenAI(ctx context.Context, code, redirect, verifi
 }
 
 func (c *OAuthClient) FetchRoles(ctx context.Context, token string) (protocol.JSONObject, error) {
-	return c.request(ctx, "GET", c.Config.BaseAPIURL+"/api/oauth/claude_cli/roles", nil, authHeaders(token), 30*time.Second)
+	return c.request(ctx, "GET", c.Config.BaseAPIURL+"/api/oauth/claude_cli/roles", nil, append(authHeaders(token), [2]string{"User-Agent", "claude-code/" + provider.SourceCompatibilityVersion}), 30*time.Second)
 }
 func (c *OAuthClient) CreateAPIKey(ctx context.Context, token string) (string, error) {
-	result, e := c.request(ctx, "POST", c.Config.BaseAPIURL+"/api/oauth/claude_cli/create_api_key", nil, append(authHeaders(token), [2]string{"Content-Type", "application/x-www-form-urlencoded"}), 30*time.Second)
+	result, e := c.request(ctx, "POST", c.Config.BaseAPIURL+"/api/oauth/claude_cli/create_api_key", nil, append(authHeaders(token), [2]string{"Content-Type", "application/x-www-form-urlencoded"}, [2]string{"User-Agent", "claude-code/" + provider.SourceCompatibilityVersion}), 30*time.Second)
 	return result.String("raw_key"), e
 }
 func (c *OAuthClient) FirstTokenDate(ctx context.Context, token, version string) (json.RawMessage, error) {
 	return c.FirstTokenDateHeaders(ctx, append(authHeaders(token), [2]string{"anthropic-beta", "oauth-2025-04-20"}), version)
 }
 func (c *OAuthClient) FirstTokenDateHeaders(ctx context.Context, auth [][2]string, version string) (json.RawMessage, error) {
-	headers := append(append([][2]string{}, auth...), [2]string{"User-Agent", "claude-code/" + version})
+	headers := append(append([][2]string{}, auth...), [2]string{"User-Agent", "claude-code/" + provider.SourceCompatibilityVersion})
 	result, e := c.request(ctx, "GET", c.Config.BaseAPIURL+"/api/organization/claude_code_first_token_date", nil, headers, 10*time.Second)
 	if e != nil {
 		return nil, e

@@ -45,7 +45,9 @@ func (m *MainPrint) nativeVertexBinding(scope *cooperative.Scope) (*requestretry
 			return requestretry.NativeVertexClient{}, err
 		}
 		if settings.String("gcpAuthRefresh") != "" {
-			return requestretry.NativeVertexClient{}, mainCap("actual GCP auth refresh probe/command/cache consumer")
+			if err = m.nativeRefreshGCPCredentials(ctx, scope); err != nil {
+				return requestretry.NativeVertexClient{}, err
+			}
 		}
 		auth, err := m.nativeGoogleAuth(scope, env)
 		if err != nil {

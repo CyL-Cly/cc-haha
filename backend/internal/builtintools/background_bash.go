@@ -78,7 +78,7 @@ func taskTail(path string, max int64) (json.RawMessage, error) {
 	return quote(output), nil
 }
 func (s *Service) startBackgroundBash(scope *cooperative.Scope, in protocol.JSONObject, toolID json.RawMessage) (json.RawMessage, error) {
-	sandbox, e := s.selectBashSandbox(scope, in)
+	sandbox, e := s.shellSandbox(scope, in)
 	if e != nil {
 		return nil, e
 	}
@@ -103,9 +103,9 @@ func (s *Service) startBackgroundBash(scope *cooperative.Scope, in protocol.JSON
 	if e != nil {
 		return nil, e
 	}
-	shell := environment["SHELL"]
-	if shell == "" {
-		shell = "/bin/bash"
+	shell, e := s.shellExecutable(scope, environment)
+	if e != nil {
+		return nil, e
 	}
 	p, e := executableInEnvironment(shell, environment)
 	if e != nil {
@@ -135,7 +135,7 @@ func (s *Service) startBackgroundBash(scope *cooperative.Scope, in protocol.JSON
 		if e != nil {
 			return nil, e
 		}
-		cmd := exec.CommandContext(processContext, p, "-l", "-c", executionCommand)
+		cmd := exec.CommandContext(processContext, p, s.shellArgs(executionCommand)...)
 		cmd.Dir = execution.OriginalCwd
 		keys := []string{}
 		for key := range environment {
@@ -148,7 +148,7 @@ func (s *Service) startBackgroundBash(scope *cooperative.Scope, in protocol.JSON
 		}
 		cmd.Stdout = output
 		cmd.Stderr = output
-		configureProcess(cmd)
+		s.configureShell(cmd)
 		if e = cmd.Start(); e != nil {
 			_ = output.Close()
 			return nil, e
@@ -210,7 +210,7 @@ func (s *Service) startBackgroundBash(scope *cooperative.Scope, in protocol.JSON
 			return nil, e
 		}
 	}
-	return object(field("stdout", ""), field("stderr", ""), field("interrupted", false), field("isImage", false), field("backgroundTaskId", id), field("noOutputExpected", nativeBashSilent(command, s.options.Platform))), nil
+	return raw(s.shellBackgroundData(command, id)), nil
 }
 
 func taskHead(path, limit string) (json.RawMessage, error) {
@@ -455,7 +455,19 @@ func (s *Service) callBash(ctx context.Context, in protocol.JSONObject, c queryl
 	if e != nil {
 		return queryloop.ToolCallResult{}, e
 	}
-	return view.callBashOnContext(ctx, in, c)
+	result, err := view.callBashOnContext(ctx, in, c)
+	if err != nil {
+		return result, err
+	}
+	data := inputObject(result.Data)
+	if data.String("backgroundTaskId") == "" {
+		data, err = view.normalizeShellImage(ctx, scopeFor(c.Opaque), data)
+		if err != nil {
+			return queryloop.ToolCallResult{}, err
+		}
+		result.Data = raw(data)
+	}
+	return result, nil
 }
 
 func (s *Service) callBashOnContext(ctx context.Context, in protocol.JSONObject, c queryloop.JSONToolCallContext) (queryloop.ToolCallResult, error) {

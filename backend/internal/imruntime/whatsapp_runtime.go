@@ -60,6 +60,9 @@ func WhatsAppAuthDirectory(cfg Config) (string, error) {
 }
 
 func NewWhatsAppRuntime(ctx context.Context, o WhatsAppRuntimeOptions) (*WhatsAppRuntime, error) {
+	if err := migrationRuntimeAvailable(o.Config); err != nil {
+		return nil, err
+	}
 	path, e := WhatsAppAuthDirectory(o.Config)
 	if e != nil {
 		return nil, e
@@ -84,6 +87,15 @@ func NewWhatsAppRuntime(ctx context.Context, o WhatsAppRuntimeOptions) (*WhatsAp
 		}
 	}
 	clientOptions.Now = core.Now
+	priorWarn := clientOptions.Warn
+	clientOptions.Warn = func(err error) {
+		core.migration.RecordFailure(err)
+		if priorWarn != nil {
+			priorWarn(err)
+		} else {
+			core.Log("[WhatsApp] Failed to save credentials: " + err.Error())
+		}
+	}
 	prior := clientOptions.OnEvent
 	clientOptions.OnEvent = func(v any) {
 		switch event := v.(type) {
@@ -253,6 +265,11 @@ func (r *WhatsAppRuntime) handleServerMessage(ctx context.Context, id string, m 
 }
 
 func (r *WhatsAppRuntime) HandleMessage(event *events.Message) error {
+	done, admitted := r.migration.Admit()
+	if !admitted {
+		return nil
+	}
+	defer done(nil)
 	content := event.RawMessage
 	if content == nil {
 		content = event.Message
@@ -314,7 +331,11 @@ func (r *WhatsAppRuntime) Start() {
 }
 func (r *WhatsAppRuntime) Wait() error { <-r.done; r.mu.Lock(); defer r.mu.Unlock(); return r.err }
 func (r *WhatsAppRuntime) Close() {
-	r.stop.Do(func() { r.cancel(); _ = r.Client.Close(context.Background()); r.platformRuntimeCore.close() })
+	r.stop.Do(func() {
+		r.cancel()
+		r.migration.RecordFailure(r.Client.Close(context.Background()))
+		r.platformRuntimeCore.close()
+	})
 }
 
 type whatsAppRuntimeResponse struct {

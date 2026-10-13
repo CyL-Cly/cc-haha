@@ -35,7 +35,7 @@ func NewNativeMCPModels(scope *cooperative.Scope, options Options, sessionID str
 		return nil, err
 	}
 	err = accounting.InstallNativeScopedCalculator(scope, func(current *cooperative.Scope, model string, environment map[string]string) (*modelaccounting.Calculator, error) {
-		return modelaccounting.NewNativeCalculator(model, modelaccounting.NativeCalculatorOptions{Environment: environment, Settings: options.Startup.GetInitialSettings, Global: options.Global.Get, SDKBetas: []string{}, ModelSelector: func(o modelselection.Options) (*modelselection.Selector, error) { return selectModel(current, o) }})
+		return modelaccounting.NewNativeCalculator(model, modelaccounting.NativeCalculatorOptions{Environment: environment, Settings: options.Startup.GetInitialSettings, Global: options.Global.Get, SDKBetas: options.SDKBetas, ModelSelector: func(o modelselection.Options) (*modelselection.Selector, error) { return selectModel(current, o) }})
 	})
 	if err != nil {
 		return nil, err

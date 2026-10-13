@@ -100,6 +100,11 @@ type StreamErrorPolicy struct {
 func PreserveNativeStreamErrorPolicyOriginalEnvironment(env map[string]string) *StreamErrorPolicy {
 	p := PreserveStreamErrorPolicyOriginalEnvironment(env)
 	p.native = true
+	for _, name := range []string{"CLAUDE_STREAM_IDLE_TIMEOUT_MS", "CLAUDE_STREAM_FIRST_TOKEN_TIMEOUT_MS", "API_TIMEOUT_MS", "CLAUDE_STREAM_MAX_DURATION_MS", "CLAUDE_STREAM_TOOL_INPUT_MAX_DURATION_MS", "CC_HAHA_OPENAI_OAUTH_FIRST_TOKEN_TIMEOUT_MS"} {
+		if value, present := env[name]; present {
+			p.original[name] = value
+		}
+	}
 	p.maxTransientRetries = 2
 	if prefix := regexp.MustCompile(`^[+-]?[0-9]+`).FindString(strings.TrimFunc(env["CLAUDE_STREAM_TRANSIENT_RETRY_MAX"], streamPolicySpace)); prefix != "" {
 		if number, e := strconv.ParseFloat(prefix, 64); e == nil && number >= 0 && !math.IsInf(number, 0) {
@@ -108,6 +113,18 @@ func PreserveNativeStreamErrorPolicyOriginalEnvironment(env map[string]string) *
 	}
 	p.disableFallback = streamPolicyTruthy(env["CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK"])
 	return p
+}
+
+func streamRetryOverride(value string) *float64 {
+	prefix := regexp.MustCompile(`^[+-]?[0-9]+`).FindString(strings.TrimFunc(value, streamPolicySpace))
+	if prefix == "" {
+		return nil
+	}
+	if number, e := strconv.ParseFloat(prefix, 64); e == nil && number >= 0 && !math.IsInf(number, 0) {
+		n := math.Min(number, 5)
+		return &n
+	}
+	return nil
 }
 
 func streamPolicySpace(r rune) bool {

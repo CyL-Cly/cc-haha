@@ -139,9 +139,17 @@ func actualQQMainprint(t *testing.T, liveToken string) {
 	packets := []protocol.JSONObject{}
 	closed := atomic.Int32{}
 	permissionID := regexp.MustCompile(`需要权限确认 \[([^\]]+)\]`)
+	firstGatewayClosed := make(chan struct{})
+	var gatewayConnections atomic.Int32
 	wsPeer := httptest.NewServer(websocket.Server{Handshake: func(*websocket.Config, *http.Request) error { return nil }, Handler: func(conn *websocket.Conn) {
+		firstConnection := gatewayConnections.Add(1) == 1
 		defer conn.Close()
 		defer closed.Add(1)
+		defer func() {
+			if firstConnection {
+				close(firstGatewayClosed)
+			}
+		}()
 		websocket.Message.Send(conn, string(raw(map[string]any{"op": 10, "d": map[string]int{"heartbeat_interval": 60000}})))
 		var identify protocol.JSONObject
 		if websocket.JSON.Receive(conn, &identify) != nil {
@@ -219,7 +227,7 @@ func actualQQMainprint(t *testing.T, liveToken string) {
 	started := make(chan struct{})
 	launcherDone := make(chan error, 1)
 	options := func(cfg imruntime.Config) imruntime.QQRuntimeOptions {
-		return imruntime.QQRuntimeOptions{Config: cfg, ServerHTTP: desktop.Client(), ClientOptions: imruntime.QQClientOptions{HTTP: &http.Client{Transport: qqFlowRoute{platform}}}, GatewayOptions: imruntime.QQGatewayOptions{Dial: func(ctx context.Context, address string, h http.Header, config *tls.Config) (imruntime.QQGatewaySocket, error) {
+		return imruntime.QQRuntimeOptions{Config: cfg, ServerHTTP: desktop.Client(), Log: func(message string) { t.Log(message) }, ClientOptions: imruntime.QQClientOptions{HTTP: &http.Client{Transport: qqFlowRoute{platform}}}, GatewayOptions: imruntime.QQGatewayOptions{Dial: func(ctx context.Context, address string, h http.Header, config *tls.Config) (imruntime.QQGatewaySocket, error) {
 			return imruntime.DialQQGatewaySocket(ctx, address, h, config)
 		}}}
 	}
@@ -288,6 +296,14 @@ func actualQQMainprint(t *testing.T, liveToken string) {
 	case <-time.After(10 * time.Second):
 		t.Fatal("launcher close not joined")
 	}
+	// Local Close joins the adapter; the remote loopback peer owns a separate
+	// goroutine. Wait for it to retire before handing the next gateway a message,
+	// so the old peer cannot destructively consume this fixture's shared queue.
+	select {
+	case <-firstGatewayClosed:
+	case <-time.After(10 * time.Second):
+		t.Fatal("closed QQ gateway peer did not retire")
+	}
 	{
 		restartCtx, restartCancel := context.WithCancel(context.Background())
 		defer restartCancel()
@@ -306,7 +322,10 @@ func actualQQMainprint(t *testing.T, liveToken string) {
 		select {
 		case <-resumed:
 		case <-time.After(deadline):
-			t.Fatal("QQ cold resume missing")
+			packetMu.Lock()
+			copy := append([]protocol.JSONObject{}, packets...)
+			packetMu.Unlock()
+			t.Fatal("QQ cold resume missing", "requests", fakeRequests.Load(), "gatewayPeerCloseCount", closed.Load(), "session", restarted.Store.Get("U1"), "bridgeOpen", restarted.Bridge.IsOpen("U1", stored.SessionID), "outbound", string(raw(copy)))
 		}
 		binding := restarted.Store.Get("U1")
 		if binding == nil || binding.SessionID != stored.SessionID || (liveToken == "" && fakeRequests.Load() != 5) || (liveToken != "" && fakeRequests.Load() != 0) {

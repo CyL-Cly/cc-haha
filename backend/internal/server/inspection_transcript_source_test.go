@@ -18,6 +18,11 @@ import (
 )
 
 func TestInspectionTranscriptActualSourceMetadataUsageContextAndLimits(t *testing.T) {
+	for _, direct := range []bool{true, false} {
+		t.Run(fmt.Sprintf("direct-credential-%v", direct), func(t *testing.T) { runInspectionTranscriptActualSource(t, direct) })
+	}
+}
+func runInspectionTranscriptActualSource(t *testing.T, direct bool) {
 	bun := os.Getenv("CC_HAHA_SOURCE_BUN")
 	if bun == "" {
 		t.Skip("actual Source Bun unavailable")
@@ -53,6 +58,24 @@ func TestInspectionTranscriptActualSourceMetadataUsageContextAndLimits(t *testin
 	add("known-pricing", usageEntry("api1", "claude-sonnet-4-6", usage, nil))
 	add("compact-resets-context-only", usageEntry("api1", "deepseek-flash", usage, nil)+`{"type":"system","subtype":"compact_boundary","uuid":"boundary"}`+"\n"+entry("user", "after", "continued", nil))
 	add("tail-estimate-after-provider-usage", usageEntry("api1", "deepseek-flash", usage, nil)+entry("user", "after", strings.Repeat("x", 512), nil))
+	attachment := func(value any) string {
+		data, _ := json.Marshal(map[string]any{"type": "attachment", "attachment": value})
+		return string(data) + "\n"
+	}
+	textFile := map[string]any{"type": "file", "filename": "$HOME/read.txt", "displayPath": "read.txt", "content": map[string]any{"type": "text", "file": map[string]any{"filePath": "$HOME/read.txt", "content": "actual retained source file 中文🙂\nsecond line", "numLines": 2, "startLine": 1, "totalLines": 2}}}
+	add("retained-read-file-after-usage", usageEntry("api1", "deepseek-flash", usage, nil)+attachment(textFile))
+	truncatedFile := map[string]any{}
+	for key, value := range textFile {
+		truncatedFile[key] = value
+	}
+	truncatedFile["truncated"] = true
+	add("retained-truncated-file-before-usage", attachment(truncatedFile)+usageEntry("api1", "deepseek-flash", usage, nil))
+	add("retained-directory-after-usage", usageEntry("api1", "deepseek-flash", usage, nil)+attachment(map[string]any{"type": "directory", "path": "$HOME/src", "content": "read.txt\nother.txt"}))
+	add("retained-image-after-usage", usageEntry("api1", "deepseek-flash", usage, nil)+attachment(map[string]any{"type": "file", "filename": "$HOME/image.png", "content": map[string]any{"type": "image", "file": map[string]any{"filePath": "$HOME/image.png", "base64": "YWJj", "type": "image/png", "originalSize": 3}}}))
+	add("retained-pdf-after-usage", usageEntry("api1", "deepseek-flash", usage, nil)+attachment(map[string]any{"type": "file", "filename": "$HOME/book.pdf", "content": map[string]any{"type": "pdf", "file": map[string]any{"filePath": "$HOME/book.pdf", "base64": "JVBERi0xLjQ=", "originalSize": 2048}}}))
+	add("retained-extracted-pdf-parts-source-ignored", usageEntry("api1", "deepseek-flash", usage, nil)+attachment(map[string]any{"type": "file", "filename": "$HOME/book.pdf", "content": map[string]any{"type": "parts", "file": map[string]any{"filePath": "$HOME/book.pdf", "originalSize": 2048, "count": 2}}}))
+	add("retained-plan-mode-full", usageEntry("api1", "deepseek-flash", usage, nil)+attachment(map[string]any{"type": "plan_mode", "reminderType": "full", "isSubAgent": false, "planFilePath": "$HOME/plan.md"}))
+	add("retained-plan-mode-exit", usageEntry("api1", "deepseek-flash", usage, nil)+attachment(map[string]any{"type": "plan_mode_exit"}))
 	add("mixed-models-durations", usageEntry("api1", "deepseek-flash", usage, map[string]any{"timestamp": "2026-10-07T00:00:00.000Z"})+usageEntry("api2", "claude-sonnet-4-6", usage, map[string]any{"timestamp": "2026-10-07T00:00:02.500Z"}))
 	add("empty-workdir-falls-to-cwd", `{"type":"session-meta","workDir":"","cwd":"$HOME/actual","permissionMode":"plan","runtimeProviderId":"saved","runtimeModelId":"old","effortLevel":"low"}`+"\n"+`{"type":"session-meta","runtimeProviderId":null,"runtimeModelId":"next"}`+"\n")
 	add("worktree-and-repository", `{"type":"session-meta","workDir":"$HOME","repository":{"repoRoot":"$HOME/repo"}}`+"\n"+`{"type":"worktree-state","worktreeSession":{"worktreePath":"$HOME/w","worktreeName":"native"}}`+"\n"+`{"type":"worktree-state","worktreeSession":null}`+"\n"+`{"type":"custom-title","customTitle":""}`+"\n")
@@ -69,6 +92,10 @@ func TestInspectionTranscriptActualSourceMetadataUsageContextAndLimits(t *testin
 	home := t.TempDir()
 	_ = os.MkdirAll(filepath.Join(home, "tmp"), 0700)
 	env := map[string]string{"ANTHROPIC_API_KEY": "fake-no-network", "ANTHROPIC_BASE_URL": "http://127.0.0.1:43210", "ANTHROPIC_MODEL": "claude-sonnet-4-6", "CLAUDE_CODE_MODEL_CONTEXT_WINDOWS": `{"deepseek-flash":1000000}`}
+	if !direct {
+		delete(env, "ANTHROPIC_API_KEY")
+		delete(env, "ANTHROPIC_AUTH_TOKEN")
+	}
 	fixture, _ := filepath.Abs("../../../scripts/quality-gate/go-parity/native-session-inspection.fixture.ts")
 	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 	defer cancel()

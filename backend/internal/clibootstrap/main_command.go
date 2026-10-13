@@ -14,6 +14,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/clistartupenv"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/diagnostics"
+	"github.com/NanmiCoder/cc-haha/backend/internal/installationdiagnostics"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/securestorage"
 	"github.com/NanmiCoder/cc-haha/backend/internal/storage"
@@ -22,6 +23,7 @@ import (
 // MainCommand binds non-model CLI actions to the existing native settings,
 // global writer and credential services. It does not construct an ASK session.
 type MainCommand struct {
+	doctorPackages      *installationdiagnostics.Packages
 	version             string
 	pid                 int
 	Owner               *cooperative.Owner

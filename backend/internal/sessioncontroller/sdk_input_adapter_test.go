@@ -183,7 +183,7 @@ func TestParsedSDKHistoricalLookupUsesActualCacheAndOriginalAck(t *testing.T) {
 }
 
 func TestParsedSDKRefusesCapabilitiesBeforeOwnerEffects(t *testing.T) {
-	for _, name := range []string{"wrong-owner", "now", "attachments", "slash", "snapshots", "legacy"} {
+	for _, name := range []string{"wrong-owner", "unknown-priority", "attachments", "slash", "snapshots", "legacy"} {
 		t.Run(name, func(t *testing.T) {
 			owner, controller, serial := parsedSDKHost(t)
 			other := cooperative.New()
@@ -193,8 +193,8 @@ func TestParsedSDKRefusesCapabilitiesBeforeOwnerEffects(t *testing.T) {
 			switch name {
 			case "wrong-owner":
 				activeOwner = other
-			case "now":
-				input.Set("priority", quote("now"))
+			case "unknown-priority":
+				input.Set("priority", quote("unknown"))
 			case "attachments":
 				input.Set("file_attachments", json.RawMessage("[]"))
 			case "slash":

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/url"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -15,41 +16,68 @@ import (
 
 type BridgeHandler func(context.Context, protocol.JSONObject) error
 type bridgeSession struct {
-	id       string
-	socket   *Socket
-	cancel   context.CancelFunc
-	open     chan struct{}
-	initial  chan struct{}
-	done     chan struct{}
-	handler  BridgeHandler
-	attempts int
-	ended    bool
+	lastActivity           time.Time
+	turnActive, cliRunning bool
+	pending                map[string]bool
+	ordinal                uint64
+	id                     string
+	socket                 *Socket
+	cancel                 context.CancelFunc
+	open                   chan struct{}
+	initial                chan struct{}
+	done                   chan struct{}
+	handler                BridgeHandler
+	attempts               int
+	ended                  bool
 }
 type Bridge struct {
-	config   Config
-	tls      *tls.Config
-	mu       sync.Mutex
-	sessions map[string]*bridgeSession
-	closed   bool
-	ctx      context.Context
-	cancel   context.CancelFunc
-	wg       sync.WaitGroup
-	Log      func(string)
+	Now         func() time.Time
+	idleRelease time.Duration
+	sequence    uint64
+	config      Config
+	tls         *tls.Config
+	mu          sync.Mutex
+	sessions    map[string]*bridgeSession
+	closed      bool
+	ctx         context.Context
+	cancel      context.CancelFunc
+	wg          sync.WaitGroup
+	Log         func(string)
 }
 
-func NewBridge(ctx context.Context, config Config, tlsConfig *tls.Config, log func(string)) *Bridge {
+type BridgeOptions struct {
+	Now                            func() time.Time
+	IdleRelease, HeartbeatInterval time.Duration
+}
+
+const IdleSessionRelease = 30 * time.Minute
+
+func NewBridge(ctx context.Context, config Config, tlsConfig *tls.Config, log func(string), options ...BridgeOptions) *Bridge {
+	o := BridgeOptions{Now: time.Now, IdleRelease: IdleSessionRelease, HeartbeatInterval: 30 * time.Second}
+	if len(options) > 0 {
+		if options[0].Now != nil {
+			o.Now = options[0].Now
+		}
+		if options[0].IdleRelease > 0 {
+			o.IdleRelease = options[0].IdleRelease
+		}
+		if options[0].HeartbeatInterval > 0 {
+			o.HeartbeatInterval = options[0].HeartbeatInterval
+		}
+	}
 	ctx, cancel := context.WithCancel(ctx)
-	b := &Bridge{config: config, tls: tlsConfig, sessions: map[string]*bridgeSession{}, ctx: ctx, cancel: cancel, Log: log}
+	b := &Bridge{config: config, tls: tlsConfig, sessions: map[string]*bridgeSession{}, ctx: ctx, cancel: cancel, Log: log, Now: o.Now, idleRelease: o.IdleRelease}
 	b.wg.Add(1)
 	go func() {
 		defer b.wg.Done()
-		timer := time.NewTicker(30 * time.Second)
+		timer := time.NewTicker(o.HeartbeatInterval)
 		defer timer.Stop()
 		for {
 			select {
 			case <-ctx.Done():
 				return
 			case <-timer.C:
+				b.ReleaseIdleSessions()
 				b.mu.Lock()
 				chats := []string{}
 				for chat := range b.sessions {
@@ -93,7 +121,7 @@ func (b *Bridge) SetHandler(chat string, handler BridgeHandler) {
 }
 func (b *Bridge) Connect(chat, id string, handler BridgeHandler) bool {
 	b.mu.Lock()
-	if b.ctx.Err() != nil {
+	if b.ctx.Err() != nil || !migrationFromContext(b.ctx).Available() {
 		b.mu.Unlock()
 		return false
 	}
@@ -104,8 +132,10 @@ func (b *Bridge) Connect(chat, id string, handler BridgeHandler) bool {
 	}
 	old := b.sessions[chat]
 	ctx, cancel := context.WithCancel(b.ctx)
-	s := &bridgeSession{id: id, cancel: cancel, open: make(chan struct{}), initial: make(chan struct{}), done: make(chan struct{}), handler: handler}
+	b.sequence++
+	s := &bridgeSession{id: id, cancel: cancel, open: make(chan struct{}), initial: make(chan struct{}), done: make(chan struct{}), handler: handler, lastActivity: b.Now(), pending: map[string]bool{}, ordinal: b.sequence}
 	if old != nil {
+		s.lastActivity, s.turnActive, s.cliRunning, s.pending, s.ordinal = old.lastActivity, old.turnActive, old.cliRunning, old.pending, old.ordinal
 		s.attempts = old.attempts
 		old.cancel()
 		if old.socket != nil {
@@ -167,6 +197,9 @@ func (b *Bridge) run(ctx context.Context, chat string, s *bridgeSession) {
 				b.mu.Lock()
 				handler := s.handler
 				active := b.sessions[chat] == s
+				if active {
+					b.trackInbound(s, message)
+				}
 				b.mu.Unlock()
 				if active && handler != nil {
 					if failure := handler(ctx, message); failure != nil && b.Log != nil {
@@ -242,6 +275,15 @@ func (b *Bridge) Send(chat string, message protocol.JSONObject) bool {
 	var socket *Socket
 	if s != nil && !s.ended {
 		socket = s.socket
+		if socket != nil && message.String("type") != "ping" {
+			s.lastActivity = b.Now()
+			if message.String("type") == "user_message" {
+				s.turnActive = true
+			}
+			if message.String("type") == "permission_response" {
+				delete(s.pending, message.String("requestId"))
+			}
+		}
 	}
 	b.mu.Unlock()
 	if socket == nil {
@@ -299,6 +341,84 @@ func (b *Bridge) Close() {
 	b.wg.Wait()
 }
 
+func (b *Bridge) trackInbound(s *bridgeSession, m protocol.JSONObject) {
+	s.lastActivity = b.Now()
+	switch m.String("type") {
+	case "status":
+		s.turnActive = m.String("state") != "idle"
+	case "message_complete":
+		s.turnActive = false
+		clear(s.pending)
+	case "error":
+		s.turnActive = false
+	case "permission_request", "computer_use_permission_request":
+		if isString(m.Get("requestId")) {
+			s.pending[m.String("requestId")] = true
+		}
+	case "permission_resolved":
+		delete(s.pending, m.String("requestId"))
+	case "permission_requests_snapshot":
+		s.turnActive = string(m.Get("turnActive")) == "true"
+		s.pending = map[string]bool{}
+		for _, field := range []string{"toolRequestIds", "computerUseRequestIds"} {
+			var ids []json.RawMessage
+			_ = json.Unmarshal(m.Get(field), &ids)
+			for _, id := range ids {
+				if isString(id) {
+					var value string
+					_ = json.Unmarshal(id, &value)
+					s.pending[value] = true
+				}
+			}
+		}
+	case "system_notification":
+		if m.String("subtype") == "session_state_changed" {
+			s.cliRunning = object(m.Get("data")).String("state") == "running"
+		}
+	case "session_state":
+		// The shared Go host also emits its native snapshot after reconnect.
+		s.turnActive = m.String("turnState") == "running"
+		var background []json.RawMessage
+		_ = json.Unmarshal(m.Get("activeBackgroundTaskIds"), &background)
+		s.cliRunning = len(background) > 0
+	}
+}
+func (b *Bridge) MarkActive(chat string) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	if s := b.sessions[chat]; s != nil {
+		s.lastActivity = b.Now()
+	}
+}
+func (b *Bridge) ReleaseIdleSessions() []string {
+	b.mu.Lock()
+	now := b.Now()
+	type released struct {
+		chat    string
+		session *bridgeSession
+	}
+	selected := []released{}
+	for chat, s := range b.sessions {
+		if s.socket == nil || s.ended || s.turnActive || s.cliRunning || len(s.pending) > 0 || now.Sub(s.lastActivity) < b.idleRelease {
+			continue
+		}
+		selected = append(selected, released{chat, s})
+		delete(b.sessions, chat)
+	}
+	b.mu.Unlock()
+	sort.Slice(selected, func(i, j int) bool { return selected[i].session.ordinal < selected[j].session.ordinal })
+	chats := []string{}
+	for _, entry := range selected {
+		entry.session.cancel()
+		_ = entry.session.socket.Close("session reset")
+		chats = append(chats, entry.chat)
+		if b.Log != nil {
+			b.Log("[WsBridge] Releasing idle session " + entry.session.id + " (chat " + entry.chat + ")")
+		}
+	}
+	return chats
+}
+
 const SessionReconnectNotice = "暂时无法连接原会话，已保留会话和工作目录，请稍后重试。"
 
 type SessionRestore struct {
@@ -322,6 +442,7 @@ func RestoreSession(ctx context.Context, chat string, store *SessionStore, http 
 		reset()
 	}
 	if bridge.IsOpen(chat, stored.SessionID) {
+		bridge.MarkActive(chat)
 		return SessionRestore{Status: "restored", Session: stored}, nil
 	}
 	exists, err := http.SessionExists(ctx, stored.SessionID)

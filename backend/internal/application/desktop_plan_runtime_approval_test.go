@@ -136,8 +136,8 @@ func TestDesktopPlanRuntimeApprovalAcknowledgesPersistsAllowsAndChangesNextASK(t
 		t.Fatal("accepted runtime receipt lost original selected model", applied)
 	}
 	receive("message_complete")
-	for state := receive("session_state"); state.String("turnState") != "idle"; state = receive("session_state") {
-	}
+	requestDesktopSessionSync(t, ws)
+	assertDesktopIdleSnapshot(t, receive("session_state"))
 	data, err := os.ReadFile(filepath.Join(work, "plan-result.txt"))
 	if err != nil || string(data) != "PLAN_DESKTOP_STATE_OK" {
 		t.Fatal("actual approved execution was not written", string(data), err)
@@ -150,8 +150,8 @@ func TestDesktopPlanRuntimeApprovalAcknowledgesPersistsAllowsAndChangesNextASK(t
 	}
 	send(map[string]any{"type": "user_message", "content": "Report marker again without tools."})
 	receive("message_complete")
-	for state := receive("session_state"); state.String("turnState") != "idle"; state = receive("session_state") {
-	}
+	requestDesktopSessionSync(t, ws)
+	assertDesktopIdleSnapshot(t, receive("session_state"))
 	if calls.Load() != 7 {
 		t.Fatal("next ASK did not use the same live session", calls.Load())
 	}
@@ -235,10 +235,8 @@ func TestDesktopPlanRuntimeApprovalFailureRetainsActualPermission(t *testing.T) 
 					}
 				}
 			}
-			// The active user-message handler publishes its terminal session_state
-			// immediately before returning. Both the frame and done can therefore
-			// be ready together; don't let select choose done before draining the
-			// already-published lifecycle frame.
+			// Only a client sync_state publishes a snapshot. Keep the actual
+			// completion frame and handler settlement as separate barriers.
 			waitForSessionState := func() protocol.JSONObject {
 				t.Helper()
 				for {
@@ -337,8 +335,16 @@ func TestDesktopPlanRuntimeApprovalFailureRetainsActualPermission(t *testing.T) 
 					t.Fatal(err)
 				}
 			}
-			if state := waitForSessionState(); state.String("turnState") != "idle" {
-				for state = waitForSessionState(); state.String("turnState") != "idle"; state = waitForSessionState() {
+			completed := false
+			for !completed {
+				select {
+				case frame := <-frames:
+					if frame.String("type") == "error" {
+						t.Fatal("actual desktop plan failed", frame)
+					}
+					completed = frame.String("type") == "message_complete"
+				case <-ctx.Done():
+					t.Fatal(ctx.Err())
 				}
 			}
 			select {
@@ -349,6 +355,16 @@ func TestDesktopPlanRuntimeApprovalFailureRetainsActualPermission(t *testing.T) 
 			case <-ctx.Done():
 				t.Fatal(ctx.Err())
 			}
+			// The WebSocket sync_state branch calls the live Snapshot consumer,
+			// rather than forwarding that control to LiveSession.Handle.
+			snapshot, err := d.Snapshot(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, frame := range snapshot {
+				frames <- obj(frame)
+			}
+			assertDesktopIdleSnapshot(t, waitForSessionState())
 			if d.currentEngine() != before || calls.Load() != 4 {
 				t.Fatal("approval restarted engine or made extra attempts", calls.Load())
 			}

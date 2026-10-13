@@ -274,6 +274,11 @@ func ProjectWithOptions(payload json.RawMessage, factory *messages.Factory, plan
 		}
 	case "auto_mode_exit":
 		content = quoted("## Exited Auto Mode\n\nYou have exited auto mode. The user may now want to interact more directly. You should ask clarifying questions when the approach is ambiguous rather than making assumptions.")
+	case "compact_file_reference", "plan_file_reference", "task_status":
+		content, err = projectCompactAttachment(value)
+		if err != nil {
+			return nil, err
+		}
 	case "invoked_skills":
 		var empty bool
 		content, empty, err = skillsContent(value.Get("skills"))

@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -145,7 +146,12 @@ func observeDirectClientOptions(t *testing.T, input directClientFixtureInput) []
 				_, err = NewAnthropic(config).StreamMessage(context.Background(), prepared, nil)
 			}
 			if err != nil {
-				failure = map[string]string{"name": "Error", "message": err.Error()}
+				name := "Error"
+				var headerFailure *BunHeaderError
+				if errors.As(err, &headerFailure) {
+					name = "TypeError"
+				}
+				failure = map[string]string{"name": name, "message": err.Error()}
 			}
 		}
 		var timeout any = profile.TimeoutMillis

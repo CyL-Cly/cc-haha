@@ -26,6 +26,7 @@ type WechatRuntimeOptions struct {
 }
 
 type WechatRuntime struct {
+	migration    *MigrationLifecycle
 	o            WechatRuntimeOptions
 	API          *WechatAPI
 	Media        *WechatMedia
@@ -60,6 +61,9 @@ func adapterSleep(ctx context.Context, duration time.Duration) error {
 }
 
 func NewWechatRuntime(ctx context.Context, o WechatRuntimeOptions) (*WechatRuntime, error) {
+	if err := migrationRuntimeAvailable(o.Config); err != nil {
+		return nil, err
+	}
 	if o.Config.Err != nil {
 		return nil, o.Config.Err
 	}
@@ -105,17 +109,21 @@ func NewWechatRuntime(ctx context.Context, o WechatRuntimeOptions) (*WechatRunti
 		}
 		client.CloseIdleConnections()
 	}
+	ctx, lifecycle := newMigrationContext(ctx)
 	ctx, cancel := context.WithCancel(ctx)
-	r := &WechatRuntime{o: o, API: o.API, ctx: ctx, cancel: cancel, cursor: raw(""), done: make(chan struct{})}
-	r.Bridge = NewBridge(ctx, o.Config, o.SocketTLS, o.Log)
+	r := &WechatRuntime{migration: lifecycle, o: o, API: o.API, ctx: ctx, cancel: cancel, cursor: raw(""), done: make(chan struct{})}
+	r.Bridge = NewBridge(ctx, o.Config, o.SocketTLS, o.Log, BridgeOptions{Now: o.Now})
 	r.Client = NewHTTPClient(o.Config, o.ServerHTTP)
 	r.Store = NewSessionStore(o.Config.ConfigDir)
+	r.Store.Lifecycle = lifecycle
 	r.Store.NowMillis = func() int64 { return o.Now().UnixMilli() }
 	r.Pairing = NewPairing(o.Config.ConfigDir, nil)
+	r.Pairing.Lifecycle = lifecycle
 	r.Pairing.NowMillis = r.Store.NowMillis
 	r.Dedup = NewMessageDedup(ctx)
 	r.Dedup.Now = o.Now
-	r.Attachments = NewAttachmentStore(o.Config.Home)
+	r.Attachments = NewConfiguredAttachmentStore(o.Config)
+	r.Attachments.Lifecycle = lifecycle
 	r.Attachments.Now = o.Now
 	if o.Media == nil {
 		o.Media, err = NewWechatMedia(WechatMediaOptions{Environment: o.Config.Environment, Store: r.Attachments, Now: o.Now})
@@ -236,6 +244,11 @@ func (r *WechatRuntime) HandleUpdates(body json.RawMessage) error {
 	return nil
 }
 func (r *WechatRuntime) HandleMessage(body json.RawMessage) error {
+	done, admitted := r.migration.Admit()
+	if !admitted {
+		return nil
+	}
+	defer done(nil)
 	if string(bytes.TrimSpace(body)) == "null" {
 		return errors.New("null is not an object (evaluating 'message.from_user_id')")
 	}

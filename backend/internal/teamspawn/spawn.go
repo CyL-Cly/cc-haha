@@ -125,6 +125,7 @@ func ResolveModel(env, input, agent, leader string, hasDefinition bool, configur
 
 type StateOptions struct {
 	ID, Name, Team, Prompt, ParentSessionID, Color, OutputFile string
+	ResumableAgentID                                           string
 	Model, ToolUseID, SpinnerVerb, PastTenseVerb               json.RawMessage
 	PlanRequired                                               bool
 	Now                                                        float64
@@ -148,6 +149,9 @@ func CreateState(o StateOptions) (protocol.JSONObject, error) {
 		return protocol.JSONObject{}, err
 	}
 	identity := protocol.NewJSONObject(protocol.JSONField{Name: "agentId", Value: quoted(o.Name + "@" + o.Team)}, protocol.JSONField{Name: "agentName", Value: quoted(o.Name)}, protocol.JSONField{Name: "teamName", Value: quoted(o.Team)}, protocol.JSONField{Name: "color", Value: optionalRaw(o.Color)}, protocol.JSONField{Name: "planModeRequired", Value: rawJSON(o.PlanRequired)}, protocol.JSONField{Name: "parentSessionId", Value: quoted(o.ParentSessionID)})
+	if o.ResumableAgentID != "" {
+		identity.Set("resumableAgentId", quoted(o.ResumableAgentID))
+	}
 	mode := "default"
 	if o.PlanRequired {
 		mode = "plan"

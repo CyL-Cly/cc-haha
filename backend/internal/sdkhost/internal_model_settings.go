@@ -61,14 +61,14 @@ func (h *Host) AcceptInternalModelSettings(scope *cooperative.Scope) error {
 	if err != nil {
 		return err
 	}
-	if err := sdkpermissions.ValidateNativeWithBindings(next, h.options.Print.Registry.HasNativePluginBindings(), h.options.Print.NativeMCP != nil, h.options.Print.Tools != nil && h.options.Print.Tools.HasWebFetchBindings(), h.options.Print.Tools != nil && h.options.Print.Tools.HasWebSearchBindings(), h.options.Print.Permissions.NativeStartup.Owns(h.options.Owner), h.options.Print.Tools != nil && h.options.Print.Tools.HasWorktreeBindings(), h.options.Print.Hooks.HasNativeCommandBindings(h.options.Owner), h.options.Print.NativeSystemContext != nil, nativeTeamExecutionBound(scope, h.options), nativeAuthHelperBound(scope, h.options), nativeCloudSettingsBound(scope, h.options), nativeWorkflowKeywordBound(h.options), h.options.Print.Tools != nil && h.options.Print.Tools.HasInternalReadableBindings(), h.options.Print.Tools != nil && h.options.Print.Tools.HasSandboxBindings(), h.options.Print.NativeTypedModelSettings != nil && h.options.Print.NativeTypedModelSettings(scope), h.options.Print.NativeMainAgentSettings != nil && h.options.Print.NativeMainAgentSettings(scope)); err != nil {
+	if err := h.validateInternalNativeSettings(scope, next); err != nil {
 		return err
 	}
-	if !h.sameInternalModelSettings(previous, next) {
+	if !h.sameInternalModelSettings(h.internalSettingsBaseline(previous), next) {
 		return cap("internal model settings changed another consumer")
 	}
 	h.internalModelSettings = next
-	return nil
+	return h.certifyInternalSettings(previous, next)
 }
 
 func (h *Host) validateASKSettingsReference(settings, merged *protocol.JSONObject, scopes ...*cooperative.Scope) error {
@@ -82,8 +82,21 @@ func (h *Host) validateASKSettingsReference(settings, merged *protocol.JSONObjec
 	if h.validateTransferredASKSettings(settings, merged) {
 		return nil
 	}
+	if h.options.Print != nil && h.options.Print.NativeProcess && merged == h.internalOwnerSettings && settings == h.internalOwnerSettingsBase {
+		if err := h.checkInferenceOwner(scope); err != nil {
+			return err
+		}
+		if !settingsMatchSnapshot(settings, h.internalOwnerSettingsBaseSnapshot) || !settingsMatchSnapshot(merged, h.internalOwnerSettingsSnapshot) {
+			return cap("ASK settings cache identity changed")
+		}
+		return h.validateInternalNativeSettings(scope, merged)
+	}
 	if h.options.Print == nil || !h.options.Print.NativeProcess || (merged != h.internalModelSettings && merged != h.internalFastSettings) || !h.sameInternalModelSettings(settings, merged) {
 		return cap("ASK settings cache identity changed")
 	}
-	return sdkpermissions.ValidateNativeWithBindings(merged, h.options.Print.Registry.HasNativePluginBindings(), h.options.Print.NativeMCP != nil, h.options.Print.Tools != nil && h.options.Print.Tools.HasWebFetchBindings(), h.options.Print.Tools != nil && h.options.Print.Tools.HasWebSearchBindings(), h.options.Print.Permissions.NativeStartup.Owns(h.options.Owner), h.options.Print.Tools != nil && h.options.Print.Tools.HasWorktreeBindings(), h.options.Print.Hooks.HasNativeCommandBindings(h.options.Owner), h.options.Print.NativeSystemContext != nil, nativeTeamExecutionBound(scope, h.options), nativeAuthHelperBound(scope, h.options), nativeCloudSettingsBound(scope, h.options), nativeWorkflowKeywordBound(h.options), h.options.Print.Tools != nil && h.options.Print.Tools.HasInternalReadableBindings(), h.options.Print.Tools != nil && h.options.Print.Tools.HasSandboxBindings(), h.options.Print.NativeTypedModelSettings != nil && h.options.Print.NativeTypedModelSettings(scope), h.options.Print.NativeMainAgentSettings != nil && h.options.Print.NativeMainAgentSettings(scope))
+	return h.validateInternalNativeSettings(scope, merged)
+}
+
+func (h *Host) validateInternalNativeSettings(scope *cooperative.Scope, merged *protocol.JSONObject) error {
+	return sdkpermissions.ValidateNativeWithBindings(merged, h.options.Print.Registry.HasNativePluginBindings(), h.options.Print.NativeMCP != nil, h.options.Print.Tools != nil && h.options.Print.Tools.HasWebFetchBindings(), h.options.Print.Tools != nil && h.options.Print.Tools.HasWebSearchBindings(), h.options.Print.Permissions.NativeStartup.Owns(h.options.Owner), h.options.Print.Tools != nil && h.options.Print.Tools.HasWorktreeBindings(), h.options.Print.Hooks.HasNativeCommandBindings(h.options.Owner), h.options.Print.NativeSystemContext != nil, nativeTeamExecutionBound(scope, h.options), nativeAuthHelperBound(scope, h.options), nativeCloudSettingsBound(scope, h.options), nativeWorkflowKeywordBound(h.options), h.options.Print.Tools != nil && h.options.Print.Tools.HasInternalReadableBindings(), h.options.Print.Tools != nil && h.options.Print.Tools.HasSandboxBindings(), h.options.Print.NativeTypedModelSettings != nil && h.options.Print.NativeTypedModelSettings(scope), h.options.Print.NativeMainAgentSettings != nil && h.options.Print.NativeMainAgentSettings(scope), nativePlanSettingsBound(h.options), h.options.Print.NativeSpinnerVerb != nil, h.options.Print.NativeThinkingSummaryBeta != nil, h.options.Print.NativeAutoDream != nil && h.options.Print.CloseNativeAutoDream != nil)
 }

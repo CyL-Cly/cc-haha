@@ -74,6 +74,10 @@ func NewNativeSink(o NativeSinkOptions) (*NativeSink, error) {
 	}
 	return sink, nil
 }
+
+// DebugMode is the same process debug decision sampled by RemoteIO's bridge
+// constructor. Formatted SDK output alone does not enable debug echoing.
+func (s *NativeSink) DebugMode() bool { s.mu.Lock(); defer s.mu.Unlock(); return s.debugMode }
 func (s *NativeSink) Write(err error) {
 	m := s.options.Metadata()
 	text := Text(err)

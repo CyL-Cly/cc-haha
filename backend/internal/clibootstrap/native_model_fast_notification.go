@@ -40,6 +40,11 @@ func (m *MainPrint) nativeModelFastOrgNotice(scope *cooperative.Scope, enabled b
 	if err = m.Controller.SetTypedFastMode(scope, false); err != nil {
 		return err
 	}
+	if m.options.Interactive {
+		if err = m.verifyNativeAutoGateOnOwner(scope); err != nil {
+			return err
+		}
+	}
 	return m.nativeModelFastNotify(scope, "fast-mode-org-changed", "Fast mode has been disabled by your organization", "warning")
 }
 func (m *MainPrint) nativeModelFastEffect(scope *cooperative.Scope, value retrypolicy.FastEffect) error {
@@ -90,6 +95,11 @@ func (m *MainPrint) nativeModelFastEffect(scope *cooperative.Scope, value retryp
 		}
 		if err = m.Controller.SetTypedFastMode(scope, false); err != nil {
 			return err
+		}
+		if m.options.Interactive {
+			if err = m.verifyNativeAutoGateOnOwner(scope); err != nil {
+				return err
+			}
 		}
 		return m.nativeModelFastNotify(scope, "fast-mode-overage-rejected", value.Message, "warning")
 	case "cooldown":

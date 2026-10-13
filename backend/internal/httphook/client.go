@@ -198,7 +198,7 @@ func Execute(ctx context.Context, hook, settings protocol.JSONObject, jsonInput 
 		return result, nil
 	}
 	request.Header.Set("Accept", "application/json, text/plain, */*")
-	request.Header.Set("User-Agent", "axios/1.14.0")
+	request.Header.Set("User-Agent", "axios/1.15.2")
 	request.Header.Set("Accept-Encoding", "gzip, compress, deflate, br")
 	for _, header := range prepared.Headers {
 		name, err := scalar(header.Name)

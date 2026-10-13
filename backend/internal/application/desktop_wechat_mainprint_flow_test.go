@@ -133,6 +133,7 @@ func actualWechatMainprint(t *testing.T, liveToken string) {
 	var finishOnce, resumeOnce sync.Once
 	var approvals atomic.Int32
 	var platformMu sync.Mutex
+	var peerPolls sync.WaitGroup
 	notices := []string{}
 	permissionID := regexp.MustCompile(`需要权限确认 \[([^\]]+)\]`)
 	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
@@ -143,6 +144,8 @@ func actualWechatMainprint(t *testing.T, liveToken string) {
 		w.Header().Set("Content-Type", "application/json")
 		switch req.URL.Path {
 		case "/ilink/bot/getupdates":
+			peerPolls.Add(1)
+			defer peerPolls.Done()
 			select {
 			case batch := <-updates:
 				_, _ = w.Write(raw(map[string]any{"ret": 0, "get_updates_buf": "private-cursor", "msgs": batch}))
@@ -259,6 +262,17 @@ func actualWechatMainprint(t *testing.T, liveToken string) {
 		t.Fatal("launcher did not join Close")
 	}
 	if liveToken == "" {
+		// A real remote poll endpoint has its own request lifetime. The private
+		// peer uses a destructive channel, so wait for the retired HTTP handler
+		// to observe transport cancellation before publishing the next batch.
+		// Otherwise the old peer can consume a message intended for restart.
+		peerDrained := make(chan struct{})
+		go func() { peerPolls.Wait(); close(peerDrained) }()
+		select {
+		case <-peerDrained:
+		case <-time.After(10 * time.Second):
+			t.Fatal("retired private getupdates request did not close")
+		}
 		restartCtx, restartCancel := context.WithCancel(context.Background())
 		defer restartCancel()
 		cfg := imruntime.LoadPlatformConfig("wechat", home, o.WorkDir, env, func(string) {})
@@ -272,7 +286,10 @@ func actualWechatMainprint(t *testing.T, liveToken string) {
 		select {
 		case <-resumed:
 		case <-time.After(30 * time.Second):
-			t.Fatal("restart did not continue old session")
+			platformMu.Lock()
+			snapshot := append([]string{}, notices...)
+			platformMu.Unlock()
+			t.Fatal("restart did not continue old session", "modelRequests", fakeRequests.Load(), "approvals", approvals.Load(), "binding", restarted.Store.Get("U1"), "bridgeOpen", restarted.Bridge.IsOpen("U1", stored.SessionID), "notices", snapshot)
 		}
 		binding := restarted.Store.Get("U1")
 		if binding == nil || binding.SessionID != stored.SessionID || fakeRequests.Load() != 5 {

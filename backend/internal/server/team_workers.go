@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"sort"
 
+	"github.com/NanmiCoder/cc-haha/backend/internal/httpapi"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/teamworker"
 )
@@ -15,6 +16,7 @@ type TeamWorkerLaunch struct {
 	ID, WorkDir, Model, Effort, PermissionMode string
 	ProviderID                                 *string
 	Worker                                     teamworker.Start
+	Resume                                     bool
 }
 type nativeTeamWorkerSession interface {
 	AcknowledgeTeamWorkerModel(context.Context, string) (protocol.JSONObject, error)
@@ -36,16 +38,18 @@ func (s *Server) PrepareTeamWorker(ctx context.Context, launch TeamWorkerLaunch)
 	}
 	s.mu.Lock()
 	parent := s.runtimes[launch.Worker.ParentSessionID]
-	closed := s.closed
+	closed := s.closed || s.migration.active
 	s.mu.Unlock()
-	if closed || parent == nil {
+	if closed || parent == nil && !launch.Resume {
 		return "", errors.New("Team leader must be connected before launching")
 	}
-	parent.mu.Lock()
-	connected := parent.live != nil && !parent.retired
-	parentContext := parent.ctx
-	parent.mu.Unlock()
-	if !connected {
+	connected := false
+	if parent != nil {
+		parent.mu.Lock()
+		connected = parent.live != nil && !parent.retired
+		parent.mu.Unlock()
+	}
+	if !connected && !launch.Resume {
 		return "", errors.New("Team leader must be connected before launching")
 	}
 	worker := launch.Worker
@@ -58,10 +62,23 @@ func (s *Server) PrepareTeamWorker(ctx context.Context, launch TeamWorkerLaunch)
 	if launch.Effort != "" {
 		metadata.Set("effortLevel", teamWorkerJSON(launch.Effort))
 	}
-	runtimeContext, cancel := context.WithCancel(parentContext)
-	runtime := &runtimeSession{ctx: runtimeContext, cancel: cancel, options: SessionOptions{ID: launch.ID, WorkDir: launch.WorkDir, PermissionMode: launch.PermissionMode, Metadata: teamWorkerJSON(metadata), TeamWorker: &worker, OnCanonicalTranscriptMutation: func(path string) error { s.noteSessionMutation(path); return nil }}, wake: make(chan struct{}, 1), admitted: make(chan struct{})}
+	// Source asks to recover the same worker identity, but only adds --resume
+	// when its canonical saved transcript actually exists. The requested
+	// recovery still permits a disconnected lead; it is distinct from the
+	// effective CLI launch mode used by the owning factory.
+	resume := false
+	if launch.Resume {
+		if info, err := s.findSession(ctx, launch.ID); err == nil {
+			resume = info.Path != ""
+		}
+		if err := context.Cause(ctx); err != nil {
+			return "", err
+		}
+	}
+	runtimeContext, cancel := context.WithCancel(s.ctx)
+	runtime := &runtimeSession{ctx: runtimeContext, cancel: cancel, options: SessionOptions{ID: launch.ID, WorkDir: launch.WorkDir, PermissionMode: launch.PermissionMode, Metadata: teamWorkerJSON(metadata), TeamWorker: &worker, Resume: resume, OnCanonicalTranscriptMutation: func(path string) error { s.noteSessionMutation(path); return nil }}, wake: make(chan struct{}, 1), admitted: make(chan struct{})}
 	s.mu.Lock()
-	if s.closed || s.runtimes[launch.ID] != nil || s.deleting[launch.ID] {
+	if s.closed || s.migration.active || s.runtimes[launch.ID] != nil || s.deleting[launch.ID] {
 		s.mu.Unlock()
 		cancel()
 		return "", errors.New("Team worker session is already active or unavailable")
@@ -95,8 +112,9 @@ func (s *Server) ReleaseTeamWorker(ctx context.Context, id, text string, canSend
 	}
 	s.mu.Lock()
 	runtime := s.runtimes[id]
+	unavailable := s.closed || s.migration.active
 	s.mu.Unlock()
-	if runtime == nil {
+	if unavailable || runtime == nil {
 		return errors.New("CLI session is not running")
 	}
 	uuid, err := uuid()
@@ -142,7 +160,13 @@ func (s *Server) teamChildren(parentID string) []teamRuntimeEntry {
 	return result
 }
 func (s *Server) StopTeamWorkers(ctx context.Context, parentID string) error {
-	if err := s.stopTeamPlanParent(ctx, parentID); err != nil {
+	return s.stopTeamWorkers(ctx, parentID, false)
+}
+func (s *Server) PauseTeamWorkers(ctx context.Context, parentID string) error {
+	return s.stopTeamWorkers(ctx, parentID, true)
+}
+func (s *Server) stopTeamWorkers(ctx context.Context, parentID string, pause bool) error {
+	if err := s.stopTeamPlanParent(ctx, parentID, pause); err != nil {
 		return err
 	}
 	var failures []error
@@ -180,6 +204,14 @@ func teamPermissionFrame(data json.RawMessage, worker *teamworker.Start) json.Ra
 	return data
 }
 func (s *Server) emitTeamWorker(id string, data json.RawMessage) {
+	var event protocol.JSONObject
+	_ = event.UnmarshalJSON(data)
+	if event.String("type") == "message_complete" || event.String("type") == "permission_request" || event.String("type") == "permission_resolved" {
+		// Snapshot and replay must not interleave a resolved frame: otherwise
+		// a completed permission can be resurrected after its resolution.
+		s.teamEventMu.Lock()
+		defer s.teamEventMu.Unlock()
+	}
 	s.broadcast(id, data)
 	s.mu.Lock()
 	runtime := s.runtimes[id]
@@ -191,6 +223,41 @@ func (s *Server) emitTeamWorker(id string, data json.RawMessage) {
 	worker := runtime.options.TeamWorker
 	runtime.mu.Unlock()
 	if worker == nil {
+		var frame protocol.JSONObject
+		_ = frame.UnmarshalJSON(data)
+		if frame.String("type") == "message_complete" {
+			// Source replays outstanding can_use_tool requests after projecting
+			// result. React clears the completed turn's permissions at that frame;
+			// independent teammates can still be waiting on the same request.
+			ctx := context.WithoutCancel(runtime.ctx)
+			permissions := []json.RawMessage{}
+			runtime.mu.Lock()
+			live, retired := runtime.live, runtime.retired || runtime.closing != nil || runtime.ctx.Err() != nil
+			runtime.mu.Unlock()
+			if live != nil && !retired {
+				frames, err := live.Snapshot(ctx)
+				if err != nil {
+					s.options.OnUnhandled(httpapi.UnhandledError{Type: "permission_replay_failed", Severity: "error", Summary: "Cannot replay pending permissions after lead completion", Error: err})
+				} else {
+					for _, data := range frames {
+						var pending protocol.JSONObject
+						_ = pending.UnmarshalJSON(data)
+						if pending.String("type") == "permission_request" {
+							permissions = append(permissions, data)
+						}
+					}
+				}
+			}
+			childPermissions, err := s.teamPermissionSnapshots(ctx, id)
+			if err != nil {
+				s.options.OnUnhandled(httpapi.UnhandledError{Type: "team_permission_replay_failed", Severity: "error", Summary: "Cannot replay pending teammate permissions after lead completion", Error: err})
+				return
+			}
+			permissions = append(permissions, childPermissions...)
+			for _, pending := range permissions {
+				s.broadcast(id, pending)
+			}
+		}
 		return
 	}
 	var frame protocol.JSONObject
@@ -205,8 +272,9 @@ func (s *Server) teamPermissionSnapshots(ctx context.Context, parentID string) (
 	for _, entry := range s.teamChildren(parentID) {
 		entry.runtime.mu.Lock()
 		live, worker := entry.runtime.live, entry.runtime.options.TeamWorker
+		retired := entry.runtime.retired || entry.runtime.closing != nil || entry.runtime.ctx.Err() != nil
 		entry.runtime.mu.Unlock()
-		if live == nil {
+		if live == nil || retired {
 			continue
 		}
 		frames, err := live.Snapshot(ctx)

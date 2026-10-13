@@ -78,22 +78,22 @@ type ReductionOptions struct {
 	ValidateRetainedMetadata func(protocol.JSONObject) error
 }
 type reducerState struct {
-	fallbackCreated, fallbackModified, fallbackWorkDir                      json.RawMessage
-	createdAt                                                               json.RawMessage
-	hasCreated                                                              bool
-	semanticModified                                                        *string
-	messageCount                                                            int64
-	firstUserTitle, goalTitle, aiTitle, customTitle                         json.RawMessage
-	workDir, cwd, permission, provider, model, effort, repository, worktree json.RawMessage
-	teamWorker                                                              bool
-	nextOrdinal, nextLine                                                   int64
-	activity                                                                ActivityProjection
-	sawActivity, firstValid, lastValid                                      bool
-	lastMessageTime                                                         *float64
-	days                                                                    map[string]ActivityDay
-	models                                                                  map[string]ActivityModel
-	tools, skills                                                           map[string]NamedUsage
-	usageKeys                                                               map[string]bool
+	fallbackCreated, fallbackModified, fallbackWorkDir                                json.RawMessage
+	createdAt                                                                         json.RawMessage
+	hasCreated                                                                        bool
+	semanticModified                                                                  *string
+	messageCount                                                                      int64
+	firstUserTitle, goalTitle, aiTitle, customTitle                                   json.RawMessage
+	workDir, cwd, permission, provider, model, effort, fastMode, repository, worktree json.RawMessage
+	teamWorker                                                                        bool
+	nextOrdinal, nextLine                                                             int64
+	activity                                                                          ActivityProjection
+	sawActivity, firstValid, lastValid                                                bool
+	lastMessageTime                                                                   *float64
+	days                                                                              map[string]ActivityDay
+	models                                                                            map[string]ActivityModel
+	tools, skills                                                                     map[string]NamedUsage
+	usageKeys                                                                         map[string]bool
 }
 
 func cloneReductionState(s *reducerState) *reducerState {
@@ -227,6 +227,9 @@ func (s *reducerState) apply(entry protocol.JSONObject, o ReductionOptions) erro
 		if v := entry.Get("permissionMode"); oneOf(v, "default", "acceptEdits", "plan", "bypassPermissions", "dontAsk", "auto") {
 			s.permission = v
 		}
+		if v := entry.Get("openAIFastMode"); string(v) == "true" || string(v) == "false" {
+			s.fastMode = v
+		}
 		provider, model := entry.Get("runtimeProviderId"), entry.Get("runtimeModelId")
 		if string(provider) == "null" || jsonStringValue(provider) {
 			s.provider = provider
@@ -322,6 +325,9 @@ func (s *reducerState) summary() protocol.JSONObject {
 		if jsTruthy(f.Value) {
 			out.Set(f.Name, f.Value)
 		}
+	}
+	if s.fastMode != nil {
+		out.Set("openAIFastMode", s.fastMode)
 	}
 	if len(s.provider) > 0 {
 		out.Set("runtimeProviderId", s.provider)

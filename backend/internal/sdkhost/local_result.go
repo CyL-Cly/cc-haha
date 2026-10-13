@@ -32,6 +32,14 @@ func (h *Host) runLocalOutput(scope *cooperative.Scope, local *sessioncontroller
 	if e != nil || action == requestretry.Stop {
 		return e
 	}
+	if len(local.CompactHistory) > 0 {
+		for _, record := range local.CompactHistory {
+			if err := h.emitCompactOutput(scope, record); err != nil {
+				return err
+			}
+		}
+		display = false
+	}
 	if display {
 		history := h.serial.History()
 		if len(history) < 3 {

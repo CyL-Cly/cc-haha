@@ -76,7 +76,7 @@ func TestActualMainPrintStreamRetryThenToolsAndNextHumanShareCanonical(t *testin
 	if err != nil || string(data) != "ACTUAL_RECOVERY_ARTIFACT" {
 		t.Fatal("real artifact", err, string(data))
 	}
-	recoveries, results := 0, 0
+	recoveries, retries, results := 0, 0, 0
 	for _, record := range output {
 		if record.String("type") == "system" && record.String("subtype") == "streaming_fallback" {
 			recoveries++
@@ -90,14 +90,32 @@ func TestActualMainPrintStreamRetryThenToolsAndNextHumanShareCanonical(t *testin
 				t.Fatal("actual normal result", rawMain(record))
 			}
 		}
-	}
-	if recoveries != 1 || results != 2 {
-		t.Fatal("actual SDK recovery/result count", recoveries, results)
-	}
-	for _, record := range m.Controller.History() {
-		if record.String("subtype") == "streaming_fallback" || strings.Contains(string(rawMain(record)), "private before output") {
-			t.Fatal("failed attempt or recovery polluted model/canonical history")
+		if record.String("type") == "system" && record.String("subtype") == "api_retry" {
+			retries++
+			if string(record.Get("error_status")) != "null" || record.String("error") != "unknown" || record.String("session_id") != m.Controller.SessionID() {
+				t.Fatal("actual QueryEngine retry projection lost", rawMain(record))
+			}
 		}
+	}
+	if recoveries != 1 || retries != 1 || results != 2 {
+		t.Fatal("actual SDK recovery/retry/result count", recoveries, retries, results)
+	}
+	// MAIN QueryEngine retains both system controls in mutableMessages; its
+	// next ASK records that initial history. They are not model input messages.
+	mutableRecovery, mutableRetry := 0, 0
+	for _, record := range m.Controller.History() {
+		if record.String("subtype") == "streaming_fallback" {
+			mutableRecovery++
+		}
+		if record.String("subtype") == "api_error" {
+			mutableRetry++
+		}
+		if record.String("type") == "assistant" && strings.Contains(string(rawMain(record)), "private before output") {
+			t.Fatal("failed attempt assistant leaked")
+		}
+	}
+	if mutableRecovery != 1 || mutableRetry != 1 {
+		t.Fatal("MAIN mutable system history lost", mutableRecovery, mutableRetry)
 	}
 	// The real writer must finish the same session, including tool execution.
 	if err := m.Host.WaitTranscriptRuntime(ctx); err != nil {
@@ -114,7 +132,7 @@ func TestActualMainPrintStreamRetryThenToolsAndNextHumanShareCanonical(t *testin
 		t.Fatal("actual canonical absent")
 	}
 	log, err := os.ReadFile(canonical)
-	if err != nil || !strings.Contains(string(log), "ACTUAL_RECOVERY_ARTIFACT") || strings.Contains(string(log), "streaming_fallback") {
+	if err != nil || !strings.Contains(string(log), "ACTUAL_RECOVERY_ARTIFACT") || !strings.Contains(string(log), "streaming_fallback") || !strings.Contains(string(log), "api_error") {
 		t.Fatal("real persisted recovery boundary", err)
 	}
 	var lines []json.RawMessage

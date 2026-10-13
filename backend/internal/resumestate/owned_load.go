@@ -16,8 +16,9 @@ import (
 // from original input. Copy captures SnapshotArray, while public return samples
 // its current property. It is not a prepared history or a second transcript cache.
 type OriginalLog struct {
-	Fields  protocol.JSONObject
-	History *filehistorycopy.Log
+	Fields          protocol.JSONObject
+	History         *filehistorycopy.Log
+	sourceSessionID json.RawMessage
 }
 
 func DecodeOriginalLog(fields protocol.JSONObject) (*OriginalLog, error) {
@@ -31,7 +32,7 @@ func DecodeOriginalLog(fields protocol.JSONObject) (*OriginalLog, error) {
 	if e != nil {
 		return nil, e
 	}
-	return &OriginalLog{fields, history}, nil
+	return &OriginalLog{Fields: fields, History: history}, nil
 }
 func (log *OriginalLog) ReplaceSnapshots(value *filehistorycopy.SnapshotArray) {
 	log.History.Snapshots = value
@@ -104,6 +105,9 @@ func (s *Service) BeginLoad(scope *cooperative.Scope, input Input) (*ownerasync.
 	if e := s.checkOwned(scope); e != nil {
 		return nil, e
 	}
+	if input.Original == nil && input.Source == nil {
+		return s.beginOwnedContinue(scope, input.ResumeAt)
+	}
 	out, e := ownerasync.NewOwnerFuture[*Result](s.owned.state.Owner())
 	if e != nil {
 		return nil, e
@@ -120,16 +124,15 @@ func (s *Service) BeginLoad(scope *cooperative.Scope, input Input) (*ownerasync.
 	if input.Original != nil {
 		log = input.Original
 	} else if input.Source != nil && input.JSONLPath != "" {
-		return s.beginOwnedJSONL(scope, input.JSONLPath)
+		return s.beginOwnedJSONL(scope, input.JSONLPath, input.ResumeAt)
 	} else if input.Source == nil {
-		fail(scope, &CapabilityError{Capability: "public continue enumeration/BG-session producer"})
-		return out, nil
+		return s.beginOwnedContinue(scope, input.ResumeAt)
 	} else if _, ok := units(input.Source); ok {
 		if !s.options.PublicSID {
 			fail(scope, &CapabilityError{Capability: "public SID transcript producer"})
 			return out, nil
 		}
-		return s.beginOwnedSID(scope, input.Source)
+		return s.beginOwnedSID(scope, input.Source, input.ResumeAt)
 	} else if isNull(input.Source) {
 		resolveOwned(out, scope, (*Result)(nil), nil)
 		return out, nil
@@ -145,34 +148,7 @@ func (s *Service) BeginLoad(scope *cooperative.Scope, input Input) (*ownerasync.
 		return out, nil
 	}
 	proceed := func(next *cooperative.Scope, original *OriginalLog) {
-		sid := original.Fields.Get("sessionId")
-		if !truthy(sid) {
-			sid = nil
-			if len(original.History.Messages) > 0 {
-				sid = original.History.Messages[0].Get("sessionId")
-			}
-		}
-		afterPlan := func(next *cooperative.Scope) { s.finishOwnedHistory(next, original, sid, out, fail) }
-		if truthy(sid) {
-			plan, e := s.beginOwnedPlan(next, original, sid)
-			if e != nil {
-				fail(next, e)
-				return
-			}
-			_, e = plan.Then(next, func(after *cooperative.Scope, _ bool, failure error) error {
-				if failure != nil {
-					fail(after, failure)
-				} else {
-					afterPlan(after)
-				}
-				return nil
-			})
-			if e != nil {
-				fail(next, e)
-			}
-		} else {
-			afterPlan(next)
-		}
+		s.proceedOwnedOriginal(next, original, out, fail, input.ResumeAt)
 	}
 	if len(log.History.Messages) == 0 && log.Fields.Get("sessionId") != nil {
 		// loadFullLog is async even when it returns the input for missing fullPath.
@@ -198,7 +174,7 @@ func (s *Service) BeginLoad(scope *cooperative.Scope, input Input) (*ownerasync.
 	}
 	return out, nil
 }
-func (s *Service) finishOwnedHistory(scope *cooperative.Scope, log *OriginalLog, sid json.RawMessage, out *ownerasync.OwnerFuture[*Result], fail func(*cooperative.Scope, error)) {
+func (s *Service) finishOwnedHistory(scope *cooperative.Scope, log *OriginalLog, sid json.RawMessage, out *ownerasync.OwnerFuture[*Result], fail func(*cooperative.Scope, error), resumeAt string) {
 	// Enter actual copy prefix, discard its Promise. No dependent callback/await
 	// is added by loadConversationForResume; copy owns its catches/native refs.
 	if _, e := s.BeginCopy(scope, log.History); e != nil {
@@ -210,10 +186,15 @@ func (s *Service) finishOwnedHistory(scope *cooperative.Scope, log *OriginalLog,
 		fail(scope, e)
 		return
 	}
-	s.finishOwnedMessages(scope, rows, log.Fields, func() *filehistorycopy.SnapshotArray { return log.History.Snapshots }, sid, out, fail)
+	s.finishOwnedMessages(scope, rows, log.Fields, func() *filehistorycopy.SnapshotArray { return log.History.Snapshots }, sid, out, fail, resumeAt)
 }
 
-func (s *Service) finishOwnedMessages(scope *cooperative.Scope, rows []json.RawMessage, fields protocol.JSONObject, currentSnapshots func() *filehistorycopy.SnapshotArray, sid json.RawMessage, out *ownerasync.OwnerFuture[*Result], fail func(*cooperative.Scope, error)) {
+func (s *Service) finishOwnedMessages(scope *cooperative.Scope, rows []json.RawMessage, fields protocol.JSONObject, currentSnapshots func() *filehistorycopy.SnapshotArray, sid json.RawMessage, out *ownerasync.OwnerFuture[*Result], fail func(*cooperative.Scope, error), resumeAt string) {
+	rows, e := truncatePersistedHistory(rows, resumeAt)
+	if e != nil {
+		fail(scope, e)
+		return
+	}
 	history, e := sessionresume.ParseMessages(rows)
 	if e != nil {
 		fail(scope, e)
@@ -239,7 +220,7 @@ func (s *Service) finishOwnedMessages(scope *cooperative.Scope, rows []json.RawM
 		fail(scope, e)
 		return
 	}
-	reduced, e := s.options.Reducer.Deserialize(history)
+	reduced, e := s.options.Reducer.DeserializeWithOptions(history, sessionresume.DeserializeOptions{Truncated: resumeAt != ""})
 	if e != nil {
 		fail(scope, e)
 		return
@@ -266,6 +247,9 @@ func (s *Service) finishOwnedMessages(scope *cooperative.Scope, rows []json.RawM
 				return nil
 			}
 			for _, message := range startup.Messages {
+				if resumeAt != "" {
+					break
+				}
 				raw, err := message.MarshalJSON()
 				if err != nil {
 					fail(next, err)

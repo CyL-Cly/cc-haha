@@ -22,6 +22,11 @@ func (s *Service) bashContextView(scope *cooperative.Scope, opaque any) (*Servic
 	borrowed := *s
 	borrowed.options = s.options
 	borrowed.options.NonInteractive = true
+	if b := borrowed.options.ShellHints; b != nil {
+		copy := *b
+		copy.AgentID = call.AgentID
+		borrowed.options.ShellHints = &copy
+	}
 	if cwd := s.options.BashCwd; cwd != nil {
 		copy := *cwd
 		copy.PreventChanges = true

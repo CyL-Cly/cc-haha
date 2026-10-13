@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func shellCommand(ctx context.Context, command string) (*exec.Cmd, error) {
+func shellCommand(ctx context.Context, command string, _ ProcessOptions) (*exec.Cmd, error) {
 	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", command)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	cmd.Cancel = func() error {

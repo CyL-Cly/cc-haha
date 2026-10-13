@@ -12,6 +12,9 @@ func numberSchema(description string) Schema {
 	return Schema{Kind: "number", Description: quote(description), Optional: true, Semantic: true}
 }
 func builtinDefinition(name string) (Definition, error) {
+	if name == "PowerShell" {
+		return PowerShellDefinition(nil), nil
+	}
 	definition := Definition{Kind: "builtin", Name: name, Strict: name != "Glob"}
 	fields := []Field{}
 	switch name {

@@ -142,6 +142,11 @@ func NormalizeProxyModel(modelRaw json.RawMessage) (json.RawMessage, error) {
 }
 
 func PrepareProxyRequest(config ProxyConfig, body protocol.JSONObject, incoming http.Header, version string, scoped bool) (ProxyRequest, error) {
+	return PrepareProxyRequestWithImageMode(config, body, incoming, version, scoped, "vision")
+}
+
+// Only the transport's learned endpoint/model refusal may select text-only.
+func PrepareProxyRequestWithImageMode(config ProxyConfig, body protocol.JSONObject, incoming http.Header, version string, scoped bool, imageMode string) (ProxyRequest, error) {
 	modelRaw, err := NormalizeProxyModel(body.Get("model"))
 	if err != nil {
 		return ProxyRequest{}, err
@@ -253,12 +258,10 @@ func PrepareProxyRequest(config ProxyConfig, body protocol.JSONObject, incoming 
 		deepSeekFamily := strings.HasPrefix(reasoningModel, "deepseek-v4") || reasoningModel == "deepseek-chat" || reasoningModel == "deepseek-reasoner"
 		options.Set("roundTripReasoningContent", responseJSON(known || deepSeekFamily))
 		options.Set("passThinkingToggle", responseJSON(known))
-		textOnly := proxyDeepSeek.MatchString(base) && !proxyVision.MatchString(model) || proxyOpenCode.MatchString(base) && !proxyVision.MatchString(model) && strings.ToLower(model) != "kimi-k3" && strings.ToLower(model) != "space-bunny-free"
-		mode := "vision"
-		if textOnly {
-			mode = "text_only"
+		if imageMode != "text_only" {
+			imageMode = "vision"
 		}
-		options.Set("imageContentMode", responseJSON(mode))
+		options.Set("imageContentMode", responseJSON(imageMode))
 		p.Upstream, err = AnthropicToChat(body, options)
 	} else {
 		p.URL = base + "/responses"

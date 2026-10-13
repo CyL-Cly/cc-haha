@@ -212,7 +212,7 @@ func (s *Service) CheckDomain(ctx context.Context, domain string) (string, error
 		return "check_failed", e
 	}
 	req.Header.Set("Accept", "application/json, text/plain, */*")
-	req.Header.Set("User-Agent", "axios/1.14.0")
+	req.Header.Set("User-Agent", "axios/1.15.2")
 	req.Header.Set("Accept-Encoding", "gzip, compress, deflate, br")
 	response, e := s.options.HTTPClient.Do(req)
 	if e != nil {

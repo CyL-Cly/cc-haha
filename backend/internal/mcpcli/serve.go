@@ -19,6 +19,8 @@ type ServeHost interface {
 }
 type ServeOptions struct {
 	Version          string
+	ServerName       string          // Empty preserves the original claude/tengu CLI server.
+	Capabilities     json.RawMessage // Empty preserves the original tools-only capability.
 	Input            io.Reader
 	Output           io.Writer
 	Host             ServeHost
@@ -162,7 +164,14 @@ func serveRequest(ctx context.Context, o ServeOptions, r protocol.JSONObject) (p
 		if !supported[version] {
 			version = mcpclient.LatestProtocolVersion
 		}
-		return protocol.NewJSONObject(protocol.JSONField{Name: "protocolVersion", Value: encode(version)}, protocol.JSONField{Name: "capabilities", Value: json.RawMessage(`{"tools":{}}`)}, protocol.JSONField{Name: "serverInfo", Value: encode(protocol.NewJSONObject(protocol.JSONField{Name: "name", Value: encode("claude/tengu")}, protocol.JSONField{Name: "version", Value: encode(o.Version)}))}), nil
+		name, capabilities := o.ServerName, o.Capabilities
+		if name == "" {
+			name = "claude/tengu"
+		}
+		if len(capabilities) == 0 {
+			capabilities = json.RawMessage(`{"tools":{}}`)
+		}
+		return protocol.NewJSONObject(protocol.JSONField{Name: "protocolVersion", Value: encode(version)}, protocol.JSONField{Name: "capabilities", Value: capabilities}, protocol.JSONField{Name: "serverInfo", Value: encode(protocol.NewJSONObject(protocol.JSONField{Name: "name", Value: encode(name)}, protocol.JSONField{Name: "version", Value: encode(o.Version)}))}), nil
 	case "ping":
 		return protocol.NewJSONObject(), nil
 	case "tools/list":

@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func TestForegroundPromotionReturnGraceAndParentResultAgainstActualSource(t *testing.T) {
+func TestForegroundPromotionSameIteratorAndParentResultAgainstActualSource(t *testing.T) {
 	bun := os.Getenv("CC_HAHA_SOURCE_BUN")
 	if bun == "" {
 		t.Skip("actual Source Bun required")
@@ -60,8 +60,12 @@ func TestForegroundPromotionReturnGraceAndParentResultAgainstActualSource(t *tes
 		t.Fatalf("Source shape %v %.4000s", e, out)
 	}
 	for _, row := range source.Rows {
-		if row.Result.Data.Status != "async_launched" || !row.Result.Data.IsAsync || row.Result.Data.AgentID != row.ID || row.Task.Status != "completed" || len(row.Messages) != 1 || row.Messages[0].Message.Content[0].Text != "native background response" {
-			t.Fatalf("Source lifecycle identity %s %.4000s", row.ID, out)
+		wantStatus := "completed"
+		if row.ID == "areject" {
+			wantStatus = "failed"
+		}
+		if row.Result.Data.Status != "async_launched" || !row.Result.Data.IsAsync || row.Result.Data.AgentID != row.ID || row.Task.Status != wantStatus || len(row.Messages) != 1 || row.Messages[0].Message.Content[0].Text != "native pending response" {
+			t.Fatalf("Source same-iterator lifecycle %s %.4000s", row.ID, out)
 		}
 		order := map[string]int{}
 		elapsed := map[string]float64{}
@@ -69,15 +73,14 @@ func TestForegroundPromotionReturnGraceAndParentResultAgainstActualSource(t *tes
 			order[event.Name] = i
 			elapsed[event.Name] = event.Elapsed
 		}
-		if order["parent-tool-return"] >= order["background-start"] || elapsed["parent-tool-return"] > 250 {
-			t.Fatalf("parent blocked on iterator close %s %+v", row.ID, row.Events)
+		if _, restarted := order["background-start"]; restarted {
+			t.Fatal("Source restarted an already admitted iterator", row.Events)
 		}
-		if row.ID == "aslow" {
-			if order["background-start"] >= order["old-finally-done"] || elapsed["background-start"] < 950 || elapsed["background-start"] > 1120 {
-				t.Fatalf("Source one-second grace %s %+v", row.ID, row.Events)
-			}
-		} else if order["old-finally-done"] >= order["background-start"] || elapsed["background-start"] > 500 {
-			t.Fatalf("Source awaited real finally %s %+v", row.ID, row.Events)
+		if order["parent-tool-return"] >= order["old-pending-yield"] || elapsed["parent-tool-return"] > 250 {
+			t.Fatal("parent blocked pending stream", row.Events)
+		}
+		if order["old-finally-done"] >= order["release-slot"] || order["iterator-return-called"] >= order["release-slot"] {
+			t.Fatal("lease released before real iterator closure", row.Events)
 		}
 	}
 }

@@ -18,6 +18,7 @@ import (
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/builtinwrite"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
+	"github.com/NanmiCoder/cc-haha/backend/internal/nativepaths"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 )
 
@@ -29,8 +30,14 @@ func (s *Service) notebookPath(in protocol.JSONObject) (string, error) {
 	if strings.ContainsRune(p, 0) {
 		return "", errors.New("Path contains null bytes")
 	}
-	if strings.HasPrefix(p, `\\`) || strings.HasPrefix(p, "//") {
+	if s.options.Platform != "windows" && (strings.HasPrefix(p, `\\`) || strings.HasPrefix(p, "//")) {
 		return "", capability("UNC network paths")
+	}
+	if s.options.Platform == "windows" {
+		if !nativepaths.IsWindowsAbsolute(p) {
+			return nativepaths.ResolveWindows(p, s.options.CWD), nil
+		}
+		return p, nil
 	}
 	if !filepath.IsAbs(p) {
 		p = filepath.Join(s.options.CWD, p)
@@ -80,6 +87,9 @@ func (s *Service) validateNotebook(in protocol.JSONObject, scope *cooperative.Sc
 	p, err := s.notebookPath(in)
 	if err != nil {
 		return err
+	}
+	if s.options.Platform == "windows" && nativepaths.IsUNC(p) {
+		return nil
 	}
 	if filepath.Ext(p) != ".ipynb" {
 		return notebookValidation("File must be a Jupyter notebook (.ipynb file). For editing other file types, use the FileEdit tool.", 2)

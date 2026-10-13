@@ -2,7 +2,9 @@ package teamspawn
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/teamstore"
 )
 
 type LeadMailboxPartition struct {
@@ -64,7 +66,10 @@ func ShutdownApproved(message string) *protocol.JSONObject {
 func FormatHeadlessTeammateMessages(messages []protocol.JSONObject) (json.RawMessage, error) {
 	rows := make([]json.RawMessage, len(messages))
 	for i, message := range messages {
-		from, err := protocol.ExactJavaScriptStringJSON(message.Get("from"))
+		if _, e := protocol.DecodeJavaScriptJSONString(message.Get("from")); e != nil {
+			return nil, errors.New("Teammate XML sender must be a string")
+		}
+		from, err := teamstore.EscapeXMLAttrJSON(message.Get("from"))
 		if err != nil {
 			return nil, err
 		}
@@ -74,11 +79,24 @@ func FormatHeadlessTeammateMessages(messages []protocol.JSONObject) (json.RawMes
 		}
 		pieces := []json.RawMessage{quoted(`<teammate-message teammate_id="`), from, quoted(`"`)}
 		if leaderTruthy(message.Get("color")) {
-			color, err := protocol.ExactJavaScriptStringJSON(message.Get("color"))
+			if _, e := protocol.DecodeJavaScriptJSONString(message.Get("color")); e != nil {
+				return nil, errors.New("Teammate XML color must be a string")
+			}
+			color, err := teamstore.EscapeXMLAttrJSON(message.Get("color"))
 			if err != nil {
 				return nil, err
 			}
 			pieces = append(pieces, quoted(` color="`), color, quoted(`"`))
+		}
+		if leaderTruthy(message.Get("summary")) {
+			if _, e := protocol.DecodeJavaScriptJSONString(message.Get("summary")); e != nil {
+				return nil, errors.New("Teammate XML summary must be a string")
+			}
+			summary, e := teamstore.EscapeXMLAttrJSON(message.Get("summary"))
+			if e != nil {
+				return nil, e
+			}
+			pieces = append(pieces, quoted(` summary="`), summary, quoted(`"`))
 		}
 		pieces = append(pieces, quoted(">\n"), text, quoted("\n</teammate-message>"))
 		rows[i], err = protocol.JoinJavaScriptValuesJSON(pieces, "")

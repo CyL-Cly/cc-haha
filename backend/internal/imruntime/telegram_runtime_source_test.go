@@ -91,9 +91,21 @@ func TestOriginalTelegramEntrypointRealHandlersHTTPWSCommandsPermissionsAndState
 	addUser("/model", 42, "private", true)
 	addCallback("tgsel:model:pick:0", 42)
 	actions[len(actions)-1]["now"] = now + 1800001
-	want := runIMSource(t, "native-telegram-entry-runtime.fixture.ts", "CC_HAHA_TELEGRAM_ENTRY_RUNTIME_FIXTURE", map[string]any{"now": now, "work": work, "projects": projects, "sessions": sessions, "actions": actions}, home)
+	runTelegramEntrypointScenario(t, home, work, now, projects, sessions, actions, nil)
+}
+
+type telegramEntryResponse struct {
+	Status int     `json:"status"`
+	Body   any     `json:"body"`
+	Raw    *string `json:"raw,omitempty"`
+}
+
+func runTelegramEntrypointScenario(t *testing.T, home, work string, now int64, projects, sessions []any, actions []map[string]any, responses map[string]telegramEntryResponse) {
+	t.Helper()
+	want := runIMSource(t, "native-telegram-entry-runtime.fixture.ts", "CC_HAHA_TELEGRAM_ENTRY_RUNTIME_FIXTURE", map[string]any{"now": now, "work": work, "projects": projects, "sessions": sessions, "actions": actions, "responses": responses}, home)
 	var mu sync.Mutex
 	calls, requests, packets := []any{}, []any{}, []any{}
+	responseOverrides := responses
 	nextMessage, nextSession := 0, 0
 	active, currentModel := "private-provider", "private-model"
 	ws := websocket.Server{Handshake: func(*websocket.Config, *http.Request) error { return nil }, Handler: func(conn *websocket.Conn) {
@@ -140,6 +152,16 @@ func TestOriginalTelegramEntrypointRealHandlersHTTPWSCommandsPermissionsAndState
 			record["body"] = body
 		}
 		requests = append(requests, record)
+		if override, ok := responseOverrides[request.Method+" "+request.URL.RequestURI()]; ok {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(override.Status)
+			if override.Raw != nil {
+				_, _ = w.Write([]byte(*override.Raw))
+			} else {
+				_, _ = w.Write(raw(override.Body))
+			}
+			return
+		}
 		switch {
 		case path == "/api/sessions" && request.Method == "POST":
 			nextSession++
@@ -199,6 +221,11 @@ func TestOriginalTelegramEntrypointRealHandlersHTTPWSCommandsPermissionsAndState
 	runtime.Poller.username = "private_test_bot"
 	rows := []any{}
 	for _, action := range actions {
+		if override, ok := action["responses"].(map[string]telegramEntryResponse); ok {
+			mu.Lock()
+			responseOverrides = override
+			mu.Unlock()
+		}
 		if value, ok := action["now"]; ok {
 			clock = value.(int64)
 		}

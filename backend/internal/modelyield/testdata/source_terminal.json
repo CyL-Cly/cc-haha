@@ -18,9 +18,9 @@
         "name": "creation-default",
         "mode": "sequence",
         "layer": "creation",
-        "home": "/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/https-request-final-tools-1q2SEU/tmp/https-request-home-1joC8Q",
+        "home": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/main-model-terminal-G8dEvs",
         "env": {
-          "ANTHROPIC_BASE_URL": "https://127.0.0.1:59597",
+          "ANTHROPIC_BASE_URL": "https://127.0.0.1:60075",
           "ANTHROPIC_API_KEY": "offline-original-env-key",
           "API_TIMEOUT_MS": "3000",
           "CLAUDE_CODE_MAX_RETRIES": "2",
@@ -34,11 +34,12 @@
       },
       "expectedTerminal": "{\"type\":\"assistant\",\"uuid\":\"retry-id-3\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"retry-id-4\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API: Self-signed certificate detected. Check your proxy or corporate SSL certificates\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
       "expectedNotices": [
-        "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"cause\":{\"code\":\"DEPTH_ZERO_SELF_SIGNED_CERT\",\"path\":\"https://127.0.0.1:59597/v1/messages?beta=true\",\"errno\":0},\"error\":{\"cause\":{\"code\":\"DEPTH_ZERO_SELF_SIGNED_CERT\",\"path\":\"https://127.0.0.1:59597/v1/messages?beta=true\",\"errno\":0}},\"retryInMs\":500,\"retryAttempt\":1,\"maxRetries\":2,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-id-1\"}",
-        "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"cause\":{\"code\":\"DEPTH_ZERO_SELF_SIGNED_CERT\",\"path\":\"https://127.0.0.1:59597/v1/messages?beta=true\",\"errno\":0},\"error\":{\"cause\":{\"code\":\"DEPTH_ZERO_SELF_SIGNED_CERT\",\"path\":\"https://127.0.0.1:59597/v1/messages?beta=true\",\"errno\":0}},\"retryInMs\":1000,\"retryAttempt\":2,\"maxRetries\":2,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-id-2\"}"
+        "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"cause\":{\"code\":\"DEPTH_ZERO_SELF_SIGNED_CERT\",\"path\":\"https://127.0.0.1:60075/v1/messages?beta=true\",\"errno\":0},\"error\":{\"type\":null,\"cause\":{\"code\":\"DEPTH_ZERO_SELF_SIGNED_CERT\",\"path\":\"https://127.0.0.1:60075/v1/messages?beta=true\",\"errno\":0}},\"retryInMs\":500,\"retryAttempt\":1,\"maxRetries\":2,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-id-1\"}",
+        "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"cause\":{\"code\":\"DEPTH_ZERO_SELF_SIGNED_CERT\",\"path\":\"https://127.0.0.1:60075/v1/messages?beta=true\",\"errno\":0},\"error\":{\"type\":null,\"cause\":{\"code\":\"DEPTH_ZERO_SELF_SIGNED_CERT\",\"path\":\"https://127.0.0.1:60075/v1/messages?beta=true\",\"errno\":0}},\"retryInMs\":1000,\"retryAttempt\":2,\"maxRetries\":2,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-id-2\"}"
       ],
       "sourceRawFile": "artifacts/go-parity/https-request/runs/2026-10-02T09-34-53-025Z/creation-default-source-run-1-raw.json",
-      "sourceRawSHA256": "183e813d0696798ec6d406c8304b9e0cc55f9ca1eafef4cd90fbd6e6efa4425f"
+      "sourceRawSHA256": "183e813d0696798ec6d406c8304b9e0cc55f9ca1eafef4cd90fbd6e6efa4425f",
+      "sourceRawSha256": "e7a795e165bdd2d1a09ad53de709d1debd7f587c2374e8fd68d8a6200ad0aa93"
     },
     {
       "input": {
@@ -55,14 +56,14 @@
         "name": "creation-malformed",
         "mode": "sequence",
         "layer": "creation",
-        "home": "/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/https-request-final-tools-1q2SEU/tmp/https-request-home-YBGFTl",
+        "home": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/main-model-terminal-8OJ0dP",
         "env": {
-          "ANTHROPIC_BASE_URL": "https://127.0.0.1:59527",
+          "ANTHROPIC_BASE_URL": "https://127.0.0.1:60080",
           "ANTHROPIC_API_KEY": "offline-original-env-key",
           "API_TIMEOUT_MS": "3000",
           "CLAUDE_CODE_MAX_RETRIES": "2",
           "CLAUDE_CODE_DISABLE_FAST_MODE": "1",
-          "NODE_EXTRA_CA_CERTS": "/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/https-request-final-tools-1q2SEU/tmp/https-request-home-YBGFTl/original-ca.pem"
+          "NODE_EXTRA_CA_CERTS": "/private/var/folders/sx/hl8zlmxd7gx9b58_1t2zhp5r0000gn/T/main-model-terminal-8OJ0dP/original-ca.pem"
         },
         "runtime": {
           "platform": "darwin",
@@ -72,11 +73,14 @@
       },
       "expectedTerminal": "{\"type\":\"assistant\",\"uuid\":\"retry-id-3\",\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"message\":{\"id\":\"retry-id-4\",\"container\":null,\"model\":\"<synthetic>\",\"role\":\"assistant\",\"stop_reason\":\"stop_sequence\",\"stop_sequence\":\"\",\"type\":\"message\",\"usage\":{\"input_tokens\":0,\"output_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":null,\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":0},\"inference_geo\":null,\"iterations\":null,\"speed\":null},\"content\":[{\"type\":\"text\",\"text\":\"API Error: Unable to connect to API (FailedToOpenSocket)\"}],\"context_management\":null},\"error\":\"unknown\",\"isApiErrorMessage\":true}",
       "expectedNotices": [
-        "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"cause\":{\"code\":\"FailedToOpenSocket\",\"path\":\"https://127.0.0.1:59527/v1/messages?beta=true\",\"errno\":0},\"error\":{\"cause\":{\"code\":\"FailedToOpenSocket\",\"path\":\"https://127.0.0.1:59527/v1/messages?beta=true\",\"errno\":0}},\"retryInMs\":500,\"retryAttempt\":1,\"maxRetries\":2,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-id-1\"}",
-        "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"cause\":{\"code\":\"FailedToOpenSocket\",\"path\":\"https://127.0.0.1:59527/v1/messages?beta=true\",\"errno\":0},\"error\":{\"cause\":{\"code\":\"FailedToOpenSocket\",\"path\":\"https://127.0.0.1:59527/v1/messages?beta=true\",\"errno\":0}},\"retryInMs\":1000,\"retryAttempt\":2,\"maxRetries\":2,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-id-2\"}"
+        "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"cause\":{\"code\":\"FailedToOpenSocket\",\"path\":\"https://127.0.0.1:60080/v1/messages?beta=true\",\"errno\":0},\"error\":{\"type\":null,\"cause\":{\"code\":\"FailedToOpenSocket\",\"path\":\"https://127.0.0.1:60080/v1/messages?beta=true\",\"errno\":0}},\"retryInMs\":500,\"retryAttempt\":1,\"maxRetries\":2,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-id-1\"}",
+        "{\"type\":\"system\",\"subtype\":\"api_error\",\"level\":\"error\",\"cause\":{\"code\":\"FailedToOpenSocket\",\"path\":\"https://127.0.0.1:60080/v1/messages?beta=true\",\"errno\":0},\"error\":{\"type\":null,\"cause\":{\"code\":\"FailedToOpenSocket\",\"path\":\"https://127.0.0.1:60080/v1/messages?beta=true\",\"errno\":0}},\"retryInMs\":1000,\"retryAttempt\":2,\"maxRetries\":2,\"timestamp\":\"2023-11-14T22:13:20.000Z\",\"uuid\":\"retry-id-2\"}"
       ],
       "sourceRawFile": "artifacts/go-parity/https-request/runs/2026-10-02T09-34-53-025Z/creation-malformed-source-run-1-raw.json",
-      "sourceRawSHA256": "4477507fb39cb9b5091c38356f3980475df7facc7ae545472f04fd0bad3d15d2"
+      "sourceRawSHA256": "4477507fb39cb9b5091c38356f3980475df7facc7ae545472f04fd0bad3d15d2",
+      "sourceRawSha256": "9ce8da24b5f86c0b35a1357cac2206d925dd2bb6df9546e759d81108854ff21f"
     }
-  ]
+  ],
+  "sourceSha": "6d21316ec4635f29ecbaa43e1a5574bfd31d7155",
+  "sdk": "0.128.0"
 }

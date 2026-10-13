@@ -23,7 +23,8 @@ func installFailure(err error) error {
 	}
 	return fail(502, "MARKET_UPSTREAM_ERROR", "Upstream download failed: "+err.Error())
 }
-func (s *Service) Install(ctx context.Context, source, slug string) (object, error) {
+func (s *Service) Install(ctx context.Context, source, slug string, owner ...string) (object, error) {
+	ctx, _ = ownerContext(ctx, source, slug, owner)
 	s.mu.Lock()
 	if s.inFlight[slug] {
 		s.mu.Unlock()
@@ -36,7 +37,7 @@ func (s *Service) Install(ctx context.Context, source, slug string) (object, err
 	if dir == "" {
 		return nil, fail(422, "MARKET_NOT_INSTALLABLE", "Skill slug cannot be used as a directory name: "+slug)
 	}
-	detail, _, err := s.Detail(ctx, source, slug)
+	detail, _, err := s.Detail(ctx, source, slug, owner...)
 	if err != nil {
 		return nil, installFailure(err)
 	}

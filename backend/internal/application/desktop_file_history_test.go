@@ -102,8 +102,10 @@ func TestActualDesktopFileHistoryBeforeAfterFrozenDiffAndRewind(t *testing.T) {
 		}
 		if v.String("type") == "message_complete" {
 			complete = true
+			requestDesktopSessionSync(t, ws)
 		}
-		if complete && v.String("type") == "session_state" && v.String("turnState") == "idle" {
+		if complete && v.String("type") == "session_state" {
+			assertDesktopIdleSnapshot(t, v)
 			break
 		}
 	}

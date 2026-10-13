@@ -37,6 +37,10 @@ func TestInProcessWaitPriorityAndPhysicalTaskClaimsAgainstActualSource(t *testin
 		{"mailbox": []any{msg("peer", `{"type":"shutdown_request"}`, false), msg("team-lead", "valid leader", false)}, "tasks": []any{}},
 		{"mailbox": []any{}, "tasks": []any{task("completed", "worker"), task("pending", "")}},
 		{"abort": true, "pending": []string{"not consumed"}, "mailbox": []any{msg("team-lead", "not read", false)}, "tasks": []any{}},
+		{"deadlineMs": -1, "mailbox": []any{}, "tasks": []any{}},
+		{"deadlineMs": -1, "mailbox": []any{msg("peer", "mail beats deadline", false)}, "tasks": []any{}},
+		{"cancel": true, "pending": []string{"cancel keeps pending"}, "mailbox": []any{}, "tasks": []any{}},
+		{"claimTasks": false, "deadlineMs": -1, "mailbox": []any{}, "tasks": []any{task("completed", "worker"), task("pending", "")}},
 	}
 	home, _ := filepath.EvalSymlinks(t.TempDir())
 	root := t.TempDir()
@@ -85,7 +89,19 @@ func TestInProcessWaitPriorityAndPhysicalTaskClaimsAgainstActualSource(t *testin
 		if row["abort"] == true {
 			cancel()
 		}
-		result, err := inbox.Wait(ctx)
+		wait := WaitOptions{}
+		if deadline, ok := row["deadlineMs"].(int); ok {
+			wait.Deadline = time.Now().Add(time.Duration(deadline) * time.Millisecond)
+		}
+		if claim, ok := row["claimTasks"].(bool); ok {
+			wait.ClaimTasks = &claim
+		}
+		if row["cancel"] == true {
+			cancelled, stop := context.WithCancel(context.Background())
+			stop()
+			wait.CancelContext = cancelled
+		}
+		result, err := inbox.Wait(ctx, wait)
 		cancel()
 		if err != nil {
 			t.Fatal(err)
@@ -97,7 +113,9 @@ func TestInProcessWaitPriorityAndPhysicalTaskClaimsAgainstActualSource(t *testin
 		actual = append(actual, map[string]any{"result": result, "pending": pending, "mailbox": mailbox.Read("worker", team), "tasks": tasks})
 	}
 	fixture, _ := filepath.Abs("../../../scripts/quality-gate/go-parity/native-inprocess-teammate-inbox.fixture.ts")
-	cmd := exec.Command(bun, "--no-env-file", fixture)
+	sourceCtx, sourceCancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer sourceCancel()
+	cmd := exec.CommandContext(sourceCtx, bun, "--no-env-file", fixture)
 	cmd.Dir = home
 	cmd.Env = []string{"HOME=" + home, "USERPROFILE=" + home, "CLAUDE_CONFIG_DIR=" + filepath.Join(home, ".claude"), "TMPDIR=" + home, "CC_HAHA_FIXTURE_TEMP_ROOT=" + filepath.Dir(home), "CC_HAHA_INPROCESS_TEAM_INBOX_FIXTURE=1", "NODE_ENV=production", "BUN_OPTIONS=--no-env-file", "DISABLE_TELEMETRY=1", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1", "PATH=/usr/bin:/bin"}
 	cmd.Stdin = bytes.NewReader(rawJSON(map[string]any{"homeDir": home, "rows": rows}))

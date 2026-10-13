@@ -23,6 +23,7 @@ type SlackRuntimeOptions struct {
 	Now        func() time.Time
 }
 type SlackRuntime struct {
+	migration    *MigrationLifecycle
 	o            SlackRuntimeOptions
 	API          *SlackAPI
 	Bridge       *Bridge
@@ -59,6 +60,9 @@ func SlackAppToken(c Config) string {
 	return ""
 }
 func NewSlackRuntime(ctx context.Context, o SlackRuntimeOptions) (*SlackRuntime, error) {
+	if err := migrationRuntimeAvailable(o.Config); err != nil {
+		return nil, err
+	}
 	if o.Config.Err != nil {
 		return nil, o.Config.Err
 	}
@@ -97,17 +101,21 @@ func NewSlackRuntime(ctx context.Context, o SlackRuntimeOptions) (*SlackRuntime,
 		}
 		client.CloseIdleConnections()
 	}
+	ctx, lifecycle := newMigrationContext(ctx)
 	ctx, cancel := context.WithCancel(ctx)
-	r := &SlackRuntime{o: o, API: o.API, ctx: ctx, cancel: cancel, threads: map[string]string{}, names: map[string]string{}, done: make(chan struct{})}
-	r.Bridge = NewBridge(ctx, o.Config, o.SocketTLS, o.Log)
+	r := &SlackRuntime{migration: lifecycle, o: o, API: o.API, ctx: ctx, cancel: cancel, threads: map[string]string{}, names: map[string]string{}, done: make(chan struct{})}
+	r.Bridge = NewBridge(ctx, o.Config, o.SocketTLS, o.Log, BridgeOptions{Now: o.Now})
 	r.Client = NewHTTPClient(o.Config, o.ServerHTTP)
 	r.Store = NewSessionStore(o.Config.ConfigDir)
+	r.Store.Lifecycle = lifecycle
 	r.Store.NowMillis = func() int64 { return o.Now().UnixMilli() }
 	r.Pairing = NewPairing(o.Config.ConfigDir, nil)
+	r.Pairing.Lifecycle = lifecycle
 	r.Pairing.NowMillis = r.Store.NowMillis
 	r.Dedup = NewMessageDedup(ctx)
 	r.Dedup.Now = o.Now
-	r.Attachments = NewAttachmentStore(o.Config.Home)
+	r.Attachments = NewConfiguredAttachmentStore(o.Config)
+	r.Attachments.Lifecycle = lifecycle
 	r.Attachments.Now = o.Now
 	port := ChatPort{Platform: "slack", LogPrefix: "[Slack]", SendNotice: r.Notice, CreateResponse: func(id string) ResponseStream { return &SlackResponse{runtime: r, chat: id} }, SendImage: r.SendImage, ClearChat: func(id string) { r.mu.Lock(); delete(r.threads, id); r.mu.Unlock() }}
 	r.Chat = NewChatRuntime(ctx, ChatRuntimeOptions{Config: o.Config, Port: port, Bridge: r.Bridge, Store: r.Store, Client: r.Client, Pairing: r.Pairing, Dedup: r.Dedup, FlushInterval: 900 * time.Millisecond, FlushThreshold: 240, Log: o.Log, Now: o.Now})
@@ -302,6 +310,11 @@ func (r *SlackRuntime) CollectAttachments(id string, files []protocol.JSONObject
 	return refs, nil
 }
 func (r *SlackRuntime) HandleEnvelope(e protocol.JSONObject) {
+	done, admitted := r.migration.Admit()
+	if !admitted {
+		return
+	}
+	defer done(nil)
 	if e.String("type") != "events_api" {
 		return
 	}

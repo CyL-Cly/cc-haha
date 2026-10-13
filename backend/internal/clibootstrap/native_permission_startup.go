@@ -16,6 +16,11 @@ func (m *MainPrint) prepareNativePermissions(settings *protocol.JSONObject) erro
 	if !n.NativeProcess {
 		return nil
 	}
+	permissions := protocol.NewJSONObject()
+	if settings != nil {
+		_ = permissions.UnmarshalJSON(settings.Get("permissions"))
+	}
+	m.nativeAutoModeFlag = m.options.Arguments.EnableAutoMode || m.options.Arguments.PermissionMode == "auto" || m.options.Arguments.PermissionMode == "" && permissions.String("defaultMode") == "auto"
 	producer, e := sdkpermissions.NewNativeStartup(m.Owner, sdkpermissions.NativeStartupOptions{SettingsForSource: m.Startup.GetSettingsForSource, InitialSettings: m.Startup.GetInitialSettings, Home: n.Home, CWD: n.CWD, OriginalCWD: n.CWD, Platform: m.options.Platform, Environment: func(key string) string {
 		var value string
 		_ = json.Unmarshal(m.environment.Get(key), &value)

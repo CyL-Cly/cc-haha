@@ -24,6 +24,9 @@ func cap(b string) error             { return &CapabilityError{b} }
 func quote(s string) json.RawMessage { b, _ := json.Marshal(s); return b }
 
 type Input struct {
+	NativeAutoDreamBindings                                  bool
+	NativeThinkingSummaryBindings                            bool
+	NativeSpinnerBindings                                    bool
 	NativeMainAgentBindings                                  bool
 	NativeModelCommandBindings                               bool
 	NativeSandboxBindings                                    bool
@@ -97,7 +100,12 @@ func (rules RuleSet) nativeRulesJSON(key string, normalizeEmpty bool) json.RawMe
 }
 
 type State struct {
+	nativeAutoDreamBindings       bool
+	nativeThinkingSummaryBindings bool
+	nativePlanBindings            bool
+	nativeSpinnerBindings         bool
 	autoModeActive                bool
+	autoFastMode                  bool
 	nativeMainAgentBindings       bool
 	nativeModelCommandBindings    bool
 	nativeSandboxBindings         bool
@@ -134,7 +142,7 @@ func (s *State) SetMode(scope *cooperative.Scope, mode string) error {
 		return e
 	}
 	switch mode {
-	case "default", "acceptEdits", "plan", "bypassPermissions":
+	case "default", "acceptEdits", "plan", "bypassPermissions", "dontAsk":
 	case "auto":
 		if s.nativeStartup == nil || s.nativeStartup.options.SettingsForSource == nil {
 			return cap("permission mode auto without native policy")
@@ -167,6 +175,10 @@ func (s *State) SetMode(scope *cooperative.Scope, mode string) error {
 				return e
 			}
 			if !gate {
+				return cap("auto mode gate disabled")
+			}
+			config := s.nativeStartup.autoFeatureConfig()
+			if s.nativeStartup.autoEnabledState() == "disabled" || startupTruthy(config.Get("disableFastMode")) && s.autoFastMode {
 				return cap("auto mode gate disabled")
 			}
 			if e = s.stripAutoRules(); e != nil {
@@ -210,7 +222,7 @@ func Initialize(scope *cooperative.Scope, owner *cooperative.Owner, settings *pr
 	validate := ValidateNeutral
 	if input.NativeProcess {
 		validate = func(settings *protocol.JSONObject) error {
-			return ValidateNativeWithBindings(settings, input.NativePluginBindings, input.NativeMCPBindings, input.NativeWebFetchBindings, input.NativeWebSearchBindings, input.NativeStartup.Owns(owner), input.NativeWorktreeBindings, input.NativeHookBindings, input.NativeSystemContextBindings, input.NativeTeamExecutionBindings, input.NativeAuthHelperBindings, input.NativeCloudSettingsBindings, input.NativeWorkflowKeywordBindings, input.NativeInternalReadBindings, input.NativeSandboxBindings, input.NativeModelCommandBindings, input.NativeMainAgentBindings)
+			return ValidateNativeWithBindings(settings, input.NativePluginBindings, input.NativeMCPBindings, input.NativeWebFetchBindings, input.NativeWebSearchBindings, input.NativeStartup.Owns(owner), input.NativeWorktreeBindings, input.NativeHookBindings, input.NativeSystemContextBindings, input.NativeTeamExecutionBindings, input.NativeAuthHelperBindings, input.NativeCloudSettingsBindings, input.NativeWorkflowKeywordBindings, input.NativeInternalReadBindings, input.NativeSandboxBindings, input.NativeModelCommandBindings, input.NativeMainAgentBindings, input.NativePlanBindings, input.NativeSpinnerBindings, input.NativeThinkingSummaryBindings, input.NativeAutoDreamBindings)
 		}
 	}
 	if err := validate(settings); err != nil {
@@ -257,7 +269,7 @@ func (s *State) Read(scope *cooperative.Scope) (*protocol.JSONObject, protocol.J
 	validate := ValidateNeutral
 	if s.nativeProcess {
 		validate = func(settings *protocol.JSONObject) error {
-			return ValidateNativeWithBindings(settings, s.nativePluginBindings, s.nativeMCPBindings, s.nativeWebFetchBindings, s.nativeWebSearchBindings, s.nativeStartup.Owns(s.owner), s.nativeWorktreeBindings, s.nativeHookBindings, s.nativeSystemContextBindings, s.nativeTeamExecutionBindings, s.nativeAuthHelperBindings, s.nativeCloudSettingsBindings, s.nativeWorkflowKeywordBindings, s.nativeInternalReadBindings, s.nativeSandboxBindings, s.nativeModelCommandBindings, s.nativeMainAgentBindings)
+			return ValidateNativeWithBindings(settings, s.nativePluginBindings, s.nativeMCPBindings, s.nativeWebFetchBindings, s.nativeWebSearchBindings, s.nativeStartup.Owns(s.owner), s.nativeWorktreeBindings, s.nativeHookBindings, s.nativeSystemContextBindings, s.nativeTeamExecutionBindings, s.nativeAuthHelperBindings, s.nativeCloudSettingsBindings, s.nativeWorkflowKeywordBindings, s.nativeInternalReadBindings, s.nativeSandboxBindings, s.nativeModelCommandBindings, s.nativeMainAgentBindings, s.nativePlanBindings, s.nativeSpinnerBindings, s.nativeThinkingSummaryBindings, s.nativeAutoDreamBindings)
 		}
 	}
 	if err := validate(s.settings); err != nil {
@@ -290,6 +302,10 @@ func ValidateNativeWithBindings(settings *protocol.JSONObject, pluginsBound, mcp
 	sandboxBound := len(webBindings) > 11 && webBindings[11]
 	modelCommandBound := len(webBindings) > 12 && webBindings[12]
 	mainAgentBound := len(webBindings) > 13 && webBindings[13]
+	planBound := len(webBindings) > 14 && webBindings[14]
+	spinnerBound := len(webBindings) > 15 && webBindings[15]
+	thinkingSummaryBound := len(webBindings) > 16 && webBindings[16]
+	autoDreamBound := len(webBindings) > 17 && webBindings[17]
 	if settings == nil || !settings.IsObject() {
 		return cap("original native settings object")
 	}
@@ -357,6 +373,26 @@ func ValidateNativeWithBindings(settings *protocol.JSONObject, pluginsBound, mcp
 			if _, err := protocol.DecodeJavaScriptJSONString(property.Value); err != nil {
 				return cap("autoMemoryDirectory original string schema")
 			}
+		case "claudeMdExcludes", "autoMemoryEnabled":
+			if !internalReadBound || !systemContextBound {
+				return cap(key + " actual memory/system-context bindings")
+			}
+		case "plansDirectory":
+			if !planBound {
+				return cap("plansDirectory actual session plan bindings")
+			}
+		case "spinnerVerbs":
+			if !spinnerBound {
+				return cap("spinnerVerbs actual spinner selection bindings")
+			}
+		case "autoDreamEnabled":
+			if !autoDreamBound {
+				return cap("autoDreamEnabled actual scheduler and skipTranscript fork bindings")
+			}
+		case "showThinkingSummaries":
+			if !thinkingSummaryBound {
+				return cap("showThinkingSummaries actual runtime model beta bindings")
+			}
 		case "effortLevel":
 			// Native main reads this through getInitialEffortSetting's external
 			// toPersistableEffort filter. CLI/session-only levels are not disk
@@ -364,6 +400,10 @@ func ValidateNativeWithBindings(settings *protocol.JSONObject, pluginsBound, mcp
 			value := string(protocol.StringifyValidatedJavaScriptJSON(property.Value))
 			if value != `"low"` && value != `"medium"` && value != `"high"` {
 				return cap("native persisted effortLevel")
+			}
+		case "maxConcurrentSubagents":
+			if !clisettings.IsNativeSubagentLimit(property.Value) {
+				return cap("native maxConcurrentSubagents positive safe integer or null")
 			}
 		case "cleanupPeriodDays":
 			if !clisettings.IsNativeCleanupPeriodDays(property.Value) {

@@ -24,7 +24,7 @@ func TestGoalStateParserHookIdentityReplacementCleanupAndTranscriptAgainstActual
 		t.Skip("actual Source Bun required")
 	}
 	args := []string{"", " ", "\ufeffclear\u00a0", "clear", "Clear", "status", "pause", "resume", "complete", "--tokens 100 goal", "--tokensMore", "literal task\nthen verify", "\u0085visible", "\u3000中文😀\u3000"}
-	contents := []string{Marker + "\n<goal-objective> objective\nlines </goal-objective>", "<goal-objective>wrong marker</goal-objective>", "<LOCAL-COMMAND-STDOUT>Goal set: x</LOCAL-COMMAND-STDOUT>", "<local-command-stderr>Goal continuing: x</local-command-stderr>", "<local-command-stdout></local-command-stdout><local-command-stderr>Goal set: ignored</local-command-stderr>", "<local-command-stdout>No active goal.</local-command-stdout>"}
+	contents := []string{Marker + "\n<goal-objective> objective\nlines </goal-objective>", "<goal-objective>wrong marker</goal-objective>", "<LOCAL-COMMAND-STDOUT>Goal set: x</LOCAL-COMMAND-STDOUT>", "<local-command-stderr>Goal continuing: x</local-command-stderr>", "<local-command-stdout></local-command-stdout><local-command-stderr>Goal set: ignored</local-command-stderr>", "<local-command-stdout>No active goal.</local-command-stdout>", "<local-command-stdout>Goal waiting for teammates: peers working</local-command-stdout>"}
 	continuations := []string{"", "Prompt hook condition was not met:  <then> & verify\nnext", "PROMPT HOOK CONDITION WAS NOT MET:\ufeff  finish", strings.Repeat("a", 239) + "😀rest", "\u0085keep\u0085", "\u3000中文\u2028验证"}
 	message := func(text string) map[string]any { return map[string]any{"type": "system", "content": text} }
 	transcript := []any{message("<command-name>/goal</command-name>"), message("<local-command-stdout>Goal set: restore target</local-command-stdout>")}
@@ -45,6 +45,7 @@ func TestGoalStateParserHookIdentityReplacementCleanupAndTranscriptAgainstActual
 	var source struct {
 		Parsed, Outputs, Rows []map[string]any
 		Continuations         []json.RawMessage
+		Waiting               []json.RawMessage
 	}
 	if err = json.Unmarshal(raw, &source); err != nil {
 		t.Fatal(err, string(raw))
@@ -54,6 +55,14 @@ func TestGoalStateParserHookIdentityReplacementCleanupAndTranscriptAgainstActual
 		b, _ := protocol.DecodeJavaScriptJSONString(source.Continuations[i])
 		if !reflect.DeepEqual(a, b) {
 			t.Errorf("continuation%d Go%s Source%s", i, ContinuationOutputJSON(reason), source.Continuations[i])
+		}
+	}
+	for i, reason := range continuations {
+		rawReason, _ := json.Marshal(reason)
+		a, _ := protocol.DecodeJavaScriptJSONString(WaitingForTeamOutputRawJSON(rawReason))
+		b, _ := protocol.DecodeJavaScriptJSONString(source.Waiting[i])
+		if !reflect.DeepEqual(a, b) {
+			t.Errorf("waiting%d Go%s Source%s", i, WaitingForTeamOutputRawJSON(rawReason), source.Waiting[i])
 		}
 	}
 	for i, input := range args {

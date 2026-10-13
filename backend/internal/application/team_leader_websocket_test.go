@@ -141,8 +141,8 @@ func TestActualDesktopLeaderIdleMailboxReconnectSamePendingAndServerCloseJoinsWo
 	}
 	send(map[string]any{"type": "user_message", "content": "create a team and leave its actual worker active"})
 	receive("message_complete")
-	for receive("session_state").String("turnState") != "idle" {
-	}
+	requestDesktopSessionSync(t, ws)
+	assertDesktopIdleSnapshot(t, receive("session_state"))
 	store, e := taskstore.New(taskstore.Options{ConfigDir: configDir, PID: os.Getpid(), Now: time.Now})
 	if e != nil {
 		t.Fatal(e)
@@ -177,8 +177,8 @@ func TestActualDesktopLeaderIdleMailboxReconnectSamePendingAndServerCloseJoinsWo
 	action.Set("requestId", raw("actual-human-approval"))
 	post("/api/teams/actual-durable-ws/plan/approve", action)
 	receive("message_complete")
-	for receive("session_state").String("turnState") != "idle" {
-	}
+	requestDesktopSessionSync(t, ws)
+	assertDesktopIdleSnapshot(t, receive("session_state"))
 	select {
 	case <-childStarted:
 	case <-ctx.Done():
@@ -186,8 +186,8 @@ func TestActualDesktopLeaderIdleMailboxReconnectSamePendingAndServerCloseJoinsWo
 	}
 	send(map[string]any{"type": "user_message", "content": "NEXT_DESKTOP_HUMAN"})
 	receive("message_complete")
-	for receive("session_state").String("turnState") != "idle" {
-	}
+	requestDesktopSessionSync(t, ws)
+	assertDesktopIdleSnapshot(t, receive("session_state"))
 	if e = mailbox.Write("team-lead", "actual-durable-ws", protocol.NewJSONObject(field("from", "worker"), field("text", "DESKTOP_PHYSICAL_PEER"), field("timestamp", "2026-10-07T00:00:00.000Z"))); e != nil {
 		t.Fatal(e)
 	}
@@ -199,8 +199,8 @@ func TestActualDesktopLeaderIdleMailboxReconnectSamePendingAndServerCloseJoinsWo
 	_ = ws.Close()
 	ws = dial()
 	state := receive("session_state")
-	if state.String("turnState") != "running" {
-		t.Fatal("reconnect lost actual internal SDK run", string(raw(state)))
+	if state.String("turnState") != "idle" {
+		t.Fatal("internal SDK run incorrectly registered a foreground user turn", string(raw(state)))
 	}
 	restored := receive("permission_request")
 	if restored.String("requestId") != request {
@@ -209,7 +209,7 @@ func TestActualDesktopLeaderIdleMailboxReconnectSamePendingAndServerCloseJoinsWo
 	snapshot := receive("permission_requests_snapshot")
 	var ids []string
 	_ = json.Unmarshal(snapshot.Get("toolRequestIds"), &ids)
-	if len(ids) != 1 || ids[0] != request || string(snapshot.Get("turnActive")) != "true" {
+	if len(ids) != 1 || ids[0] != request || string(snapshot.Get("turnActive")) != "false" {
 		t.Fatal("reconnect snapshot incorrect", string(raw(snapshot)))
 	}
 	send(map[string]any{"type": "permission_response", "requestId": request, "allowed": true})

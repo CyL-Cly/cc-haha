@@ -43,5 +43,6 @@ func (h *Host) ApplyNativeSettingsChange(scope *cooperative.Scope, rules map[str
 	}
 	h.permissionMode = permission.String("mode")
 	h.internalModelSettings = nil
+	h.clearInternalSettingsCertificate()
 	return h.initializePrintCatalog(scope)
 }

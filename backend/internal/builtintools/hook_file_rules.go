@@ -2,6 +2,7 @@ package builtintools
 
 import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
+	"github.com/NanmiCoder/cc-haha/backend/internal/nativepaths"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/server/ignorepattern"
 	"path/filepath"
@@ -14,6 +15,42 @@ func (s *Service) matchingHookFileRule(scope *cooperative.Scope, c protocol.JSON
 	rows, e := orderedHookRules(c, behavior)
 	if e != nil {
 		return nil, e
+	}
+	if s.options.Platform == "windows" {
+		key := "alwaysDenyRules"
+		if behavior == "allow" {
+			key = "alwaysAllowRules"
+		} else if behavior == "ask" {
+			key = "alwaysAskRules"
+		}
+		patterns, err := nativepaths.WindowsPatterns(c, key, name)
+		if err != nil {
+			return nil, err
+		}
+		roots := map[string]string{}
+		for _, pattern := range patterns {
+			if !strings.HasPrefix(pattern.Pattern, "/") || strings.HasPrefix(pattern.Pattern, "//") {
+				continue
+			}
+			if s.options.HookPermissionRoot != nil {
+				roots[pattern.Source], err = s.options.HookPermissionRoot(scope, pattern.Source)
+			} else {
+				roots[pattern.Source] = s.options.PermissionRoots[pattern.Source]
+			}
+			if err != nil {
+				return nil, err
+			}
+		}
+		matched, err := nativepaths.MatchingWindowsPattern(path, s.options.CWD, s.options.Home, roots, patterns)
+		if err != nil || matched == nil {
+			return nil, err
+		}
+		for i := len(rows) - 1; i >= 0; i-- {
+			if rows[i].source == matched.Source && rows[i].value.String("toolName") == name && rows[i].value.String("ruleContent") == matched.Pattern {
+				return &rows[i], nil
+			}
+		}
+		return nil, nil
 	}
 	unique := []hookRule{}
 	indices := map[string]int{}

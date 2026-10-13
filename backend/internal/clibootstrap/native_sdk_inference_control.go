@@ -24,7 +24,17 @@ func (m *MainPrint) nativeSDKInferenceControl(scope *cooperative.Scope, request 
 				return err
 			}
 		}
-		return m.applyNativeSessionModelOnOwner(context.Background(), scope, requested)
+		if err := m.applyNativeSessionModelOnOwner(context.Background(), scope, requested); err != nil {
+			return err
+		}
+		if m.remoteIO != nil {
+			model, err := m.Host.InferenceModel(scope)
+			if err != nil {
+				return err
+			}
+			m.remoteIO.ReportMetadata(protocol.NewJSONObject(protocol.JSONField{Name: "model", Value: quoteMain(model)}))
+		}
+		return nil
 	case "set_max_thinking_tokens":
 		value := bytes.TrimSpace(request.Get("max_thinking_tokens"))
 		thinking := requestcontext.Thinking{}

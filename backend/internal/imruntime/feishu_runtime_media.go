@@ -2,6 +2,7 @@ package imruntime
 
 import (
 	"fmt"
+	"github.com/NanmiCoder/cc-haha/backend/internal/storagerelocations"
 	"os"
 )
 
@@ -10,7 +11,15 @@ func (r *FeishuRuntime) materializeOutbound(source UploadSource) (SafeImage, err
 	case "base64":
 		return SafeImage{OK: true, Buffer: nodeBase64(source.Data), MIME: source.MIME}, nil
 	case "path":
-		p, e := os.ReadFile(source.Path)
+		path := source.Path
+		var e error
+		if r.o.Config.ConfigDir != "" {
+			path, e = storagerelocations.Resolve(path, r.o.Config.ConfigDir)
+			if e != nil {
+				return SafeImage{}, e
+			}
+		}
+		p, e := os.ReadFile(path)
 		if e != nil {
 			return SafeImage{}, e
 		}

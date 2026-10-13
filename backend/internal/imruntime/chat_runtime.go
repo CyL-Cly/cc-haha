@@ -165,7 +165,7 @@ func (r *ChatRuntime) QueueInbound(m InboundChatMessage) {
 	}
 }
 func (r *ChatRuntime) admitInbound(m *InboundChatMessage) (<-chan struct{}, chan struct{}, bool) {
-	if m.ChatID == "" || r.ctx.Err() != nil {
+	if m.ChatID == "" || r.ctx.Err() != nil || !migrationFromContext(r.ctx).Available() {
 		return nil, nil, false
 	}
 	if m.DedupKey != "" && !r.o.Dedup.TryRecord(r.o.Port.Platform+":"+m.DedupKey) {
@@ -595,7 +595,7 @@ func (r *ChatRuntime) dispatchImage(id string, p PendingUpload) {
 	if s := r.o.Store.Get(id); s != nil {
 		work = s.WorkDir
 	}
-	image := LoadSafeOutboundImage(p, work)
+	image := LoadSafeOutboundImage(p, work, r.o.Config.ConfigDir)
 	if !image.OK {
 		r.o.Log(r.o.Port.LogPrefix + " Outbound image rejected: " + image.Reason)
 		return

@@ -1024,7 +1024,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -1049,7 +1049,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -1077,7 +1077,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -1108,7 +1108,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
         "Authorization": "Bearer env-token"
       },
@@ -1138,7 +1138,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -1166,7 +1166,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -1197,7 +1197,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -1222,7 +1222,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -1250,7 +1250,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -1281,7 +1281,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
         "Authorization": "Bearer env-token"
       },
@@ -1311,7 +1311,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-app",
@@ -1335,7 +1335,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -1366,7 +1366,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
         "Authorization": "Bearer env-token"
       },
@@ -1396,7 +1396,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -1424,7 +1424,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -1450,86 +1450,19 @@
     {
       "name": "empty token constructor behavior",
       "apiKey": null,
-      "authToken": "",
+      "authToken": null,
       "baseURL": "http://127.0.0.1:43210",
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
-      "fetch": {
-        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
-        "method": "POST",
-        "headers": [
-          [
-            "accept",
-            "application/json"
-          ],
-          [
-            "anthropic-dangerous-direct-browser-access",
-            "true"
-          ],
-          [
-            "anthropic-version",
-            "2023-06-01"
-          ],
-          [
-            "authorization",
-            "Bearer"
-          ],
-          [
-            "content-type",
-            "application/json"
-          ],
-          [
-            "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
-          ],
-          [
-            "x-app",
-            "cli"
-          ],
-          [
-            "x-claude-code-session-id",
-            "00000000-0000-4000-8000-000000000000"
-          ],
-          [
-            "x-stainless-arch",
-            "arm64"
-          ],
-          [
-            "x-stainless-lang",
-            "js"
-          ],
-          [
-            "x-stainless-os",
-            "MacOS"
-          ],
-          [
-            "x-stainless-package-version",
-            "0.80.0"
-          ],
-          [
-            "x-stainless-retry-count",
-            "0"
-          ],
-          [
-            "x-stainless-runtime",
-            "node"
-          ],
-          [
-            "x-stainless-runtime-version",
-            "v24.3.0"
-          ],
-          [
-            "x-stainless-timeout",
-            "600"
-          ]
-        ],
-        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
-      },
-      "error": null
+      "fetch": null,
+      "error": {
+        "name": "Error",
+        "message": "Could not resolve authentication method. Expected one of apiKey, authToken, credentials, config, or profile to be set. Or for one of the \"X-Api-Key\" or \"Authorization\" headers to be explicitly omitted"
+      }
     },
     {
       "name": "missing credentials fail before fetch",
@@ -1539,13 +1472,13 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": null,
       "error": {
         "name": "Error",
-        "message": "Could not resolve authentication method. Expected either apiKey or authToken to be set. Or for one of the \"X-Api-Key\" or \"Authorization\" headers to be explicitly omitted"
+        "message": "Could not resolve authentication method. Expected one of apiKey, authToken, credentials, config, or profile to be set. Or for one of the \"X-Api-Key\" or \"Authorization\" headers to be explicitly omitted"
       }
     },
     {
@@ -1556,7 +1489,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -1581,7 +1514,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -1609,7 +1542,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -1640,7 +1573,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
         "Authorization": "Bearer   token  "
       },
@@ -1670,7 +1603,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -1698,7 +1631,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -1729,7 +1662,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (internal, sdk, agent-sdk/0.2.3, client-app/client/1.0, workload/cron)",
+        "User-Agent": "claude-cli/2.1.288 (internal, cli, agent-sdk/0.2.3, client-app/client/1.0, workload/cron)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
         "x-claude-remote-container-id": "container-id",
         "x-claude-remote-session-id": "remote-id",
@@ -1757,7 +1690,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (internal, sdk, agent-sdk/0.2.3, client-app/client/1.0, workload/cron)"
+            "claude-cli/2.1.288 (internal, cli, agent-sdk/0.2.3, client-app/client/1.0, workload/cron)"
           ],
           [
             "x-api-key",
@@ -1797,7 +1730,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -1828,7 +1761,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, )",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -1853,7 +1786,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, )"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -1881,7 +1814,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -1912,7 +1845,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -1937,7 +1870,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -1965,7 +1898,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -1996,7 +1929,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
         "x-anthropic-additional-protection": "true"
       },
@@ -2022,7 +1955,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-anthropic-additional-protection",
@@ -2054,7 +1987,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -2085,7 +2018,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -2110,7 +2043,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -2138,7 +2071,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -2170,13 +2103,13 @@
       "defaultHeaders": {
         "1": "one",
         "2": "two",
-        "x-app": "cli",
         "User-Agent": "exact",
-        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
         "user-agent": "later",
         "X-Future": "replacement",
         "x-future": "final",
-        "constructor": "present"
+        "constructor": "present",
+        "x-app": "cli",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
         "url": "http://127.0.0.1:43210/v1/messages?beta=true",
@@ -2244,7 +2177,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -2274,92 +2207,18 @@
       "baseURL": "http://127.0.0.1:43210",
       "timeout": 600000,
       "defaultHeaders": {
-        "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
-        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
+        "": "ignored",
         "X-Future": "value:with:colons",
-        "X-Empty": ""
+        "X-Empty": "",
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
-      "fetch": {
-        "url": "http://127.0.0.1:43210/v1/messages?beta=true",
-        "method": "POST",
-        "headers": [
-          [
-            "accept",
-            "application/json"
-          ],
-          [
-            "anthropic-dangerous-direct-browser-access",
-            "true"
-          ],
-          [
-            "anthropic-version",
-            "2023-06-01"
-          ],
-          [
-            "content-type",
-            "application/json"
-          ],
-          [
-            "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
-          ],
-          [
-            "x-api-key",
-            "offline-client-key"
-          ],
-          [
-            "x-app",
-            "cli"
-          ],
-          [
-            "x-claude-code-session-id",
-            "00000000-0000-4000-8000-000000000000"
-          ],
-          [
-            "x-empty",
-            ""
-          ],
-          [
-            "x-future",
-            "value:with:colons"
-          ],
-          [
-            "x-stainless-arch",
-            "arm64"
-          ],
-          [
-            "x-stainless-lang",
-            "js"
-          ],
-          [
-            "x-stainless-os",
-            "MacOS"
-          ],
-          [
-            "x-stainless-package-version",
-            "0.80.0"
-          ],
-          [
-            "x-stainless-retry-count",
-            "0"
-          ],
-          [
-            "x-stainless-runtime",
-            "node"
-          ],
-          [
-            "x-stainless-runtime-version",
-            "v24.3.0"
-          ],
-          [
-            "x-stainless-timeout",
-            "600"
-          ]
-        ],
-        "body": "{\"model\":\"fixture-model\",\"messages\":[],\"max_tokens\":32,\"stream\":true}"
-      },
-      "error": null
+      "fetch": null,
+      "error": {
+        "name": "TypeError",
+        "message": "Invalid header name: ''"
+      }
     },
     {
       "name": "environment token overrides custom authorization",
@@ -2368,12 +2227,12 @@
       "baseURL": "http://127.0.0.1:43210",
       "timeout": 600000,
       "defaultHeaders": {
-        "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
-        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
         "Authorization": "Bearer environment",
         "X-Api-Key": "custom-key",
-        "Content-Type": "custom/type"
+        "Content-Type": "custom/type",
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
         "url": "http://127.0.0.1:43210/v1/messages?beta=true",
@@ -2401,7 +2260,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -2429,7 +2288,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -2459,12 +2318,12 @@
       "baseURL": "http://127.0.0.1:43210",
       "timeout": 600000,
       "defaultHeaders": {
-        "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
-        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
         "Content-Type": "custom/type",
         "Accept": "custom/accept",
-        "Anthropic-Version": "custom-version"
+        "Anthropic-Version": "custom-version",
+        "x-app": "cli",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
         "url": "http://127.0.0.1:43210/v1/messages?beta=true",
@@ -2488,7 +2347,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -2516,7 +2375,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -2546,10 +2405,10 @@
       "baseURL": "http://127.0.0.1:43210",
       "timeout": 600000,
       "defaultHeaders": {
+        "X-Future": "client",
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
-        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000",
-        "X-Future": "client"
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
+        "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
         "url": "http://127.0.0.1:43210/v1/messages?beta=true",
@@ -2605,7 +2464,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -2636,7 +2495,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -2653,7 +2512,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-app",
@@ -2677,7 +2536,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -2708,13 +2567,13 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": null,
       "error": {
         "name": "Error",
-        "message": "Could not resolve authentication method. Expected either apiKey or authToken to be set. Or for one of the \"X-Api-Key\" or \"Authorization\" headers to be explicitly omitted"
+        "message": "Could not resolve authentication method. Expected one of apiKey, authToken, credentials, config, or profile to be set. Or for one of the \"X-Api-Key\" or \"Authorization\" headers to be explicitly omitted"
       }
     },
     {
@@ -2725,7 +2584,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -2750,7 +2609,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -2778,7 +2637,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -2809,7 +2668,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -2834,7 +2693,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -2862,7 +2721,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -2893,7 +2752,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -2918,7 +2777,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -2946,7 +2805,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -2977,7 +2836,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -3002,7 +2861,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -3030,7 +2889,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -3061,7 +2920,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -3086,7 +2945,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -3114,7 +2973,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -3145,7 +3004,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -3170,7 +3029,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -3202,7 +3061,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -3234,7 +3093,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -3259,7 +3118,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -3291,7 +3150,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -3323,7 +3182,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -3348,7 +3207,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -3380,7 +3239,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -3412,7 +3271,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -3437,7 +3296,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -3465,7 +3324,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -3497,7 +3356,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (ant, cli)",
+        "User-Agent": "claude-cli/2.1.288 (ant, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -3522,7 +3381,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (ant, cli)"
+            "claude-cli/2.1.288 (ant, cli)"
           ],
           [
             "x-api-key",
@@ -3554,7 +3413,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -3586,7 +3445,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -3611,7 +3470,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -3639,7 +3498,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -3671,7 +3530,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -3700,7 +3559,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -3728,7 +3587,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -3759,7 +3618,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -3788,7 +3647,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-app",
@@ -3812,7 +3671,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -3843,7 +3702,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -3872,7 +3731,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -3900,7 +3759,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -3931,7 +3790,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -3956,7 +3815,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -3984,7 +3843,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -4015,7 +3874,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -4040,7 +3899,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -4068,7 +3927,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -4099,7 +3958,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -4124,7 +3983,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -4152,7 +4011,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -4183,7 +4042,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -4212,7 +4071,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -4240,7 +4099,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -4271,7 +4130,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": {
@@ -4296,7 +4155,7 @@
           ],
           [
             "user-agent",
-            "claude-cli/2.1.281 (external, cli)"
+            "claude-cli/2.1.288 (external, cli)"
           ],
           [
             "x-api-key",
@@ -4324,7 +4183,7 @@
           ],
           [
             "x-stainless-package-version",
-            "0.80.0"
+            "0.128.0"
           ],
           [
             "x-stainless-retry-count",
@@ -4355,7 +4214,7 @@
       "timeout": 600000,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": null,
@@ -4369,7 +4228,7 @@
       "timeout": 1250,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": null,
@@ -4383,7 +4242,7 @@
       "timeout": 42,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": null,
@@ -4397,7 +4256,7 @@
       "timeout": 0,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": null,
@@ -4411,7 +4270,7 @@
       "timeout": 1,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": null,
@@ -4425,7 +4284,7 @@
       "timeout": -1,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": null,
@@ -4439,7 +4298,7 @@
       "timeout": null,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": null,
@@ -4453,7 +4312,7 @@
       "timeout": 123,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": null,
@@ -4467,7 +4326,7 @@
       "timeout": 2147483648,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": null,
@@ -4481,7 +4340,7 @@
       "timeout": null,
       "defaultHeaders": {
         "x-app": "cli",
-        "User-Agent": "claude-cli/2.1.281 (external, cli)",
+        "User-Agent": "claude-cli/2.1.288 (external, cli)",
         "X-Claude-Code-Session-Id": "00000000-0000-4000-8000-000000000000"
       },
       "fetch": null,
@@ -4719,5 +4578,12 @@
       "managedToken": null,
       "injectRequestID": false
     }
-  ]
+  ],
+  "source": {
+    "sourceSha": "6d21316ec4635f29ecbaa43e1a5574bfd31d7155",
+    "productionFiles": 2522,
+    "sdk": "0.128.0",
+    "bun": "1.3.14",
+    "revision": "0d9b296af33f2b851fcbf4df3e9ec89751734ba4"
+  }
 }

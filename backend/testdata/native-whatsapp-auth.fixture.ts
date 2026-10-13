@@ -1,3 +1,4 @@
+import { adapterMigrationLifecycle } from '../../adapters/common/migration-lifecycle.js'
 import {createRequire} from 'node:module'
 import {dirname,join} from 'node:path'
 const adapterRequire=createRequire(new URL('../../adapters/package.json',import.meta.url))
@@ -15,7 +16,7 @@ const source=readFileSync(new URL('../../adapters/whatsapp/session.ts',import.me
 const start=source.indexOf('function resolveCredsPath'),end=source.indexOf('function makeBaileysLogger',start)
 const transpiled=new Bun.Transpiler({loader:'ts'}).transformSync(source.slice(start,end))
 const queues=new Map<string,Promise<void>>()
-const local=new Function('fs','path','CREDS_FILE','CREDS_BACKUP_FILE','credsSaveQueues',transpiled+';return {maybeRestoreCredsFromBackup,enqueueSaveCreds,isValidJsonFile}') (fs,path,'creds.json','creds.json.bak',queues)
+const local=new Function('fs','path','CREDS_FILE','CREDS_BACKUP_FILE','credsSaveQueues','adapterMigrationLifecycle',transpiled+';return {maybeRestoreCredsFromBackup,enqueueSaveCreds,isValidJsonFile}') (fs,path,'creds.json','creds.json.bak',queues,adapterMigrationLifecycle)
 const dir=path.join(process.env.HOME!,'auth');fs.mkdirSync(dir,{recursive:true,mode:0o700})
 for(const [file,data]of Object.entries(input.files??{}))fs.writeFileSync(path.join(dir,file),data as string,{mode:0o600})
 local.maybeRestoreCredsFromBackup(dir)

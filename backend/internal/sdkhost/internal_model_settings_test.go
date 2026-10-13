@@ -75,3 +75,16 @@ func TestInternalModelCacheRequiresOriginalServicesAndActualOwner(t *testing.T) 
 		t.Fatal(err)
 	}
 }
+
+func TestClearedSettingsLifecycleCannotAdmitOldFastCache(t *testing.T) {
+	before := modelSettings(`{"model":"old","fastMode":true,"permissions":{"allow":["Read"]},"future":"\ud800"}`)
+	removed := modelSettings(`{"model":"old","permissions":{"allow":["Read"]},"future":"\ud800"}`)
+	host := &Host{options: Options{Print: &PrintOptions{NativeProcess: true}}, internalFastSettings: removed}
+	if err := host.validateASKSettingsReference(before, removed); err != nil {
+		t.Fatal(err)
+	}
+	host.clearInternalSettingsCertificate()
+	if err := host.validateASKSettingsReference(before, removed); err == nil {
+		t.Fatal("a retired fast-mode cache bypassed the next settings lifecycle")
+	}
+}

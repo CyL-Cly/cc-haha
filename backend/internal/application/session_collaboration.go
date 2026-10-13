@@ -50,18 +50,17 @@ func (d *DesktopSession) EnqueueCollaboration(ctx context.Context, message proto
 		d.runtimeMu.Unlock()
 		return result, nil
 	}
-	d.running = true
+	d.running, d.foregroundPending = true, true
 	d.projection.Stopped = false
 	engine := d.engine
 	d.mu.Unlock()
 	d.runtimeMu.Unlock()
-	d.emit(frame("session_state", field("turnState", "running")))
+	d.emit(frame("status", field("state", "thinking"), field("verb", "Thinking")))
 	go func() {
 		err := engine.RunCollaboration(d.ctx)
 		d.mu.Lock()
-		d.running = false
+		d.running, d.foregroundPending = false, false
 		d.mu.Unlock()
-		d.emit(frame("session_state", field("turnState", "idle")))
 		if restartErr := d.applyDeferredRuntime(d.ctx); err == nil {
 			err = restartErr
 		}

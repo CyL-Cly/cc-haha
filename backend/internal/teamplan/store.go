@@ -419,7 +419,7 @@ func (s *Store) StageMember(team string, member protocol.JSONObject) (out protoc
 			return e
 		}
 		if approved {
-			return failure("A running team already has this member", 409)
+			return failure("A running team already has member "+member.String("name")+". Give it more work with SendMessage instead; a stopped member restarts from its saved conversation when messaged.", 409)
 		}
 		out = plan.Clone()
 		if out.String("state") == "running" {

@@ -51,9 +51,6 @@ func (pending *PendingWriter) BeginAppend(scope *cooperative.Scope, loader *sess
 				return e
 			}
 		}
-		if envTruthy(writer.options.Environment["ENABLE_SESSION_PERSISTENCE"]) {
-			return capability("active remote transcript append")
-		}
 		future = newWriteFuture()
 		job := &appendContinuation{pending: pending, entry: entry, sid: sid, path: path, future: future}
 		if skipped {
@@ -254,6 +251,9 @@ func (job *appendContinuation) complete(s *cooperative.Scope, err error) {
 	}
 	if err == nil && job.add {
 		err = job.set.Add(s, job.entry.Get("uuid"))
+	}
+	if err == nil && job.persistRemote(s) {
+		return
 	}
 	job.future.settle(err)
 }

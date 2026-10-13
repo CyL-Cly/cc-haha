@@ -7,7 +7,9 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/provider"
 	"github.com/NanmiCoder/cc-haha/backend/internal/storage"
 	"github.com/NanmiCoder/cc-haha/backend/internal/streamhistory"
+	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 	"unicode/utf16"
 )
@@ -69,6 +71,13 @@ func apiDetail(sdk *provider.SDKStreamError) (json.RawMessage, error) {
 	units, e := protocol.DecodeJavaScriptJSONString(raw)
 	if e != nil {
 		return nil, e
+	}
+	if sdk.Status != nil {
+		prefix := utf16.Encode([]rune(strconv.Itoa(*sdk.Status) + " "))
+		if len(units) >= len(prefix) && reflect.DeepEqual(units[:len(prefix)], prefix) {
+			units = units[len(prefix):]
+			raw = protocol.QuoteJavaScriptUTF16(units)
+		}
 	}
 	body := sdk.Payload
 	if body == nil || string(body) == "null" {
@@ -178,6 +187,35 @@ func StreamFailure(failure error, domain Domain, factory *messages.Factory) (*st
 // Only the native body's proven Bun socket failure is converted here; arbitrary
 // host/admin errors keep their original admission boundary.
 func NativeStreamFailure(failure error, domain Domain, factory *messages.Factory) (*streamhistory.Envelope, error) {
+	if watchdog, ok := failure.(*streamhistory.WatchdogTimeoutError); ok {
+		diagnostic, err := watchdog.DiagnosticJSON()
+		if err != nil {
+			return nil, err
+		}
+		record, err := factory.CreateOrderedAssistantAPIError(storage.Object{"content": quote("API Error: " + watchdog.Error()), "error": quote("server_error"), "errorDetails": quote(string(diagnostic))})
+		if err != nil {
+			return nil, err
+		}
+		return streamFailureEnvelope(record)
+	}
+	if early, ok := failure.(*streamhistory.StreamEndedEarlyError); ok {
+		details := protocol.NewJSONObject(protocol.JSONField{Name: "reason", Value: quote(early.Reason)}, protocol.JSONField{Name: "retries", Value: json.RawMessage(strconv.Itoa(early.Retries))})
+		raw, _ := json.Marshal(early.Evidence)
+		var evidence protocol.JSONObject
+		if e := evidence.UnmarshalJSON(raw); e != nil {
+			return nil, e
+		}
+		details.Assign(evidence)
+		encoded, e := details.MarshalJSON()
+		if e != nil {
+			return nil, e
+		}
+		record, e := factory.CreateOrderedAssistantAPIError(storage.Object{"content": quote("API Error: " + early.Format()), "error": quote("unknown"), "errorDetails": quote(string(encoded)), "businessErrorCode": quote("upstream_stream_interrupted")})
+		if e != nil {
+			return nil, e
+		}
+		return streamFailureEnvelope(record)
+	}
 	if native, ok := failure.(*provider.NativeStreamReadError); ok {
 		original, e := NewOriginalError(quote(native.Error()))
 		if e != nil {
@@ -186,4 +224,20 @@ func NativeStreamFailure(failure error, domain Domain, factory *messages.Factory
 		return StreamFailure(original, domain, factory)
 	}
 	return StreamFailure(failure, domain, factory)
+}
+
+func streamFailureEnvelope(record protocol.JSONObject) (*streamhistory.Envelope, error) {
+	var message protocol.JSONObject
+	if e := message.UnmarshalJSON(record.Get("message")); e != nil {
+		return nil, e
+	}
+	var blocks []protocol.JSONObject
+	if e := json.Unmarshal(message.Get("content"), &blocks); e != nil {
+		return nil, e
+	}
+	content := make([]*streamhistory.Block, 0, len(blocks))
+	for _, block := range blocks {
+		content = append(content, &streamhistory.Block{Object: block})
+	}
+	return &streamhistory.Envelope{Record: record, Message: message, Content: content, Usage: &streamhistory.Usage{Raw: message.Get("usage")}, UUID: record.String("uuid"), APIError: true}, nil
 }

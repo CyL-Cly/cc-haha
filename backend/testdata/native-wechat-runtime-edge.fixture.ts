@@ -1,4 +1,5 @@
 import { mock } from 'bun:test'
+import { adapterMigrationLifecycle } from '../../adapters/common/migration-lifecycle'
 import { readFileSync, mkdirSync, writeFileSync, readdirSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { assertDisposableFixtureHome } from '../../scripts/quality-gate/go-parity/fixture-guard'
@@ -118,6 +119,11 @@ if (input.mode === 'route') {
     process.stdout.write(JSON.stringify({ unauthorized, during }))
     // Execute the unchanged original signal handler, including process.exit.
     process.emit('SIGINT')
+    if (!adapterMigrationLifecycle.isQuiescing) throw new Error('Original shutdown did not enter migration drain')
+    // MAIN now waits for the already accepted download. Release the physical
+    // loopback barrier only after the actual signal handler closes admission.
+    await control('release')
+    await new Promise(() => {})
     throw new Error('Original Wechat SIGINT must terminate')
   }
   await control('release')

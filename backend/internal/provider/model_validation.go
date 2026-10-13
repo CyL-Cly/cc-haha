@@ -28,11 +28,11 @@ func (client *Anthropic) CreateModelValidationMessageObserved(ctx context.Contex
 		}
 		switch err.Error() {
 		case "Connection error.":
-			return response, &SDKStreamError{Kind: "request_connection", Class: "APIConnectionError", Name: "Error", Message: err.Error(), MessageJSON: []byte(`"Connection error."`), Cause: err}
+			return response, &SDKStreamError{Kind: "request_connection", Class: "APIConnectionError", Name: "Error", Message: err.Error(), MessageJSON: []byte(`"Connection error."`), Type: json.RawMessage(`null`), Cause: err}
 		case "Request timed out.":
-			return response, &SDKStreamError{Kind: "request_connection", Class: "APIConnectionTimeoutError", Name: "Error", Message: err.Error(), MessageJSON: []byte(`"Request timed out."`), Cause: err}
+			return response, &SDKStreamError{Kind: "request_connection", Class: "APIConnectionTimeoutError", Name: "Error", Message: err.Error(), MessageJSON: []byte(`"Request timed out."`), Type: json.RawMessage(`null`), Cause: err}
 		case "Request was aborted.":
-			return response, &SDKStreamError{Kind: "caller_abort", Class: "APIUserAbortError", Name: "Error", Message: err.Error(), MessageJSON: []byte(`"Request was aborted."`), Cause: err}
+			return response, &SDKStreamError{Kind: "caller_abort", Class: "APIUserAbortError", Name: "Error", Message: err.Error(), MessageJSON: []byte(`"Request was aborted."`), Type: json.RawMessage(`null`), Cause: err}
 		}
 	}
 	return response, err

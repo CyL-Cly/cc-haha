@@ -34,6 +34,8 @@ func (s *Session) SubscribeTeammates(ctx context.Context, callback func(protocol
 }
 func (s *Session) ControlTeammate(ctx context.Context, action tui.TeammateAction) error {
 	switch action.Kind {
+	case "stop-dream":
+		return s.process.StopNativeAutoDream(ctx, action.TaskID)
 	case "enter":
 		return s.process.SetTeammateView(ctx, action.TaskID)
 	case "exit":

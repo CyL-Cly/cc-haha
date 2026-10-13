@@ -17,6 +17,7 @@ type InboxOptions struct {
 	ReadPending         func(context.Context) (string, bool, error)
 	Sleep               func(context.Context, time.Duration) error
 	Log                 func(error)
+	Now                 func() time.Time
 }
 type Inbox struct{ options InboxOptions }
 
@@ -35,6 +36,9 @@ func NewInbox(o InboxOptions) (*Inbox, error) {
 				return context.Cause(ctx)
 			}
 		}
+	}
+	if o.Now == nil {
+		o.Now = time.Now
 	}
 	return &Inbox{options: o}, nil
 }
@@ -71,11 +75,41 @@ func abortedPrompt() protocol.JSONObject {
 	return protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoted("aborted")})
 }
 
-// Wait preserves original pending-user -> shutdown -> leader -> FIFO -> task
-// priority. Reading and marking use the original shared physical mailbox.
-func (s *Inbox) Wait(ctx context.Context) (protocol.JSONObject, error) {
+// Wait preserves pending user input, then shutdown or mailbox batch, then task
+// priority. Reading and claiming share the physical mailbox transaction.
+type WaitOptions struct {
+	Deadline      time.Time
+	CancelContext context.Context
+	ClaimTasks    *bool
+}
+
+func (s *Inbox) Wait(ctx context.Context, options ...WaitOptions) (protocol.JSONObject, error) {
+	o := WaitOptions{}
+	if len(options) > 0 {
+		o = options[0]
+	}
+	sleepContext, cancelSleep := context.WithCancel(ctx)
+	defer cancelSleep()
+	if o.CancelContext != nil {
+		stop := context.AfterFunc(o.CancelContext, cancelSleep)
+		defer stop()
+	}
+	interrupted := func() *protocol.JSONObject {
+		if ctx.Err() != nil {
+			value := abortedPrompt()
+			return &value
+		}
+		if o.CancelContext != nil && o.CancelContext.Err() != nil {
+			value := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoted("cancelled")})
+			return &value
+		}
+		return nil
+	}
 	polls := 0
-	for ctx.Err() == nil {
+	for {
+		if result := interrupted(); result != nil {
+			return *result, nil
+		}
 		pending, ok, err := s.options.ReadPending(ctx)
 		if err != nil {
 			return protocol.JSONObject{}, err
@@ -84,16 +118,22 @@ func (s *Inbox) Wait(ctx context.Context) (protocol.JSONObject, error) {
 			return protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoted("new_message")}, protocol.JSONField{Name: "message", Value: quoted(pending)}, protocol.JSONField{Name: "from", Value: quoted("user")}), nil
 		}
 		if polls > 0 {
-			if err = s.options.Sleep(ctx, 500*time.Millisecond); err != nil {
-				if ctx.Err() != nil {
-					return abortedPrompt(), nil
+			wait := 500 * time.Millisecond
+			if !o.Deadline.IsZero() && o.Deadline.Sub(s.options.Now()) < wait {
+				wait = o.Deadline.Sub(s.options.Now())
+			}
+			if wait > 0 {
+				if err = s.options.Sleep(sleepContext, wait); err != nil {
+					if result := interrupted(); result != nil {
+						return *result, nil
+					}
+					return protocol.JSONObject{}, err
 				}
-				return protocol.JSONObject{}, err
 			}
 		}
 		polls++
-		if ctx.Err() != nil {
-			return abortedPrompt(), nil
+		if result := interrupted(); result != nil {
+			return *result, nil
 		}
 		message, err := s.pollMailbox()
 		if err != nil {
@@ -101,64 +141,77 @@ func (s *Inbox) Wait(ctx context.Context) (protocol.JSONObject, error) {
 		} else if message != nil {
 			return *message, nil
 		}
-		prompt, err := s.claimNext()
-		if err != nil {
-			s.options.Log(err)
-		} else if prompt != nil {
-			return protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoted("new_message")}, protocol.JSONField{Name: "message", Value: *prompt}, protocol.JSONField{Name: "from", Value: quoted("task-list")}), nil
+		if o.ClaimTasks == nil || *o.ClaimTasks {
+			prompt, err := s.claimNext()
+			if err != nil {
+				s.options.Log(err)
+			} else if prompt != nil {
+				return protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoted("new_message")}, protocol.JSONField{Name: "message", Value: *prompt}, protocol.JSONField{Name: "from", Value: quoted("task-list")}), nil
+			}
+		}
+		if !o.Deadline.IsZero() && !s.options.Now().Before(o.Deadline) {
+			return protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoted("timeout")}), nil
 		}
 	}
-	return abortedPrompt(), nil
 }
+
+// PollMailbox drains every deliverable message as a single next prompt. Protocol
+// frames are claimed without model delivery; a shutdown is delivered first alone.
+func (s *Inbox) PollMailbox() (*protocol.JSONObject, error) { return s.pollMailbox() }
 func (s *Inbox) pollMailbox() (*protocol.JSONObject, error) {
-	var raw []json.RawMessage
-	if err := json.Unmarshal(s.options.Mailbox.Read(s.options.AgentName, s.options.TeamName), &raw); err != nil {
-		return nil, err
+	unread, e := s.options.Mailbox.Unread(s.options.AgentName, s.options.TeamName)
+	if e != nil {
+		return nil, e
 	}
-	rows := make([]protocol.JSONObject, len(raw))
-	for i, row := range raw {
-		rows[i] = inboxObject(row)
-	}
-	for i, row := range rows {
-		if !row.IsObject() || inboxTruthy(row.Get("read")) {
-			continue
-		}
+	for _, data := range unread {
+		row := inboxObject(data)
 		request := shutdownRequest(row.String("text"))
 		if request == nil {
 			continue
 		}
-		if err := s.options.Mailbox.MarkIndex(s.options.AgentName, s.options.TeamName, i); err != nil {
-			return nil, err
+		claimed, e := s.options.Mailbox.Claim(s.options.AgentName, s.options.TeamName, []json.RawMessage{data})
+		if e != nil {
+			return nil, e
 		}
-		result := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoted("shutdown_request")}, protocol.JSONField{Name: "request", Value: rawJSON(*request)}, protocol.JSONField{Name: "originalMessage", Value: row.Get("text")})
+		if len(claimed) == 0 {
+			return nil, nil
+		}
+		from := request.String("from")
+		if from == "" {
+			from = row.String("from")
+		}
+		if from == "" {
+			from = "team-lead"
+		}
+		result := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoted("shutdown_request")}, protocol.JSONField{Name: "from", Value: quoted(from)}, protocol.JSONField{Name: "originalMessage", Value: row.Get("text")})
 		return &result, nil
 	}
-	selected := -1
-	for i, row := range rows {
-		if row.IsObject() && !inboxTruthy(row.Get("read")) && row.String("from") == "team-lead" {
-			selected = i
-			break
+	deliverable, frames := []json.RawMessage{}, []json.RawMessage{}
+	for _, data := range unread {
+		row := inboxObject(data)
+		kind, _ := ParseInteractiveProtocol(row.String("text"))
+		if !StructuredProtocolMessage(row.String("text")) || row.String("from") == "team-lead" && kind == "plan_approval_response" {
+			deliverable = append(deliverable, data)
+		} else {
+			frames = append(frames, data)
 		}
 	}
-	if selected < 0 {
-		for i, row := range rows {
-			if !row.IsObject() {
-				return nil, errors.New("Cannot read properties of null (reading 'read')")
-			}
-			if !inboxTruthy(row.Get("read")) {
-				selected = i
-				break
-			}
+	if len(frames) > 0 {
+		if _, e = s.options.Mailbox.Claim(s.options.AgentName, s.options.TeamName, frames); e != nil {
+			return nil, e
 		}
 	}
-	if selected < 0 {
+	if len(deliverable) == 0 {
 		return nil, nil
 	}
-	row := rows[selected]
-	if err := s.options.Mailbox.MarkIndex(s.options.AgentName, s.options.TeamName, selected); err != nil {
-		return nil, err
+	claimed, e := s.options.Mailbox.Claim(s.options.AgentName, s.options.TeamName, deliverable)
+	if e != nil {
+		return nil, e
 	}
-	result := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoted("new_message")}, protocol.JSONField{Name: "message", Value: row.Get("text")}, protocol.JSONField{Name: "from", Value: row.Get("from")}, protocol.JSONField{Name: "color", Value: row.Get("color")}, protocol.JSONField{Name: "summary", Value: row.Get("summary")})
+	if len(claimed) == 0 {
+		return nil, nil
+	}
+	result := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoted("new_messages")}, protocol.JSONField{Name: "messages", Value: rawJSON(claimed)})
 	return &result, nil
 }
 func rawJSON(value any) json.RawMessage { data, _ := json.Marshal(value); return data }

@@ -8,10 +8,12 @@ import (
 	"io/fs"
 	"math"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"syscall"
 	"unicode/utf16"
 
+	"github.com/NanmiCoder/cc-haha/backend/internal/nativepaths"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/sessionprojection"
 	"github.com/NanmiCoder/cc-haha/backend/internal/storage"
@@ -115,6 +117,9 @@ func (cache *ReadCache) Clone() *ReadCache {
 	return result
 }
 func expandFilePath(value json.RawMessage, cwd, home string) (string, error) {
+	return expandFilePathPlatform(value, cwd, home, runtime.GOOS)
+}
+func expandFilePathPlatform(value json.RawMessage, cwd, home, platform string) (string, error) {
 	units, err := protocol.DecodeJavaScriptJSONString(value)
 	if err != nil {
 		return "", capability("non-string tool file path")
@@ -126,6 +131,9 @@ func expandFilePath(value json.RawMessage, cwd, home string) (string, error) {
 	}
 	if strings.ContainsRune(path, 0) {
 		return "", errors.New("Path contains null bytes")
+	}
+	if platform == "windows" {
+		return nativepaths.ExpandWindows(path, cwd, home)
 	}
 	switch {
 	case path == "":

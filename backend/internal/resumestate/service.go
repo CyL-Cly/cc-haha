@@ -118,6 +118,7 @@ type Input struct {
 	Original  *OriginalLog
 	Source    json.RawMessage
 	JSONLPath string
+	ResumeAt  string // Inclusive persisted-chain boundary, before resume filtering.
 }
 type Result struct {
 	sessionresume.Result
@@ -252,6 +253,10 @@ func (service *Service) Load(input Input) (result *Result, err error) {
 			return nil, err
 		}
 	}
+	rawMessages, err = truncatePersistedHistory(rawMessages, input.ResumeAt)
+	if err != nil {
+		return nil, err
+	}
 	history, err := sessionresume.ParseMessages(rawMessages)
 	if err != nil {
 		return nil, err
@@ -263,7 +268,7 @@ func (service *Service) Load(input Input) (result *Result, err error) {
 	if err = service.restoreSkills(history); err != nil {
 		return nil, err
 	}
-	reduced, err := service.options.Reducer.Deserialize(history)
+	reduced, err := service.options.Reducer.DeserializeWithOptions(history, sessionresume.DeserializeOptions{Truncated: input.ResumeAt != ""})
 	if err != nil {
 		return nil, err
 	}

@@ -64,6 +64,9 @@ func PrepareOpenAIRequestBody(original protocol.JSONObject, env map[string]strin
 	upstream.Set("reasoning", requestEncode(reasoning))
 	upstream.Set("include", requestEncode([]string{"reasoning.encrypted_content"}))
 	upstream.Set("stream", requestEncode(true))
+	if env["CC_HAHA_OPENAI_FAST_MODE"] == "1" {
+		upstream.Set("service_tier", requestEncode("priority"))
+	}
 	return OpenAIRequest{Endpoint: OpenAICodexEndpoint, Model: model, Body: upstream, RequestStream: requestTruthy(transformed.Get("stream"))}, nil
 }
 

@@ -63,6 +63,7 @@ func (s *State) SetInitialHistory(records []protocol.JSONObject, fullscreen bool
 				entry.Kind, entry.Text, entry.TranscriptOnly = "thinking", block.String("thinking"), true
 			case "redacted_thinking":
 				entry.Kind, entry.Text, entry.TranscriptOnly = "thinking", "[Redacted thinking]", true
+				entry.Redacted = true
 			case "tool_use":
 				entry.Kind, entry.ToolID, entry.ToolName = "tool", block.String("id"), block.String("name")
 				entry.Input = append(json.RawMessage(nil), block.Get("input")...)

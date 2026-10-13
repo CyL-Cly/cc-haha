@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"strconv"
 	"time"
 
 	"go.mau.fi/whatsmeow/proto/waE2E"
@@ -13,6 +14,28 @@ import (
 	"go.mau.fi/whatsmeow/types"
 	"google.golang.org/protobuf/proto"
 )
+
+// The original protobufjs AppStateSyncKeyData JSON producer writes int64
+// timestamps as decimal strings. Native replacements historically used JSON
+// numbers; both representations must survive a cold auth-directory migration.
+func appStateTimestamp(raw json.RawMessage) (int64, error) {
+	if len(raw) == 0 || string(raw) == "null" {
+		return 0, nil
+	}
+	var number int64
+	if json.Unmarshal(raw, &number) == nil {
+		return number, nil
+	}
+	var decimal string
+	if json.Unmarshal(raw, &decimal) != nil {
+		return 0, errors.New("invalid original app-state timestamp")
+	}
+	number, err := strconv.ParseInt(decimal, 10, 64)
+	if err != nil {
+		return 0, errors.New("invalid original app-state timestamp")
+	}
+	return number, nil
+}
 
 // App state versions and keys use the original Baileys key categories. Names,
 // presence and decrypted-event bookkeeping are runtime caches, matching the
@@ -22,7 +45,20 @@ func (n *NodeDeviceStore) PutAppStateSyncKey(ctx context.Context, id []byte, key
 	if e := proto.Unmarshal(key.Fingerprint, &fp); e != nil {
 		return e
 	}
-	return n.putKey(ctx, "app-state-sync-key", base64.StdEncoding.EncodeToString(id), nodeObject{"keyData": nodeBuffer(key.Data), "fingerprint": nodeJSON(&fp), "timestamp": nodeJSON(key.Timestamp)})
+	// The pinned Node schema uses rawId while the Go protobuf generated field
+	// JSON tag is rawID. Write the original auth JSON spelling, or an original
+	// peer silently loses the raw-id discriminator after the native update.
+	fingerprint := nodeObject{}
+	if fp.RawID != nil {
+		fingerprint["rawId"] = nodeJSON(*fp.RawID)
+	}
+	if fp.CurrentIndex != nil {
+		fingerprint["currentIndex"] = nodeJSON(*fp.CurrentIndex)
+	}
+	if len(fp.DeviceIndexes) > 0 {
+		fingerprint["deviceIndexes"] = nodeJSON(fp.DeviceIndexes)
+	}
+	return n.putKey(ctx, "app-state-sync-key", base64.StdEncoding.EncodeToString(id), nodeObject{"keyData": nodeBuffer(key.Data), "fingerprint": nodeJSON(fingerprint), "timestamp": nodeJSON(key.Timestamp)})
 }
 func (n *NodeDeviceStore) GetAppStateSyncKey(ctx context.Context, id []byte) (*store.AppStateSyncKey, error) {
 	raw, e := n.getKey(ctx, "app-state-sync-key", base64.StdEncoding.EncodeToString(id))
@@ -38,7 +74,11 @@ func (n *NodeDeviceStore) GetAppStateSyncKey(ctx context.Context, id []byte) (*s
 	if e != nil {
 		return nil, e
 	}
-	return &store.AppStateSyncKey{Data: nodeBytes(o["keyData"]), Fingerprint: b, Timestamp: nodeNumber(o["timestamp"])}, nil
+	timestamp, e := appStateTimestamp(o["timestamp"])
+	if e != nil {
+		return nil, e
+	}
+	return &store.AppStateSyncKey{Data: nodeBytes(o["keyData"]), Fingerprint: b, Timestamp: timestamp}, nil
 }
 func (n *NodeDeviceStore) GetLatestAppStateSyncKeyID(ctx context.Context) ([]byte, error) {
 	n.mu.Lock()
@@ -51,6 +91,9 @@ func (n *NodeDeviceStore) GetLatestAppStateSyncKeyID(ctx context.Context) ([]byt
 	return nodeBytes(n.Signal.Creds["myAppStateKeyId"]), nil
 }
 func (n *NodeDeviceStore) GetAllAppStateSyncKeys(ctx context.Context) ([]*store.AppStateSyncKey, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
 	ids, e := n.keysByCategory("app-state-sync-key")
 	if e != nil {
 		return nil, e
@@ -70,7 +113,11 @@ func (n *NodeDeviceStore) GetAllAppStateSyncKeys(ctx context.Context) ([]*store.
 		if e != nil {
 			return nil, e
 		}
-		out = append(out, &store.AppStateSyncKey{Data: nodeBytes(o["keyData"]), Timestamp: nodeNumber(o["timestamp"]), Fingerprint: b})
+		timestamp, e := appStateTimestamp(o["timestamp"])
+		if e != nil {
+			return nil, e
+		}
+		out = append(out, &store.AppStateSyncKey{Data: nodeBytes(o["keyData"]), Timestamp: timestamp, Fingerprint: b})
 	}
 	return out, nil
 }

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/NanmiCoder/cc-haha/backend/internal/storagerelocations"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -32,6 +33,10 @@ func (server *Server) filesystemPath(value string) string {
 		value = filepath.VolumeName(server.options.WorkDir) + value
 	}
 	return resolveFrom(server.options.WorkDir, normalizeDriveRoot(value))
+}
+
+func (server *Server) relocatedFilesystemPath(value string) (string, error) {
+	return storagerelocations.Resolve(server.filesystemPath(value), server.options.ConfigDir)
 }
 
 // Missing descendants inherit the closest existing ancestor's canonical path,
@@ -88,7 +93,7 @@ func (server *Server) RegisterChangedFileAccessRoot(file, workDir string) {
 
 func (server *Server) filesystemAllowed(path string) bool {
 	path = canonicalAccessPath(path)
-	for _, root := range []string{server.options.HomeDir, "/tmp"} {
+	for _, root := range []string{server.options.HomeDir, "/tmp", server.options.ConfigDir} {
 		if sameOrInsideFilesystemPath(path, canonicalAccessPath(server.filesystemPath(root))) {
 			return true
 		}
@@ -118,7 +123,10 @@ func (server *Server) filesystemHTTP(writer http.ResponseWriter, request *http.R
 	if value == "" {
 		value = server.options.HomeDir
 	}
-	resolved := server.filesystemPath(value)
+	resolved, err := server.relocatedFilesystemPath(value)
+	if err != nil {
+		return err
+	}
 	canonical, err := filepath.EvalSymlinks(resolved)
 	if err != nil {
 		if !server.filesystemAllowed(resolved) {
@@ -186,7 +194,10 @@ func (server *Server) filesystemImage(writer http.ResponseWriter, request *http.
 	} else if strings.HasPrefix(value, "~/") || runtime.GOOS == "windows" && strings.HasPrefix(value, `~\`) {
 		value = filepath.Join(server.options.HomeDir, value[2:])
 	}
-	resolved := server.filesystemPath(value)
+	resolved, err := server.relocatedFilesystemPath(value)
+	if err != nil {
+		return err
+	}
 	canonical, err := filepath.EvalSymlinks(resolved)
 	if err != nil {
 		if !server.filesystemAllowed(resolved) {

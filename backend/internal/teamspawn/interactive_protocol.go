@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/sdkpermissions"
+	"github.com/NanmiCoder/cc-haha/backend/internal/teamstore"
 )
 
 // ParseInteractiveProtocol preserves teammateMailbox's distinct schemas. The
@@ -137,14 +138,14 @@ func FormatInteractiveTeammateMessages(messages []protocol.JSONObject) (json.Raw
 	rows := make([]json.RawMessage, 0, len(messages))
 	for _, message := range messages {
 		pieces := []json.RawMessage{quoted(`<teammate-message teammate_id="`)}
-		from, err := protocol.ExactJavaScriptStringJSON(message.Get("from"))
+		from, err := teamstore.EscapeXMLAttrJSON(message.Get("from"))
 		if err != nil {
 			return nil, err
 		}
 		pieces = append(pieces, from, quoted(`"`))
 		for _, key := range []string{"color", "summary"} {
 			if leaderTruthy(message.Get(key)) {
-				v, err := protocol.ExactJavaScriptStringJSON(message.Get(key))
+				v, err := teamstore.EscapeXMLAttrJSON(message.Get(key))
 				if err != nil {
 					return nil, err
 				}

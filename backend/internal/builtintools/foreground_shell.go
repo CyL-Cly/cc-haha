@@ -24,17 +24,18 @@ import (
 )
 
 type foregroundShellProcess struct {
-	shell       *backgroundShell
-	mu          sync.Mutex
-	background  bool
-	byUser      bool
-	endOnce     sync.Once
-	autoWake    chan struct{}
-	done        chan struct{}
-	ended       chan struct{}
-	totalLines  int64
-	outputSize  int64
-	outputLarge bool
+	shell           *backgroundShell
+	mu              sync.Mutex
+	background      bool
+	byUser          bool
+	endOnce         sync.Once
+	autoWake        chan struct{}
+	done            chan struct{}
+	ended           chan struct{}
+	totalLines      int64
+	outputSize      int64
+	outputLarge     bool
+	submitInterrupt bool
 }
 
 // promote changes the live process's ownership without spawning a second
@@ -75,7 +76,7 @@ func (s *Service) foregroundBash(ctx context.Context, in protocol.JSONObject, ca
 	if !s.HasBackgroundTaskBindings() {
 		return nil, capability("foreground Bash shared task ownership")
 	}
-	sandbox, e := s.selectBashSandbox(scope, in)
+	sandbox, e := s.shellSandbox(scope, in)
 	if e != nil {
 		return nil, e
 	}
@@ -96,15 +97,15 @@ func (s *Service) foregroundBash(ctx context.Context, in protocol.JSONObject, ca
 	if e != nil {
 		return nil, e
 	}
-	shell := environment["SHELL"]
-	if shell == "" {
-		shell = "/bin/bash"
+	shell, e := s.shellExecutable(scope, environment)
+	if e != nil {
+		return nil, e
 	}
 	executable, e := executableInEnvironment(shell, environment)
 	if e != nil {
 		return nil, e
 	}
-	timeout := nativeBashTimeout(in, environment)
+	timeout := s.shellTimeout(in, environment)
 	execution, e := s.prepareBashExecution(ctx, scope, command, id)
 	if e != nil {
 		return nil, e
@@ -146,12 +147,12 @@ func (s *Service) foregroundBash(ctx context.Context, in protocol.JSONObject, ca
 		if e != nil {
 			return nil, e
 		}
-		cmd := exec.CommandContext(processContext, executable, "-l", "-c", executionCommand)
+		cmd := exec.CommandContext(processContext, executable, s.shellArgs(executionCommand)...)
 		cmd.Dir = execution.OriginalCwd
 		cmd.Env = env
 		cmd.Stdout = output
 		cmd.Stderr = output
-		configureProcess(cmd)
+		s.configureShell(cmd)
 		if e = cmd.Start(); e != nil {
 			_ = output.Close()
 			return nil, e
@@ -244,50 +245,60 @@ func (s *Service) foregroundBash(ctx context.Context, in protocol.JSONObject, ca
 		cancel(e)
 		return nil, e
 	}
-	shouldAutoBackground, e := nativeBashAutoBackgroundAllowed(command, s.options.Platform)
+	shouldAutoBackground, e := s.shellAutoBackgroundAllowed(command)
 	if e != nil {
 		cancel(e)
 		return nil, e
+	}
+	promoteAutomatic := func(submitInterrupt bool) {
+		receipt, e := s.options.Owner.SubmitIndependent(context.Background(), cooperative.Read, func(scope *cooperative.Scope) error {
+			if !p.promote(false) {
+				return nil
+			}
+			p.mu.Lock()
+			p.submitInterrupt = submitInterrupt
+			p.mu.Unlock()
+			if !registered {
+				if e := s.registerForegroundShell(scope, p, completed, id, command, description, call.ToolUseID, true); e != nil {
+					return e
+				}
+				registered = true
+			} else if e := s.options.BackgroundTasks.Update(scope, id, func(task protocol.JSONObject) (protocol.JSONObject, error) {
+				task = task.Clone()
+				task.Set("isBackgrounded", raw(true))
+				return task, nil
+			}); e != nil {
+				return e
+			}
+			if e := s.startForegroundShellBackground(scope, p, id, description, call.ToolUseID); e != nil {
+				return e
+			}
+			close(p.autoWake)
+			return nil
+		})
+		if e == nil {
+			e = receipt.Wait()
+		}
+		if e != nil {
+			p.shell.cancel(e)
+		}
 	}
 	go func() {
 		timer := time.NewTimer(nativeBashTimerDuration(timeout))
 		defer timer.Stop()
 		select {
 		case <-ctx.Done():
-			p.cancelForeground(context.Cause(ctx))
+			if s.isPowerShell() && context.Cause(ctx) == queryloop.SubmitInterrupt && !skillSimple(s.options.Environment["CLAUDE_CODE_DISABLE_BACKGROUND_TASKS"]) {
+				promoteAutomatic(true)
+			} else {
+				p.cancelForeground(context.Cause(ctx))
+			}
 		case <-timer.C:
 			if !shouldAutoBackground {
 				p.cancelForeground(context.DeadlineExceeded)
 				return
 			}
-			receipt, e := s.options.Owner.SubmitIndependent(context.Background(), cooperative.Read, func(scope *cooperative.Scope) error {
-				if !p.promote(false) {
-					return nil
-				}
-				if !registered {
-					if e := s.registerForegroundShell(scope, p, completed, id, command, description, call.ToolUseID, true); e != nil {
-						return e
-					}
-					registered = true
-				} else if e := s.options.BackgroundTasks.Update(scope, id, func(task protocol.JSONObject) (protocol.JSONObject, error) {
-					task = task.Clone()
-					task.Set("isBackgrounded", raw(true))
-					return task, nil
-				}); e != nil {
-					return e
-				}
-				if e := s.startForegroundShellBackground(scope, p, id, description, call.ToolUseID); e != nil {
-					return e
-				}
-				close(p.autoWake)
-				return nil
-			})
-			if e == nil {
-				e = receipt.Wait()
-			}
-			if e != nil {
-				p.shell.cancel(e)
-			}
+			promoteAutomatic(false)
 		case <-p.done:
 		case <-p.ended:
 		}
@@ -323,14 +334,22 @@ func (s *Service) foregroundBash(ctx context.Context, in protocol.JSONObject, ca
 			if !p.isBackground() && !p.outputLarge {
 				_ = os.Remove(path)
 			}
-			failed, e := bashResultIsError(s.options.Platform, command, result.Code)
+			failed, e := s.shellResultIsError(command, result.Code)
 			if e != nil {
 				return nil, e
 			}
-			if failed && ctx.Err() == nil {
+			if s.isPowerShell() || !(failed && ctx.Err() == nil) {
+				if e = s.stripProcessHints(scope, &result, command); e != nil {
+					return nil, e
+				}
+			}
+			if failed && (ctx.Err() == nil || s.isPowerShell() && context.Cause(ctx) != queryloop.SubmitInterrupt) {
+				if s.isPowerShell() {
+					return nil, &toolerrors.ShellError{Stdout: result.Out, Stderr: result.Err, Code: result.Code, Interrupted: result.Interrupted}
+				}
 				return nil, &toolerrors.ShellError{Stderr: result.Out, Code: result.Code, Interrupted: result.Interrupted}
 			}
-			data := protocol.NewJSONObject(field("stdout", strings.TrimRightFunc(result.Out, bashSpace)+"\n"), field("stderr", result.Err), field("interrupted", result.Interrupted), field("isImage", false), field("noOutputExpected", nativeBashSilent(command, s.options.Platform)))
+			data := s.shellCompletedData(command, result)
 			if p.outputLarge {
 				output, e := s.PersistForegroundShellOutput(scope, path, id, p.outputSize)
 				if e != nil {
@@ -381,7 +400,33 @@ func (s *Service) foregroundBash(ctx context.Context, in protocol.JSONObject, ca
 			}
 		}
 		if p.isBackground() {
-			data := protocol.NewJSONObject(field("stdout", ""), field("stderr", ""), field("interrupted", false), field("isImage", false), field("backgroundTaskId", id), field("noOutputExpected", nativeBashSilent(command, s.options.Platform)))
+			data := s.shellBackgroundData(command, id)
+			if s.isPowerShell() && !p.byUser {
+				data.Set("assistantAutoBackgrounded", raw(false))
+			}
+			p.mu.Lock()
+			interrupted := p.submitInterrupt
+			p.mu.Unlock()
+			if interrupted {
+				future, err := native(s, scope, func() (json.RawMessage, error) { return taskTail(path, 150000) })
+				if err != nil {
+					return nil, err
+				}
+				output, err := future.Await(scope)
+				if err != nil {
+					return nil, err
+				}
+				var value string
+				if err := json.Unmarshal(output, &value); err != nil {
+					return nil, err
+				}
+				data.Set("stdout", quote(value))
+			}
+			stripped, err := s.extractShellHints(scope, data.Get("stdout"), command, !s.isPowerShell())
+			if err != nil {
+				return nil, err
+			}
+			data.Set("stdout", stripped)
 			if p.byUser {
 				data.Set("backgroundedByUser", raw(true))
 			}
@@ -404,11 +449,15 @@ func (s *Service) foregroundBash(ctx context.Context, in protocol.JSONObject, ca
 		}
 		p.totalLines = sample.lines
 		if call.OnProgress != nil {
-			value := protocol.NewJSONObject(field("type", "bash_progress"), field("output", sample.last), field("fullOutput", sample.full), field("elapsedTimeSeconds", elapsed), field("totalLines", sample.lines), field("totalBytes", sample.bytes), field("taskId", id))
+			kind, prefix := "bash_progress", "bash-progress"
+			if s.isPowerShell() {
+				kind, prefix = "powershell_progress", "ps-progress"
+			}
+			value := protocol.NewJSONObject(field("type", kind), field("output", sample.last), field("fullOutput", sample.full), field("elapsedTimeSeconds", elapsed), field("totalLines", sample.lines), field("totalBytes", sample.bytes), field("taskId", id))
 			if in.Get("timeout") != nil && timeout != 0 {
 				value.Set("timeoutMs", raw(timeout))
 			}
-			if e = call.OnProgress(quote(fmt.Sprintf("bash-progress-%d", progressCount)), value); e != nil {
+			if e = call.OnProgress(quote(fmt.Sprintf("%s-%d", prefix, progressCount)), value); e != nil {
 				return nil, e
 			}
 			progressCount++

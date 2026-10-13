@@ -11,18 +11,34 @@ import (
 )
 
 type nativeSkillWatcher struct {
-	watcher     *skillwatcher.Watcher
-	unsubscribe func()
-	once        sync.Once
+	watcher            *skillwatcher.Watcher
+	unsubscribe        func()
+	unsubscribeManaged func()
+	managedContext     context.Context
+	managedCancel      context.CancelFunc
+	managedMu          sync.Mutex
+	managedClosed      bool
+	managedPending     sync.WaitGroup
+	once               sync.Once
 }
 
 func (s *nativeSkillWatcher) close() {
 	if s != nil {
 		s.once.Do(func() {
+			s.managedMu.Lock()
+			s.managedClosed = true
+			s.managedMu.Unlock()
+			if s.unsubscribeManaged != nil {
+				s.unsubscribeManaged()
+			}
+			if s.managedCancel != nil {
+				s.managedCancel()
+			}
 			if s.unsubscribe != nil {
 				s.unsubscribe()
 			}
 			s.watcher.Close()
+			s.managedPending.Wait()
 		})
 	}
 }
@@ -30,11 +46,7 @@ func (m *MainPrint) startNativeSkillWatcher() error {
 	if m.skillWatcher != nil || m.agentChild || m.nativeSettings == nil || envTruthyNative(m.options.Native.Environment["CLAUDE_CODE_SIMPLE"]) {
 		return nil
 	}
-	watchOptions := skillwatcher.Options{Paths: m.skillCommands.WatchPaths(context.Background(), m.computerUseConfigPath()), Reload: m.reloadNativeSkillCommands, OnError: func(e error) {
-		m.outputMu.Lock()
-		defer m.outputMu.Unlock()
-		_, _ = fmt.Fprintf(m.options.Error, "Skill command refresh failed: %v\n", e)
-	}}
+	watchOptions := skillwatcher.Options{Paths: m.skillCommands.WatchPaths(context.Background(), m.computerUseConfigPath()), ReconcileMissingPaths: true, Reload: m.reloadNativeSkillCommands, OnError: m.reportNativeSkillRefreshError}
 	if m.options.ComputerUse != nil {
 		watchOptions.Timing = m.options.ComputerUse.SkillWatchTiming
 	}
@@ -42,8 +54,16 @@ func (m *MainPrint) startNativeSkillWatcher() error {
 	if e != nil {
 		return e
 	}
-	m.skillWatcher = &nativeSkillWatcher{watcher: w, unsubscribe: m.skillCommands.OnLoaded(w.NotifyDynamic)}
+	ctx, cancel := context.WithCancel(context.Background())
+	m.skillWatcher = &nativeSkillWatcher{watcher: w, unsubscribe: m.skillCommands.OnLoaded(w.NotifyDynamic), managedContext: ctx, managedCancel: cancel}
+	m.skillWatcher.unsubscribeManaged = subscribeNativeSkillChanges(m.options.Native.Environment["CLAUDE_CONFIG_DIR"], func() error { return m.skillWatcher.enqueueManagedRefresh(m) })
 	return nil
+}
+
+func (m *MainPrint) reportNativeSkillRefreshError(err error) {
+	m.outputMu.Lock()
+	defer m.outputMu.Unlock()
+	_, _ = fmt.Fprintf(m.options.Error, "Skill command refresh failed: %v\n", err)
 }
 func (m *MainPrint) reloadNativeSkillCommands(ctx context.Context, path string, dynamic bool) error {
 	receipt, e := m.Owner.Submit(ctx, cooperative.Input, func(scope *cooperative.Scope) error {

@@ -22,6 +22,7 @@ type Thinking struct {
 }
 
 type Options struct {
+	TaskBudget              *TaskBudget       `json:"taskBudget,omitempty"`
 	Model                   string            `json:"model"`
 	QuerySource             string            `json:"querySource"`
 	QueryTracking           json.RawMessage   `json:"queryTracking,omitempty"`
@@ -38,34 +39,41 @@ type Options struct {
 	EffortValueOverridesEnv bool              `json:"effortValueOverridesEnv,omitempty"`
 }
 
+type TaskBudget struct {
+	Total     float64  `json:"total"`
+	Remaining *float64 `json:"remaining,omitempty"`
+}
+
 // Host is a frozen direct-relay session snapshot, not an ambient process read.
 // Its credential/provider transport construction remains with provider.
 type Host struct {
-	NativeFastModeProof    *cooperative.NativeFastModeRequest `json:"-"`
-	NativeBedrockBound     bool                               `json:"-"` // Minted only after the current native cloud bridge is checked.
-	NativeBedrockCanonical func(string) (string, error)       `json:"-"`
-	NativeBedrockProof     *cooperative.NativeBedrockRequest  `json:"-"`
-	NativeVertexBound      bool                               `json:"-"`
-	NativeVertexCanonical  func(string) (string, error)       `json:"-"`
-	NativeVertexProof      *cooperative.NativeVertexRequest   `json:"-"`
-	NativeClaudeSubscriber bool                               `json:"-"`
-	NativeClaudeProof      *cooperative.NativeClaudeRequest   `json:"-"`
-	NativeCodexOAuth       *provider.OpenAICodexConfig        `json:"-"`
-	NativeGrokOAuth        *provider.GrokOAuthConfig          `json:"-"`
-	NativeToolSearch       *toolsearch.Service
-	ToolSearchCatalogue    *toolsearch.Catalogue
-	PlanOptions            *attachments.PlanOptions // Original runtime planning inputs; never a rendered prompt.
-	Profile                string                   // Explicit caller declaration; not inferred from ambient state.
-	Env                    map[string]string
-	DeviceID               string
-	SessionID              string
-	Workload               string
-	SDKBetas               []string
-	TTLEligible            bool
-	TTLAllowlist           []string
-	ToolSchemas            *toolschema.Session      // Retained across rounds in the same session.
-	ToolSchemaHost         *toolschema.Host         // Original prompt/feature inputs, never rendered schemas.
-	NativeToolDefinitions  *[]toolschema.Definition // Actual executable producer declarations, outside the JSON input format.
+	NativeThinkingSummaryBeta *bool                              `json:"-"`
+	NativeFastModeProof       *cooperative.NativeFastModeRequest `json:"-"`
+	NativeBedrockBound        bool                               `json:"-"` // Minted only after the current native cloud bridge is checked.
+	NativeBedrockCanonical    func(string) (string, error)       `json:"-"`
+	NativeBedrockProof        *cooperative.NativeBedrockRequest  `json:"-"`
+	NativeVertexBound         bool                               `json:"-"`
+	NativeVertexCanonical     func(string) (string, error)       `json:"-"`
+	NativeVertexProof         *cooperative.NativeVertexRequest   `json:"-"`
+	NativeClaudeSubscriber    bool                               `json:"-"`
+	NativeClaudeProof         *cooperative.NativeClaudeRequest   `json:"-"`
+	NativeCodexOAuth          *provider.OpenAICodexConfig        `json:"-"`
+	NativeGrokOAuth           *provider.GrokOAuthConfig          `json:"-"`
+	NativeToolSearch          *toolsearch.Service
+	ToolSearchCatalogue       *toolsearch.Catalogue
+	PlanOptions               *attachments.PlanOptions // Original runtime planning inputs; never a rendered prompt.
+	Profile                   string                   // Explicit caller declaration; not inferred from ambient state.
+	Env                       map[string]string
+	DeviceID                  string
+	OAuthAccountUUID          *string // Guarded current native config/env metadata; explicit empty disables fallback.
+	SessionID                 string
+	Workload                  string
+	SDKBetas                  []string
+	TTLEligible               bool
+	TTLAllowlist              []string
+	ToolSchemas               *toolschema.Session      // Retained across rounds in the same session.
+	ToolSchemaHost            *toolschema.Host         // Original prompt/feature inputs, never rendered schemas.
+	NativeToolDefinitions     *[]toolschema.Definition // Actual executable producer declarations, outside the JSON input format.
 }
 
 const DirectRelayProfile = "direct-relay-release-default-no-experiments"

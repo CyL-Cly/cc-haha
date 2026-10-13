@@ -3,6 +3,7 @@ package application
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"regexp"
 	"strings"
 	"unicode/utf16"
@@ -321,6 +322,9 @@ func (p *Projection) Translate(data json.RawMessage) ([]json.RawMessage, error) 
 				out = append(out, frame("content_start", append([]protocol.JSONField{field("blockType", "tool_use")}, toolFields(block)...)...))
 			case "thinking", "redacted_thinking":
 				out = append(out, frame("status", field("state", "thinking"), field("verb", "Thinking")))
+				if block.kind == "redacted_thinking" && parent == "" {
+					out = append(out, frame("thinking", field("text", "[Redacted thinking]"), field("redacted", true), field("complete", true)))
+				}
 			default:
 				out = append(out, frame("content_start", field("blockType", "text")))
 			}
@@ -412,6 +416,9 @@ func (p *Projection) Translate(data json.RawMessage) ([]json.RawMessage, error) 
 				if b.String("type") == "thinking" && b.String("thinking") != "" {
 					out = append(out, frame("thinking", field("text", b.String("thinking")), field("complete", true)))
 				}
+				if b.String("type") == "redacted_thinking" {
+					out = append(out, frame("thinking", field("text", "[Redacted thinking]"), field("redacted", true), field("complete", true)))
+				}
 			}
 		}
 	case "user":
@@ -482,7 +489,46 @@ func (p *Projection) Translate(data json.RawMessage) ([]json.RawMessage, error) 
 		p.resetMain()
 		p.Stopped = stopped
 	case "system":
+		if m.String("subtype") == "memory_saved" {
+			paths := m.Get("writtenPaths")
+			if len(paths) == 0 || paths[0] != '[' {
+				paths = raw([]any{})
+			}
+			data := protocol.NewJSONObject(protocol.JSONField{Name: "writtenPaths", Value: paths})
+			if value := m.Get("verb"); len(value) > 0 && value[0] == '"' {
+				data.Set("verb", value)
+			}
+			if value := m.Get("teamCount"); len(value) > 0 && value[0] != '"' && value[0] != '[' && value[0] != '{' && string(value) != "null" && string(value) != "true" && string(value) != "false" {
+				data.Set("teamCount", value)
+			}
+			return append(out, frame("system_notification", field("subtype", "memory_saved"), protocol.JSONField{Name: "message", Value: m.Get("message")}, protocol.JSONField{Name: "data", Value: raw(data)})), nil
+		}
 		subtype := m.String("subtype")
+		if subtype == "status" && m.String("status") == "compacting" {
+			fields := []protocol.JSONField{field("state", "compacting"), field("verb", "Compacting conversation")}
+			progress, _ := m.Object("compact_progress")
+			if chars := progress.Get("output_chars"); chars != nil {
+				var count float64
+				if json.Unmarshal(chars, &count) == nil && !math.IsNaN(count) && !math.IsInf(count, 0) {
+					fields = append(fields, protocol.JSONField{Name: "compactProgress", Value: raw(map[string]float64{"outputChars": count})})
+				}
+			}
+			return append(out, frame("status", fields...)), nil
+		}
+		if subtype == "compact_boundary" {
+			metadata := m.Get("compact_metadata")
+			if metadata == nil {
+				metadata = raw(m)
+			}
+			content := m.String("message")
+			if content == "" {
+				content = m.String("content")
+			}
+			if content == "" {
+				content = "Context compacted"
+			}
+			return append(out, frame("system_notification", field("subtype", "compact_boundary"), field("message", content), protocol.JSONField{Name: "data", Value: metadata})), nil
+		}
 		if subtype == "session_state_changed" {
 			fields := []protocol.JSONField{field("subtype", subtype)}
 			if message := m.Get("message"); message != nil {
@@ -593,6 +639,7 @@ func (s *Session) output(data []byte) error {
 		case "thinking":
 			event.Kind = tui.ThinkingDelta
 			event.Text = m.String("text")
+			event.Redacted = string(m.Get("redacted")) == "true"
 		case "tool_use_complete":
 			event.Kind = tui.ToolStarted
 			event.ToolID = m.String("toolUseId")
@@ -612,6 +659,11 @@ func (s *Session) output(data []byte) error {
 			event.Kind = tui.TurnFailed
 			event.Err = fmt.Errorf("%s", m.String("message"))
 		case "system_notification":
+			if m.String("subtype") == "memory_saved" {
+				event.Kind = tui.MemorySaved
+				event.Text = tui.MemorySavedText(obj(m.Get("data")))
+				break
+			}
 			if m.String("subtype") != "goal_event" {
 				continue
 			}

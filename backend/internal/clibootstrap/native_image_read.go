@@ -62,6 +62,9 @@ func (m *MainPrint) nativeImageMetadataMessage(scope *cooperative.Scope, data js
 	if !scope.BelongsTo(m.Owner) {
 		return nil, cooperative.ErrRestricted
 	}
+	if isPDFReadData(data) {
+		return m.nativePDFMetadataMessage(scope, data)
+	}
 	var result protocol.JSONObject
 	if err := result.UnmarshalJSON(data); err != nil {
 		return nil, err

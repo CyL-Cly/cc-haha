@@ -226,8 +226,12 @@ func TestActualDesktopGrokFactoryCatalogWSWriteAndClose(t *testing.T) {
 		if value.String("type") == "error" {
 			t.Fatal(line)
 		}
-		finished = finished || value.String("type") == "message_complete"
-		if finished && value.String("type") == "session_state" && value.String("turnState") == "idle" {
+		if !finished && value.String("type") == "message_complete" {
+			finished = true
+			requestDesktopSessionSync(t, ws)
+		}
+		if finished && value.String("type") == "session_state" {
+			assertDesktopIdleSnapshot(t, value)
 			break
 		}
 	}
@@ -252,6 +256,7 @@ func TestActualDesktopGrokFactoryCatalogWSWriteAndClose(t *testing.T) {
 	case <-time.After(3 * time.Second):
 		t.Fatal("cancel did not close physical Grok request")
 	}
+	requestDesktopSessionSync(t, ws)
 	stopped := false
 	for i := 0; i < 100; i++ {
 		var line string
@@ -259,7 +264,8 @@ func TestActualDesktopGrokFactoryCatalogWSWriteAndClose(t *testing.T) {
 			t.Fatal(err)
 		}
 		value := obj([]byte(line))
-		if value.String("type") == "session_state" && value.String("turnState") == "idle" {
+		if value.String("type") == "session_state" {
+			assertDesktopIdleSnapshot(t, value)
 			stopped = true
 			break
 		}

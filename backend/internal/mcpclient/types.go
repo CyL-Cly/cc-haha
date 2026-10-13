@@ -11,9 +11,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/provider"
 )
 
 const LatestProtocolVersion = "2025-11-25"
@@ -21,12 +23,13 @@ const LatestProtocolVersion = "2025-11-25"
 var supportedProtocolVersions = map[string]bool{LatestProtocolVersion: true, "2025-06-18": true, "2025-03-26": true, "2024-11-05": true, "2024-10-07": true}
 
 type Config struct {
-	Type    string
-	Command string
-	Args    []string
-	Env     map[string]string
-	URL     string
-	Headers map[string]string
+	AuthToken string
+	Type      string
+	Command   string
+	Args      []string
+	Env       map[string]string
+	URL       string
+	Headers   map[string]string
 }
 
 // AuthProvider binds an already resolved account to the transport. A nil
@@ -69,6 +72,9 @@ type Options struct {
 	OnNotification       func(string, protocol.JSONObject)
 	OnError              func(error)
 	OnClose              func(intentional bool)
+	// SessionIngressToken is the same once-read token producer used by RemoteIO.
+	// Configured server headers take precedence; ws-ide uses only its lock token.
+	SessionIngressToken func() string
 	// OnRequest may replace roots/list and elicitation/create or implement other
 	// explicitly registered capabilities. Default handlers are ping, one root,
 	// and elicitation cancellation, matching the original initialization window.
@@ -181,7 +187,14 @@ func normalizeOptions(o Options) Options {
 		o.Capabilities = object(field("roots", object()), field("elicitation", object()))
 	}
 	if o.UserAgent == "" {
-		o.UserAgent = "claude-code/" + o.Version
+		parts := []string{"cli"}
+		if sdk := o.Environment["CLAUDE_AGENT_SDK_VERSION"]; sdk != "" {
+			parts = append(parts, "agent-sdk/"+sdk)
+		}
+		if app := o.Environment["CLAUDE_AGENT_SDK_CLIENT_APP"]; app != "" {
+			parts = append(parts, "client-app/"+app)
+		}
+		o.UserAgent = "claude-code/" + provider.SourceCompatibilityVersion + " (" + strings.Join(parts, ", ") + ")"
 	}
 	if o.RootURI == "" && o.CWD != "" {
 		o.RootURI = "file://" + o.CWD

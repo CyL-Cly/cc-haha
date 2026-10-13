@@ -8,6 +8,7 @@ await import('../../../../preload')
 const source=await import('../../../../src/goals/goalState')
 const stop=await import('../../../../src/query/stopHooks')
 const continuations=(input.continuations??[]).map((reason:string)=>stop.formatGoalContinuationStatusOutput(reason))
+const waiting=(input.continuations??[]).map((reason:string)=>stop.formatGoalWaitingForTeamStatusOutput(reason))
 const parsed=input.arguments.map((args:string)=>{try{return source.parseGoalCommand(args)}catch(e:any){return {error:e.message}}})
 const outputs=input.contents.map((content:string)=>({prompt:source.isGoalPromptHookCommand(content),objective:source.goalObjectiveFromHookCommand(content),local:source.isGoalLocalCommandOutputContent(content)}))
 const appState:any={sessionHooks:new Map()};const context:any={setAppState:(updater:any)=>updater(appState)}
@@ -21,4 +22,4 @@ for(const action of input.actions){
  rows.push(JSON.parse(JSON.stringify({result:result??null,current:source.getThreadGoal(action.sid),hooks:appState.sessionHooks.get(action.sid)?.hooks.Stop?.flatMap((m:any)=>m.hooks.map((h:any)=>h.hook))??[]})))
 }
 if(capabilities.blocked.length)throw new Error('Blocked original goal state:'+capabilities.blocked.join(', '))
-process.stdout.write(JSON.stringify({parsed,outputs,rows,continuations})+'\n')
+process.stdout.write(JSON.stringify({parsed,outputs,rows,continuations,waiting})+'\n')

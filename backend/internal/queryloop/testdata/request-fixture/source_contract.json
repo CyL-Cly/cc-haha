@@ -1,5 +1,179 @@
 {
-  "provenance": "Actual query()/productionDeps()/queryModelWithStreaming()/pinned SDK via loopback HTTP, Bun1.3.14 production-profile source replay, independently constructed Go requests",
+  "provenance": {
+    "0": "A",
+    "1": "c",
+    "2": "t",
+    "3": "u",
+    "4": "a",
+    "5": "l",
+    "6": " ",
+    "7": "q",
+    "8": "u",
+    "9": "e",
+    "10": "r",
+    "11": "y",
+    "12": "(",
+    "13": ")",
+    "14": "/",
+    "15": "p",
+    "16": "r",
+    "17": "o",
+    "18": "d",
+    "19": "u",
+    "20": "c",
+    "21": "t",
+    "22": "i",
+    "23": "o",
+    "24": "n",
+    "25": "D",
+    "26": "e",
+    "27": "p",
+    "28": "s",
+    "29": "(",
+    "30": ")",
+    "31": "/",
+    "32": "q",
+    "33": "u",
+    "34": "e",
+    "35": "r",
+    "36": "y",
+    "37": "M",
+    "38": "o",
+    "39": "d",
+    "40": "e",
+    "41": "l",
+    "42": "W",
+    "43": "i",
+    "44": "t",
+    "45": "h",
+    "46": "S",
+    "47": "t",
+    "48": "r",
+    "49": "e",
+    "50": "a",
+    "51": "m",
+    "52": "i",
+    "53": "n",
+    "54": "g",
+    "55": "(",
+    "56": ")",
+    "57": "/",
+    "58": "p",
+    "59": "i",
+    "60": "n",
+    "61": "n",
+    "62": "e",
+    "63": "d",
+    "64": " ",
+    "65": "S",
+    "66": "D",
+    "67": "K",
+    "68": " ",
+    "69": "v",
+    "70": "i",
+    "71": "a",
+    "72": " ",
+    "73": "l",
+    "74": "o",
+    "75": "o",
+    "76": "p",
+    "77": "b",
+    "78": "a",
+    "79": "c",
+    "80": "k",
+    "81": " ",
+    "82": "H",
+    "83": "T",
+    "84": "T",
+    "85": "P",
+    "86": ",",
+    "87": " ",
+    "88": "B",
+    "89": "u",
+    "90": "n",
+    "91": "1",
+    "92": ".",
+    "93": "3",
+    "94": ".",
+    "95": "1",
+    "96": "4",
+    "97": " ",
+    "98": "p",
+    "99": "r",
+    "100": "o",
+    "101": "d",
+    "102": "u",
+    "103": "c",
+    "104": "t",
+    "105": "i",
+    "106": "o",
+    "107": "n",
+    "108": "-",
+    "109": "p",
+    "110": "r",
+    "111": "o",
+    "112": "f",
+    "113": "i",
+    "114": "l",
+    "115": "e",
+    "116": " ",
+    "117": "s",
+    "118": "o",
+    "119": "u",
+    "120": "r",
+    "121": "c",
+    "122": "e",
+    "123": " ",
+    "124": "r",
+    "125": "e",
+    "126": "p",
+    "127": "l",
+    "128": "a",
+    "129": "y",
+    "130": ",",
+    "131": " ",
+    "132": "i",
+    "133": "n",
+    "134": "d",
+    "135": "e",
+    "136": "p",
+    "137": "e",
+    "138": "n",
+    "139": "d",
+    "140": "e",
+    "141": "n",
+    "142": "t",
+    "143": "l",
+    "144": "y",
+    "145": " ",
+    "146": "c",
+    "147": "o",
+    "148": "n",
+    "149": "s",
+    "150": "t",
+    "151": "r",
+    "152": "u",
+    "153": "c",
+    "154": "t",
+    "155": "e",
+    "156": "d",
+    "157": " ",
+    "158": "G",
+    "159": "o",
+    "160": " ",
+    "161": "r",
+    "162": "e",
+    "163": "q",
+    "164": "u",
+    "165": "e",
+    "166": "s",
+    "167": "t",
+    "168": "s",
+    "reference": "6d21316ec4635f29ecbaa43e1a5574bfd31d7155",
+    "sdk": "0.128.0",
+    "bun": "1.3.14",
+    "revision": "0d9b296af33f2b851fcbf4df3e9ec89751734ba4"
+  },
   "cases": [
     {
       "input": {
@@ -89,7 +263,7 @@
               ],
               [
                 "user-agent",
-                "claude-cli/2.1.281 (external, cli)"
+                "claude-cli/2.1.288 (external, cli)"
               ],
               [
                 "x-api-key",
@@ -117,7 +291,7 @@
               ],
               [
                 "x-stainless-package-version",
-                "0.80.0"
+                "0.128.0"
               ],
               [
                 "x-stainless-retry-count",
@@ -136,7 +310,7 @@
                 "600"
               ]
             ],
-            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Run one tool-free request\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.452; cc_entrypoint=unknown; cch=0547b;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}},{\"type\":\"text\",\"text\":\"Configured system\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-query-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Run one tool-free request\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.288.42b; cc_entrypoint=cli; cch=01199;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}},{\"type\":\"text\",\"text\":\"Configured system\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-query-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
           }
         ],
         "terminal": {
@@ -233,7 +407,7 @@
               ],
               [
                 "user-agent",
-                "claude-cli/2.1.281 (external, cli)"
+                "claude-cli/2.1.288 (external, cli)"
               ],
               [
                 "x-api-key",
@@ -261,7 +435,7 @@
               ],
               [
                 "x-stainless-package-version",
-                "0.80.0"
+                "0.128.0"
               ],
               [
                 "x-stainless-retry-count",
@@ -280,7 +454,7 @@
                 "600"
               ]
             ],
-            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Run one tool-free request\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.452; cc_entrypoint=unknown; cch=0853d;\"},{\"type\":\"text\",\"text\":\"You are Claude Code, Anthropic's official CLI for Claude.\",\"cache_control\":{\"type\":\"ephemeral\"}},{\"type\":\"text\",\"text\":\"Configured system\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-query-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Run one tool-free request\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.288.42b; cc_entrypoint=cli; cch=e321a;\"},{\"type\":\"text\",\"text\":\"You are Claude Code, Anthropic's official CLI for Claude.\",\"cache_control\":{\"type\":\"ephemeral\"}},{\"type\":\"text\",\"text\":\"Configured system\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-query-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
           }
         ],
         "terminal": {
@@ -377,7 +551,7 @@
               ],
               [
                 "user-agent",
-                "claude-cli/2.1.281 (external, cli)"
+                "claude-cli/2.1.288 (external, cli)"
               ],
               [
                 "x-api-key",
@@ -405,7 +579,7 @@
               ],
               [
                 "x-stainless-package-version",
-                "0.80.0"
+                "0.128.0"
               ],
               [
                 "x-stainless-retry-count",
@@ -424,7 +598,7 @@
                 "600"
               ]
             ],
-            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"0123\\ud80067\\udc00abcdefghijkl\\ud800 tail\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.95a; cc_entrypoint=unknown; cch=d9a24;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}},{\"type\":\"text\",\"text\":\"Configured\\ud800system\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-query-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"0123\\ud80067\\udc00abcdefghijkl\\ud800 tail\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.288.8c7; cc_entrypoint=cli; cch=7bbc1;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}},{\"type\":\"text\",\"text\":\"Configured\\ud800system\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-query-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"00000000-0000-4000-8000-000000000000\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
           }
         ],
         "terminal": {

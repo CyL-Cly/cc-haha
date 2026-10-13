@@ -210,8 +210,10 @@ func TestActualDesktopCollaborationToolsCreateReadSendWaitAndExecuteSharedChild(
 		}
 		if frame.String("type") == "message_complete" && finalText {
 			completed = true
+			requestDesktopSessionSync(t, ws)
 		}
-		if completed && frame.String("type") == "session_state" && frame.String("turnState") == "idle" {
+		if completed && frame.String("type") == "session_state" {
+			assertDesktopIdleSnapshot(t, frame)
 			break
 		}
 	}

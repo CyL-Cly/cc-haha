@@ -129,13 +129,15 @@ func TestDesktopRepositoryPlanStartsGoWorktreeArtifactsAndResumes(t *testing.T) 
 		t.Fatal(e)
 	}
 	receive(ws, "message_complete")
+	requestDesktopSessionSync(t, ws)
 	for {
 		var frame string
 		if e = websocket.Message.Receive(ws, &frame); e != nil {
 			t.Fatal(e)
 		}
 		value := obj([]byte(frame))
-		if value.String("type") == "session_state" && value.String("turnState") == "idle" {
+		if value.String("type") == "session_state" {
+			assertDesktopIdleSnapshot(t, value)
 			break
 		}
 	}

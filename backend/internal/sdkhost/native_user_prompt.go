@@ -59,6 +59,11 @@ func (h *Host) processQueuedPrintInput(scope *cooperative.Scope, content, uuid j
 }
 
 func (h *Host) processNativeInputWithPromptHooks(scope *cooperative.Scope, content, uuid json.RawMessage, skipSlash, meta bool, origin json.RawMessage, skipAttachments bool) (*sessioncontroller.ProcessedInput, error) {
+	if h.options.Print != nil && h.options.Print.NativeProcess {
+		if err := h.acknowledgeNativeLocalDispatch(scope, content, uuid, skipSlash); err != nil {
+			return nil, err
+		}
+	}
 	var mode json.RawMessage
 	if h.options.Print != nil && h.options.Print.NativeProcess {
 		_, permission, err := h.options.Controller.SDKSettingsOnOwner(scope)

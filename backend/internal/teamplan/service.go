@@ -17,16 +17,19 @@ type Runtime struct {
 	Stop         func(context.Context, string) error
 	IsRunning    func(context.Context, string) (bool, error)
 	NotifyLeader func(context.Context, protocol.JSONObject, string) error
+	StartLeader  func(context.Context, string) error
+	Rehydrate    func(context.Context, protocol.JSONObject) (bool, error)
 }
 type Service struct {
-	store    *Store
-	runtime  Runtime
-	ctx      context.Context
-	cancel   context.CancelFunc
-	mu       sync.Mutex
-	launches map[string]bool
-	closed   bool
-	wg       sync.WaitGroup
+	store     *Store
+	runtime   Runtime
+	ctx       context.Context
+	cancel    context.CancelFunc
+	mu        sync.Mutex
+	launches  map[string]bool
+	approving map[string]int
+	closed    bool
+	wg        sync.WaitGroup
 }
 
 func NewService(store *Store, runtime Runtime) (*Service, error) {
@@ -34,7 +37,7 @@ func NewService(store *Store, runtime Runtime) (*Service, error) {
 		return nil, errors.New("team plan service requires original store and actual validation/launch/stop runtime")
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	return &Service{store: store, runtime: runtime, ctx: ctx, cancel: cancel, launches: map[string]bool{}}, nil
+	return &Service{store: store, runtime: runtime, ctx: ctx, cancel: cancel, launches: map[string]bool{}, approving: map[string]int{}}, nil
 }
 func (s *Service) GetForSession(ctx context.Context, id string) (*protocol.JSONObject, error) {
 	plan, e := s.store.FindForSession(id)
@@ -42,13 +45,18 @@ func (s *Service) GetForSession(ctx context.Context, id string) (*protocol.JSONO
 		return plan, e
 	}
 	s.mu.Lock()
-	launching := s.launches[plan.String("planId")]
+	launching := s.launches[plan.String("planId")] || s.approving[plan.String("planId")] > 0
 	s.mu.Unlock()
 	message := ""
 	if plan.String("state") == "launching" && !launching {
 		message = "Launch ownership was lost. Work may have started and will not be replayed."
 	}
 	if plan.String("state") == "running" && s.runtime.IsRunning != nil {
+		if s.runtime.Rehydrate != nil {
+			if _, e = s.runtime.Rehydrate(ctx, *plan); e != nil {
+				return nil, e
+			}
+		}
 		running, e := s.runtime.IsRunning(ctx, plan.String("planId"))
 		if e != nil {
 			return nil, e
@@ -227,7 +235,23 @@ func (s *Service) Approve(ctx context.Context, team string, action protocol.JSON
 		if e != nil {
 			return protocol.JSONObject{}, failure(e.Error(), 400)
 		}
+		if current.String("state") == "review_pending" && s.runtime.StartLeader != nil {
+			if e = s.runtime.StartLeader(ctx, current.String("sessionId")); e != nil {
+				return protocol.JSONObject{}, failure("Team leader could not start: "+e.Error(), 409)
+			}
+		}
 	}
+	s.mu.Lock()
+	s.approving[current.String("planId")]++
+	s.mu.Unlock()
+	defer func() {
+		s.mu.Lock()
+		s.approving[current.String("planId")]--
+		if s.approving[current.String("planId")] == 0 {
+			delete(s.approving, current.String("planId"))
+		}
+		s.mu.Unlock()
+	}()
 	plan, committed, e := s.store.Approve(team, id, request, validated)
 	if e != nil {
 		return plan, e

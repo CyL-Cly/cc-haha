@@ -49,6 +49,10 @@ func (m *MainPrint) pollInteractivePaneInboxOnOwner(scope *cooperative.Scope) er
 	id := *m.teamWorker.pane
 	work, err := nativeSkillWork(m, scope, func() ([]protocol.JSONObject, error) {
 		raw, err := mailbox.Unread(id.AgentName, id.TeamName)
+		if err != nil {
+			return nil, err
+		}
+		raw, err = mailbox.Claim(id.AgentName, id.TeamName, raw)
 		rows := []protocol.JSONObject{}
 		for _, value := range raw {
 			var row protocol.JSONObject
@@ -139,12 +143,7 @@ func (m *MainPrint) pollInteractivePaneInboxOnOwner(scope *cooperative.Scope) er
 	if err = m.Controller.QueueTeamInboxOnOwner(scope, regular); err != nil {
 		return err
 	}
-	mark, err := nativeSkillWork(m, scope, func() (struct{}, error) { return struct{}{}, mailbox.MarkAll(id.AgentName, id.TeamName) })
-	if err != nil {
-		return err
-	}
-	_, err = mark.Await(scope)
-	return err
+	return nil
 }
 func (m *MainPrint) nativePanePermission(ctx context.Context, scope *cooperative.Scope, tool queryloop.RegisteredTool, in *protocol.JSONObject, call queryloop.JSONToolCallContext) (queryloop.ToolPermission, error) {
 	if !scope.BelongsTo(m.Owner) || in == nil {

@@ -22,16 +22,15 @@ func (d *DesktopSession) SubmitTeamTask(ctx context.Context, input protocol.JSON
 		d.runtimeMu.Unlock()
 		return errors.New("CLI session is not running")
 	}
-	d.running = true
+	d.running, d.foregroundPending = true, true
 	d.projection.Stopped = false
 	engine := d.engine
 	d.mu.Unlock()
 	d.runtimeMu.Unlock()
-	d.emit(frame("session_state", field("turnState", "running")))
+	d.emit(frame("status", field("state", "thinking"), field("verb", "Thinking")))
 	err := engine.submitSDKEvents(ctx, input, d.events)
 	d.mu.Lock()
-	d.running = false
+	d.running, d.foregroundPending = false, false
 	d.mu.Unlock()
-	d.emit(frame("session_state", field("turnState", "idle")))
 	return err
 }

@@ -1,3 +1,5 @@
+import { adapterMigrationLifecycle, registerAdapterShutdown } from '../../adapters/common/migration-lifecycle.js'
+import { WsBridge } from '../../adapters/common/ws-bridge.js'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 if (process.env.CC_HAHA_DINGTALK_PRIVATE_FIXTURE !== '1') throw new Error('private fixture only')
@@ -25,12 +27,13 @@ const handlers=new Function(...Object.keys(scope),body+';return {handleRobotMess
 const begin=source.indexOf('  const client = new DWClient(',source.indexOf('async function start()')),finish=source.indexOf('\n  await client.connect()',begin)
 const listener=new Bun.Transpiler({loader:'ts'}).transformSync(source.slice(begin,finish))
 const dedup=new MessageDedup()
-const client=new Function('DWClient','config','TOPIC_ROBOT','TOPIC_CARD','dedup','parseDingTalkPayload','handleRobotMessage','handleCardCallback',listener+';return client')(
- DWClient,{dingtalk:{clientId:'id',clientSecret:'secret'}},TOPIC_ROBOT,TOPIC_CARD,dedup,helpers.parseDingTalkPayload,handlers.handleRobotMessage,handlers.handleCardCallback,
+const bridge=new WsBridge('ws://127.0.0.1:1','dingtalk')
+const client=new Function('DWClient','config','TOPIC_ROBOT','TOPIC_CARD','dedup','parseDingTalkPayload','handleRobotMessage','handleCardCallback','registerAdapterShutdown','adapterMigrationLifecycle','bridge',listener+';return client')(
+ DWClient,{dingtalk:{clientId:'id',clientSecret:'secret'}},TOPIC_ROBOT,TOPIC_CARD,dedup,helpers.parseDingTalkPayload,handlers.handleRobotMessage,handlers.handleCardCallback,registerAdapterShutdown,adapterMigrationLifecycle,bridge,
 )
 client.socket={send(w){wires.push(JSON.parse(w))}}
 for(const frame of input.frames)client.onDownStream(JSON.stringify(frame))
 const prefix={webhooks:[...sessionWebhooks],targets:[...aiCardTargets],pending:[...pendingPermissionChats],decisions:structuredClone(decisions)}
 await Promise.resolve();await Promise.resolve();const beforeRelease=structuredClone(order)
 release();await Promise.resolve();await Promise.resolve();await Promise.resolve()
-dedup.destroy();process.stdout.write(JSON.stringify({prefix,wires,beforeRelease,order}))
+dedup.destroy();bridge.destroy();process.stdout.write(JSON.stringify({prefix,wires,beforeRelease,order}))

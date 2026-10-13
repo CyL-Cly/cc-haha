@@ -13,6 +13,8 @@ import (
 	"time"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/provider"
+	"github.com/NanmiCoder/cc-haha/backend/internal/webfetch"
 )
 
 type scopedProxy struct{ value *string }
@@ -100,6 +102,15 @@ func (s *Service) request(ctx context.Context, method, address string, body prot
 		return record(), 0, err
 	}
 	request.Header.Set("Content-Type", "application/json")
+	if axios {
+		request.Header.Set("Accept", "application/json, text/plain, */*")
+		request.Header.Set("User-Agent", "axios/1.15.2")
+		request.Header.Set("Accept-Encoding", "gzip, compress, deflate, br")
+	}
+	if method == http.MethodGet && strings.HasSuffix(request.URL.Path, "/api/oauth/profile") {
+		request.Header.Set("User-Agent", "claude-code/"+provider.SourceCompatibilityVersion)
+		request.Header.Set("Cache-Control", "no-cache")
+	}
 	if token != "" {
 		request.Header.Set("Authorization", "Bearer "+token)
 	}
@@ -111,7 +122,12 @@ func (s *Service) request(ctx context.Context, method, address string, body prot
 		return record(), 0, err
 	}
 	defer response.Body.Close()
-	data, err := io.ReadAll(response.Body)
+	var data []byte
+	if axios {
+		data, err = webfetch.ReadAxiosResponseBody(response)
+	} else {
+		data, err = io.ReadAll(response.Body)
+	}
 	if err != nil {
 		return record(), response.StatusCode, err
 	}

@@ -319,11 +319,24 @@ func (s *Service) GetTeam(ctx context.Context, name string) (protocol.JSONObject
 			item.Set(key, member.Get(key))
 		}
 		status := "running"
+		lastError, retry := memberFailure(member)
 		if string(member.Get("isActive")) == "false" {
 			status = "idle"
 		}
+		if lastError != nil && retry == nil {
+			status = "failed"
+		}
 		item.Set("status", raw(status))
 		item.Set("activity", raw(activity(member.Get("isActive"), member.String("name"))))
+		if string(member.Get("terminated")) == "true" {
+			item.Set("activity", raw("stopped"))
+		}
+		if lastError != nil {
+			item.Set("lastError", lastError)
+		}
+		if retry != nil {
+			item.Set("autoRetry", retry)
+		}
 		for _, key := range []string{"joinedAt", "cwd", "sessionId"} {
 			item.Set(key, member.Get(key))
 		}

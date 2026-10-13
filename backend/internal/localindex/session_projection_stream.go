@@ -42,7 +42,7 @@ func skeletonSelected(path []string) bool {
 		}
 		return false
 	default:
-		return len(path) == 1 && containsString([]string{"type", "subtype", "content", "isMeta", "isSidechain", "entrypoint", "timestamp", "cwd", "workDir", "permissionMode", "runtimeProviderId", "runtimeModelId", "effortLevel", "customTitle", "aiTitle", "uuid", "parentUuid", "messageId", "parent_tool_use_id", "requestId", "version", "sessionId", "timeSavedMs"}, path[0])
+		return len(path) == 1 && containsString([]string{"type", "subtype", "content", "isMeta", "isSidechain", "entrypoint", "timestamp", "cwd", "workDir", "permissionMode", "runtimeProviderId", "runtimeModelId", "effortLevel", "openAIFastMode", "customTitle", "aiTitle", "uuid", "parentUuid", "messageId", "parent_tool_use_id", "requestId", "version", "sessionId", "timeSavedMs"}, path[0])
 	}
 }
 func containsString(values []string, value string) bool {

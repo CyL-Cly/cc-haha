@@ -54,11 +54,21 @@ func (m *MainPrint) nativeTokenCounter(ctx context.Context, scope *cooperative.S
 	if err != nil {
 		return nil, err
 	}
+	redacted, err := m.nativeThinkingSummaryBeta(scope, model)
+	if err != nil {
+		return nil, err
+	}
+	betas = requestcontext.WithThinkingSummaryBeta(betas, redacted)
 	fastModel := selector.SmallFastModel()
 	fastBetas, err := requestcontext.DirectCountingBetas(fastModel, env, settings.Clone())
 	if err != nil {
 		return nil, err
 	}
+	fastRedacted, err := m.nativeThinkingSummaryBeta(scope, fastModel)
+	if err != nil {
+		return nil, err
+	}
+	fastBetas = requestcontext.WithThinkingSummaryBeta(fastBetas, fastRedacted)
 	global, err := m.Global.Get()
 	if err != nil {
 		return nil, err
@@ -136,13 +146,37 @@ func (m *MainPrint) nativeTokenCounter(ctx context.Context, scope *cooperative.S
 	}, nil
 }
 
-func (m *MainPrint) nativeCountClient(env map[string]string, session string) (*provider.Anthropic, error) {
+func (m *MainPrint) nativeCountClient(env map[string]string, session string, credentials ...nativeReadCountCredentials) (*provider.Anthropic, error) {
 	var key *string
 	if value, exists := env["ANTHROPIC_API_KEY"]; exists {
 		copy := value
 		key = &copy
 	}
-	config := provider.ResolveDirectClientOptions(provider.DirectClientInput{Env: env, FallbackAPIKey: key, SessionID: session, Runtime: provider.SourceRuntime{Platform: m.options.Platform, Arch: "arm64", Version: "v24.3.0"}, RequestID: uuidMain}).StreamConfig()
+	if len(credentials) > 0 {
+		key = credentials[0].key
+	}
+	workload := ""
+	if len(credentials) > 0 {
+		workload = credentials[0].workload
+	}
+	config := provider.ResolveDirectClientOptions(provider.DirectClientInput{Env: env, FallbackAPIKey: key, SessionID: session, Workload: workload, Runtime: provider.SourceRuntime{Platform: m.options.Platform, Arch: "arm64", Version: "v24.3.0"}, RequestID: uuidMain}).StreamConfig()
+	if len(credentials) > 0 {
+		actual := credentials[0]
+		if actual.vertex != nil {
+			config.Vertex = actual.vertex
+		}
+		if actual.baseURL != "" {
+			config.BaseURL = actual.baseURL
+		}
+		if actual.token != nil && *actual.token != "" {
+			if actual.oauth {
+				config.APIKey, config.APIKeySet = "", false
+				config.AuthToken, config.AuthTokenSet = *actual.token, true
+			} else {
+				config.DefaultHeaders.Set("Authorization", "Bearer "+*actual.token)
+			}
+		}
+	}
 	exchange, err := provider.NativeDirectHTTPExchangeFromEnvironment(config.BaseURL, env)
 	if err != nil {
 		return nil, err

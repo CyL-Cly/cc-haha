@@ -99,9 +99,12 @@ func (m *MainPrint) prepareNativeInProcessTurn(ctx context.Context, scope *coope
 	if err != nil {
 		return out, err
 	}
-	id, err := nativeAgentID()
-	if err != nil {
-		return out, err
+	id := turn.Identity.ResumableAgentID
+	if id == "" {
+		id, err = nativeAgentID()
+		if err != nil {
+			return out, err
+		}
 	}
 	out.streamID, err = nativeAgentID()
 	if err != nil {
@@ -124,6 +127,15 @@ func (m *MainPrint) prepareNativeInProcessTurn(ctx context.Context, scope *coope
 	}
 	identity := turn.Identity
 	o.DetachedAgent.teammate = &identity
+	// runAgent clones the spawn-time context's cache only when the teammate
+	// supplies forkContextMessages (a nonempty earlier conversation). Its first
+	// turn deliberately starts with an independent empty cache.
+	if len(turn.History) > 0 {
+		o.DetachedAgent.inheritedFileCache, err = m.nativeFileCache.Export(scope)
+		if err != nil {
+			return out, err
+		}
+	}
 	o.DetachedAgent.preset, err = m.nativeAgentPreset(scope, definition)
 	if err != nil {
 		return out, err
@@ -238,11 +250,8 @@ func (m *MainPrint) runNativeInProcessTurn(ctx context.Context, turn nativeInPro
 	}); err != nil {
 		return out, err
 	}
-	metadata := protocol.NewJSONObject(protocol.JSONField{Name: "agentType", Value: quoteMain(turn.Identity.AgentName)}, protocol.JSONField{Name: "model", Value: quoteMain(turn.Model)})
-	if turn.Model == "" {
-		metadata.Delete("model")
-	}
-	m.writeAgentWorktreeMetadata(out.Transcript, metadata)
+	metadata := nativeInProcessMetadata(turn.Identity, turn.Definition, turn.Model, turn.PermissionMode)
+	m.writeNativeInProcessMetadata(out.Transcript, metadata)
 	err = child.Owner.Run(context.Background(), func(scope *cooperative.Scope) error {
 		input := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoteMain("user")}, protocol.JSONField{Name: "session_id", Value: quoteMain(o.Arguments.SessionID)}, protocol.JSONField{Name: "message", Value: rawMain(protocol.NewJSONObject(protocol.JSONField{Name: "role", Value: quoteMain("user")}, protocol.JSONField{Name: "content", Value: quoteMain(turn.Prompt)}))})
 		return child.Host.RunOne(scope, ctx, input)

@@ -20,8 +20,20 @@ import (
 
 type nativeAgentFiles struct{ n *NativeBoundary }
 
-func (f nativeAgentFiles) Stat(path string) (fs.FileInfo, error)      { return f.n.stat(path) }
-func (f nativeAgentFiles) Lstat(path string) (fs.FileInfo, error)     { return f.n.lstat(path) }
+func (f nativeAgentFiles) Stat(path string) (fs.FileInfo, error) {
+	info, err := f.n.stat(path)
+	if err == nil {
+		info = withAgentsNativeIdentity(path, info, false)
+	}
+	return info, err
+}
+func (f nativeAgentFiles) Lstat(path string) (fs.FileInfo, error) {
+	info, err := f.n.lstat(path)
+	if err == nil {
+		info = withAgentsNativeIdentity(path, info, true)
+	}
+	return info, err
+}
 func (f nativeAgentFiles) ReadFile(path string) ([]byte, error)       { return f.n.readFile(path) }
 func (f nativeAgentFiles) ReadDir(path string) ([]fs.DirEntry, error) { return f.n.readDir(path) }
 func (f nativeAgentFiles) Realpath(path string) (string, error) {
@@ -81,6 +93,11 @@ func nativeAgentMarkdown(n *NativeBoundary, directory string) ([]string, error) 
 func (m *MainPrint) newNativeAgentCatalog() error {
 	var err error
 	m.agents, err = m.nativeSettings.AgentCatalog(m.Owner, m.options.Native.CWD, m.options.Native.Environment["CLAUDE_CODE_ENTRYPOINT"] != "cli")
+	if err == nil && m.options.Arguments.AgentsJSON != "" {
+		err = m.Owner.Run(context.Background(), func(scope *cooperative.Scope) error {
+			return m.agents.InstallCLIJSON(scope, json.RawMessage(m.options.Arguments.AgentsJSON))
+		})
+	}
 	if err == nil && m.teamWorker != nil && m.teamWorker.pane != nil {
 		err = m.Owner.Run(context.Background(), func(scope *cooperative.Scope) error {
 			defs, err := m.agents.List(scope)

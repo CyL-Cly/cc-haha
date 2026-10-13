@@ -21,6 +21,13 @@ type cacheEntry struct {
 	value FileState
 	size  int
 }
+
+// CachedFile is an immutable cross-owner value. Exported snapshots never carry
+// a live cache, map, LRU element, or a borrowed content/offset buffer.
+type CachedFile struct {
+	Path  string
+	State FileState
+}
 type FileStateCache struct {
 	owner                *cooperative.Owner
 	max, maxBytes, bytes int
@@ -105,4 +112,38 @@ func (c *FileStateCache) Snapshot(scope *cooperative.Scope) (entries, bytes int,
 		return
 	}
 	return c.order.Len(), c.bytes, nil
+}
+
+func (c *FileStateCache) Clear(scope *cooperative.Scope) error {
+	if err := c.check(scope); err != nil {
+		return err
+	}
+	c.order.Init()
+	c.entries = map[string]*list.Element{}
+	c.bytes = 0
+	return nil
+}
+
+func (c *FileStateCache) Export(scope *cooperative.Scope) ([]CachedFile, error) {
+	if err := c.check(scope); err != nil {
+		return nil, err
+	}
+	out := make([]CachedFile, 0, c.order.Len())
+	for e := c.order.Front(); e != nil; e = e.Next() {
+		row := e.Value.(cacheEntry)
+		out = append(out, CachedFile{Path: row.key, State: copyState(row.value)})
+	}
+	return out, nil
+}
+
+func (c *FileStateCache) Import(scope *cooperative.Scope, rows []CachedFile) error {
+	if err := c.Clear(scope); err != nil {
+		return err
+	}
+	for i := len(rows) - 1; i >= 0; i-- {
+		if err := c.Set(scope, rows[i].Path, rows[i].State); err != nil {
+			return err
+		}
+	}
+	return nil
 }

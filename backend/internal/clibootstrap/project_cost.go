@@ -23,7 +23,7 @@ func (m *MainPrint) restoreProjectCosts(scope *cooperative.Scope, sid string) (b
 	if e != nil {
 		return false, e
 	}
-	resolver := modelaccounting.RestoredModelResolver{Environment: m.options.Native.Environment, Settings: m.Startup.GetInitialSettings, Global: m.Global.Get}
+	resolver := modelaccounting.RestoredModelResolver{Environment: m.options.Native.Environment, Settings: m.Startup.GetInitialSettings, Global: m.Global.Get, SDKBetas: m.nativeSDKBetas}
 	return ledger.RestoreCostStateForSession(scope, sid, project, resolver, m.options.Native.NowMillis)
 }
 

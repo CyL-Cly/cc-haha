@@ -15,6 +15,12 @@ func (m *MainPrint) nativeRestoreWorktreeForResume(scope *cooperative.Scope, raw
 	if !m.options.Native.NativeProcess {
 		return nil
 	}
+	// The public print loadInitialMessages branch restores metadata but does
+	// not call the interactive processResumedConversation worktree/adoption
+	// consumer. Its next user turn uses the normal materialization path.
+	if m.options.PublicPrintLoadErrors {
+		return nil
+	}
 	if fork {
 		return nil
 	}

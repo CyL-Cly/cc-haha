@@ -115,6 +115,11 @@ func (r *WecomRuntime) SendImage(id string, image OutboundImage) error {
 	return err
 }
 func (r *WecomRuntime) HandleMessage(frame protocol.JSONObject) error {
+	done, admitted := r.migration.Admit()
+	if !admitted {
+		return nil
+	}
+	defer done(nil)
 	body := object(frame.Get("body"))
 	payload, err := ExtractWecomPayload(body)
 	if err != nil || payload == nil {

@@ -133,7 +133,7 @@ func (h *Host) queryAgentHookOnProducer(ctx context.Context, scope *cooperative.
 		return e
 	}
 	defs := append([]toolschema.Definition{}, view.definitions...)
-	requestHost := requestcontext.Host{NativeToolSearch: view.options.Print.ToolSearch, ToolSearchCatalogue: view.toolSearchCatalogue, Profile: requestcontext.NativeDirectRelayProfile, Env: h.requestEnvironment, DeviceID: deviceID, SessionID: h.options.Controller.SessionID(), NativeToolDefinitions: &defs, SDKBetas: []string{}, TTLAllowlist: []string{}, ToolSchemas: h.toolSchemas}
+	requestHost := requestcontext.Host{NativeToolSearch: view.options.Print.ToolSearch, ToolSearchCatalogue: view.toolSearchCatalogue, Profile: requestcontext.NativeDirectRelayProfile, Env: h.requestEnvironment, DeviceID: deviceID, SessionID: h.options.Controller.SessionID(), NativeToolDefinitions: &defs, SDKBetas: h.options.SDKBetas, Workload: h.options.Workload, TTLAllowlist: []string{}, ToolSchemas: h.toolSchemas}
 	if view.options.Print.Tools != nil {
 		requestHost.ToolSchemaHost, e = view.options.Print.Tools.SchemaHostForScope(scope, input.Model, h.options.OriginalEnv["ANTHROPIC_BASE_URL"])
 		if e != nil {
@@ -169,7 +169,7 @@ func (h *Host) queryAgentHookOnProducer(ctx context.Context, scope *cooperative.
 			if e != nil {
 				return queryloop.PreflightResult{}, e
 			}
-			opts := querypreflight.Input{NativeClaudeProof: h.nativeClaudeProof(scope), Profile: querypreflight.NativeProcessProfile, History: round.History, SystemPrompt: system, UserContext: protocol.NewJSONObject(), SystemContext: protocol.NewJSONObject(), MainLoopModel: model, QuerySource: "hook_agent", PermissionMode: "dontAsk", OriginalEnvironment: env, ToolCount: len(view.definitions), Tools: view.definitions, PlanOptions: requestHost.PlanOptions}
+			opts := querypreflight.Input{SDKBetas: h.options.SDKBetas, NativeClaudeProof: h.nativeClaudeProof(scope), Profile: querypreflight.NativeProcessProfile, History: round.History, SystemPrompt: system, UserContext: protocol.NewJSONObject(), SystemContext: protocol.NewJSONObject(), MainLoopModel: model, QuerySource: "hook_agent", PermissionMode: "dontAsk", OriginalEnvironment: env, ToolCount: len(view.definitions), Tools: view.definitions, PlanOptions: requestHost.PlanOptions}
 			if view.options.Print.ResolveRuntimeModel != nil {
 				opts.ResolveRuntimeModel = func(in querypreflight.RuntimeModelInput) (string, error) {
 					return view.options.Print.ResolveRuntimeModel(scope, in)

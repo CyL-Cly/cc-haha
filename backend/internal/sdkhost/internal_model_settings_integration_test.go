@@ -20,6 +20,31 @@ import (
 )
 
 func TestActualNativeMenuWritesTwoASKsRetainOriginalPermissionsAndRejectUnknownSettings(t *testing.T) {
+	for _, mutation := range []struct {
+		name  string
+		apply func(*protocol.JSONObject, *protocol.JSONObject)
+	}{
+		{"unrelated field", func(merged, _ *protocol.JSONObject) {
+			merged.Set("language", []byte(`"changed-unconsumed-field"`))
+		}},
+		{"nested shared reference", func(merged, _ *protocol.JSONObject) {
+			future, _ := merged.Object("future")
+			future.Set("kept", []byte(`false`))
+		}},
+		{"raw UTF16", func(merged, _ *protocol.JSONObject) {
+			merged.Set("future", []byte(`{"kept":true,"utf16":"\ud800"}`))
+		}},
+		{"AppState base alias", func(_, base *protocol.JSONObject) {
+			base.Set("language", []byte(`"changed-unconsumed-base"`))
+		}},
+	} {
+		t.Run(mutation.name, func(t *testing.T) {
+			testActualNativeMenuSettingsLifecycle(t, mutation.apply)
+		})
+	}
+}
+
+func testActualNativeMenuSettingsLifecycle(t *testing.T, mutate func(*protocol.JSONObject, *protocol.JSONObject)) {
 	var mu sync.Mutex
 	bodies := []json.RawMessage{}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -109,7 +134,7 @@ func TestActualNativeMenuWritesTwoASKsRetainOriginalPermissionsAndRejectUnknownS
 		if err != nil {
 			return err
 		}
-		merged.Set("language", []byte(`"changed-unconsumed-field"`))
+		mutate(merged, originalSettings)
 		if err := process.Host.AcceptInternalModelSettings(scope); err == nil {
 			return fmt.Errorf("unrelated consumer was admitted as a model write")
 		}
@@ -120,6 +145,7 @@ func TestActualNativeMenuWritesTwoASKsRetainOriginalPermissionsAndRejectUnknownS
 	if err := process.RunTurn(context.Background(), turn("must stop before physical request")); err == nil || !strings.Contains(err.Error(), "cache identity") {
 		t.Fatalf("unknown settings lifecycle bypassed: %v", err)
 	}
+
 	mu.Lock()
 	count := len(bodies)
 	mu.Unlock()

@@ -417,7 +417,7 @@ func TestSDKStreamPinnedSourceContract(t *testing.T) {
 			Observation json.RawMessage   `json:"observation"`
 		} `json:"cases"`
 	}
-	if err := json.Unmarshal(raw, &contract); err != nil || contract.SDKVersion != "0.80.0" || contract.EngineVersion != "1.3.14" || len(contract.Cases) == 0 {
+	if err := json.Unmarshal(raw, &contract); err != nil || contract.SDKVersion != "0.128.0" || contract.EngineVersion != "1.3.14" || len(contract.Cases) == 0 {
 		t.Fatal("SDK source contract requires pinned actual oracle provenance")
 	}
 	for _, fixture := range contract.Cases {

@@ -145,7 +145,7 @@ func ObjectiveFromPrompt(command string) string {
 }
 func IsStatus(text string) bool {
 	text = trim(text)
-	return strings.HasPrefix(text, "Goal set:") || strings.HasPrefix(text, "Goal continuing:") || strings.HasPrefix(text, "Goal cleared:") || text == "Goal cleared." || text == "Goal marked complete." || text == "No active goal."
+	return strings.HasPrefix(text, "Goal set:") || strings.HasPrefix(text, "Goal continuing:") || strings.HasPrefix(text, "Goal waiting for teammates:") || strings.HasPrefix(text, "Goal cleared:") || text == "Goal cleared." || text == "Goal marked complete." || text == "No active goal."
 }
 func IsLocalOutput(text string) bool {
 	output, present := xmlValue(text, "local-command-stdout")

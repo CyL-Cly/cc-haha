@@ -102,11 +102,9 @@ func TestActualIndependentForegroundAgentCancellationJoinsChildAndOneParentRegis
 	}
 }
 
-func TestActualPromotedForegroundParentShutdownJoinsBothNativeChildren(t *testing.T) {
+func TestActualPromotedForegroundParentShutdownJoinsSameNativeChild(t *testing.T) {
 	first := make(chan struct{})
-	second := make(chan struct{})
 	firstClosed := make(chan struct{})
-	secondClosed := make(chan struct{})
 	var parents, children atomic.Int32
 	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body, _ := io.ReadAll(r.Body)
@@ -128,9 +126,8 @@ func TestActualPromotedForegroundParentShutdownJoinsBothNativeChildren(t *testin
 			<-r.Context().Done()
 			close(firstClosed)
 		} else {
-			close(second)
+			t.Error("promotion spawned a new child")
 			<-r.Context().Done()
-			close(secondClosed)
 		}
 	}))
 	defer peer.Close()
@@ -151,11 +148,6 @@ func TestActualPromotedForegroundParentShutdownJoinsBothNativeChildren(t *testin
 		t.Fatal("promotion", changed, e)
 	}
 	select {
-	case <-second:
-	case <-time.After(10 * time.Second):
-		t.Fatal("grace did not launch real background")
-	}
-	select {
 	case <-firstClosed:
 		t.Fatal("promotion prematurely cancelled old pending request")
 	default:
@@ -171,14 +163,14 @@ func TestActualPromotedForegroundParentShutdownJoinsBothNativeChildren(t *testin
 	if e = m.ShutdownSession(shutdown); e != nil {
 		t.Fatal(e)
 	}
-	for _, done := range []<-chan struct{}{firstClosed, secondClosed} {
+	for _, done := range []<-chan struct{}{firstClosed} {
 		select {
 		case <-done:
 		default:
 			t.Fatal("shutdown released native reference before physical child stopped")
 		}
 	}
-	if children.Load() != 2 {
+	if children.Load() != 1 {
 		t.Fatal("spawned another Harness", children.Load())
 	}
 }

@@ -20,6 +20,14 @@ func ContinuationOutputJSON(reason string) []byte {
 // ContinuationOutputRawJSON retains both existing lone surrogates and Source's
 // 240 UTF-16 code-unit slice. XML-sensitive characters become spaces.
 func ContinuationOutputRawJSON(raw json.RawMessage) json.RawMessage {
+	return statusOutputRawJSON(raw, "Goal continuing: ")
+}
+
+func WaitingForTeamOutputRawJSON(raw json.RawMessage) json.RawMessage {
+	return statusOutputRawJSON(raw, "Goal waiting for teammates: ")
+}
+
+func statusOutputRawJSON(raw json.RawMessage, status string) json.RawMessage {
 	units, _ := protocol.DecodeJavaScriptJSONString(raw)
 	prefix := []byte("Prompt hook condition was not met:")
 	matched := len(units) >= len(prefix)
@@ -57,10 +65,10 @@ func ContinuationOutputRawJSON(raw json.RawMessage) json.RawMessage {
 		normalized = append(normalized, u)
 	}
 	if len(normalized) == 0 {
-		return protocol.QuoteJavaScriptUTF16(utf16.Encode([]rune("Goal continuing: more work is required")))
+		return protocol.QuoteJavaScriptUTF16(utf16.Encode([]rune(status + "more work is required")))
 	}
 	if len(normalized) > 240 {
 		normalized = normalized[:240]
 	}
-	return protocol.QuoteJavaScriptUTF16(append(utf16.Encode([]rune("Goal continuing: ")), normalized...))
+	return protocol.QuoteJavaScriptUTF16(append(utf16.Encode([]rune(status)), normalized...))
 }

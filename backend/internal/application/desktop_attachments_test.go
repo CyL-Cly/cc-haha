@@ -97,8 +97,10 @@ func TestActualDesktopAttachmentWebSocketStagesFileAndSharedHarnessReadsIt(t *te
 		}
 		if value.String("type") == "message_complete" {
 			completed = true
+			requestDesktopSessionSync(t, ws)
 		}
-		if completed && value.String("type") == "session_state" && value.String("turnState") == "idle" {
+		if completed && value.String("type") == "session_state" {
+			assertDesktopIdleSnapshot(t, value)
 			break
 		}
 	}

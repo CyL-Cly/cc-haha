@@ -138,8 +138,8 @@ func TestDesktopTransportRunsSharedGoAgentAndReconnectsPendingPermission(t *test
 	}
 	send(ws, map[string]any{"type": "permission_response", "requestId": permissionID, "allowed": true, "updatedInput": map[string]any{"file_path": approved, "content": "approved"}})
 	receive(ws, "message_complete")
-	for state := receive(ws, "session_state"); obj(state).String("turnState") != "idle"; state = receive(ws, "session_state") {
-	}
+	requestDesktopSessionSync(t, ws)
+	assertDesktopIdleSnapshot(t, obj(receive(ws, "session_state")))
 	if data, err := os.ReadFile(approved); err != nil || string(data) != "approved" {
 		t.Fatalf("native Write result %s %v", data, err)
 	}
@@ -156,8 +156,8 @@ func TestDesktopTransportRunsSharedGoAgentAndReconnectsPendingPermission(t *test
 	receive(ws, "connected")
 	send(ws, map[string]any{"type": "user_message", "content": "Continue after server restart."})
 	receive(ws, "message_complete")
-	for state := receive(ws, "session_state"); obj(state).String("turnState") != "idle"; state = receive(ws, "session_state") {
-	}
+	requestDesktopSessionSync(t, ws)
+	assertDesktopIdleSnapshot(t, obj(receive(ws, "session_state")))
 	if calls.Load() != 3 || opens.Load() != 2 {
 		t.Fatalf("calls=%d runtimes=%d", calls.Load(), opens.Load())
 	}

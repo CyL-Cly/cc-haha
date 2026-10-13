@@ -157,7 +157,7 @@ func (c *ClaudeAICatalog) fetch(ctx context.Context) protocol.JSONObject {
 		return empty
 	}
 	request.Header.Set("Accept", "application/json, text/plain, */*")
-	request.Header.Set("User-Agent", "axios/1.14.0")
+	request.Header.Set("User-Agent", "axios/1.15.2")
 	request.Header.Set("Accept-Encoding", "gzip, compress, deflate, br")
 	request.Header.Set("Authorization", "Bearer "+cliauth.OAuthFieldString(tokens.Get("accessToken")))
 	request.Header.Set("Content-Type", "application/json")

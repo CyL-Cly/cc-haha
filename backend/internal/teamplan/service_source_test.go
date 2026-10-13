@@ -26,7 +26,7 @@ func TestTeamPlanServiceReviewLaunchFailureDeliveryAndRestartPolicyMatchSource(t
 	if bun == "" {
 		t.Skip("actual Source Bun")
 	}
-	kinds := []string{"success", "invalid", "failed", "started", "notify", "lost_running", "lost_launching"}
+	kinds := []string{"success", "invalid", "failed", "started", "notify", "lost_running", "lost_launching", "leader_failed", "leader_started"}
 	base := object(fixturePlan())
 	initial := protocol.NewJSONObject(protocol.JSONField{Name: "members", Value: base.Get("members")}, protocol.JSONField{Name: "tasks", Value: base.Get("tasks")})
 	rows := []map[string]any{}
@@ -103,6 +103,15 @@ func TestTeamPlanServiceReviewLaunchFailureDeliveryAndRestartPolicyMatchSource(t
 		}})
 		if e != nil {
 			t.Fatal(e)
+		}
+		if kind == "leader_failed" || kind == "leader_started" {
+			service.runtime.StartLeader = func(context.Context, string) error {
+				record("startLeader")
+				if kind == "leader_failed" {
+					return errors.New("actual leader start rejected")
+				}
+				return nil
+			}
 		}
 		action := func(plan protocol.JSONObject) protocol.JSONObject {
 			v := plan.Clone()

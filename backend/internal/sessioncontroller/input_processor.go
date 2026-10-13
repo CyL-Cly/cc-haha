@@ -15,12 +15,14 @@ type ProcessedInput struct {
 	Effort             json.RawMessage
 	CommandRules       []json.RawMessage
 	NoQuery            bool
+	NoQueryResultText  string
 	StartMillis        float64
 	AttachmentsHandled bool
 }
 type LocalInputResult struct {
-	Text        string
-	StartMillis float64
+	CompactHistory []protocol.JSONObject
+	Text           string
+	StartMillis    float64
 }
 type InputProcessor struct {
 	NativeMedia         bool

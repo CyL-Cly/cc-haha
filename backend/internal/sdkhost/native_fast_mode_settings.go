@@ -31,11 +31,11 @@ func (h *Host) AcceptInternalFastModeSettings(scope *cooperative.Scope) error {
 	if err != nil {
 		return err
 	}
-	if !sameSettingsOutsideFastModeRemoval(previous, next) {
+	if !sameSettingsOutsideFastModeRemoval(h.internalSettingsBaseline(previous), next) {
 		return cap("internal fast setting changed another consumer")
 	}
 	h.internalFastSettings = next
-	return nil
+	return h.certifyInternalSettings(previous, next)
 }
 func (h *Host) sameInternalModelSettings(previous, next *protocol.JSONObject) bool {
 	return sameSettingsOutsideModelSelection(previous, next) || h.internalFastSettings != nil && sameSettingsOutsideFastModeRemoval(previous, h.internalFastSettings) && sameSettingsOutsideModelSelection(h.internalFastSettings, next)

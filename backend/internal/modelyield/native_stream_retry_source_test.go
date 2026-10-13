@@ -33,6 +33,7 @@ func TestActualNativeStreamRetryAgainstFullOriginalQueryModel(t *testing.T) {
 	for _, item := range []struct {
 		name, prefix, retries, errorWire string
 		marker, always, stop             bool
+		cleanEOF                         bool
 	}{
 		{name: "empty then success", retries: "2"},
 		{name: "budget zero", retries: "0", always: true},
@@ -44,6 +45,10 @@ func TestActualNativeStreamRetryAgainstFullOriginalQueryModel(t *testing.T) {
 		{name: "Codex buffered text retries", prefix: completedText, retries: "2", marker: true},
 		{name: "Codex buffered text exhausted", prefix: completedText, retries: "1", marker: true, always: true},
 		{name: "completed tool no replay", prefix: completedTool, retries: "2", marker: true},
+		{name: "completed tool clean EOF safely retries", prefix: completedTool, retries: "2", cleanEOF: true},
+		{name: "no events clean EOF safely retries", retries: "2", cleanEOF: true},
+		{name: "partial text clean EOF safely retries", prefix: strings.Split(queryWire("normal"), "event: content_block_stop")[0], retries: "2", cleanEOF: true},
+		{name: "missing message_stop only succeeds", prefix: strings.Split(queryWire("normal"), "event: message_stop")[0], retries: "2", cleanEOF: true, always: true},
 		{name: "policy no replay", retries: "2", marker: true, errorWire: "event: error\ndata: {\"type\":\"error\",\"error\":{\"type\":\"api_error\",\"code\":\"content_policy\",\"message\":\"private policy\"}}\n\n"},
 	} {
 		t.Run(item.name, func(t *testing.T) {
@@ -51,6 +56,7 @@ func TestActualNativeStreamRetryAgainstFullOriginalQueryModel(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				number := posts.Add(1)
 				w.Header().Set("content-type", "text/event-stream")
+				w.Header().Set("date", "Tue, 14 Nov 2023 22:13:20 GMT")
 				w.Header().Set("request-id", fmt.Sprintf("private-request-%d", number))
 				if item.marker {
 					w.Header().Set("x-cc-haha-openai-codex-stream", "1")
@@ -59,6 +65,9 @@ func TestActualNativeStreamRetryAgainstFullOriginalQueryModel(t *testing.T) {
 					errorWire := item.errorWire
 					if errorWire == "" {
 						errorWire = apiError
+					}
+					if item.cleanEOF {
+						errorWire = ""
 					}
 					_, _ = fmt.Fprint(w, item.prefix+errorWire)
 				} else {
@@ -73,7 +82,7 @@ func TestActualNativeStreamRetryAgainstFullOriginalQueryModel(t *testing.T) {
 			cmd := exec.CommandContext(ctx, bun, "--no-env-file", fixture)
 			cmd.Dir = home
 			cmd.Env = []string{"HOME=" + home, "USERPROFILE=" + home, "CLAUDE_CONFIG_DIR=" + filepath.Join(home, ".claude"), "TMPDIR=" + home, "CC_HAHA_FIXTURE_TEMP_ROOT=" + filepath.Dir(home), "CC_HAHA_NATIVE_STREAM_RETRY_FIXTURE=1", "CLAUDE_CODE_SIMPLE=1", "NODE_ENV=production", "DISABLE_TELEMETRY=1", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1", "PATH=/usr/bin:/bin", "BUN_OPTIONS=--no-env-file"}
-			payload, _ := json.Marshal(map[string]any{"home": home, "origin": server.URL, "retries": item.retries, "stopRecovery": item.stop})
+			payload, _ := json.Marshal(map[string]any{"home": home, "origin": server.URL, "retries": item.retries, "maxRetries": "2", "stopRecovery": item.stop})
 			cmd.Stdin = bytes.NewReader(payload)
 			var stderr bytes.Buffer
 			cmd.Stderr = &stderr
@@ -84,6 +93,7 @@ func TestActualNativeStreamRetryAgainstFullOriginalQueryModel(t *testing.T) {
 			var original struct {
 				Posts        int32
 				Yielded      []map[string]any
+				Sleeps       []float64
 				Capabilities struct{ Blocked []string }
 			}
 			if err := json.Unmarshal(raw, &original); err != nil || len(original.Capabilities.Blocked) != 0 || posts.Load() != original.Posts {
@@ -96,14 +106,22 @@ func TestActualNativeStreamRetryAgainstFullOriginalQueryModel(t *testing.T) {
 			binding, _ := modelaccounting.NewMainContext(owner)
 			input := queuedInput(server.URL)
 			input.Context.Host.Profile = requestcontext.NativeDirectRelayProfile
+			input.Context.Host.Env["CLAUDE_CODE_MAX_RETRIES"] = "2"
 			policyEnv := map[string]string{"CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK": "1", "CLAUDE_STREAM_TRANSIENT_RETRY_MAX": item.retries, "CLAUDE_ENABLE_STREAM_WATCHDOG": "0"}
 			yielded := []map[string]any{}
+			sleeps := []float64{}
 			err = owner.Run(ctx, func(scope *cooperative.Scope) error {
-				_, err := Run(ctx, input, Dependencies{Session: session, AgentContext: binding, StreamPolicy: PreserveNativeStreamErrorPolicyOriginalEnvironment(policyEnv), Request: requestretry.Dependencies{StreamOwner: owner, StreamScope: scope, UUID: func() string { return "private-go-id" }, Now: func() time.Time { return time.UnixMilli(1700000000000) }, Random: func() float64 { return 0 }, Sleep: func(context.Context, float64) error { return fmt.Errorf("unexpected creation sleep") }}, Emit: func(value Yield) (requestretry.NoticeAction, error) {
+				_, err := Run(ctx, input, Dependencies{Session: session, AgentContext: binding, StreamPolicy: PreserveNativeStreamErrorPolicyOriginalEnvironment(policyEnv), Request: requestretry.Dependencies{StreamOwner: owner, StreamScope: scope, UUID: func() string { return "private-go-id" }, Now: func() time.Time { return time.UnixMilli(1700000000000) }, Random: func() float64 { return 0 }, Sleep: func(_ context.Context, millis float64) error { sleeps = append(sleeps, millis); return nil }}, Emit: func(value Yield) (requestretry.NoticeAction, error) {
 					var raw []byte
 					var err error
 					if value.Control != nil {
 						raw, err = value.Control.MarshalJSON()
+					} else if value.Notice != nil {
+						message, failure := value.Notice.Envelope()
+						if failure != nil {
+							return 0, failure
+						}
+						raw, err = message.MarshalJSON()
 					} else if value.Update != nil && value.Update.Envelope != nil {
 						raw, err = value.Update.Envelope.MarshalJSON()
 					} else if value.Update != nil {
@@ -129,7 +147,7 @@ func TestActualNativeStreamRetryAgainstFullOriginalQueryModel(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if posts.Load() != original.Posts || !reflect.DeepEqual(yielded, original.Yielded) {
+			if posts.Load() != original.Posts || !reflect.DeepEqual(yielded, original.Yielded) || !reflect.DeepEqual(sleeps, original.Sleeps) {
 				got, _ := json.Marshal(yielded)
 				want, _ := json.Marshal(original.Yielded)
 				t.Fatalf("actual stream resend/yield drift POSTs %d want%d\ngot %s\nwant%s", posts.Load(), original.Posts, got, want)

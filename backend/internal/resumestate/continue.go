@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -115,17 +116,28 @@ func ReadHeadAndTail(files sessionstore.FileSystem, path string, size int64) (he
 }
 
 type candidate struct {
-	sid, path string
-	stat      Stat
+	sid, path  string
+	stat       Stat
+	head, tail string
 }
 
-func (service *Service) continueLog() (protocol.JSONObject, error) {
-	directory := service.projectDir()
-	entries, err := service.options.Files.ReadDir(directory)
+// ContinueInventory contains only the completed native directory/stat/head-tail
+// observations. Selection and metadata parsing can therefore stay on the Owner.
+type ContinueInventory struct {
+	values      []candidate
+	failedStats []string
+}
+type ContinueFiles interface {
+	sessionstore.FileSystem
+	ReadDir(string) ([]fs.DirEntry, error)
+}
+
+func ReadContinueInventory(files ContinueFiles, directory string, statFile func(string) (Stat, error)) ContinueInventory {
+	entries, err := files.ReadDir(directory)
 	if err != nil {
-		return protocol.JSONObject{}, nil
+		return ContinueInventory{}
 	}
-	values := []candidate{}
+	result := ContinueInventory{}
 	for _, entry := range entries {
 		if !entry.Type().IsRegular() || !strings.HasSuffix(entry.Name(), ".jsonl") {
 			continue
@@ -135,12 +147,24 @@ func (service *Service) continueLog() (protocol.JSONObject, error) {
 			continue
 		}
 		path := filepath.Join(directory, entry.Name())
-		stat, err := service.options.Stat(path)
+		stat, err := statFile(path)
 		if err != nil {
-			service.diagnostic("debug", "Failed to stat session file: "+path, nil)
+			result.failedStats = append(result.failedStats, path)
 			continue
 		}
-		values = append(values, candidate{sid, path, stat})
+		head, tail := ReadHeadAndTail(files, path, stat.Size)
+		result.values = append(result.values, candidate{sid: sid, path: path, stat: stat, head: head, tail: tail})
+	}
+	return result
+}
+
+func (service *Service) continueLog() (protocol.JSONObject, error) {
+	return service.selectContinueInventory(ReadContinueInventory(service.options.Files, service.projectDir(), service.options.Stat))
+}
+func (service *Service) selectContinueInventory(inventory ContinueInventory) (protocol.JSONObject, error) {
+	values := inventory.values
+	for _, path := range inventory.failedStats {
+		service.diagnostic("debug", "Failed to stat session file: "+path, nil)
 	}
 	sort.SliceStable(values, func(left, right int) bool {
 		if values[left].stat.Modified != values[right].stat.Modified {
@@ -150,7 +174,7 @@ func (service *Service) continueLog() (protocol.JSONObject, error) {
 	})
 	visible := []protocol.JSONObject{}
 	for _, value := range values {
-		head, tail := ReadHeadAndTail(service.options.Files, value.path, value.stat.Size)
+		head, tail := value.head, value.tail
 		side := strings.Contains(head, `"isSidechain":true`) || strings.Contains(head, `"isSidechain": true`)
 		team := extract(head, "teamName", false)
 		if side {

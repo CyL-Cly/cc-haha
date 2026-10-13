@@ -36,6 +36,9 @@ func (s *PrintRegistry) ReplaceNativePrompts(prompts []skillcommands.Definition,
 }
 
 func (s *PrintRegistry) Prompt(name string) (skillcommands.Definition, bool) {
+	if s.slashCommandsDisabled {
+		return skillcommands.Definition{}, false
+	}
 	for _, prompt := range s.prompts {
 		if prompt.Name() == name || prompt.UserFacingName() != "" && prompt.UserFacingName() == name {
 			return prompt, true

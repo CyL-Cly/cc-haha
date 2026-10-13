@@ -232,7 +232,7 @@ func (server *Server) effortHTTP(writer http.ResponseWriter, request *http.Reque
 		}
 		level := stringField(current, "effort")
 		if !slices.Contains(levels, level) {
-			level = "max"
+			level = "low"
 		}
 		writeJSON(writer, 200, map[string]any{"level": level, "available": levels})
 		return nil

@@ -14,7 +14,7 @@ func (h *Host) NativeSessionUsage(scope *cooperative.Scope) (protocol.JSONObject
 	if err != nil {
 		return protocol.JSONObject{}, err
 	}
-	resolver := modelaccounting.RestoredModelResolver{Environment: h.options.OriginalEnv, Settings: h.options.Startup.GetInitialSettings, Global: h.options.Global.Get}
+	resolver := modelaccounting.RestoredModelResolver{Environment: h.options.OriginalEnv, Settings: h.options.Startup.GetInitialSettings, Global: h.options.Global.Get, SDKBetas: h.options.SDKBetas}
 	return h.sessionAccounting.UsageSnapshot(scope, modelaccounting.CostPresentation{NowMillis: h.options.NowMillis, StartMillis: h.options.Print.ProcessStartMillis, LinesAdded: added, LinesRemoved: removed, CanonicalName: resolver.Canonical})
 }
 

@@ -12,9 +12,16 @@ import (
 // Policy is captured on the actual owner; only native wrapping/cleanup is
 // passed to the physical command producer. It cannot mint a new tool grant.
 type BashSandboxBindings struct {
-	Owner     *cooperative.Owner
-	Select    func(*cooperative.Scope, protocol.JSONObject) (*BashSandboxCommand, error)
-	AutoAllow func(*cooperative.Scope, protocol.JSONObject) (bool, error)
+	Owner            *cooperative.Owner
+	PowerShellPolicy func(*cooperative.Scope) error
+	// Nil means the sandbox is disabled. The actual initialized runtime supplies
+	// its write configuration; permission evaluation does not invent write paths.
+	WritePaths func(*cooperative.Scope) (*BashSandboxWritePaths, error)
+	Select     func(*cooperative.Scope, protocol.JSONObject) (*BashSandboxCommand, error)
+	AutoAllow  func(*cooperative.Scope, protocol.JSONObject) (bool, error)
+}
+type BashSandboxWritePaths struct {
+	AllowOnly, DenyWithinAllow []string
 }
 type BashSandboxCommand struct {
 	TemporaryDirectory string

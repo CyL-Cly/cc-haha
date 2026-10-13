@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 	"strings"
@@ -216,9 +217,54 @@ func (service *Service) GetAgentTeamsEnabled(ctx context.Context) (bool, error) 
 	return true, nil
 }
 
+// GetAutoUpdateEnabled and GetMaxConcurrentSubagents upgrade old preferences
+// at read time; observing defaults never rewrites the user-owned settings file.
+func (service *Service) GetAutoUpdateEnabled(ctx context.Context) (bool, error) {
+	user, err := service.GetUserSettings(ctx)
+	return AutoUpdateEnabled(user), err
+}
+
+func AutoUpdateEnabled(user storage.Object) bool {
+	return !bytes.Equal(bytes.TrimSpace(user["autoUpdateEnabled"]), []byte("false"))
+}
+
+func PositiveSafeInteger(raw json.RawMessage) (int64, bool) {
+	var value float64
+	if len(raw) == 0 || json.Unmarshal(raw, &value) != nil || value <= 0 || value > 9007199254740991 || math.IsInf(value, 0) || math.Trunc(value) != value {
+		return 0, false
+	}
+	return int64(value), true
+}
+
+func (service *Service) GetMaxConcurrentSubagents(ctx context.Context) (*int64, error) {
+	user, err := service.GetUserSettings(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return MaxConcurrentSubagents(user), nil
+}
+
+func MaxConcurrentSubagents(user storage.Object) *int64 {
+	if limit, valid := PositiveSafeInteger(user["maxConcurrentSubagents"]); valid {
+		return &limit
+	}
+	return nil
+}
+
 func (service *Service) UpdateUserSettings(ctx context.Context, patch storage.Object) error {
 	if err := validatePatch(patch); err != nil {
 		return err
+	}
+	if value, exists := patch["autoUpdateEnabled"]; exists {
+		flag := bytes.TrimSpace(value)
+		if !bytes.Equal(flag, []byte("true")) && !bytes.Equal(flag, []byte("false")) {
+			return badRequest("autoUpdateEnabled must be a boolean")
+		}
+	}
+	if value, exists := patch["maxConcurrentSubagents"]; exists && !bytes.Equal(bytes.TrimSpace(value), []byte("null")) {
+		if _, valid := PositiveSafeInteger(value); !valid {
+			return badRequest("maxConcurrentSubagents must be null or a positive safe integer")
+		}
 	}
 	if value, exists := patch["agentTeamsEnabled"]; exists {
 		flag := bytes.TrimSpace(value)

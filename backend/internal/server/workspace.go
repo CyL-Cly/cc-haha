@@ -17,6 +17,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"golang.org/x/text/collate"
 	"golang.org/x/text/language"
+	"golang.org/x/text/unicode/norm"
 )
 
 type workspacePath struct{ absolute, canonical, relative, root string }
@@ -38,6 +39,8 @@ var workspaceDocuments = map[string]workspaceDocument{
 	"xlsx": {"xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 30 * 1024 * 1024},
 	"xlsm": {"xlsx", "application/vnd.ms-excel.sheet.macroEnabled.12", 30 * 1024 * 1024},
 	"xls":  {"xlsx", "application/vnd.ms-excel", 30 * 1024 * 1024},
+	"csv":  {"xlsx", "text/csv", 10 * 1024 * 1024},
+	"tsv":  {"xlsx", "text/tab-separated-values", 10 * 1024 * 1024},
 }
 
 func workspaceExtension(path string) string {
@@ -95,7 +98,7 @@ func (server *Server) resolveWorkspacePath(info sessionInfo, requested string) (
 	if !filepath.IsAbs(normalizeDriveRoot(requested)) {
 		absolute = filepath.Join(workDir, requested)
 	}
-	absolute = filepath.Clean(normalizeDriveRoot(absolute))
+	absolute = unicodeWorkspacePath(filepath.Clean(normalizeDriveRoot(absolute)))
 	if !sameOrInsideFilesystemPath(absolute, workDir) {
 		if filepath.IsAbs(normalizeDriveRoot(requested)) && server.registeredWorkspacePath(absolute) {
 			canonical := absolute
@@ -266,6 +269,38 @@ func (server *Server) workspaceHTTP(writer http.ResponseWriter, request *http.Re
 		return notFound("Unknown workspace resource: workspace")
 	}
 	resource := parts[4]
+	if resource == "stat" {
+		paths := []string{}
+		seen := map[string]bool{}
+		for _, path := range request.URL.Query()["path"] {
+			if path != "" && !seen[path] {
+				seen[path] = true
+				paths = append(paths, path)
+			}
+		}
+		if len(paths) == 0 {
+			return badRequest("path query parameter is required for workspace stat")
+		}
+		if len(paths) > 20 {
+			return badRequest("workspace stat accepts at most 20 paths")
+		}
+		files := []map[string]any{}
+		for _, path := range paths {
+			item := map[string]any{"path": path, "state": "unavailable"}
+			resolved, e := server.resolveWorkspacePath(info, path)
+			if e == nil {
+				stat, e := os.Stat(resolved.absolute)
+				if workspaceMissing(e) || e == nil && !stat.Mode().IsRegular() {
+					item["state"] = "missing"
+				} else if e == nil {
+					item["state"], item["mtimeMs"] = "file", sourceMtimeMillis(stat)
+				}
+			}
+			files = append(files, item)
+		}
+		writeJSON(writer, 200, map[string]any{"files": files})
+		return nil
+	}
 	if resource == "search" {
 		query := trimJS(request.URL.Query().Get("query"))
 		if query == "" {
@@ -327,4 +362,38 @@ func (server *Server) workspaceHTTP(writer http.ResponseWriter, request *http.Re
 	}
 	writeJSON(writer, 200, result)
 	return nil
+}
+
+// Resolve Unicode normalization aliases segment-by-segment while retaining the
+// existing canonical containment checks. Exact filenames always win.
+func unicodeWorkspacePath(path string) string {
+	volume := filepath.VolumeName(path)
+	rest := strings.TrimPrefix(path, volume)
+	current := volume + string(filepath.Separator)
+	for _, segment := range strings.Split(strings.TrimLeft(rest, string(filepath.Separator)), string(filepath.Separator)) {
+		if segment == "" {
+			continue
+		}
+		exact := filepath.Join(current, segment)
+		if _, err := os.Stat(exact); err == nil {
+			current = exact
+			continue
+		}
+		entries, err := os.ReadDir(current)
+		if err != nil {
+			return path
+		}
+		match := ""
+		for _, entry := range entries {
+			if norm.NFC.String(entry.Name()) == norm.NFC.String(segment) {
+				match = entry.Name()
+				break
+			}
+		}
+		if match == "" {
+			return path
+		}
+		current = filepath.Join(current, match)
+	}
+	return current
 }

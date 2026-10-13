@@ -97,6 +97,11 @@ func (r *QQRuntime) TargetFor(id string) QQTarget {
 	return QQTarget{Scope: target.Scope, TargetID: target.TargetID.Clone(), MessageID: target.MessageID.Clone()}
 }
 func (r *QQRuntime) HandleMessage(message protocol.JSONObject) error {
+	done, admitted := r.migration.Admit()
+	if !admitted {
+		return nil
+	}
+	defer done(nil)
 	payload, err := ExtractQQPayload(message)
 	if err != nil || !payload.IsObject() {
 		return err

@@ -9,7 +9,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 )
 
-const chatOmittedImage = "\n[Image omitted: this OpenAI-compatible chat endpoint only supports text content.]\n"
+const chatOmittedImage = "\n[Image omitted: the upstream rejected image input for this model.]\n"
 const chatFileImage = "\n[Image omitted: file-based image source is not supported by this endpoint.]\n"
 
 func chatText(text json.RawMessage, synthetic bool) protocol.JSONObject {

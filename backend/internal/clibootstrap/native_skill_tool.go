@@ -26,7 +26,7 @@ func (m *MainPrint) nativeSkillCommands(scope *cooperative.Scope) ([]builtintool
 		copy := definition
 		commands = append(commands, builtintools.SkillCommand{Metadata: copy.Metadata(), Definition: &copy})
 	}
-	for _, command := range m.Registry.ControlCommands() {
+	for _, command := range m.Registry.ModelSkillCommands() {
 		present := false
 		for _, definition := range definitions {
 			present = present || definition.Name() == command.Name || definition.UserFacingName() == command.Name

@@ -208,6 +208,10 @@ func (service *Service) fullLog(log protocol.JSONObject) (protocol.JSONObject, e
 	if err != nil {
 		return protocol.JSONObject{}, err
 	}
+	return service.fullLogFromTranscript(log, transcript, data)
+}
+
+func (service *Service) fullLogFromTranscript(log protocol.JSONObject, transcript *sessionhistory.Transcript, data protocol.JSONObject) (protocol.JSONObject, error) {
 	if len(pairs(data.Get("messages"))) == 0 {
 		return log, nil
 	}

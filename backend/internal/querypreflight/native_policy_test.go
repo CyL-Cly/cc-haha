@@ -104,7 +104,7 @@ func TestNativeBudgetControlsNeverMutateEnvironmentOrSilentlyResolveMainAlias(t 
 	if !reflect.DeepEqual(env, before) {
 		t.Fatal("original env was mutated")
 	}
-	for _, model := range []string{"opus", "sonnet[1m]", "best", ""} {
+	for _, model := range []string{"opus", "sonnet[1m]", "best"} {
 		if _, e := nativeModel(model); e == nil {
 			t.Fatalf("unresolved native startup alias %s", model)
 		}

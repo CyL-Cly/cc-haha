@@ -2,15 +2,17 @@ package sdkpermissions
 
 import "github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 
-// NextTerminalMode is getNextPermissionMode's ordinary inactive-classifier branch.
-// Active auto-classifier transitions remain owned by their existing guard;
-// cached availability alone must not activate that unported live gate.
-func NextTerminalMode(context protocol.JSONObject, userType string) string {
+// Cached UI availability and the current live gate must both permit Auto.
+func NextTerminalMode(context protocol.JSONObject, userType string, liveAutoGate ...bool) string {
+	auto := len(liveAutoGate) > 0 && liveAutoGate[0] && string(context.Get("isAutoModeAvailable")) == "true"
 	switch context.String("mode") {
 	case "default":
 		if userType == "ant" {
 			if string(context.Get("isBypassPermissionsModeAvailable")) == "true" {
 				return "bypassPermissions"
+			}
+			if auto {
+				return "auto"
 			}
 			return "default"
 		}
@@ -20,6 +22,13 @@ func NextTerminalMode(context protocol.JSONObject, userType string) string {
 	case "plan":
 		if string(context.Get("isBypassPermissionsModeAvailable")) == "true" {
 			return "bypassPermissions"
+		}
+		if auto {
+			return "auto"
+		}
+	case "bypassPermissions":
+		if auto {
+			return "auto"
 		}
 	}
 	return "default"

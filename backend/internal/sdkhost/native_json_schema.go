@@ -178,7 +178,7 @@ func (h *Host) nativeJSONSchemaRetryLimit(scope *cooperative.Scope, turn *native
 		protocol.JSONField{Name: "is_error", Value: raw(true)}, protocol.JSONField{Name: "num_turns", Value: raw(turnCount)}, protocol.JSONField{Name: "stop_reason", Value: lastStop},
 		protocol.JSONField{Name: "session_id", Value: quote(h.options.Controller.SessionID())}, protocol.JSONField{Name: "total_cost_usd", Value: snapshot.Get("totalCostUSD")},
 		protocol.JSONField{Name: "usage", Value: raw(usage)}, protocol.JSONField{Name: "modelUsage", Value: snapshot.Get("modelUsage")},
-		protocol.JSONField{Name: "permission_denials", Value: raw([]any{})}, protocol.JSONField{Name: "fast_mode_state", Value: quote("off")}, protocol.JSONField{Name: "uuid", Value: quote(h.options.UUID())},
+		protocol.JSONField{Name: "permission_denials", Value: h.permissionDenialsJSON()}, protocol.JSONField{Name: "fast_mode_state", Value: quote("off")}, protocol.JSONField{Name: "uuid", Value: quote(h.options.UUID())},
 		protocol.JSONField{Name: "errors", Value: raw([]string{fmt.Sprintf("Failed to provide valid structured output after %s attempts", strconv.FormatFloat(limit, 'f', -1, 64))})},
 	)
 	_, e = h.enqueue(scope, result)

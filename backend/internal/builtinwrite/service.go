@@ -45,7 +45,8 @@ func (s *Service) Validate(ctx context.Context, input protocol.JSONObject, scope
 	if deny {
 		return &ValidationError{"File is in a directory that is denied by your permission settings.", 1}
 	}
-	// Source returns valid without stat for UNC; execution permission still refuses.
+	// Source returns valid without stat for UNC; permission resolution precedes
+	// the physical call and is the only admission of network I/O.
 	if unc(input.Get("file_path")) {
 		return nil
 	}
@@ -116,7 +117,7 @@ func (s *Service) ReadForCache(scope *cooperative.Scope, inputPath json.RawMessa
 	if e := s.check(scope); e != nil {
 		return e
 	}
-	if unc(inputPath) {
+	if s.options.Host.Platform != "windows" && unc(inputPath) {
 		return capability("UNC file read")
 	}
 	path, e := s.expand(inputPath)
@@ -147,7 +148,7 @@ func (s *Service) callWithParent(ctx context.Context, input protocol.JSONObject,
 	if e := cancelled(ctx); e != nil {
 		return nil, e
 	}
-	if unc(input.Get("file_path")) {
+	if s.options.Host.Platform != "windows" && unc(input.Get("file_path")) {
 		return nil, capability("UNC/NTLM network-path permission handling")
 	}
 	originalPathUnits, e := protocol.DecodeJavaScriptJSONString(input.Get("file_path"))
@@ -185,7 +186,11 @@ func (s *Service) callWithParent(ctx context.Context, input protocol.JSONObject,
 	if _, e = mkdir.Await(scope); e != nil {
 		return nil, e
 	}
-	if truth(s.options.Environment("CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING")) && !truth(s.options.Environment("CLAUDE_CODE_DISABLE_FILE_CHECKPOINTING")) {
+	host, e := s.options.HostState(scope)
+	if e != nil {
+		return nil, e
+	}
+	if (!host.NonInteractive || truth(s.options.Environment("CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING"))) && !truth(s.options.Environment("CLAUDE_CODE_DISABLE_FILE_CHECKPOINTING")) {
 		if s.options.FileHistoryTrack == nil {
 			return nil, capability("enabled actual fileHistoryTrackEdit")
 		}

@@ -163,6 +163,9 @@ func (m *MainPrint) nativeAWSResolver(scope *cooperative.Scope) (*cloudauth.AWSR
 func (m *MainPrint) nativeCloudCommand(ctx context.Context, scope *cooperative.Scope, command string, timeout time.Duration, env map[string]string) (cloudauth.CommandOutput, error) {
 	cwd := m.state.Snapshot().CWD
 	future, err := nativeSkillWork(m, scope, func() (cloudauth.CommandOutput, error) {
+		if timeout > 0 {
+			return cloudauth.RunAuthRefresh(ctx, command, timeout, cwd, env, m.options.CloudAuthStatus)
+		}
 		return cloudauth.RunConfiguredCommand(ctx, command, timeout, cwd, env)
 	})
 	if err != nil {

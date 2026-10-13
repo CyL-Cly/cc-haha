@@ -17,6 +17,7 @@ func TestNativeMemoryDirectorySchemaRetainsOriginalStringUnknownFieldsAndInvalid
 		t.Skip("pinned Source Bun required")
 	}
 	rows := []string{`{}`, `{"autoMemoryDirectory":"~/trusted","future":7}`, `{"autoMemoryDirectory":""}`, `{"autoMemoryDirectory":"/"}`, `{"autoMemoryDirectory":"../relative"}`, `{"autoMemoryDirectory":null}`, `{"autoMemoryDirectory":7}`, `{"autoMemoryDirectory":false}`, `{"autoMemoryDirectory":[]}`, `{"autoMemoryDirectory":{},"model":7}`, `{"autoMemoryDirectory":"e\u0301/\ud800","effortLevel":"high","future":{"keep":true}}`}
+	rows = append(rows, `{"autoMemoryEnabled":true}`, `{"autoMemoryEnabled":false,"autoMemoryDirectory":"~/saved","future":"keep"}`, `{"autoMemoryEnabled":null}`, `{"autoMemoryEnabled":7}`, `{"autoMemoryEnabled":"false"}`, `{"autoMemoryEnabled":[],"model":7}`, `{"autoMemoryEnabled":{}}`)
 	fixture, _ := filepath.Abs("../../../scripts/quality-gate/go-parity/native-plugin-settings.fixture.ts")
 	allocation := t.TempDir()
 	home := filepath.Join(allocation, "source-home")
@@ -61,5 +62,8 @@ func TestNativeMemoryDirectorySchemaRetainsOriginalStringUnknownFieldsAndInvalid
 	}
 	if _, e := ValidateJSONContent(`{"autoMemoryDirectory":"~/trusted"}`, "finite"); e == nil {
 		t.Fatal("finite profile expanded")
+	}
+	if _, e := ValidateJSONContent(`{"autoMemoryEnabled":false}`, "finite"); e == nil {
+		t.Fatal("finite memory gate expanded")
 	}
 }

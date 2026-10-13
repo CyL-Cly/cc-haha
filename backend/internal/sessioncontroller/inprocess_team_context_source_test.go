@@ -48,7 +48,11 @@ func TestInProcessTeammateIdentityAndSidechainMetadataAgainstActualSource(t *tes
 			if err != nil {
 				return err
 			}
-			actual = append(actual, map[string]any{"identity": got, "list": list, "records": []map[string]any{{"isSidechain": true, "agentId": writer, "teamName": options.TeamName, "agentName": options.AgentName, "sessionId": c.SessionID()}}})
+			// The Source fixture observes the public teammate getters. The
+			// resumable transcript handle is internal runner state, not one of
+			// those getter results, so compare the same explicit projection.
+			publicIdentity := map[string]any{"TeamName": got.TeamName, "AgentName": got.AgentName, "AgentID": got.AgentID, "ParentSessionID": got.ParentSessionID, "Color": got.Color, "PlanModeRequired": got.PlanModeRequired}
+			actual = append(actual, map[string]any{"identity": publicIdentity, "list": list, "records": []map[string]any{{"isSidechain": true, "agentId": writer, "teamName": options.TeamName, "agentName": options.AgentName, "sessionId": c.SessionID()}}})
 			return nil
 		}); err != nil {
 			t.Fatal(err)

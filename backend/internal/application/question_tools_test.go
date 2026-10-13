@@ -270,8 +270,8 @@ func TestQuestionDesktopPermissionImagesReachActualWebSocketHarness(t *testing.T
 			}
 			send(decision)
 			receive("message_complete")
-			for state := receive("session_state"); state.String("turnState") != "idle"; state = receive("session_state") {
-			}
+			requestDesktopSessionSync(t, ws)
+			assertDesktopIdleSnapshot(t, receive("session_state"))
 			if calls.Load() != 2 {
 				t.Fatal("desktop Question did not settle")
 			}

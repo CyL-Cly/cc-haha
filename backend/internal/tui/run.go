@@ -22,6 +22,8 @@ type Options struct {
 	Output         io.Writer
 	Environment    []string
 	Title          string
+	TerminalTitle  string
+	InitialDraft   string
 	InitialPrompt  string
 	InitialHistory []protocol.JSONObject
 	Commands       []Completion
@@ -64,6 +66,7 @@ type tickMsg time.Time
 type foregroundTasksChangedMsg bool
 type permissionModeChangedMsg string
 type commandsChangedMsg []Completion
+type ideOnboardingChangedMsg struct{ props *IDEPicker }
 type inputEndMsg struct{}
 
 var errTerminalInputClosed = errors.New("terminal input reached EOF")
@@ -101,10 +104,18 @@ func (m *terminalModel) stopStartingTurns() { m.lifetime.Lock(); m.closed = true
 
 func (m *terminalModel) Init() tea.Cmd {
 	commands := []tea.Cmd{m.tick()}
+	if m.options.InitialDraft != "" {
+		m.state.Editor.Set(m.options.InitialDraft)
+		m.state.syncWorkflowKeyword(time.Now())
+	}
 	if m.options.InitialPrompt != "" {
 		m.state.Editor.Set(m.options.InitialPrompt)
 		m.state.syncWorkflowKeyword(time.Now())
 		commands = append(commands, m.actions(m.state.submit()))
+		// Source's initial-message onSubmit has a no-op clearBuffer. Early
+		// input stays editable while the positional prompt runs separately.
+		m.state.Editor.Set(m.options.InitialDraft)
+		m.state.syncWorkflowKeyword(time.Now())
 	}
 	return tea.Batch(commands...)
 }
@@ -127,6 +138,10 @@ func (m *terminalModel) actions(actions []action) tea.Cmd {
 	for _, action := range actions {
 		a := action
 		switch a.kind {
+		case actionMessageSelector:
+			commands = append(commands, m.messageSelectorCommand())
+		case actionMessageSelection:
+			commands = append(commands, m.messageSelectionCommand(a.messageSelection))
 		case actionSubmit:
 			commands = append(commands, func() tea.Msg {
 				// Commands can be dispatched asynchronously while Quit is being
@@ -224,6 +239,10 @@ func (m *terminalModel) actions(actions []action) tea.Cmd {
 			})
 		case actionThinkingPicker:
 			commands = append(commands, m.thinkingPickerCommand(a))
+		case actionIDEPicker:
+			commands = append(commands, m.idePickerCommand(a))
+		case actionPluginHint:
+			commands = append(commands, m.pluginHintCommand(a.name))
 		case actionTeammate:
 			commands = append(commands, m.teammateCommand(a.teammate))
 		}
@@ -233,6 +252,56 @@ func (m *terminalModel) actions(actions []action) tea.Cmd {
 
 func (m *terminalModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case ideOnboardingChangedMsg:
+		if msg.props == nil {
+			m.state.IDEOnboarding = nil
+		} else {
+			m.state.OpenIDEPicker(*msg.props)
+		}
+	case pluginHintChangedMsg:
+		m.state.PluginHint = nil
+		if msg.hint != nil {
+			m.state.PluginHint = &pluginHintState{hint: *msg.hint}
+		}
+	case pluginHintResponseMsg:
+		if msg.err != nil {
+			m.state.Status = msg.err.Error()
+		} else if msg.notice != "" {
+			m.state.applyNotice(Event{Kind: Notice, Text: msg.notice, NoticeTimeout: 5 * time.Second})
+		}
+	case messageSelectorOpenedMsg:
+		if msg.err != nil {
+			m.state.Status = msg.err.Error()
+		} else {
+			m.state.OpenMessageSelector(msg.snapshot)
+		}
+	case messageSelectionReturnedMsg:
+		if msg.result.PermissionMode != "" {
+			m.state.PermissionMode = msg.result.PermissionMode
+		}
+		if msg.result.History != nil {
+			m.state.SetInitialHistory(msg.result.History, m.options.Fullscreen)
+		}
+		if msg.result.Mode != "" {
+			m.state.Editor.Set(msg.result.Prefill)
+			m.state.Mode = msg.result.Mode
+			m.state.PastedContents = clonePastes(msg.result.PastedContents)
+			for id := range msg.result.PastedContents {
+				m.state.pasteSequence = max(m.state.pasteSequence, id)
+			}
+		}
+		if msg.err != nil {
+			if p := m.state.MessageSelector; p != nil {
+				p.busy = false
+				p.error = msg.err.Error()
+			} else {
+				m.state.Status = msg.err.Error()
+			}
+		} else {
+			m.state.MessageSelector = nil
+			m.state.Status = msg.result.Notice
+		}
+
 	case teammatesChangedMsg:
 		m.state.SetTeammateTasks(msg.tasks)
 	case permissionModeChangedMsg:
@@ -274,6 +343,7 @@ func (m *terminalModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, m.actions(m.state.HandleKey(terminalKey(msg), time.Now()))
 	case tea.PasteMsg:
 		m.state.Paste(msg.Content)
+		m.state.pluginHintInputChanged(time.Now())
 	case tea.WindowSizeMsg:
 		m.state.Resize(msg.Width, msg.Height)
 		if m.options.OnResize != nil {
@@ -295,6 +365,9 @@ func (m *terminalModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case returnedMsg:
 		return m, m.actions(m.state.FinishTurn(msg.id, msg.err))
 	case permissionReturnedMsg:
+		if errors.Is(msg.err, ErrStartupConsentDeclined) {
+			return m, m.actions(m.state.EOF())
+		}
 		if msg.err != nil {
 			m.state.Status = msg.err.Error()
 		}
@@ -341,13 +414,15 @@ func (m *terminalModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, m.actions(m.state.EOF())
 	case tickMsg:
 		m.state.Tick(time.Time(msg))
-		return m, m.tick()
+		return m, tea.Batch(m.tick(), m.actions(m.state.pluginHintTick(time.Time(msg))), m.actions(m.state.ideOnboardingTick()))
 	}
 	return m, nil
 }
 
 func (m *terminalModel) View() tea.View {
-	return m.state.View(m.options.Title, m.options.Fullscreen)
+	view := m.state.View(m.options.Title, m.options.Fullscreen)
+	view.WindowTitle = m.options.TerminalTitle
+	return view
 }
 
 type eofReader struct {
@@ -492,6 +567,33 @@ func Run(ctx context.Context, session Session, options Options) (err error) {
 	// Native termination signals follow the same ordered shutdown path.
 	program := tea.NewProgram(model, tea.WithContext(context.WithoutCancel(ctx)), tea.WithoutSignalHandler(), tea.WithInput(input), tea.WithOutput(options.Output), tea.WithEnvironment(options.Environment), tea.WithWindowSize(width, height))
 	model.program = program
+	if source, ok := session.(TerminalAutoConsentSource); ok {
+		initial, remove, err := source.BindTerminalAutoConsent(ctx, func(event Event) error { program.Send(actionEventMsg{event: event}); return nil })
+		if err != nil {
+			return err
+		}
+		if remove != nil {
+			defer remove()
+		}
+		model.state.applyInitialAutoConsent(initial)
+	}
+	if remove, e := model.bindPluginHints(); e != nil {
+		return e
+	} else if remove != nil {
+		defer remove()
+	}
+	if source, ok := session.(IDEOnboardingSource); ok {
+		initial, remove, e := source.SubscribeIDEOnboarding(ctx, func(props *IDEPicker) { program.Send(ideOnboardingChangedMsg{props}) })
+		if e != nil {
+			return e
+		}
+		if remove != nil {
+			defer remove()
+		}
+		if initial != nil {
+			model.state.OpenIDEPicker(*initial)
+		}
+	}
 	if remove, e := model.bindTeammates(); e != nil {
 		return e
 	} else if remove != nil {

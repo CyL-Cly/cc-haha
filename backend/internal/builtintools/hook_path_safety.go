@@ -1,6 +1,7 @@
 package builtintools
 
 import (
+	"github.com/NanmiCoder/cc-haha/backend/internal/nativepaths"
 	"github.com/dlclark/regexp2/v2"
 	"github.com/dop251/goja"
 	"path/filepath"
@@ -42,6 +43,13 @@ func suspiciousHookPath(path, platform string, allowUNC bool) bool {
 	return false
 }
 func hookExpandedSafetyPath(path string, c HookPathSafetyContext) string {
+	if c.Platform == "windows" {
+		expanded, err := nativepaths.ExpandWindows(path, c.CWD, c.CWD)
+		if err == nil {
+			return expanded
+		}
+		return path
+	}
 	if !filepath.IsAbs(path) {
 		path = filepath.Join(c.CWD, path)
 	}
@@ -73,16 +81,29 @@ func hookSafetyUnder(path, root string) bool {
 func claudeHookConfigPath(path string, c HookPathSafetyContext) bool {
 	p := hookCasePath(hookExpandedSafetyPath(path, c))
 	sep := string(filepath.Separator)
+	if c.Platform == "windows" {
+		sep = `\`
+	}
 	if strings.HasSuffix(p, sep+".claude"+sep+"settings.json") || strings.HasSuffix(p, sep+".claude"+sep+"settings.local.json") {
 		return true
 	}
 	for _, configured := range c.SettingsPaths {
-		if hookCasePath(configured) == p {
+		configured = hookCasePath(configured)
+		if configured == p {
 			return true
 		}
 	}
 	for _, dir := range []string{"commands", "agents", "skills"} {
-		if hookSafetyUnder(p, filepath.Join(c.CWD, ".claude", dir)) {
+		root := filepath.Join(c.CWD, ".claude", dir)
+		if c.Platform == "windows" {
+			root = hookCasePath(nativepaths.JoinWindows(c.CWD, ".claude", dir))
+			relative := nativepaths.RelativeWindows(root, p)
+			if relative == "" || relative != ".." && !regexpTraversal.MatchString(relative) {
+				return true
+			}
+			continue
+		}
+		if hookSafetyUnder(p, root) {
 			return true
 		}
 	}
@@ -92,7 +113,11 @@ func dangerousHookPath(path string, c HookPathSafetyContext, allowUNC bool) bool
 	if !allowUNC && (strings.HasPrefix(path, `\\`) || strings.HasPrefix(path, "//")) {
 		return true
 	}
-	parts := strings.Split(hookExpandedSafetyPath(path, c), string(filepath.Separator))
+	expanded, separator := hookExpandedSafetyPath(path, c), string(filepath.Separator)
+	if c.Platform == "windows" {
+		expanded, separator = nativepaths.WindowsToPOSIX(expanded), "/"
+	}
+	parts := strings.Split(expanded, separator)
 	for i, part := range parts {
 		lower := hookCasePath(part)
 		for _, dir := range []string{".git", ".vscode", ".idea", ".claude"} {

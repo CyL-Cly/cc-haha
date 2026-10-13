@@ -41,10 +41,12 @@ func (c *Controller) FlushProducerError(emit Emit) error {
 type AttemptState struct {
 	CompletedMessages         int
 	CrossedSideEffectBoundary bool
+	CommittedOutput           bool
+	ServerToolUseStarted      bool
 }
 
 func (c *Controller) AttemptState() AttemptState {
-	return AttemptState{CompletedMessages: len(c.created), CrossedSideEffectBoundary: c.crossed}
+	return AttemptState{CompletedMessages: len(c.created), CrossedSideEffectBoundary: c.crossed, CommittedOutput: c.committed, ServerToolUseStarted: c.serverToolStarted}
 }
 func (c *Controller) FlushProducerErrorWithoutToolUse(emit Emit) error {
 	if c.closed {

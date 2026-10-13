@@ -38,7 +38,7 @@ func TestActualSourceMarketStaleCacheRetryDisableAndRecovery(t *testing.T) {
 	defer peer.Close()
 	disabled, enabled := "clawhub", ""
 	start := int64(1800000000000)
-	steps := []step{{Path: "/api/market/skills?source=clawhub&limit=1"}, {Path: "/api/market/skills?source=clawhub&limit=1"}, {Path: "/api/market/skills?source=clawhub&limit=1", Now: start + 360001, Control: object{"fail": true}}, {Path: "/api/market/status"}, {Path: "/api/market/skills?source=clawhub&limit=1"}, {Path: "/api/market/status"}, {Path: "/api/market/skills?source=clawhub&limit=1", Disabled: &disabled}, {Path: "/api/market/skills?source=clawhub&limit=1", Disabled: &enabled, Control: object{"fail": false}}, {Path: "/api/market/status"}}
+	steps := []step{{Path: "/api/market/skills?scope=market&source=clawhub&limit=1"}, {Path: "/api/market/skills?scope=market&source=clawhub&limit=1"}, {Path: "/api/market/skills?scope=market&source=clawhub&limit=1", Now: start + 360001, Control: object{"fail": true}}, {Path: "/api/market/status"}, {Path: "/api/market/skills?scope=market&source=clawhub&limit=1"}, {Path: "/api/market/status"}, {Path: "/api/market/skills?scope=market&source=clawhub&limit=1", Disabled: &disabled}, {Path: "/api/market/skills?scope=market&source=clawhub&limit=1", Disabled: &enabled, Control: object{"fail": false}}, {Path: "/api/market/status"}}
 	sourceHome := t.TempDir()
 	expected := sourceContract(t, sourceHome, peer.URL, steps)
 	sourceRequests := requests.Load()
@@ -158,7 +158,7 @@ func TestMarketCloseCancelsActualPendingUpstreamAndJoinsHTTP(t *testing.T) {
 	done := make(chan struct{})
 	go func() {
 		defer close(done)
-		s.HandleHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "http://fixture.invalid/api/market/skills?source=clawhub", nil), []string{"api", "market", "skills"})
+		s.HandleHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "http://fixture.invalid/api/market/skills?scope=market&source=clawhub", nil), []string{"api", "market", "skills"})
 	}()
 	select {
 	case <-started:

@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
@@ -47,6 +48,20 @@ func TestHookPathSafetyUsesActualSourceThreePassesAndNativeSymlinkForms(t *testi
 		}
 	}
 	rows = append(rows, row{Path: "//server/path", Forms: []string{"//server/path"}, CWD: cwd, Platform: "windows", AllowUNC: true}, row{Path: filepath.Join(cwd, "GreekΟΣ", ".claude", "skills", "a.md"), Forms: []string{filepath.Join(cwd, "GreekΟΣ", ".claude", "skills", "a.md")}, CWD: filepath.Join(cwd, "Greekος"), Platform: "darwin"})
+
+	// Actual Windows inputs must use Win32 primitives even on a Unix host.
+	for _, name := range []string{`ordinary.txt`, `.cLAuDE\settings.json`, `other\.claude\settings.local.json`, `.claude\agents\private.md`, `.claude\skills\nested\a.md`, `.claude\skills-neighbor\a.md`, `.claude\worktrees\tree\ordinary.txt`, `.claude\worktrees\tree\.claude\agents\private.md`, `.git\config`, `.vScOdE\settings.json`, `.idea\a`, `.BaShRc`, `file:stream`, `GIT~1\config`, `file...`, `file.PRN`, `...\file`, `override.json`, `C:\Project\alias`, `/c/Project/.claude/settings.json`, `\\server\share\file`, `\\?\C:\Project\file`, `D:\Outside\.claude\settings.json`} {
+		path := `C:\Project\` + name
+		if strings.HasPrefix(name, `C:`) || strings.HasPrefix(name, `D:`) || strings.HasPrefix(name, `/`) || strings.HasPrefix(name, `\\`) {
+			path = name
+		}
+		forms := []string{path}
+		if name == `C:\Project\alias` {
+			forms = append(forms, `D:\Outside\.git\config`)
+		}
+		rows = append(rows, row{Path: path, Forms: forms, CWD: `C:\Project`, Platform: "windows", SettingsPaths: []string{`C:\Project\override.json`}})
+	}
+	rows = append(rows, row{Path: `\\server\share\project\ordinary.txt`, Forms: []string{`\\server\share\project\ordinary.txt`}, CWD: `\\server\share\project`, Platform: "windows", AllowUNC: true})
 	fixture, _ := filepath.Abs("../../../scripts/quality-gate/go-parity/native-hook-command.fixture.ts")
 	for i := range rows {
 		if rows[i].SettingsPaths == nil {

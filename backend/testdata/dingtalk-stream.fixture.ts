@@ -1,3 +1,5 @@
+import { adapterMigrationLifecycle, registerAdapterShutdown } from '../../adapters/common/migration-lifecycle.js'
+import { WsBridge } from '../../adapters/common/ws-bridge.js'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 if (process.env.CC_HAHA_DINGTALK_PRIVATE_FIXTURE !== '1') throw new Error('private fixture only')
@@ -19,17 +21,18 @@ if(start<0||end<0) throw new Error('Source listener boundary changed')
 const code=new Bun.Transpiler({loader:'ts'}).transformSync(source.slice(start,end))
 const robots=[],cards=[]
 const dedup=new MessageDedup()
-const client=new Function('DWClient','config','TOPIC_ROBOT','TOPIC_CARD','dedup','parseDingTalkPayload','handleRobotMessage','handleCardCallback',code+';return client')(
+const bridge=new WsBridge('ws://127.0.0.1:1','dingtalk')
+const client=new Function('DWClient','config','TOPIC_ROBOT','TOPIC_CARD','dedup','parseDingTalkPayload','handleRobotMessage','handleCardCallback','registerAdapterShutdown','adapterMigrationLifecycle','bridge',code+';return client')(
  DWClient,{dingtalk:input.credentials},TOPIC_ROBOT,TOPIC_CARD,dedup,parseDingTalkPayload,
- async data=>{robots.push(data)},async data=>{cards.push(data)},
+ async data=>{robots.push(data)},async data=>{cards.push(data)},registerAdapterShutdown,adapterMigrationLifecycle,bridge,
 )
 if(input.gateway){
  const capture=async()=>{try{await client.getEndpoint();return{value:{url:client.dw_url,endpoint:client.config.endpoint}}}catch(error){return{error:error instanceof Error?error.message:error}}}
- const result=await capture();dedup.destroy();process.stdout.write(JSON.stringify(result))
+ const result=await capture();dedup.destroy();bridge.destroy();process.stdout.write(JSON.stringify(result))
 }else if(input.frames){
  const wires=[];client.socket={send(w){wires.push(JSON.parse(w))}}
  for(const f of input.frames)client.onDownStream(JSON.stringify(f))
- dedup.destroy();process.stdout.write(JSON.stringify({wires,robots,cards,state:{connected:client.connected,registered:client.registered,reconnecting:client.reconnecting,isAlive:client.isAlive}}))
+ dedup.destroy();bridge.destroy();process.stdout.write(JSON.stringify({wires,robots,cards,state:{connected:client.connected,registered:client.registered,reconnecting:client.reconnecting,isAlive:client.isAlive}}))
 }else{
  const initial={heartbeat:client.heartbeat_interval,reconnect:client.reconnectInterval}
  client.heartbeat_interval=100;client.reconnectInterval=20
@@ -41,5 +44,5 @@ if(input.gateway){
  while(robots.length<(input.expectRobots??1)&&Date.now()<deadline)await new Promise(r=>setTimeout(r,1))
  if(robots.length<(input.expectRobots??1))throw new Error('private actual socket callback not observed')
  const result={initial,robots,cards,connections:connected.length}
- client.disconnect();dedup.destroy();process.stdout.write(JSON.stringify(result));process.exit(0)
+ client.disconnect();dedup.destroy();bridge.destroy();process.stdout.write(JSON.stringify(result));process.exit(0)
 }

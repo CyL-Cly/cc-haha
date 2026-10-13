@@ -35,10 +35,19 @@ type Options struct {
 	TLS                    *tlsconfig.State
 	HTTPClient             *http.Client
 	NowMillis              func() int64
+	OnImageInputDisabled   func(context.Context, ImageInputDisabled)
 	// Private physical-clock tests shorten the original normalized timeout.
 	TimeoutOverride time.Duration
 }
-type Service struct{ options Options }
+type Service struct {
+	options Options
+	images  *providerproxy.ChatImageSupport
+}
+
+type ImageInputDisabled struct {
+	ProviderID, Model, SessionID string
+	Status                       int
+}
 
 func New(o Options) (*Service, error) {
 	if o.Provider == nil || o.Settings == nil || o.Environment == nil && o.EnvironmentWithContext == nil {
@@ -47,7 +56,7 @@ func New(o Options) (*Service, error) {
 	if o.NowMillis == nil {
 		o.NowMillis = func() int64 { return time.Now().UnixMilli() }
 	}
-	return &Service{o}, nil
+	return &Service{options: o, images: providerproxy.NewChatImageSupport()}, nil
 }
 
 var scopedPath = regexp.MustCompile(`^/proxy/providers/([^/]+)/v1/messages$`)
@@ -90,6 +99,10 @@ func commonFailure(err error) *http.Response {
 	return errorResponse(status, kind, err.Error())
 }
 func (s *Service) Handle(req *http.Request) (*http.Response, error) {
+	return s.handle(req, "", true)
+}
+
+func (s *Service) handle(req *http.Request, forcedImageMode string, allowImageRetry bool) (*http.Response, error) {
 	match := scopedPath.FindStringSubmatch(req.URL.EscapedPath())
 	id := ""
 	if req.Method != http.MethodPost || req.URL.Path != "/proxy/v1/messages" && match == nil {
@@ -127,6 +140,18 @@ func (s *Service) Handle(req *http.Request) (*http.Response, error) {
 	plan, err := providerproxy.PrepareProxyRequest(*config, body, req.Header, s.options.Version, id != "")
 	if err != nil {
 		return commonFailure(err), nil
+	}
+	if plan.Protocol == "openai_chat" {
+		mode := forcedImageMode
+		if mode == "" {
+			mode = s.images.Mode(plan.URL, plan.Model, s.options.NowMillis())
+		}
+		if mode == "text_only" {
+			plan, err = providerproxy.PrepareProxyRequestWithImageMode(*config, body, req.Header, s.options.Version, id != "", mode)
+			if err != nil {
+				return commonFailure(err), nil
+			}
+		}
 	}
 	settings, err := s.options.Settings(req.Context())
 	if err != nil {
@@ -260,6 +285,19 @@ func (s *Service) Handle(req *http.Request) (*http.Response, error) {
 		cleanup()
 		text := string(protocol.DecodeJavaScriptUTF8(raw))
 		text = strings.TrimPrefix(text, "\ufeff")
+		if allowImageRetry && plan.Protocol == "openai_chat" && providerproxy.OpenAIChatImageRejection(upstream.StatusCode, text, plan.Upstream) {
+			complete(tracecapture.ProxyOutcome{ResponseStatus: &upstream.StatusCode, Headers: upstream.Header, UpstreamResponse: encoded(text)})
+			retry := req.Clone(req.Context())
+			retry.Body = io.NopCloser(bytes.NewReader(bodyBytes))
+			response, retryErr := s.handle(retry, "text_only", false)
+			if retryErr == nil && response != nil && response.StatusCode >= 200 && response.StatusCode < 300 {
+				s.images.Remember(plan.URL, plan.Model, s.options.NowMillis())
+				if s.options.OnImageInputDisabled != nil {
+					s.options.OnImageInputDisabled(req.Context(), ImageInputDisabled{ProviderID: config.ID, Model: plan.Model, SessionID: req.Header.Get("X-Claude-Code-Session-Id"), Status: upstream.StatusCode})
+				}
+			}
+			return response, retryErr
+		}
 		status, result := upstreamFailure(upstream.StatusCode, text)
 		complete(tracecapture.ProxyOutcome{ResponseStatus: &upstream.StatusCode, Headers: upstream.Header, UpstreamResponse: encoded(text), AnthropicResponse: encoded(result)})
 		return jsonResponse(status, result), nil

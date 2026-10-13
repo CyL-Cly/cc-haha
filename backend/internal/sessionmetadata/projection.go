@@ -131,7 +131,7 @@ func selected(path []string) bool {
 	switch path[0] {
 	case "type", "subtype", "uuid", "parentUuid", "parent_tool_use_id", "isSidechain", "isMeta",
 		"cwd", "timestamp", "workDir", "repository", "worktreeSession", "permissionMode",
-		"runtimeProviderId", "runtimeModelId", "effortLevel", "customTitle", "aiTitle", "entrypoint", "content":
+		"runtimeProviderId", "runtimeModelId", "effortLevel", "openAIFastMode", "customTitle", "aiTitle", "entrypoint", "content":
 		return true
 	case "message":
 		if len(path) == 1 {

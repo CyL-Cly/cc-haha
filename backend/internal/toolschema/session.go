@@ -54,6 +54,13 @@ func (session *Session) RenderBatch(definitions []Definition, options Options) (
 					return nil, err
 				}
 			}
+			if !options.Host.TeamEnabled {
+				var err error
+				input, err = filterSwarmAPIFields(definition.Name, input)
+				if err != nil {
+					return nil, err
+				}
+			}
 			description, err := session.prompt(definition, options.Host)
 			if err != nil {
 				return nil, err
@@ -83,4 +90,30 @@ func (session *Session) RenderBatch(definitions []Definition, options Options) (
 		result = append(result, schema)
 	}
 	return result, nil
+}
+
+// MAIN filters these properties at the API boundary, before caching the first
+// rendered schema. The local input parser and compaction budget keep the full
+// definition, and a later feature flip takes effect only after cache clearing.
+func filterSwarmAPIFields(name string, input json.RawMessage) (json.RawMessage, error) {
+	var fields []string
+	switch name {
+	case "Agent":
+		fields = []string{"name", "team_name", "mode"}
+	case "ExitPlanMode":
+		fields = []string{"launchSwarm", "teammateCount"}
+	default:
+		return input, nil
+	}
+	schema, err := parseObject(input)
+	if err != nil {
+		return nil, err
+	}
+	if properties, ok := schema.Object("properties"); ok {
+		for _, field := range fields {
+			properties.Delete(field)
+		}
+		schema.Set("properties", raw(properties))
+	}
+	return raw(schema), nil
 }

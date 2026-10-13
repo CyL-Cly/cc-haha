@@ -10,6 +10,8 @@ import (
 	"unicode/utf16"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/activitystatsapi"
+	"github.com/NanmiCoder/cc-haha/backend/internal/attachments"
+	"github.com/NanmiCoder/cc-haha/backend/internal/builtintools"
 	"github.com/NanmiCoder/cc-haha/backend/internal/messages"
 	"github.com/NanmiCoder/cc-haha/backend/internal/modelaccounting"
 	"github.com/NanmiCoder/cc-haha/backend/internal/preflightcore"
@@ -95,6 +97,11 @@ func (s *Server) readInspectionTranscript(ctx context.Context, info sessionInfo,
 	estimated, afterUsage := 0.0, 0.0
 	media := false
 	factory, _ := messages.NewFactory(func() string { id, _ := uuid(); return id }, time.Now)
+	// The Source transcript accumulator invokes normalizeAttachmentForAPI, which
+	// uses the original tool formatters and external plan defaults. These are
+	// pure renderers over retained bytes; inspection does not create another
+	// tool service, read the named file or invoke a model.
+	attachmentOptions := &preflightcore.AttachmentOptions{Factory: factory, Plan: &attachments.PlanOptions{MapToolResult: builtintools.MapResult, Environment: o.Environment, ExplorePlanAgentsEnabled: true}}
 	parser := activitystatsapi.NewIndexDateParser(nil)
 	limit := int64(8 * 1024 * 1024)
 	scan, err := s.reader.Stream(ctx, info.Path, func(raw json.RawMessage, _ bool, _ int64) error {
@@ -129,6 +136,9 @@ func (s *Server) readInspectionTranscript(ctx context.Context, info sessionInfo,
 				launch.Set("runtimeModelId", entry.Get("runtimeModelId"))
 			}
 			effort = sessionprojection.ResolveSessionEffortLevel(entry, effort)
+			if fast := entry.Get("openAIFastMode"); string(fast) == "true" || string(fast) == "false" {
+				launch.Set("openAIFastMode", fast)
+			}
 		}
 		if raw := entry.Get("repository"); len(raw) > 0 && string(raw) != "null" && (raw[0] == '{' || raw[0] == '[') {
 			launch.Set("repository", raw)
@@ -154,7 +164,7 @@ func (s *Server) readInspectionTranscript(ctx context.Context, info sessionInfo,
 			media = false
 		}
 		if kind == "user" || kind == "assistant" || kind == "attachment" {
-			tokens, e := preflightcore.RoughHistoryWithAttachments([]protocol.JSONObject{entry}, &preflightcore.AttachmentOptions{Factory: factory})
+			tokens, e := preflightcore.RoughHistoryWithAttachments([]protocol.JSONObject{entry}, attachmentOptions)
 			if e != nil {
 				return e
 			}

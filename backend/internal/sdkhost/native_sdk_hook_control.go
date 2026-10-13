@@ -44,6 +44,7 @@ func (h *Host) bindNativeSDKHookInput(scope *cooperative.Scope, input *PlainStru
 	input.allowSDKGetSettings = h.options.NativeSDKGetSettings != nil
 	input.allowSDKMCPStatus = h.options.NativeSDKMCPStatus != nil
 	input.allowSDKInference = h.options.NativeSDKInferenceControl != nil
+	input.allowSDKPermissionMode = h.options.NativeSDKPermissionControl != nil
 	replay, e := h.options.Controller.ReplayUserMessagesOnOwner(scope)
 	if e != nil {
 		return e
@@ -229,6 +230,7 @@ func (h *Host) sdkHookInitializeControl(scope *cooperative.Scope, event protocol
 		}
 	}
 	response := protocol.NewJSONObject(protocol.JSONField{Name: "subtype", Value: quote("success")}, protocol.JSONField{Name: "request_id", Value: event.Get("request_id")})
+	firstInitialize := !h.sdkHooks.initialized
 	if h.sdkHooks.initialized {
 		response.Set("subtype", quote("error"))
 		response.Set("error", quote("Already initialized"))
@@ -266,7 +268,13 @@ func (h *Host) sdkHookInitializeControl(scope *cooperative.Scope, event protocol
 		h.sdkHooks.initialized = true
 		response.Set("response", raw(metadata))
 	}
-	return h.enqueueSDKControl(scope, protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quote("control_response")}, protocol.JSONField{Name: "response", Value: raw(response)}))
+	if err := h.enqueueSDKControl(scope, protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quote("control_response")}, protocol.JSONField{Name: "response", Value: raw(response)})); err != nil {
+		return err
+	}
+	if firstInitialize && h.options.EnableAuthStatus {
+		return h.enqueueAuthStatus(scope, h.options.AuthStatus.Status())
+	}
+	return nil
 }
 
 func (h *Host) pendingSDKPermissionRequests() []protocol.JSONObject {

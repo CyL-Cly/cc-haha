@@ -22,8 +22,7 @@ func (h *Host) InferenceContextWindow(scope *cooperative.Scope) (float64, error)
 	if err != nil {
 		return 0, err
 	}
-	// The admitted native print host has the original undefined SDK beta state;
-	// existing generic SDK beta input is not widened by this native getter.
+	// The same admitted SDK beta producer feeds request and context consumers.
 	return h.ContextWindowForModel(scope, model)
 }
 
@@ -34,6 +33,6 @@ func (h *Host) ContextWindowForModel(scope *cooperative.Scope, model string) (fl
 	if h.options.Startup == nil || h.options.Global == nil {
 		return 0, cap("actual scoped model context bindings")
 	}
-	resolver := modelaccounting.RestoredModelResolver{Environment: h.options.OriginalEnv, Settings: h.options.Startup.GetInitialSettings, Global: h.options.Global.Get}
+	resolver := modelaccounting.RestoredModelResolver{Environment: h.options.OriginalEnv, Settings: h.options.Startup.GetInitialSettings, Global: h.options.Global.Get, SDKBetas: h.options.SDKBetas}
 	return resolver.ContextWindow(model)
 }

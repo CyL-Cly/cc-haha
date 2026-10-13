@@ -9,7 +9,7 @@ import (
 
 // Explicit JSONL resume takes the original file selector branch. It does not
 // copy SID metadata, plans, backups, or prime the SID writer cache.
-func (s *Service) beginOwnedJSONL(scope *cooperative.Scope, path string) (*ownerasync.OwnerFuture[*Result], error) {
+func (s *Service) beginOwnedJSONL(scope *cooperative.Scope, path, resumeAt string) (*ownerasync.OwnerFuture[*Result], error) {
 	out, e := ownerasync.NewOwnerFuture[*Result](s.owned.state.Owner())
 	if e != nil {
 		return nil, e
@@ -33,7 +33,7 @@ func (s *Service) beginOwnedJSONL(scope *cooperative.Scope, path string) (*owner
 			fail(next, failure)
 			return nil
 		}
-		s.finishOwnedMessages(next, loaded.Messages, protocol.NewJSONObject(), nil, loaded.SessionID, out, fail)
+		s.finishOwnedMessages(next, loaded.Messages, protocol.NewJSONObject(), nil, loaded.SessionID, out, fail, resumeAt)
 		return nil
 	})
 	if e != nil {

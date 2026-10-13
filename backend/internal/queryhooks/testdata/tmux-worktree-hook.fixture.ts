@@ -26,6 +26,10 @@ for (const row of input.rows) {
  const wrapper=new Function('createBaseHookInput','executeHooksOutsideREPL','TOOL_HOOK_EXECUTION_TIMEOUT_MS',extract(['executeWorktreeCreateHook'])+';return executeWorktreeCreateHook')(()=>({session_id:row.sid,transcript_path:'/original/transcript',cwd:'/original/cwd'}),implementation,600000)
  let result:any;try{result={path:(await wrapper(row.name)).worktreePath}}catch(e){result={error:e.message}}
  rows.push({has,...result})
+ }else if ((row.event === 'PreCompact' || row.event === 'PostCompact') && row.wrapper) {
+  const name = row.event === 'PreCompact' ? 'executePreCompactHooks' : 'executePostCompactHooks'
+  const wrapper = new Function('createBaseHookInput','executeHooksOutsideREPL','TOOL_HOOK_EXECUTION_TIMEOUT_MS',extract([name]) + '\nreturn ' + name)(() => ({session_id:row.sid,transcript_path:'/original/transcript',cwd:'/original/cwd'}),implementation,600000)
+  rows.push(await wrapper(row.event === 'PreCompact' ? {trigger:row.fields.trigger,customInstructions:row.fields.custom_instructions} : {trigger:row.fields.trigger,compactSummary:row.fields.compact_summary}))
  }else if (row.event === 'ConfigChange' && row.wrapper) {
   const wrapper = new Function('createBaseHookInput','executeHooksOutsideREPL','TOOL_HOOK_EXECUTION_TIMEOUT_MS',extract(['executeConfigChangeHooks'])+'\nreturn executeConfigChangeHooks')(() => ({session_id:row.sid,transcript_path:'/original/transcript',cwd:'/original/cwd'}),implementation,600000)
   rows.push(await wrapper(row.fields.source,row.fields.file_path))

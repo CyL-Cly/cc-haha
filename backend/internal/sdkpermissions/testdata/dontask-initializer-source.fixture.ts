@@ -18,6 +18,7 @@ const config = await import('../../../../src/utils/config')
 const { resetSettingsCache } = await import('../../../../src/utils/settings/settingsCache')
 const { resetGrowthBook } = await import('../../../../src/services/analytics/growthbook')
 const { initialPermissionModeFromCLI, initializeToolPermissionContext } = await import('../../../../src/utils/permissions/permissionSetup')
+const { _resetForTesting: resetAutoModeState } = await import('../../../../src/utils/permissions/autoModeState')
 const cwd = join(input.homeDir, 'project')
 mkdirSync(cwd, { recursive: true })
 for (const path of input.directories ?? []) mkdirSync(join(input.homeDir, path), { recursive: true })
@@ -36,15 +37,9 @@ for (const row of input.rows) {
   config.saveGlobalConfig(old => ({ ...old, growthBookOverrides: row.configOverrides ?? {}, cachedStatsigGates: { tengu_disable_bypass_permissions_mode: true }, cachedGrowthBookFeatures: { tengu_disable_bypass_permissions_mode: true } }))
   resetSettingsCache()
   resetGrowthBook()
+  resetAutoModeState()
   state.setAdditionalDirectoriesForClaudeMd(row.addDirs ?? [])
   const mode = initialPermissionModeFromCLI({ permissionModeCli: row.mode, dangerouslySkipPermissions: row.skip })
-  // The original historical fixture stops before the dontAsk initializer.
-  // This copy exercises that original function now that its real child
-  // permission consumer is verified. Source production and guards are unchanged.
-  if (mode.mode === 'auto') {
-    rows.push({ mode, unported: true })
-    continue
-  }
   // Registry filtering is independently covered by existing Source fixtures.
   // Omit the optional base-list input here so these mode/workspace observations
   // do not invoke account/model discovery through getToolsForDefaultPreset.

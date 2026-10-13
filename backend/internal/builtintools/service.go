@@ -15,39 +15,47 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/analytics"
 	"github.com/NanmiCoder/cc-haha/backend/internal/builtinwrite"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
+	"github.com/NanmiCoder/cc-haha/backend/internal/nativepaths"
 	"github.com/NanmiCoder/cc-haha/backend/internal/ownerasync"
+	"github.com/NanmiCoder/cc-haha/backend/internal/powershellpolicy"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/queryloop"
 	"github.com/NanmiCoder/cc-haha/backend/internal/taskstore"
+	"github.com/NanmiCoder/cc-haha/backend/internal/windowshell"
 )
 
 type Options struct {
-	RipgrepConfig             func() (string, []string, error)
-	BashSandbox               *BashSandboxBindings
-	ReportEvent               func(*cooperative.Scope, analytics.Event) error
-	Images                    *ImageBindings
-	BashCwd                   *BashCwdBindings
-	SessionEnvironmentScript  func(context.Context, *cooperative.Scope) (*string, error)
-	SessionEnvironmentCapture func(*cooperative.Scope) (func() (*string, error), error)
-	HookPathSafety            func(*cooperative.Scope) (HookPathSafetyContext, error)
-	HookInternalEditable      func(*cooperative.Scope, string) (bool, error)
-	InternalReadable          func(*cooperative.Scope, string) (bool, string, error)
-	HookPermissionRoot        func(*cooperative.Scope, string) (string, error)
-	FileHistoryTrack          func(*cooperative.Scope, string, json.RawMessage) error
-	ForegroundShellProgress   bool
-	ToolResultsDirectory      func(*cooperative.Scope) (string, error)
-	Owner                     *cooperative.Owner
-	NativeBinding             *ownerasync.NativeBinding
-	Cache                     *builtinwrite.FileStateCache
-	Write                     *builtinwrite.Service
-	Home, CWD, Platform       string
-	NowMillis                 func() float64
-	Environment               map[string]string
-	ProcessEnvironment        func(*cooperative.Scope) (map[string]string, error)
-	PermissionContext         func(*cooperative.Scope) (protocol.JSONObject, error)
-	PermissionRoots           map[string]string
+	ShellHints                     *ShellHintBindings
+	Shells                         *windowshell.Resolver
+	WindowsPowerShellSandboxPolicy func(*cooperative.Scope) error
+	PermissionRealpath             func(string) (string, error)
+	RipgrepConfig                  func() (string, []string, error)
+	BashSandbox                    *BashSandboxBindings
+	ReportEvent                    func(*cooperative.Scope, analytics.Event) error
+	Images                         *ImageBindings
+	BashCwd                        *BashCwdBindings
+	SessionEnvironmentScript       func(context.Context, *cooperative.Scope) (*string, error)
+	SessionEnvironmentCapture      func(*cooperative.Scope) (func() (*string, error), error)
+	HookPathSafety                 func(*cooperative.Scope) (HookPathSafetyContext, error)
+	HookInternalEditable           func(*cooperative.Scope, string) (bool, error)
+	InternalReadable               func(*cooperative.Scope, string) (bool, string, error)
+	HookPermissionRoot             func(*cooperative.Scope, string) (string, error)
+	FileHistoryTrack               func(*cooperative.Scope, string, json.RawMessage) error
+	ForegroundShellProgress        bool
+	ToolResultsDirectory           func(*cooperative.Scope) (string, error)
+	Owner                          *cooperative.Owner
+	NativeBinding                  *ownerasync.NativeBinding
+	Cache                          *builtinwrite.FileStateCache
+	Write                          *builtinwrite.Service
+	Home, CWD, Platform            string
+	NowMillis                      func() float64
+	Environment                    map[string]string
+	ProcessEnvironment             func(*cooperative.Scope) (map[string]string, error)
+	PermissionContext              func(*cooperative.Scope) (protocol.JSONObject, error)
+	PermissionRoots                map[string]string
 	// Large text reads use the caller's actual token counter. Small reads retain
 	// Source's rough-estimate fast path and do not call a model.
+	CountTokensOnOwner    func(context.Context, *cooperative.Scope, string) (*float64, error)
 	CountTokens           func(context.Context, string) (*int, error)
 	Random                func() float64
 	RunAgent              func(context.Context, *cooperative.Scope, AgentRequest) (*ownerasync.OwnerFuture[AgentRunResult], error)
@@ -116,8 +124,11 @@ type AgentRunResult struct {
 }
 
 type Service struct {
-	options       Options
-	agentSnapshot []agentcatalog.Definition
+	powerShellParser     *powershellpolicy.Parser
+	powerShellClassifier *powershellpolicy.Classifier
+	shellTool            string
+	options              Options
+	agentSnapshot        []agentcatalog.Definition
 }
 type CapabilityError struct{ Boundary string }
 
@@ -130,7 +141,7 @@ func New(o Options) (*Service, error) {
 	if o.Owner == nil || o.NativeBinding == nil || !o.NativeBinding.Owns(o.Owner) || o.Cache == nil || !o.Cache.Owns(o.Owner) || o.Write == nil || !o.Write.Owns(o.Owner) || !filepath.IsAbs(o.Home) || !filepath.IsAbs(o.CWD) || o.NowMillis == nil || o.PermissionContext == nil {
 		return nil, capability("shared owner, writer binding, file-state cache and original paths")
 	}
-	if o.Platform != "darwin" && o.Platform != "linux" {
+	if o.Platform != "darwin" && o.Platform != "linux" && o.Platform != "windows" {
 		return nil, capability("Windows file, process and shell semantics")
 	}
 	environment := make(map[string]string, len(o.Environment))
@@ -195,6 +206,9 @@ func (s *Service) expand(v json.RawMessage) (string, error) {
 		return "", errors.New("Path contains null bytes")
 	}
 	p = strings.TrimSpace(p)
+	if s.options.Platform == "windows" {
+		return nativepaths.ExpandWindows(p, s.options.CWD, s.options.Home)
+	}
 	if p == "~" {
 		p = s.options.Home
 	} else if strings.HasPrefix(p, "~/") {

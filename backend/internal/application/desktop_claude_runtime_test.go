@@ -221,6 +221,7 @@ func TestActualDesktopClaudeOfficialTokenAndSubscriptionReachMainPrint(t *testin
 		t.Fatal(err)
 	}
 	finished := false
+	complete := false
 	for i := 0; i < 200; i++ {
 		var line string
 		if err = websocket.Message.Receive(ws, &line); err != nil {
@@ -230,7 +231,15 @@ func TestActualDesktopClaudeOfficialTokenAndSubscriptionReachMainPrint(t *testin
 		if frame.String("type") == "error" {
 			t.Fatal("actual MainPrint failed", line)
 		}
-		if frame.String("type") == "session_state" && frame.String("turnState") == "idle" && calls.Load() == 2 {
+		if frame.String("type") == "message_complete" {
+			complete = true
+			requestDesktopSessionSync(t, ws)
+		}
+		if complete && frame.String("type") == "session_state" {
+			assertDesktopIdleSnapshot(t, frame)
+			if calls.Load() != 2 {
+				t.Fatal("actual Claude shared turn request count changed", calls.Load(), 2)
+			}
 			finished = true
 			break
 		}
@@ -251,6 +260,7 @@ func TestActualDesktopClaudeOfficialTokenAndSubscriptionReachMainPrint(t *testin
 		if err := websocket.Message.Send(socket, `{"type":"user_message","content":"Use the prior real Write result and finish the next turn."}`); err != nil {
 			t.Fatal(err)
 		}
+		complete := false
 		for i := 0; i < 200; i++ {
 			var line string
 			if err := websocket.Message.Receive(socket, &line); err != nil {
@@ -260,7 +270,15 @@ func TestActualDesktopClaudeOfficialTokenAndSubscriptionReachMainPrint(t *testin
 			if frame.String("type") == "error" {
 				t.Fatal(line)
 			}
-			if frame.String("type") == "session_state" && frame.String("turnState") == "idle" && calls.Load() == want {
+			if frame.String("type") == "message_complete" {
+				complete = true
+				requestDesktopSessionSync(t, socket)
+			}
+			if complete && frame.String("type") == "session_state" {
+				assertDesktopIdleSnapshot(t, frame)
+				if calls.Load() != want {
+					t.Fatal("actual Claude shared turn request count changed", calls.Load(), want)
+				}
 				return
 			}
 		}

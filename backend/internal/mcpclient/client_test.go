@@ -521,7 +521,7 @@ func runContract(t *testing.T, c *Client, requests []contractRequest) ([]any, []
 	return values, progress
 }
 
-func originalContract(t *testing.T, bun, home string, config Config, requests []contractRequest) map[string]any {
+func originalContract(t *testing.T, bun, home string, config Config, requests []contractRequest, environments ...map[string]string) map[string]any {
 	t.Helper()
 	_ = os.Mkdir(filepath.Join(home, "tmp"), 0700)
 	fixture, _ := filepath.Abs("../../../scripts/quality-gate/go-parity/native-mcp-client.fixture.ts")
@@ -530,6 +530,13 @@ func originalContract(t *testing.T, bun, home string, config Config, requests []
 	cmd := exec.CommandContext(ctx, bun, "--no-env-file", fixture)
 	cmd.Dir = home
 	cmd.Env = []string{"HOME=" + home, "USERPROFILE=" + home, "CLAUDE_CONFIG_DIR=" + filepath.Join(home, ".claude"), "TMPDIR=" + filepath.Join(home, "tmp"), "CC_HAHA_FIXTURE_TEMP_ROOT=" + filepath.Dir(home), "BUN_OPTIONS=--no-env-file", "CC_HAHA_MCP_CLIENT_FIXTURE=1", "NODE_ENV=production", "PATH=/usr/bin:/bin", "CLAUDE_CODE_LOCAL_SKIP_REMOTE_PREFETCH=1", "DISABLE_NON_ESSENTIAL_MODEL_CALLS=1"}
+	for _, environment := range environments {
+		for _, key := range []string{"CLAUDE_AGENT_SDK_VERSION", "CLAUDE_AGENT_SDK_CLIENT_APP"} {
+			if value, ok := environment[key]; ok {
+				cmd.Env = append(cmd.Env, key+"="+value)
+			}
+		}
+	}
 	cmd.Stdin = bytes.NewReader(raw(map[string]any{"config": map[string]any{"type": config.Type, "url": config.URL, "command": config.Command, "args": config.Args, "env": config.Env, "headers": config.Headers}, "requests": requests, "names": []string{}}))
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
@@ -542,6 +549,34 @@ func originalContract(t *testing.T, bun, home string, config Config, requests []
 		t.Fatalf("actual Source JSON: %v %s", err, bounded(string(expected)))
 	}
 	return result
+}
+
+func TestSDKClientIdentityMatchesActualSourceHTTPWire(t *testing.T) {
+	bun := os.Getenv("CC_HAHA_SOURCE_BUN")
+	if bun == "" {
+		t.Skip("actual Source Bun runner not configured")
+	}
+	for _, environment := range []map[string]string{
+		{"CLAUDE_AGENT_SDK_VERSION": "0.2.3"},
+		{"CLAUDE_AGENT_SDK_CLIENT_APP": "private-desktop/1.0"},
+		{"CLAUDE_AGENT_SDK_VERSION": "0.2.3", "CLAUDE_AGENT_SDK_CLIENT_APP": "private-desktop/1.0"},
+		{"CLAUDE_AGENT_SDK_VERSION": "", "CLAUDE_AGENT_SDK_CLIENT_APP": ""},
+	} {
+		t.Run(fmt.Sprint(environment), func(t *testing.T) {
+			home := t.TempDir()
+			goPeer, sourcePeer := newFixtureServer(t, false), newFixtureServer(t, false)
+			opts := options(home)
+			for key, value := range environment {
+				opts.Environment[key] = value
+			}
+			client := mustConnect(t, goPeer.config(), opts)
+			if err := client.Close(); err != nil {
+				t.Fatal(err)
+			}
+			originalContract(t, bun, home, sourcePeer.config(), []contractRequest{}, environment)
+			assertJSONEqual(t, raw(orderIndependentServerReplies(goPeer.snapshot())), raw(orderIndependentServerReplies(sourcePeer.snapshot())))
+		})
+	}
 }
 func TestRequestsAndResultsMatchActualOriginalClient(t *testing.T) {
 	bun := os.Getenv("CC_HAHA_SOURCE_BUN")

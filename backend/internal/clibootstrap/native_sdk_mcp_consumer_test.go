@@ -99,7 +99,11 @@ func TestActualDefaultSDKMCPInitializeACKThenFirstASKToolAndPhysicalResult(t *te
 func TestActualDefaultSDKMCPStdioASKApprovalThenPhysicalResult(t *testing.T) {
 	runSDKMCPConsumer(t, true)
 }
-func runSDKMCPConsumer(t *testing.T, stdio bool) {
+func runSDKMCPConsumer(t *testing.T, stdio bool) { runSDKMCPConsumerWithCLI(t, stdio, false) }
+func TestActualCLISDKMCPConfigBeforeInitializeBindsAndRunsFirstASK(t *testing.T) {
+	runSDKMCPConsumerWithCLI(t, false, true)
+}
+func runSDKMCPConsumerWithCLI(t *testing.T, stdio, cli bool) {
 	f := worktreeMainFixture(t)
 	file := filepath.Join(f.home, "sdk-root-physical-P684.txt")
 	if e := os.WriteFile(file, []byte("SDK_ROOT_PHYSICAL_ONLY_P684_7249\n"), 0600); e != nil {
@@ -138,7 +142,7 @@ func runSDKMCPConsumer(t *testing.T, stdio bool) {
 	if stdio {
 		permissionTool = "stdio"
 	}
-	m, e := NewMainPrint(MainPrintOptions{Arguments: PrintArguments{PermissionPromptToolName: permissionTool, ComputerUse: &disabled, Model: "fixture-model", PermissionMode: "default", MaxTurns: 100400, Sources: DefaultState()}, Native: f.n, PID: os.Getpid(), Version: "fixture", Platform: "darwin", Input: reader, Output: peer, Error: &diagnostics})
+	m, e := NewMainPrint(MainPrintOptions{Arguments: PrintArguments{MCPConfigs: map[bool][]string{true: {`{"mcpServers":{"sdk-p684":{"type":"sdk","name":"original-config-name"}}}`}}[cli], PermissionPromptToolName: permissionTool, ComputerUse: &disabled, Model: "fixture-model", PermissionMode: "default", MaxTurns: 100400, Sources: DefaultState()}, Native: f.n, PID: os.Getpid(), Version: "fixture", Platform: "darwin", Input: reader, Output: peer, Error: &diagnostics})
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -154,7 +158,11 @@ func runSDKMCPConsumer(t *testing.T, stdio bool) {
 	done := make(chan error, 1)
 	go func() { _, err := m.Run(ctx); done <- err }()
 	go func() {
-		_, _ = writer.Write([]byte(`{"type":"control_request","request_id":"sdk-root-init-P684","request":{"subtype":"initialize","sdkMcpServers":["sdk-p684"]}}` + "\n"))
+		line := `{"type":"control_request","request_id":"sdk-root-init-P684","request":{"subtype":"initialize","sdkMcpServers":["sdk-p684"]}}`
+		if cli {
+			line = `{"type":"control_request","request_id":"sdk-root-init-P684","request":{"subtype":"initialize"}}`
+		}
+		_, _ = writer.Write([]byte(line + "\n"))
 	}()
 	select {
 	case <-peer.ack:

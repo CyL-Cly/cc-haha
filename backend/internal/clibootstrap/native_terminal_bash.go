@@ -12,6 +12,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/sessioncontroller"
 	"github.com/NanmiCoder/cc-haha/backend/internal/storage"
 	"github.com/NanmiCoder/cc-haha/backend/internal/toolerrors"
+	"github.com/NanmiCoder/cc-haha/backend/internal/windowshell"
 	"strings"
 	"unicode/utf16"
 )
@@ -56,16 +57,27 @@ func (m *MainPrint) nativeProcessTerminalBash(ctx context.Context, scope *cooper
 	if e != nil {
 		return nil, result, e
 	}
+	shellTool := "Bash"
+	available, e := m.nativeShellAvailability(scope)
+	if e != nil {
+		return nil, result, e
+	}
+	configured := ""
 	if settings != nil {
-		// PowerShellTool is never enabled on macOS/Linux. Source falls back
-		// to Bash there even when the persisted preference is PowerShell.
-		if m.options.Platform == "windows" && settings.String("defaultShell") == "powershell" {
-			return nil, result, mainCap("actual PowerShell terminal shell producer")
-		}
+		configured = settings.String("defaultShell")
+	}
+	if windowshell.DefaultShell(configured, available) == "powershell" {
+		shellTool = "PowerShell"
 	}
 	start := m.options.Native.NowMillis()
 	first := messages.OrderedUser(m.factory.CreateUser(storage.Object{"content": quoteMain("<bash-input>" + command + "</bash-input>")}))
-	data, callError := m.nativeTools.CallTerminalBash(ctx, scope, command, progress)
+	var data json.RawMessage
+	var callError error
+	if shellTool == "PowerShell" {
+		data, callError = m.nativeTools.CallTerminalPowerShell(ctx, scope, command, progress)
+	} else {
+		data, callError = m.nativeTools.CallTerminalBash(ctx, scope, command, progress)
+	}
 	result.Data = append(json.RawMessage(nil), data...)
 	body := ""
 	if callError == nil {
@@ -76,11 +88,17 @@ func (m *MainPrint) nativeProcessTerminalBash(ctx context.Context, scope *cooper
 		result.Stderr = value.String("stderr")
 		result.Interrupted = string(value.Get("interrupted")) == "true"
 		value.Set("stderr", quoteMain(""))
-		mapped, mapError := m.nativeTools.MapTerminalBashResult(scope, rawMain(value), quoteMain(uuidMain()))
+		var mapped protocol.JSONObject
+		var mapError error
+		if shellTool == "PowerShell" {
+			mapped, mapError = m.nativeTools.MapTerminalPowerShellResult(scope, rawMain(value), quoteMain(uuidMain()))
+		} else {
+			mapped, mapError = m.nativeTools.MapTerminalBashResult(scope, rawMain(value), quoteMain(uuidMain()))
+		}
 		if mapError != nil {
 			return nil, result, mapError
 		}
-		mapped, mapError = queryloop.ProcessSmallTextToolResult(mapped, "Bash", 30000)
+		mapped, mapError = queryloop.ProcessSmallTextToolResult(mapped, shellTool, 30000)
 		if mapError != nil {
 			return nil, result, mapError
 		}

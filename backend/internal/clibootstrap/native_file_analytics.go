@@ -211,6 +211,9 @@ func (m *MainPrint) nativeAnalyticsRecord(scope *cooperative.Scope, event analyt
 	core := protocol.NewJSONObject(protocol.JSONField{Name: "model", Value: quoteMain(model)}, protocol.JSONField{Name: "sessionId", Value: quoteMain(m.Controller.SessionID())}, protocol.JSONField{Name: "userType", Value: quoteMain(env["USER_TYPE"])}, protocol.JSONField{Name: "isInteractive", Value: quoteMain(map[bool]string{true: "true", false: "false"}[m.options.Interactive])}, protocol.JSONField{Name: "clientType", Value: quoteMain("cli")}, protocol.JSONField{Name: "envContext", Value: rawContext})
 	if settings, e := m.Startup.GetInitialSettings(); e == nil {
 		if betas, e := requestcontext.DirectCountingBetas(model, env, settings.Clone()); e == nil && len(betas) > 0 {
+			if redacted, e := m.nativeThinkingSummaryBeta(scope, model); e == nil {
+				betas = requestcontext.WithThinkingSummaryBeta(betas, redacted)
+			}
 			core.Set("betas", quoteMain(strings.Join(betas, ",")))
 		}
 	}

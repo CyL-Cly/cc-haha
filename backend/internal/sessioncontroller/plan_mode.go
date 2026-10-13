@@ -15,11 +15,16 @@ func (c *Controller) PlanModeContext(scope *cooperative.Scope) (protocol.JSONObj
 	}
 	return c.appState.permission.PlanModeContext(scope)
 }
-func (c *Controller) EnterPlanMode(scope *cooperative.Scope) error {
+func (c *Controller) EnterPlanMode(scope *cooperative.Scope) (resultErr error) {
 	before, e := c.PlanModeContext(scope)
 	if e != nil {
 		return e
 	}
+	defer func() {
+		if resultErr == nil {
+			resultErr = c.observePermissionMode(scope, before.String("mode"))
+		}
+	}()
 	wasAuto, e := c.appState.permission.AutoModeActive(scope)
 	if e != nil {
 		return e
@@ -38,10 +43,16 @@ func (c *Controller) EnterPlanMode(scope *cooperative.Scope) error {
 	}
 	return c.options.Bootstrap.HandlePlanModeTransition(scope, before.String("mode"), "plan")
 }
-func (c *Controller) ExitPlanMode(scope *cooperative.Scope) error {
-	if _, e := c.PlanModeContext(scope); e != nil {
+func (c *Controller) ExitPlanMode(scope *cooperative.Scope) (resultErr error) {
+	before, e := c.PlanModeContext(scope)
+	if e != nil {
 		return e
 	}
+	defer func() {
+		if resultErr == nil {
+			resultErr = c.observePermissionMode(scope, before.String("mode"))
+		}
+	}()
 	wasAuto, e := c.appState.permission.AutoModeActive(scope)
 	if e != nil {
 		return e

@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 )
 
 // The request originates from the worker Host only after its tool response is
@@ -38,6 +40,18 @@ func (d *DesktopSession) requestTeammateShutdown(_ context.Context, expected *Se
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 		err := d.closeDesktopEngine(ctx, expected)
+		if err == nil {
+			d.mu.Lock()
+			owned := d.closed && d.engine == expected
+			retire := d.onRuntimeClosed
+			d.mu.Unlock()
+			// The engine has already joined its own owner and SDK. Calling the
+			// server lifecycle before releasing runtimeMu would Close this same
+			// wrapper recursively and deadlock graceful shutdown.
+			if owned && retire != nil {
+				err = retire(ctx, d)
+			}
+		}
 		if err != nil {
 			d.mu.Lock()
 			stderr := d.options.Stderr
@@ -66,5 +80,21 @@ func (d *DesktopSession) closeDesktopEngine(ctx context.Context, expected *Sessi
 	if d.autoQuestionUnbind != nil {
 		d.autoQuestionUnbind()
 	}
-	return errors.Join(d.closeSDKTransport(ctx), engine.Close(ctx))
+	engine.Cancel()
+	engine.mu.Lock()
+	alreadyClosing := engine.closed
+	engine.mu.Unlock()
+	var cleanup error
+	if !alreadyClosing {
+		cleanup = engine.process.StopAllBackgroundTasks(ctx)
+	}
+	transportErr := d.closeSDKTransport(ctx)
+	closeErr := engine.Close(ctx)
+	// Replacement and teammate shutdown can close this Session independently.
+	// Its established Close receipt is authoritative only after the actual
+	// cleanup/transcript/Owner join succeeded. Preserve every other failure.
+	if cleanup == cooperative.ErrClosed && closeErr == nil {
+		cleanup = nil
+	}
+	return errors.Join(transportErr, cleanup, closeErr)
 }

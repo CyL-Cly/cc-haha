@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/storagerelocations"
 )
 
 const ImageMaxBytes = 10 * 1024 * 1024
@@ -44,6 +45,7 @@ func CheckAttachmentLimit(kind string, size int64, mime string) AttachmentLimit 
 }
 
 type AttachmentStore struct {
+	Lifecycle              *MigrationLifecycle
 	Root                   string
 	Now                    func() time.Time
 	Random                 func() string
@@ -52,6 +54,14 @@ type AttachmentStore struct {
 
 func NewAttachmentStore(home string) *AttachmentStore {
 	return &AttachmentStore{Root: filepath.Join(home, ".claude", "im-downloads"), Now: time.Now, Random: func() string { var b [3]byte; _, _ = rand.Read(b[:]); return hex.EncodeToString(b[:]) }, Retention: 24 * time.Hour, OrphanGrace: 10 * time.Minute}
+}
+
+func NewConfiguredAttachmentStore(config Config) *AttachmentStore {
+	store := NewAttachmentStore(config.Home)
+	if config.ConfigDir != "" {
+		store.Root = filepath.Join(config.ConfigDir, "im-downloads")
+	}
+	return store
 }
 
 var repeatedDots = regexp.MustCompile(`\.{2,}`)
@@ -91,7 +101,9 @@ func (s *AttachmentStore) ResolvePath(platform, session, name string) (string, e
 	base := strings.TrimSuffix(name, ext)
 	return filepath.Join(dir, fmt.Sprintf("%s-%d-%s%s", base, s.Now().UnixMilli(), s.Random(), ext)), nil
 }
-func (s *AttachmentStore) Write(target string, data []byte) error {
+func (s *AttachmentStore) Write(target string, data []byte) (err error) {
+	done := s.Lifecycle.Track()
+	defer func() { done(err) }()
 	if err := os.MkdirAll(filepath.Dir(target), 0777); err != nil {
 		return err
 	}
@@ -108,6 +120,8 @@ type GCSummary struct {
 }
 
 func (s *AttachmentStore) GC() GCSummary {
+	done := s.Lifecycle.Track()
+	defer done(nil)
 	now := s.Now()
 	result := GCSummary{}
 	var walk func(string)
@@ -242,6 +256,7 @@ type ImageWatcher struct {
 }
 
 var markdownImage = regexp.MustCompile(`!\[([^\]]*)\]\(([^)\s]+)\)`)
+var windowsAbsoluteImage = regexp.MustCompile(`^(?:[a-zA-Z]:[\\/]|\\\\[^\\]+\\[^\\]+)`)
 var base64Image = regexp.MustCompile(`^data:([^;,]+);base64,(.+)$`)
 
 func imageFingerprint(text string) string {
@@ -274,7 +289,7 @@ func (w *ImageWatcher) Feed(chunk Text) []PendingUpload {
 			source = UploadSource{Kind: "path", Path: strings.TrimPrefix(target, "file://")}
 		case strings.HasPrefix(target, "http://") || strings.HasPrefix(target, "https://"):
 			source = UploadSource{Kind: "url", URL: target}
-		case strings.HasPrefix(target, "/"):
+		case strings.HasPrefix(target, "/") || windowsAbsoluteImage.MatchString(target):
 			source = UploadSource{Kind: "path", Path: target}
 		}
 		if source.Kind != "" {
@@ -325,7 +340,7 @@ func nodeBase64(data string) []byte {
 	result, _ := base64.RawStdEncoding.DecodeString(data)
 	return result
 }
-func LoadSafeOutboundImage(pending PendingUpload, work string) SafeImage {
+func LoadSafeOutboundImage(pending PendingUpload, work string, configDirs ...string) SafeImage {
 	fail := func(reason string) SafeImage { return SafeImage{Reason: reason} }
 	if work == "" {
 		return fail("missing session work directory")
@@ -348,7 +363,14 @@ func LoadSafeOutboundImage(pending PendingUpload, work string) SafeImage {
 	if err != nil {
 		return fail("image path does not exist")
 	}
-	path, err := filepath.EvalSymlinks(pending.Source.Path)
+	inputPath := pending.Source.Path
+	if len(configDirs) > 0 && configDirs[0] != "" {
+		inputPath, err = storagerelocations.Resolve(inputPath, configDirs[0])
+		if err != nil {
+			return fail(err.Error())
+		}
+	}
+	path, err := filepath.EvalSymlinks(inputPath)
 	if err != nil {
 		return fail("image path does not exist")
 	}

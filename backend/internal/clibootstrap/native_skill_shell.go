@@ -28,9 +28,6 @@ func (m *MainPrint) nativeSkillShellWithPermission(ctx context.Context, scope *c
 	if !scope.BelongsTo(m.Owner) || m.nativeTools == nil {
 		return "", cooperative.ErrRestricted
 	}
-	if request.Shell == "powershell" {
-		return "", mainCap("actual PowerShell prompt tool consumer")
-	}
 	matches, e := skillcommands.PromptShellMatches(request.Text)
 	if e != nil {
 		return "", e
@@ -97,14 +94,23 @@ func (m *MainPrint) nativeSkillShellOneWithPermission(ctx context.Context, scope
 	in := protocol.NewJSONObject(protocol.JSONField{Name: "command", Value: quoteMain(match.Command)})
 	// The original permission call allocates an empty assistant before checking.
 	_ = m.factory.CreateAssistant(storage.Object{"content": json.RawMessage("[]")})
-	decision, e := m.nativeTools.PromptShellPermission(scope, &in, permission)
+	name := "Bash"
+	if request.Shell == "powershell" {
+		name = "PowerShell"
+	}
+	var decision queryloop.ToolPermission
+	if name == "PowerShell" {
+		decision, e = m.nativeTools.PromptPowerShellPermission(scope, &in, permission)
+	} else {
+		decision, e = m.nativeTools.PromptShellPermission(scope, &in, permission)
+	}
 	if e != nil {
 		return "", e
 	}
 	if decision.Behavior != "allow" {
 		message := decision.Message
 		if len(message) == 0 {
-			message = quoteMain("Claude requested permissions to use Bash, but you haven't granted it yet.")
+			message = quoteMain("Claude requested permissions to use " + name + ", but you haven't granted it yet.")
 		}
 		var text string
 		_ = json.Unmarshal(message, &text)
@@ -113,7 +119,7 @@ func (m *MainPrint) nativeSkillShellOneWithPermission(ctx context.Context, scope
 		}
 		return "", fmt.Errorf("Shell command permission check failed for pattern \"%s\": %s", match.Pattern, text)
 	}
-	data, e := m.nativeTools.Call(ctx, "Bash", in, scope, false)
+	data, e := m.nativeTools.Call(ctx, name, in, scope, false)
 	if e != nil {
 		var shell *toolerrors.ShellError
 		if errors.As(e, &shell) {
@@ -125,17 +131,35 @@ func (m *MainPrint) nativeSkillShellOneWithPermission(ctx context.Context, scope
 		}
 		return "", fmt.Errorf("[Error]\n%s", e.Error())
 	}
-	mapped, e := builtintools.MapResult("Bash", data, quoteMain(uuidMain()))
+	var mapped protocol.JSONObject
+	if name == "PowerShell" {
+		mapped, e = m.nativeTools.MapTerminalPowerShellResult(scope, data, quoteMain(uuidMain()))
+	} else {
+		mapped, e = builtintools.MapResult(name, data, quoteMain(uuidMain()))
+	}
 	if e != nil {
 		return "", e
 	}
-	mapped, e = queryloop.ProcessSmallTextToolResult(mapped, "Bash", 30_000)
+	mapped, e = queryloop.ProcessSmallTextToolResult(mapped, name, 30_000)
 	if e != nil {
 		return "", e
 	}
 	var output string
 	if e = json.Unmarshal(mapped.Get("content"), &output); e != nil {
-		return "", e
+		// Source's prompt utility uses the actual shell streams when the mapped
+		// result is structured (for example a normalized image block).
+		var shell protocol.JSONObject
+		if e := shell.UnmarshalJSON(data); e != nil {
+			return "", e
+		}
+		parts := []string{}
+		if stdout := strings.TrimFunc(shell.String("stdout"), skillWhitespace); stdout != "" {
+			parts = append(parts, stdout)
+		}
+		if stderr := strings.TrimFunc(shell.String("stderr"), skillWhitespace); stderr != "" {
+			parts = append(parts, "[stderr]\n"+stderr)
+		}
+		output = strings.Join(parts, "\n")
 	}
 	return output, nil
 }

@@ -38,7 +38,7 @@ func runNativeAuxiliaryProducer(owner *Owner, caller *Scope, ctx context.Context
 	if !caller.BelongsTo(owner) || caller.frame != 0 || ctx == nil || producer == nil {
 		return ErrRestricted
 	}
-	if caller.sideContinuation != nil && !caller.IsNativeSideQuestion(owner) && !caller.isNativePermissionRequestHook(owner) {
+	if caller.sideContinuation != nil && !caller.IsNativeSideQuestion(owner) && !caller.IsNativeAutoDream(owner) && !caller.isNativePermissionRequestHook(owner) {
 		return ErrRestricted
 	}
 	if e := caller.check(); e != nil {
@@ -53,7 +53,7 @@ func runNativeAuxiliaryProducer(owner *Owner, caller *Scope, ctx context.Context
 	if closing || owner.life.Err() != nil {
 		return ErrClosed
 	}
-	if !active && !caller.IsNativeSideQuestion(owner) && !caller.isNativePermissionRequestHook(owner) {
+	if !active && !caller.IsNativeSideQuestion(owner) && !caller.IsNativeAutoDream(owner) && !caller.isNativePermissionRequestHook(owner) {
 		return ErrRestricted
 	}
 	scope := &Scope{owner: owner, ctx: caller.ctx, valid: true, sideContinuation: caller.sideContinuation}

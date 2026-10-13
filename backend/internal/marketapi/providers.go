@@ -103,9 +103,18 @@ func (s *Service) clawFetch(ctx context.Context, target, slug string) (*http.Res
 		return nil, err
 	}
 	q := u.Query()
-	s.mu.Lock()
-	owner := s.owners[slug]
-	s.mu.Unlock()
+	pinned := requestedOwner(ctx, slug)
+	if pinned == "" {
+		if e := catalogEntry("clawhub", slug); e != nil {
+			pinned = str(e["owner"])
+		}
+	}
+	owner := pinned
+	if owner == "" {
+		s.mu.Lock()
+		owner = s.owners[slug]
+		s.mu.Unlock()
+	}
 	if owner != "" && !q.Has("owner") {
 		q.Set("owner", owner)
 		u.RawQuery = q.Encode()
@@ -119,7 +128,7 @@ func (s *Service) clawFetch(ctx context.Context, target, slug string) (*http.Res
 	res.Body.Close()
 	matches := arr(data["matches"])
 	resolved := ""
-	if data["code"] == "AMBIGUOUS_SKILL_SLUG" && len(matches) > 0 {
+	if pinned == "" && data["code"] == "AMBIGUOUS_SKILL_SLUG" && len(matches) > 0 {
 		resolved = str(obj(matches[0])["ownerHandle"])
 	}
 	if resolved == "" {
@@ -450,6 +459,25 @@ func (s *Service) providerDetail(ctx context.Context, source, slug string) (obje
 					r := object{"vendor": "clawhub-scan", "status": status, "statusText": text}
 					optional(r, "reportUrl", security["virustotalUrl"])
 					reports = append(reports, r)
+					for _, spec := range []struct{ key, vendor string }{{"vt", "VirusTotal"}, {"skillspector", "skillspector"}, {"llm", "LLM review"}} {
+						scanner := obj(obj(security["scanners"])[spec.key])
+						status := first(scanner["normalizedStatus"], scanner["status"])
+						if status == "" {
+							continue
+						}
+						text := status
+						if n := str(scanner["recommendation"]); n != "" {
+							text += " · " + n
+						}
+						report := object{"vendor": spec.vendor, "status": status, "statusText": text}
+						if v := str(scanner["summary"]); v != "" {
+							report["summary"] = v
+						}
+						if spec.key == "vt" {
+							optional(report, "reportUrl", security["virustotalUrl"])
+						}
+						reports = append(reports, report)
+					}
 				}
 			}
 		}
@@ -524,6 +552,20 @@ func (s *Service) providerDetail(ctx context.Context, source, slug string) (obje
 	if len(reports) > 0 {
 		out["securityReports"] = reports
 	}
+	if source == "clawhub" {
+		if handle := str(owner["handle"]); handle != "" {
+			out["pageUrl"] = "https://clawhub.ai/" + url.PathEscape(handle) + "/" + url.PathEscape(slug)
+		}
+	}
+	if text := meaningfulChangelog(obj(data["latestVersion"])["changelog"]); text != "" {
+		note := object{"text": text}
+		if version != "" {
+			note["version"] = version
+		}
+		optional(note, "publishedAt", obj(data["latestVersion"])["createdAt"])
+		out["changelog"] = note
+	}
+
 	out["description"] = description
 	normalized, total := normalizedFiles(files)
 	out["files"], out["totalSize"] = normalized, total

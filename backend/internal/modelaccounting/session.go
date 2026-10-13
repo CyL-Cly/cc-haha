@@ -8,6 +8,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/providerlogging"
 	"github.com/NanmiCoder/cc-haha/backend/internal/requestcontext"
 	"github.com/NanmiCoder/cc-haha/backend/internal/requestretry"
+	"github.com/NanmiCoder/cc-haha/backend/internal/streamhistory"
 )
 
 // Session is the sole mutable session ledger. Each original request separately
@@ -38,6 +39,7 @@ type Attempt struct {
 	calculator     *Calculator
 	querySource    string
 	agentContext   *AgentContextBinding
+	fallbackUsage  *protocol.JSONObject
 }
 
 // NewOwnedSession starts original zero accounting with an optional original
@@ -199,20 +201,27 @@ func (a *Attempt) Finish(scope *cooperative.Scope, normal bool, requestID *strin
 		return nil
 	}
 	a.finished = true
+	usages := []protocol.JSONObject{}
 	if a.seen {
+		usages = append(usages, a.usage)
+	}
+	if a.fallbackUsage != nil {
+		usages = append(usages, *a.fallbackUsage)
+	}
+	for _, usage := range usages {
 		// Other same-owner attempts may have finished since this one began. Attach
 		// the current ledger at the actual finally; no stale attempt copy overwrites it.
 		a.calculator.Total = a.session.cost
 		a.calculator.Models = a.session.models.Clone()
-		cost, err := a.calculator.Charge(a.usage)
+		cost, err := a.calculator.Charge(usage)
 		if err != nil {
 			return err
 		}
 		a.session.unknownModelCost = a.session.unknownModelCost || a.calculator.UnknownModel
 		a.session.cost = a.calculator.Total
 		a.session.models = a.calculator.Models
-		a.session.total = AccumulateUsage(a.session.total, a.usage)
-		if err := a.session.relayLedger(scope, LedgerDelta{kind: "charge", model: a.calculator.Model, cost: cost, usage: a.usage, row: object(a.calculator.Models.Get(a.calculator.Model)), unknown: a.calculator.UnknownModel}); err != nil {
+		a.session.total = AccumulateUsage(a.session.total, usage)
+		if err := a.session.relayLedger(scope, LedgerDelta{kind: "charge", model: a.calculator.Model, cost: cost, usage: usage, row: object(a.calculator.Models.Get(a.calculator.Model)), unknown: a.calculator.UnknownModel}); err != nil {
 			return err
 		}
 	}
@@ -222,6 +231,26 @@ func (a *Attempt) Finish(scope *cooperative.Scope, normal bool, requestID *strin
 		copy := *requestID
 		a.session.lastRequestID = &copy
 	}
+	return nil
+}
+
+// A fallback is a second physical request; it cannot overwrite streaming usage
+// already observed. Capture it before yielding so consumer Return still charges.
+func (a *Attempt) ObserveFallback(scope *cooperative.Scope, raw json.RawMessage) error {
+	if a == nil || a.finished || a.fallbackUsage != nil || !scope.BelongsTo(a.session.owner) {
+		return cooperative.ErrRestricted
+	}
+	var message protocol.JSONObject
+	if err := message.UnmarshalJSON(raw); err != nil {
+		return err
+	}
+	// Source normalizes a complete fallback usage record, rather than applying
+	// stream-delta rules (which intentionally retain service tier and geography).
+	usage := object(streamhistory.NormalizeUsage(message.Get("usage")))
+	if _, err := UpdateUsage(ZeroUsage(), usage); err != nil {
+		return err
+	}
+	a.fallbackUsage = &usage
 	return nil
 }
 func (s *Session) Snapshot(scope *cooperative.Scope) (protocol.JSONObject, error) {

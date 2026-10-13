@@ -80,7 +80,7 @@ func (h *Host) sideQuestionFallback(scope *cooperative.Scope) (nativeSideQuestio
 	if e != nil {
 		return nativeSideQuestionCache{}, e
 	}
-	input := requestcontext.Context{Tools: h.originalTools, Thinking: h.options.Print.Thinking, Options: requestcontext.Options{Model: inference.model, QuerySource: "side_question", EffortValue: inference.effort, EffortValueOverridesEnv: inference.effortOverridesEnv, HasAppendSystemPrompt: h.options.Print.AppendSystemPrompt != ""}, Host: requestcontext.Host{Profile: requestcontext.NativeDirectRelayProfile, Env: h.requestEnvironment, DeviceID: deviceID, SessionID: h.options.Controller.SessionID(), SDKBetas: []string{}, TTLAllowlist: []string{}, ToolSchemas: h.toolSchemas}}
+	input := requestcontext.Context{Tools: h.originalTools, Thinking: h.options.Print.Thinking, Options: requestcontext.Options{Model: inference.model, QuerySource: "side_question", EffortValue: inference.effort, EffortValueOverridesEnv: inference.effortOverridesEnv, HasAppendSystemPrompt: h.options.Print.AppendSystemPrompt != ""}, Host: requestcontext.Host{Profile: requestcontext.NativeDirectRelayProfile, Env: h.requestEnvironment, DeviceID: deviceID, SessionID: h.options.Controller.SessionID(), SDKBetas: h.options.SDKBetas, Workload: h.options.Workload, TTLAllowlist: []string{}, ToolSchemas: h.toolSchemas}}
 	if input.Thinking.Type == "" {
 		input.Thinking.Type = "adaptive"
 	}

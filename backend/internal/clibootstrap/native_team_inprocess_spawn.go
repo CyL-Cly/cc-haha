@@ -16,7 +16,6 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/teamspawn"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 func (m *MainPrint) nativeTeammateColor(scope *cooperative.Scope, id string) (string, error) {
@@ -37,6 +36,10 @@ func (m *MainPrint) nativeTeammateColor(scope *cooperative.Scope, id string) (st
 // This producer performs the original in-process branch only. Pane mode is
 // admitted by the native backend selector separately, never silently replaced.
 func (m *MainPrint) spawnNativeInProcessTeamAgent(ctx context.Context, scope *cooperative.Scope, team string, input protocol.JSONObject, call queryloop.JSONToolCallContext) (*ownerasync.OwnerFuture[queryloop.ToolCallResult], error) {
+	return m.spawnNativeInProcessTeamAgentFromCheckpoint(ctx, scope, team, input, call, nil)
+}
+
+func (m *MainPrint) spawnNativeInProcessTeamAgentFromCheckpoint(ctx context.Context, scope *cooperative.Scope, team string, input protocol.JSONObject, call queryloop.JSONToolCallContext, resume *nativeInProcessResume) (_ *ownerasync.OwnerFuture[queryloop.ToolCallResult], returned error) {
 	if !scope.BelongsTo(m.Owner) || m.teamLeader == nil || m.nativeInProcessTeammateIdentity() != nil || m.teamWorker != nil {
 		return nil, cooperative.ErrRestricted
 	}
@@ -78,27 +81,29 @@ func (m *MainPrint) spawnNativeInProcessTeamAgent(ctx context.Context, scope *co
 	if selected != nil && selected.Source != "built-in" {
 		preset = selected
 	}
-	read, err := nativeSkillWork(m, scope, func() ([]protocol.JSONObject, error) {
-		file := m.teamLeader.config.Read(team)
-		if file == nil {
-			return nil, nil
+	reservation, err := m.reserveNativeInProcessRoster(ctx, scope, team, input, model, resume)
+	if err != nil {
+		return nil, err
+	}
+	name, id, color := reservation.Name, reservation.ID, reservation.Color
+	launched := false
+	defer func() {
+		if returned != nil && reservation.Added && !launched {
+			rollback, err := nativeSkillWork(m, scope, func() (struct{}, error) {
+				_, err := m.teamLeader.config.RemoveMemberByAgentID(team, id)
+				return struct{}{}, err
+			})
+			if err == nil {
+				_, err = rollback.Await(scope)
+			}
+			if err != nil {
+				_, _ = fmt.Fprintln(m.options.Error, err)
+			}
 		}
-		var members []protocol.JSONObject
-		err := json.Unmarshal(file.Get("members"), &members)
-		return members, err
-	})
-	if err != nil {
-		return nil, err
-	}
-	members, err := read.Await(scope)
-	if err != nil {
-		return nil, err
-	}
-	name := strings.ReplaceAll(teamspawn.UniqueName(input.String("name"), members), "@", "-")
-	id := name + "@" + team
-	color, err := m.nativeTeammateColor(scope, id)
-	if err != nil {
-		return nil, err
+	}()
+	if resume != nil {
+		model = resume.Template.Model
+		preset = resume.Template.Definition
 	}
 	taskID, err := teamspawn.GenerateTaskID(rand.Reader)
 	if err != nil {
@@ -130,6 +135,27 @@ func (m *MainPrint) spawnNativeInProcessTeamAgent(ctx context.Context, scope *co
 		return nil, err
 	}
 	identity := sessioncontroller.InProcessTeammateIdentity{TeamName: team, AgentName: name, AgentID: id, ParentSessionID: m.Controller.SessionID(), Color: color, PlanModeRequired: input.String("mode") == "plan"}
+	identity.ResumableAgentID, err = nativeAgentID()
+	if err != nil {
+		return nil, err
+	}
+	if resume != nil {
+		identity = resume.Template.Identity
+	}
+	storedIdentity, _ := data.Object("identity")
+	storedIdentity.Set("resumableAgentId", quoteMain(identity.ResumableAgentID))
+	data.Set("identity", rawMain(storedIdentity))
+	if resume != nil {
+		if mode := nativeResumableTeammatePermissionMode(resume.Metadata); mode != "" {
+			data.Set("permissionMode", quoteMain(mode))
+		}
+		rows := resume.History
+		if len(rows) > teamspawn.UIMessagesCap-1 {
+			rows = rows[len(rows)-(teamspawn.UIMessagesCap-1):]
+		}
+		data.Set("messages", rawMain(rows))
+	}
+	m.rememberNativeInProcessTemplate(scope, identity, preset, model, input.String("description"))
 	life, cancel := context.WithCancelCause(context.Background())
 	done := make(chan struct{})
 	join := func(ctx context.Context) error {
@@ -178,10 +204,11 @@ func (m *MainPrint) spawnNativeInProcessTeamAgent(ctx context.Context, scope *co
 		_ = m.Controller.DeleteBackgroundTaskOnOwner(scope, taskID)
 		return nil, err
 	}
+	launched = true
 	go func() {
 		defer close(done)
 		defer ref.DeliveryFinished()
-		failure := m.runNativeInProcessLoop(life, taskID, identity, preset, model, input.String("prompt"), input.String("description"))
+		failure := m.runNativeInProcessLoop(life, taskID, identity, preset, model, input.String("prompt"), input.String("description"), resume)
 		if err := m.finishNativeInProcessTask(context.Background(), taskID, identity, path, failure, unregister); err != nil {
 			_, _ = fmt.Fprintln(m.options.Error, err)
 		}
@@ -217,22 +244,12 @@ func (m *MainPrint) spawnNativeInProcessTeamAgent(ctx context.Context, scope *co
 	if err = m.Controller.SetLeaderTeamOnOwner(scope, team); err != nil {
 		return nil, err
 	}
-	member := protocol.NewJSONObject(protocol.JSONField{Name: "agentId", Value: quoteMain(id)}, protocol.JSONField{Name: "name", Value: quoteMain(name)}, protocol.JSONField{Name: "agentType", Value: input.Get("subagent_type")}, protocol.JSONField{Name: "model", Value: quoteMain(model)}, protocol.JSONField{Name: "prompt", Value: input.Get("prompt")}, protocol.JSONField{Name: "color", Value: quoteMain(color)}, protocol.JSONField{Name: "planModeRequired", Value: rawMain(identity.PlanModeRequired)}, protocol.JSONField{Name: "joinedAt", Value: rawMain(m.options.Native.NowMillis())}, protocol.JSONField{Name: "tmuxPaneId", Value: quoteMain("in-process")}, protocol.JSONField{Name: "cwd", Value: quoteMain(m.workingDirectory())}, protocol.JSONField{Name: "subscriptions", Value: rawMain([]string{})}, protocol.JSONField{Name: "backendType", Value: quoteMain("in-process")})
-	write, err := nativeSkillWork(m, scope, func() (queryloop.ToolCallResult, error) {
-		_, err := m.teamLeader.config.Mutate(team, func(file protocol.JSONObject) (protocol.JSONObject, error) {
-			var members []protocol.JSONObject
-			if err := json.Unmarshal(file.Get("members"), &members); err != nil {
-				return file, err
-			}
-			file.Set("members", rawMain(append(members, member)))
-			return file, nil
-		})
-		if err != nil {
-			return queryloop.ToolCallResult{}, err
-		}
-		data := protocol.NewJSONObject(protocol.JSONField{Name: "status", Value: quoteMain("teammate_spawned")}, protocol.JSONField{Name: "prompt", Value: input.Get("prompt")}, protocol.JSONField{Name: "teammate_id", Value: quoteMain(id)}, protocol.JSONField{Name: "agent_id", Value: quoteMain(id)}, protocol.JSONField{Name: "agent_type", Value: input.Get("subagent_type")}, protocol.JSONField{Name: "model", Value: quoteMain(model)}, protocol.JSONField{Name: "name", Value: quoteMain(name)}, protocol.JSONField{Name: "color", Value: quoteMain(color)}, protocol.JSONField{Name: "tmux_session_name", Value: quoteMain("in-process")}, protocol.JSONField{Name: "tmux_window_name", Value: quoteMain("in-process")}, protocol.JSONField{Name: "tmux_pane_id", Value: quoteMain("in-process")}, protocol.JSONField{Name: "team_name", Value: quoteMain(team)}, protocol.JSONField{Name: "is_splitpane", Value: rawMain(false)}, protocol.JSONField{Name: "plan_mode_required", Value: rawMain(identity.PlanModeRequired)})
-		return queryloop.ToolCallResult{Data: rawMain(data)}, nil
-	})
+	write, err := ownerasync.NewOwnerFuture[queryloop.ToolCallResult](m.Owner)
+	if err != nil {
+		return nil, err
+	}
+	result := protocol.NewJSONObject(protocol.JSONField{Name: "status", Value: quoteMain("teammate_spawned")}, protocol.JSONField{Name: "prompt", Value: input.Get("prompt")}, protocol.JSONField{Name: "teammate_id", Value: quoteMain(id)}, protocol.JSONField{Name: "agent_id", Value: quoteMain(id)}, protocol.JSONField{Name: "agent_type", Value: input.Get("subagent_type")}, protocol.JSONField{Name: "model", Value: quoteMain(model)}, protocol.JSONField{Name: "name", Value: quoteMain(name)}, protocol.JSONField{Name: "color", Value: quoteMain(color)}, protocol.JSONField{Name: "tmux_session_name", Value: quoteMain("in-process")}, protocol.JSONField{Name: "tmux_window_name", Value: quoteMain("in-process")}, protocol.JSONField{Name: "tmux_pane_id", Value: quoteMain("in-process")}, protocol.JSONField{Name: "team_name", Value: quoteMain(team)}, protocol.JSONField{Name: "is_splitpane", Value: rawMain(false)}, protocol.JSONField{Name: "plan_mode_required", Value: rawMain(identity.PlanModeRequired)})
+	err = write.Resolve(scope, queryloop.ToolCallResult{Data: rawMain(result)})
 	return write, err
 }
 

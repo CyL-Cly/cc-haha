@@ -1,6 +1,6 @@
-// Package computerusemcp binds the original two macOS MCP entry points to the
-// guarded native tool facade and isolated Go JavaScript kernel. It never calls
-// native helper actions directly or creates a second Agent/model consumer.
+// Package computerusemcp binds each platform's original MCP face to the shared
+// SID-bound native facade. macOS uses the isolated JavaScript kernel; Windows
+// exposes the original pixel tools through its native Python transport.
 package computerusemcp
 
 import (
@@ -20,13 +20,35 @@ import (
 //go:embed assets/tools.json
 var toolDefinitions []byte
 
+//go:embed assets/windows-tools.json
+var windowsToolDefinitions []byte
+
 type Binder struct {
 	tools   *computeruse.NativeTools
+	windows *computeruse.WindowsTools
 	runtime *curepl.Runtime
 	mu      sync.Mutex
 	tail    chan struct{}
 	epoch   uint64
 	closed  bool
+}
+
+func NewWindows(tools *computeruse.WindowsTools) (*Binder, error) {
+	if tools == nil {
+		return nil, errors.New("Windows Computer Use MCP requires an actual SID-bound pixel facade")
+	}
+	return &Binder{windows: tools}, nil
+}
+func WindowsDefinitions(mode string) ([]protocol.JSONObject, error) {
+	var definitions map[string][]protocol.JSONObject
+	if err := json.Unmarshal(windowsToolDefinitions, &definitions); err != nil {
+		return nil, err
+	}
+	tools, ok := definitions[mode]
+	if !ok {
+		return nil, errors.New("unsupported Windows Computer Use coordinate mode")
+	}
+	return tools, nil
 }
 
 func New(tools *computeruse.NativeTools, kernel *curepl.Runtime) (*Binder, error) {
@@ -38,6 +60,12 @@ func New(tools *computeruse.NativeTools, kernel *curepl.Runtime) (*Binder, error
 	return &Binder{tools: tools, runtime: kernel, tail: ready}, nil
 }
 func (b *Binder) Tools(ctx context.Context) ([]protocol.JSONObject, error) {
+	if b.windows != nil {
+		if b.windows.Disabled(ctx) {
+			return []protocol.JSONObject{}, nil
+		}
+		return WindowsDefinitions(b.windows.CoordinateMode())
+	}
 	if b.tools.Disabled(ctx) {
 		return []protocol.JSONObject{}, nil
 	}
@@ -54,6 +82,20 @@ func input(raw json.RawMessage) (protocol.JSONObject, bool) {
 	return value, err == nil && value.IsObject()
 }
 func (b *Binder) Call(ctx context.Context, name string, args json.RawMessage) curepl.Result {
+	if b.windows != nil {
+		b.mu.Lock()
+		closed := b.closed
+		b.mu.Unlock()
+		if closed {
+			return resultError("Computer Use cancelled before dispatch.")
+		}
+		result, err := b.windows.Call(ctx, name, args)
+		if err != nil {
+			return resultError(err.Error())
+		}
+		// Telemetry and native execution metadata stop at the MCP boundary.
+		return convertNativeResult(result)
+	}
 	if name == "js_reset" {
 		value, valid := input(args)
 		if !valid || len(value.OwnProperties()) != 0 {
@@ -88,15 +130,7 @@ func (b *Binder) Call(ctx context.Context, name string, args json.RawMessage) cu
 		if err != nil {
 			return resultError(err.Error())
 		}
-		raw, err := json.Marshal(result)
-		if err != nil {
-			return resultError(err.Error())
-		}
-		var output curepl.Result
-		if err = json.Unmarshal(raw, &output); err != nil {
-			return resultError(err.Error())
-		}
-		return output
+		return convertNativeResult(result)
 	}
 	value, valid := input(args)
 	if !valid {
@@ -136,12 +170,31 @@ func (b *Binder) Call(ctx context.Context, name string, args json.RawMessage) cu
 		return json.Marshal(result)
 	}, func() bool { return b.tools.Disabled(ctx) })
 }
-func (b *Binder) EndTurn(ctx context.Context) error { return b.tools.EndTurn(ctx) }
+func convertNativeResult(result computeruse.NativeToolResult) curepl.Result {
+	raw, err := json.Marshal(result)
+	if err != nil {
+		return resultError(err.Error())
+	}
+	var output curepl.Result
+	if err = json.Unmarshal(raw, &output); err != nil {
+		return resultError(err.Error())
+	}
+	return output
+}
+func (b *Binder) EndTurn(ctx context.Context) error {
+	if b.windows != nil {
+		return b.windows.EndTurn(ctx)
+	}
+	return b.tools.EndTurn(ctx)
+}
 func (b *Binder) Close(ctx context.Context) error {
 	b.mu.Lock()
 	b.closed = true
 	b.epoch++
 	b.mu.Unlock()
+	if b.windows != nil {
+		return b.windows.Close(ctx)
+	}
 	b.runtime.Close()
 	return b.tools.Close(ctx)
 }

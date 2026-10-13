@@ -21,7 +21,8 @@ func TestPublicDebugRawArgvSurvivesCommanderBooleanCoercionWithoutEnablingOtherF
 	if e != nil || command.Arguments.DebugFormatted {
 		t.Fatal("plain terminal text incorrectly JSON-formatted debug", e)
 	}
-	if _, _, e := ParseCommand([]string{"--mcp-debug", "--print", "prompt"}, "fixture", t.TempDir(), t.TempDir()); e == nil {
-		t.Fatal("debug admission widened deprecated MCP producer guard")
+	deprecated, _, e := ParseCommand([]string{"--mcp-debug", "--print", "prompt"}, "fixture", t.TempDir(), t.TempDir())
+	if e != nil || deprecated.Arguments.DebugFormatted {
+		t.Fatal("deprecated MCP debug no-op did not preserve normal public invocation", e)
 	}
 }

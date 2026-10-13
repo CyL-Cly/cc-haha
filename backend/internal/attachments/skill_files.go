@@ -89,7 +89,12 @@ func projectSkillFile(value protocol.JSONObject, factory *messages.Factory, opti
 		if e != nil || !content.IsObject() {
 			return nil, &CapabilityError{Boundary: "malformed retained file attachment"}
 		}
-		if content.String("type") != "text" && content.String("type") != "notebook" && content.String("type") != "image" {
+		// The original file-attachment switch has no parts case: extracted
+		// pages are supplemental live tool messages, not retained attachments.
+		if content.String("type") == "parts" {
+			return []protocol.JSONObject{}, nil
+		}
+		if content.String("type") != "text" && content.String("type") != "notebook" && content.String("type") != "image" && content.String("type") != "pdf" {
 			return nil, &CapabilityError{Boundary: "retained file " + content.String("type") + " mapper"}
 		}
 		name = "Read"

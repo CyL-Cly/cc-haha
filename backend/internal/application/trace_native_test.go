@@ -138,8 +138,12 @@ func TestDesktopTraceFactoryCapturesActualWebSocketTurnAndSettings(t *testing.T)
 		if message.String("type") == "error" {
 			t.Fatal(frame)
 		}
-		finished = finished || message.String("type") == "message_complete"
-		if finished && message.String("type") == "session_state" && message.String("turnState") == "idle" {
+		if !finished && message.String("type") == "message_complete" {
+			finished = true
+			requestDesktopSessionSync(t, ws)
+		}
+		if finished && message.String("type") == "session_state" {
+			assertDesktopIdleSnapshot(t, message)
 			break
 		}
 	}

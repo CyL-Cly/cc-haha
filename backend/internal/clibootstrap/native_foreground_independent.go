@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
-	"time"
+	"sync/atomic"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/builtintools"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
@@ -15,7 +15,6 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/queryloop"
 	"github.com/NanmiCoder/cc-haha/backend/internal/runtimecleanup"
-	"github.com/NanmiCoder/cc-haha/backend/internal/sdkhost"
 	"github.com/NanmiCoder/cc-haha/backend/internal/usercontext"
 )
 
@@ -23,6 +22,8 @@ import (
 // existing MainPrint/ASK/Writer on its own Owner, with the same shared settings,
 // accounting relay, permissions and parent task producer as a background child.
 type nativeForegroundAgent struct {
+	releaseSlot                   func()
+	backgrounded                  atomic.Bool
 	parent, child                 *MainPrint
 	id, path, directory, streamID string
 	request                       builtintools.AgentRequest
@@ -44,6 +45,16 @@ func (m *MainPrint) startNativeForegroundAgent(ctx context.Context, scope *coope
 	if !scope.BelongsTo(m.Owner) || m.nativeModelSelector == nil || m.prompt == nil {
 		return nil, cooperative.ErrRestricted
 	}
+	releaseSlot, e := m.reserveOrdinarySubagent()
+	if e != nil {
+		return nil, e
+	}
+	transferred := false
+	defer func() {
+		if !transferred {
+			releaseSlot()
+		}
+	}()
 	id, e := nativeAgentID()
 	if e != nil {
 		return nil, e
@@ -111,7 +122,8 @@ func (m *MainPrint) startNativeForegroundAgent(ctx context.Context, scope *coope
 	}
 	oldCtx, cancelOld := context.WithCancelCause(context.Background())
 	taskCtx, cancelTask := context.WithCancelCause(context.Background())
-	state := &nativeForegroundAgent{parent: m, id: id, directory: directory, streamID: streamID, request: request, tree: tree, start: m.options.Native.NowMillis(), progress: m.nativeAgentProgress(request, tree.CWD), result: result, oldDone: make(chan struct{}), taskDone: make(chan struct{}), oldContext: oldCtx, cancelOld: cancelOld, taskContext: taskCtx, cancelTask: cancelTask}
+	state := &nativeForegroundAgent{releaseSlot: releaseSlot, parent: m, id: id, directory: directory, streamID: streamID, request: request, tree: tree, start: m.options.Native.NowMillis(), progress: m.nativeAgentProgress(request, tree.CWD), result: result, oldDone: make(chan struct{}), taskDone: make(chan struct{}), oldContext: oldCtx, cancelOld: cancelOld, taskContext: taskCtx, cancelTask: cancelTask}
+	o.DetachedAgent.isBackgrounded = state.backgrounded.Load
 	o.DetachedAgent.iteratorReady = func(childScope *cooperative.Scope) error {
 		return bridgeAgentVoid(state.child, m, childScope, func(parentScope *cooperative.Scope) error {
 			if !state.registered && !skillTruthy(m.options.Native.Environment["CLAUDE_CODE_DISABLE_BACKGROUND_TASKS"]) {
@@ -252,6 +264,7 @@ func (m *MainPrint) startNativeForegroundAgent(ctx context.Context, scope *coope
 		go func() { defer ref.DeliveryFinished(); _ = state.child.ShutdownSession(context.Background()) }()
 		return fail(e)
 	}
+	transferred = true
 	go state.run(ref)
 	return result, nil
 }
@@ -274,9 +287,7 @@ func (state *nativeForegroundAgent) register(scope *cooperative.Scope) error {
 	m := state.parent
 	cancel := func(e error) {
 		state.cancelTask(e)
-		if !state.promoted {
-			state.cancelOld(e)
-		}
+		state.cancelOld(e)
 	}
 	if e := m.beginForegroundAgentTask(scope, state.id, state.path, state.request, cancel, state.taskDone); e != nil {
 		return e
@@ -297,74 +308,10 @@ func (state *nativeForegroundAgent) promote(scope *cooperative.Scope) error {
 	if state.stopAuto != nil {
 		state.stopAuto()
 	}
-	// Resolving the original tool result is independent of iterator close. The
-	// closure owns a native lease from this same parent through grace and restart.
-	_ = state.result.Resolve(scope, builtintools.AgentRunResult{AgentID: state.id, Async: true, OutputFile: filepath.Join(state.directory, state.id+".output")})
-	binding, e := state.parent.Controller.BorrowNativeCopyBinding(state.parent.Owner)
-	if e != nil {
-		return e
-	}
-	ref, e := binding.Acquire(scope)
-	if e != nil {
-		return e
-	}
-	snapshot := append([]queryloop.Message(nil), state.messages...)
-	go state.restartAfterReturn(ref, snapshot)
-	return nil
-}
-func (state *nativeForegroundAgent) restartAfterReturn(ref *ownerasync.NativeReference, streamed []queryloop.Message) {
-	m := state.parent
-	var seed *sdkhost.NativeAgentRestartPrompt
-
-	receipt, e := state.child.Owner.SubmitIndependent(context.Background(), cooperative.Read, func(scope *cooperative.Scope) error {
-		var e error
-		seed, e = state.child.Host.ExportAgentRestartPrompt(scope)
-		if e != nil {
-			return e
-		}
-		_, e = state.child.Host.ReturnAgentIterator(scope)
-		return e
-	})
-	if e == nil {
-		e = receipt.Wait()
-	}
-	if e == nil {
-		timer := time.NewTimer(time.Second)
-		select {
-		case <-state.oldDone:
-		case <-timer.C:
-		}
-		if !timer.Stop() {
-			select {
-			case <-timer.C:
-			default:
-			}
-		}
-	}
-	delivery, postError := m.Owner.SubmitIndependent(context.Background(), cooperative.Read, func(scope *cooperative.Scope) error {
-		defer ref.DeliveryFinished()
-		if e != nil {
-			return m.completeNativeBackgroundAgent(scope, state.id, state.request, builtintools.AgentRunResult{AgentID: state.id, Messages: streamed}, e, state.progress, state.start, nil)
-		}
-		request := state.request
-		request.Name = ""
-		request.ResumeAgentID = state.id
-		request.ResumeHistory = nil
-		future, e := m.startNativeBackgroundAgent(state.taskContext, scope, request, &nativeAgentBackgroundRestart{worktree: state.tree, prompt: seed, messages: streamed, start: state.start, abortContext: state.taskContext})
-		if e == nil {
-			_, e = future.Await(scope)
-		}
-		if e != nil {
-			return m.completeNativeBackgroundAgent(scope, state.id, request, builtintools.AgentRunResult{AgentID: state.id, Messages: streamed}, e, state.progress, state.start, nil)
-		}
-		return nil
-	})
-	if postError == nil {
-		postError = delivery.Wait()
-	}
-	if postError != nil {
-		ref.DeliveryFinished()
-	}
+	// The same admitted iterator, provider stream and sidechain continue. Only
+	// its interaction boundary changes; no prompt/history is replayed.
+	state.backgrounded.Store(true)
+	return state.result.Resolve(scope, builtintools.AgentRunResult{AgentID: state.id, Async: true, OutputFile: filepath.Join(state.directory, state.id+".output")})
 }
 func (state *nativeForegroundAgent) run(ref *ownerasync.NativeReference) {
 	child, m := state.child, state.parent
@@ -382,10 +329,6 @@ func (state *nativeForegroundAgent) run(ref *ownerasync.NativeReference) {
 		return e
 	})
 	_ = child.Owner.Run(context.Background(), func(scope *cooperative.Scope) error {
-		promoted, e := nativeAgentOwnerCall(child, scope, m, func(*cooperative.Scope) (bool, error) { return state.promoted, nil })
-		if e != nil || promoted {
-			return e
-		}
 		return child.killAgentOwnedShells(scope, state.id)
 	})
 	cleanup := child.ShutdownSession(context.Background())
@@ -414,8 +357,30 @@ func (state *nativeForegroundAgent) run(ref *ownerasync.NativeReference) {
 		if state.stopAuto != nil {
 			state.stopAuto()
 		}
+		defer state.releaseSlot()
+		defer state.cancelTask(nil)
 		if state.promoted {
-			return nil
+			run := builtintools.AgentRunResult{AgentID: state.id, Messages: history, DurationMillis: m.options.Native.NowMillis() - state.start}
+			if e := m.completeNativeBackgroundAgent(scope, state.id, state.request, run, failure, state.progress, state.start, nil); e != nil {
+				return e
+			}
+			retained, e := m.finishAgentWorktree(scope, state.tree)
+			if e != nil {
+				return e
+			}
+			if retained == nil && state.tree.service != nil {
+				meta := nativeAgentMetadata(state.request, state.tree, m.options.AgentID, false)
+				meta.Delete("worktreePath")
+				m.writeAgentWorktreeMetadata(state.path, meta)
+			}
+			kind := "complete"
+			if failure != nil {
+				kind = "error"
+				if errors.Is(failure, context.Canceled) {
+					kind = "cancelled"
+				}
+			}
+			return state.emit(kind, nil, failure)
 		}
 		defer state.cancelTask(nil)
 		if state.registered {
@@ -451,6 +416,7 @@ func (state *nativeForegroundAgent) run(ref *ownerasync.NativeReference) {
 	}
 	if e != nil {
 		ref.DeliveryFinished()
+		state.releaseSlot()
 		_ = state.result.RejectAdministrative(e)
 		state.cancelOld(e)
 		state.cancelTask(e)

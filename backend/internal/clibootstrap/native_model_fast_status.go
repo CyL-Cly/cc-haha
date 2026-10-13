@@ -181,7 +181,7 @@ func (m *MainPrint) startNativeModelFastHTTP(scope *cooperative.Scope, ctx conte
 		}
 		request.Header.Set("Accept", "application/json, text/plain, */*")
 		request.Header.Set("Accept-Encoding", "gzip, compress, deflate, br")
-		request.Header.Set("User-Agent", "axios/1.14.0")
+		request.Header.Set("User-Agent", "axios/1.15.2")
 		if token != "" {
 			request.Header.Set("Authorization", "Bearer "+token)
 			request.Header.Set("anthropic-beta", "oauth-2025-04-20")

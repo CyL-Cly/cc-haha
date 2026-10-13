@@ -12,11 +12,13 @@ import (
 )
 
 type ImageBindings struct {
-	Read              func(context.Context, *cooperative.Scope, string, float64) (*ownerasync.OwnerFuture[json.RawMessage], error)
-	MetadataMessage   func(*cooperative.Scope, json.RawMessage) (*queryloop.Message, error)
-	Config            func(*cooperative.Scope) (*imagegeneration.Config, error)
-	Generate          func(context.Context, *cooperative.Scope, protocol.JSONObject, imagegeneration.Config) (imagegeneration.Output, error)
-	RegisterUserImage func(context.Context, *cooperative.Scope, string) error
+	NormalizeShellData func(context.Context, *cooperative.Scope, []byte, string) (*ownerasync.OwnerFuture[string], error)
+	ReadPDF            func(context.Context, *cooperative.Scope, string, *string) (*ownerasync.OwnerFuture[json.RawMessage], error)
+	Read               func(context.Context, *cooperative.Scope, string, float64) (*ownerasync.OwnerFuture[json.RawMessage], error)
+	MetadataMessage    func(*cooperative.Scope, json.RawMessage) (*queryloop.Message, error)
+	Config             func(*cooperative.Scope) (*imagegeneration.Config, error)
+	Generate           func(context.Context, *cooperative.Scope, protocol.JSONObject, imagegeneration.Config) (imagegeneration.Output, error)
+	RegisterUserImage  func(context.Context, *cooperative.Scope, string) error
 }
 
 func imageTool(name string) bool { return name == "ImageGen" || name == "ImageEdit" }

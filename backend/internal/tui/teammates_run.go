@@ -12,6 +12,15 @@ type teammatesChangedMsg struct{ tasks protocol.JSONObject }
 
 func (m *terminalModel) teammateCommand(action TeammateAction) tea.Cmd {
 	return func() tea.Msg {
+		if action.Kind == "stop-dream" {
+			host, ok := m.session.(TeammateSession)
+			if !ok {
+				return actionReturnedMsg{&UnsupportedAction{Action: action.Kind}}
+			}
+			// The original task dialog can kill this background fork while the
+			// foreground ASK is still active. It is not another user turn.
+			return actionReturnedMsg{host.ControlTeammate(m.ctx, action)}
+		}
 		if !m.beginTurn() {
 			return actionReturnedMsg{context.Canceled}
 		}

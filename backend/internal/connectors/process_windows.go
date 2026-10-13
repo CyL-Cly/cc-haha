@@ -3,11 +3,13 @@
 package connectors
 
 import (
+	"context"
 	"os"
 	"os/exec"
-	"strconv"
 	"syscall"
 	"time"
+
+	"github.com/NanmiCoder/cc-haha/backend/internal/processpolicy"
 )
 
 func configureProcess(cmd *exec.Cmd) {
@@ -16,12 +18,10 @@ func configureProcess(cmd *exec.Cmd) {
 		if cmd.Process == nil {
 			return os.ErrProcessDone
 		}
-		kill := exec.Command("taskkill", "/PID", strconv.Itoa(cmd.Process.Pid), "/T", "/F")
-		kill.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
-		if err := kill.Run(); err != nil {
-			return cmd.Process.Kill()
+		if processpolicy.KillWindowsProcessTree(context.Background(), cmd.Process.Pid, processpolicy.WindowsTreeKillOptions{}) {
+			return nil
 		}
-		return nil
+		return cmd.Process.Kill()
 	}
 	cmd.WaitDelay = 2 * time.Second
 }

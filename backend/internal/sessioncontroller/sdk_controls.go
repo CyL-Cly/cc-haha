@@ -2,7 +2,7 @@ package sessioncontroller
 
 import "github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 
-func (c *Controller) SetSDKPermissionMode(scope *cooperative.Scope, mode string) error {
+func (c *Controller) SetSDKPermissionMode(scope *cooperative.Scope, mode string) (resultErr error) {
 	if c == nil || c.options.Bootstrap == nil || c.appState.permission == nil {
 		return cooperative.ErrRestricted
 	}
@@ -17,6 +17,11 @@ func (c *Controller) SetSDKPermissionMode(scope *cooperative.Scope, mode string)
 	if e != nil {
 		return e
 	}
+	defer func() {
+		if resultErr == nil {
+			resultErr = c.observePermissionMode(scope, before.String("mode"))
+		}
+	}()
 	if e := c.appState.permission.SetMode(scope, mode); e != nil {
 		return e
 	}

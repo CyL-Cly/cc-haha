@@ -66,12 +66,18 @@ func (f mainAgentsFiles) Stat(p string) (fs.FileInfo, error) {
 	if e != nil && !errors.Is(e, fs.ErrNotExist) && !errors.Is(e, fs.ErrPermission) {
 		return nil, &agentcatalog.CapabilityError{Boundary: e.Error()}
 	}
+	if e == nil {
+		i = withAgentsNativeIdentity(p, i, false)
+	}
 	return i, e
 }
 func (f mainAgentsFiles) Lstat(p string) (fs.FileInfo, error) {
 	i, e := f.n.lstat(p)
 	if e != nil && !errors.Is(e, fs.ErrNotExist) {
 		return nil, &agentcatalog.CapabilityError{Boundary: e.Error()}
+	}
+	if e == nil {
+		i = withAgentsNativeIdentity(p, i, true)
 	}
 	return i, e
 }

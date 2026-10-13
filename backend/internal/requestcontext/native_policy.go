@@ -16,6 +16,9 @@ var nativeTiers = []string{"FABLE", "OPUS", "SONNET", "HAIKU"}
 // direct-relay request producer. Transport and startup inputs stay with their
 // owning services rather than being admitted as inert request options.
 func IsNativePolicyEnvironment(name string) bool {
+	if name == "DISABLE_INTERLEAVED_THINKING" || name == "CLAUDE_CODE_DISABLE_1M_CONTEXT" {
+		return true
+	}
 	if supportedHostEnvironment[name] {
 		return true
 	}

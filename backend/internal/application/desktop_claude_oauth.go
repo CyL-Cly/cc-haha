@@ -15,6 +15,7 @@ func desktopOAuthBaseEnvironment(o Options, base map[string]string) map[string]s
 		env[key] = value
 	}
 	delete(env, "CLAUDE_CODE_OAUTH_TOKEN")
+	delete(env, "CLAUDE_CODE_ACCOUNT_UUID")
 	// Runtime settings pass an explicit null or saved-provider identity to the
 	// desktop child producer. Strip the inherited managed keys before projection.
 	if o.desktopManagedClaudeOAuth && o.RuntimeSelection != nil {
@@ -39,6 +40,12 @@ func desktopOAuthEnvironment(ctx context.Context, o Options, base map[string]str
 		fmt.Fprintf(o.Stderr, "[conversationService] ensureFreshAccessToken failed: %s\n", err)
 	} else if token != nil && *token != "" {
 		env["CLAUDE_CODE_OAUTH_TOKEN"] = *token
+		if o.DesktopOAuthAccountUUID != nil {
+			account, lookupError := o.DesktopOAuthAccountUUID(ctx, *token)
+			if lookupError == nil && account != nil && *account != "" {
+				env["CLAUDE_CODE_ACCOUNT_UUID"] = *account
+			}
+		}
 	}
 	return env
 }

@@ -50,8 +50,12 @@ func (m *MainPrint) nativeContextUsageWithContext(ctx context.Context, scope *co
 	for _, entry := range projection.Records {
 		history = append(history, entry.Record)
 	}
+	plan, err := m.nativePlanProjection(scope)
+	if err != nil {
+		return protocol.JSONObject{}, err
+	}
 	dependencies := requestcontext.Dependencies{UUID: uuidMain, Now: m.options.Native.Now}
-	normalized, err := requestcontext.NormalizeForInspection(history, dependencies)
+	normalized, err := requestcontext.NormalizeForInspectionWithPlan(history, dependencies, plan)
 	if err != nil {
 		return protocol.JSONObject{}, err
 	}
@@ -76,7 +80,7 @@ func (m *MainPrint) nativeContextUsageWithContext(ctx context.Context, scope *co
 		return protocol.JSONObject{}, err
 	}
 	env := m.options.Native.Environment
-	resolver := modelaccounting.RestoredModelResolver{Environment: env, Settings: m.Startup.GetInitialSettings, Global: m.Global.Get}
+	resolver := modelaccounting.RestoredModelResolver{Environment: env, Settings: m.Startup.GetInitialSettings, Global: m.Global.Get, SDKBetas: m.nativeSDKBetas}
 	window, err := resolver.ContextWindow(actual.Model)
 	if err != nil {
 		return protocol.JSONObject{}, err
@@ -86,7 +90,15 @@ func (m *MainPrint) nativeContextUsageWithContext(ctx context.Context, scope *co
 		return protocol.JSONObject{}, err
 	}
 	simple := envTruthyNative(env["CLAUDE_CODE_SIMPLE"])
-	in := contextusage.Input{Model: actual.Model, Window: window, EffectiveWindow: querypreflight.EffectiveContextWindow(actual.MainModel, env), Simple: simple, EstimateOnly: estimateOnly, History: history, Normalized: normalized, SystemPrompt: prompt, SystemContext: system, Definitions: actual.Definitions, Schemas: actual.Schemas, AutoCompact: !envTruthyNative(env["DISABLE_COMPACT"]) && !envTruthyNative(env["DISABLE_AUTO_COMPACT"]) && nativeSettingsTruthy(global.Get("autoCompactEnabled")), LowTrust: !nativeGlobalCacheScope(env) || toolsearch.Provider(env) != "firstParty", Internal: env["USER_TYPE"] == "ant"}
+	effectiveWindow := querypreflight.EffectiveContextWindow(actual.MainModel, env)
+	if len(m.nativeSDKBetas) > 0 {
+		mainWindow, err := resolver.ContextWindow(actual.MainModel)
+		if err != nil {
+			return protocol.JSONObject{}, err
+		}
+		effectiveWindow = querypreflight.EffectiveContextWindowWithSDKBetas(actual.MainModel, env, mainWindow)
+	}
+	in := contextusage.Input{Model: actual.Model, Window: window, EffectiveWindow: effectiveWindow, Simple: simple, EstimateOnly: estimateOnly, History: history, Normalized: normalized, SystemPrompt: prompt, SystemContext: system, Definitions: actual.Definitions, Schemas: actual.Schemas, AutoCompact: !envTruthyNative(env["DISABLE_COMPACT"]) && !envTruthyNative(env["DISABLE_AUTO_COMPACT"]) && nativeSettingsTruthy(global.Get("autoCompactEnabled")), LowTrust: !nativeGlobalCacheScope(env) || toolsearch.Provider(env) != "firstParty", Internal: env["USER_TYPE"] == "ant"}
 	if !estimateOnly {
 		in.Count, err = m.nativeTokenCounter(ctx, scope, actual.MainModel)
 		if err != nil {
@@ -142,10 +154,10 @@ func (m *MainPrint) nativeContextUsageWithContext(ctx context.Context, scope *co
 		}
 	}
 	in.AttachmentMessages = func(raw json.RawMessage) ([]protocol.JSONObject, error) {
-		return attachments.ProjectWithOptions(raw, m.factory, nil)
+		return attachments.ProjectWithOptions(raw, m.factory, plan)
 	}
 	in.EstimateCanonical = func(history []protocol.JSONObject) (float64, error) {
-		return preflightcore.EstimateContextWithAttachments(history, &preflightcore.AttachmentOptions{Factory: m.factory})
+		return preflightcore.EstimateContextWithAttachments(history, &preflightcore.AttachmentOptions{Factory: m.factory, Plan: plan})
 	}
 	data, err := contextusage.Analyze(in)
 	if err != nil {

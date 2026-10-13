@@ -9,10 +9,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/NanmiCoder/cc-haha/backend/internal/openaiauth"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/provider"
 )
 
-const compatibilityVersion = "2.1.281"
+const compatibilityVersion = provider.SourceCompatibilityVersion
 
 var modelContextSuffix = regexp.MustCompile(`(?i)\[(1|2)m\]`)
 var modelDate = regexp.MustCompile(`-\d{8}$`)
@@ -177,15 +179,11 @@ const sdkPresetPrefix = "You are Claude Code, Anthropic's official CLI for Claud
 func buildSystem(input Context, history []protocol.JSONObject, caching bool) (json.RawMessage, error) {
 	prompts := []json.RawMessage{}
 	if !envFalse(input.Host.Env["CLAUDE_CODE_ATTRIBUTION_HEADER"]) {
-		entrypoint, exists := input.Host.Env["CLAUDE_CODE_ENTRYPOINT"]
-		if !exists {
-			entrypoint = "unknown"
-		}
 		workload := ""
 		if input.Host.Workload != "" {
 			workload = " cc_workload=" + input.Host.Workload + ";"
 		}
-		prompts = append(prompts, quoted("x-anthropic-billing-header: cc_version="+compatibilityVersion+"."+fingerprint(history)+"; cc_entrypoint="+entrypoint+"; cch=00000;"+workload))
+		prompts = append(prompts, quoted("x-anthropic-billing-header: cc_version="+compatibilityVersion+"."+fingerprint(history)+"; cc_entrypoint=cli; cch=00000;"+workload))
 	}
 	prefix := cliPrefix
 	if input.Options.IsNonInteractiveSession {
@@ -248,7 +246,19 @@ func metadata(input Context) (json.RawMessage, error) {
 	}
 	extra := objectEnvironment(input.Host.Env["CLAUDE_CODE_EXTRA_METADATA"])
 	extra.Set("device_id", quoted(input.Host.DeviceID))
-	extra.Set("account_uuid", quoted(""))
+	account := ""
+	if input.Host.OAuthAccountUUID != nil {
+		account = *input.Host.OAuthAccountUUID
+	} else {
+		source := ""
+		if input.Host.Env["ANTHROPIC_API_KEY"] != "" {
+			source = "ANTHROPIC_API_KEY"
+		}
+		if openaiauth.AnthropicAuthEnabled(openaiauth.AnthropicAuthInput{Bare: envTrue(input.Host.Env["CLAUDE_CODE_SIMPLE"]), Environment: input.Host.Env, APIKeySource: source}) {
+			account = trim(input.Host.Env["CLAUDE_CODE_ACCOUNT_UUID"])
+		}
+	}
+	extra.Set("account_uuid", quoted(account))
 	extra.Set("session_id", quoted(input.Host.SessionID))
 	serialized, err := stringify(rawObject(extra))
 	if err != nil {

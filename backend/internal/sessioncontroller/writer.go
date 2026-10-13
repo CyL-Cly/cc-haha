@@ -1,6 +1,7 @@
 package sessioncontroller
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"io/fs"
@@ -16,6 +17,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/ownerasync"
 	"github.com/NanmiCoder/cc-haha/backend/internal/projectpath"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/remoteio"
 	"github.com/NanmiCoder/cc-haha/backend/internal/streamhistory"
 )
 
@@ -40,6 +42,12 @@ type queuedEntry struct {
 	identity identity
 }
 type Writer struct {
+	remote                 *remoteio.Service
+	ingress                *remoteio.Ingress
+	ingressURL             string
+	ingressContext         context.Context
+	ingressEnabled         func() bool
+	ingressFailure         func(error)
 	mu                     sync.Mutex
 	options                WriterOptions
 	path                   string

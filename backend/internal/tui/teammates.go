@@ -18,6 +18,7 @@ type TeammateSession interface {
 }
 
 func (s *State) SetTeammateTasks(tasks protocol.JSONObject) {
+	s.BackgroundTasks = tasks.Clone()
 	if s.Teammates == nil {
 		state := teamnavigation.New()
 		s.Teammates = &state

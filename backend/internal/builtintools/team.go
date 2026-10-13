@@ -17,7 +17,14 @@ type TeamBindings struct {
 	Start            func(context.Context, *cooperative.Scope, string, protocol.JSONObject) (*ownerasync.OwnerFuture[queryloop.ToolCallResult], error)
 	ConsumeTurnPause func(context.Context, *cooperative.Scope) (bool, error)
 	TeamName         func(*cooperative.Scope) (string, error)
-	StageAgent       func(context.Context, *cooperative.Scope, string, protocol.JSONObject, queryloop.JSONToolCallContext) (*ownerasync.OwnerFuture[queryloop.ToolCallResult], error)
+	AgentName        func(*cooperative.Scope) (string, error)
+	// These storage callbacks run on the native I/O worker, never on the owner.
+	TaskExecutionApproved func(string, string) (bool, error)
+	TaskAssigned          func(string, protocol.JSONObject) error
+	// Assignment notification errors are diagnostics after the task transaction
+	// has committed. This callback runs on the owner, not the native I/O worker.
+	TaskAssignmentError func(*cooperative.Scope, error)
+	StageAgent          func(context.Context, *cooperative.Scope, string, protocol.JSONObject, queryloop.JSONToolCallContext) (*ownerasync.OwnerFuture[queryloop.ToolCallResult], error)
 }
 
 func (s *Service) teamAgent(ctx context.Context, scope *cooperative.Scope, input protocol.JSONObject, call queryloop.JSONToolCallContext) (bool, *ownerasync.OwnerFuture[queryloop.ToolCallResult], error) {

@@ -157,8 +157,12 @@ func TestActualDesktopProviderProxyThreeProtocolsWSWriteAndScopedCredentials(t *
 					t.Fatal(line)
 				}
 				write = write || bytes.Contains([]byte(line), []byte(`"name":"Write"`))
-				finished = finished || value.String("type") == "message_complete"
-				if finished && value.String("type") == "session_state" && value.String("turnState") == "idle" {
+				if !finished && value.String("type") == "message_complete" {
+					finished = true
+					requestDesktopSessionSync(t, ws)
+				}
+				if finished && value.String("type") == "session_state" {
+					assertDesktopIdleSnapshot(t, value)
 					break
 				}
 			}

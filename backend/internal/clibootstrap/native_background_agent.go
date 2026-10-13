@@ -29,6 +29,22 @@ func (m *MainPrint) startNativeBackgroundAgent(ctx context.Context, scope *coope
 	if !scope.BelongsTo(m.Owner) || m.nativeModelSelector == nil || m.prompt == nil {
 		return nil, cooperative.ErrRestricted
 	}
+	var releaseSlot func()
+	var e error
+	if restart != nil && restart.releaseSlot != nil {
+		releaseSlot = restart.releaseSlot
+	} else {
+		releaseSlot, e = m.reserveOrdinarySubagent()
+	}
+	if e != nil {
+		return nil, e
+	}
+	transferred := false
+	defer func() {
+		if !transferred {
+			releaseSlot()
+		}
+	}()
 	agentID, e := nativeAgentID()
 	if e != nil {
 		return nil, e
@@ -215,7 +231,9 @@ func (m *MainPrint) startNativeBackgroundAgent(ctx context.Context, scope *coope
 		_ = child.ShutdownSession(context.Background())
 		return fail(e)
 	}
+	transferred = true
 	go func() {
+		defer releaseSlot()
 		var run builtintools.AgentRunResult
 		failure := child.Owner.Run(agentContext, func(scope *cooperative.Scope) error {
 			input := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoteMain("user")}, protocol.JSONField{Name: "session_id", Value: quoteMain(snapshot.SessionID)}, protocol.JSONField{Name: "message", Value: rawMain(protocol.NewJSONObject(protocol.JSONField{Name: "role", Value: quoteMain("user")}, protocol.JSONField{Name: "content", Value: quoteMain(request.Prompt)}))})

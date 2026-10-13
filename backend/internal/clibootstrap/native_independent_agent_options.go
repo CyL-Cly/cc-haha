@@ -6,6 +6,7 @@ import (
 	"math"
 	"strings"
 
+	"github.com/NanmiCoder/cc-haha/backend/internal/agentcatalog"
 	"github.com/NanmiCoder/cc-haha/backend/internal/builtintools"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/modelaccounting"
@@ -26,6 +27,11 @@ func (m *MainPrint) nativeIndependentAgentOptions(scope *cooperative.Scope, requ
 	}
 	snapshot := m.state.Snapshot()
 	detached := &NativeDetachedAgentOptions{authParent: m, Bootstrap: snapshot, PromptSections: sections, PermissionMode: request.PermissionModeOverride, OmitClaudeMd: request.OmitClaudeMd, TaskDirectory: directory}
+	background := agentcatalog.ResolveTools(agentcatalog.Definition{Name: request.AgentType, Source: request.Source, Fields: request.SelectedAgent}, request.Tools, true, false)
+	detached.backgroundToolNames = map[string]bool{}
+	for _, name := range background.ResolvedTools {
+		detached.backgroundToolNames[name] = true
+	}
 	m.bindAgentImageAuthorization(detached)
 	detached.resolvePermission = m.independentAgentPermissionResolver()
 	detached.restartPrompt = restartPrompt
@@ -87,6 +93,11 @@ func (m *MainPrint) nativeIndependentAgentOptions(scope *cooperative.Scope, requ
 	o.Arguments.AllowedTools = nil
 	o.Arguments.PermissionMode = request.PermissionContext.String("mode")
 	o.Arguments.MaxTurns = math.MaxInt32
+	// These are the parent QueryEngine's public print controls. The Source
+	// Agent query does not inherit them, while its workload ALS does inherit.
+	o.Arguments.MaxBudgetUSD, o.Arguments.TaskBudget = nil, nil
+	o.Arguments.FallbackModel = ""
+	o.Arguments.EnableAuthStatus = false
 	if request.MaxTurns != nil && *request.MaxTurns <= math.MaxInt32 {
 		o.Arguments.MaxTurns = int(*request.MaxTurns)
 	}
@@ -102,4 +113,16 @@ func (m *MainPrint) nativeIndependentAgentOptions(scope *cooperative.Scope, requ
 	o.Output = io.Discard
 	o.OnOutput = func([]byte) error { return nil }
 	return o, nil
+}
+
+func (m *MainPrint) nativeAgentToolAllowed(name string) bool {
+	d := m.options.DetachedAgent
+	return d == nil || d.isBackgrounded == nil || !d.isBackgrounded() || d.backgroundToolNames[name]
+}
+
+func (m *MainPrint) nativeAgentToolFilter() func(string) bool {
+	if d := m.options.DetachedAgent; d != nil && d.isBackgrounded != nil {
+		return m.nativeAgentToolAllowed
+	}
+	return nil
 }

@@ -47,7 +47,7 @@ func (p *NativeSideQuestionModels) Start(caller *Scope, ctx context.Context, pro
 // IsNativeSideQuestion is a read-only current-segment proof for Source callers
 // which must project child identity. A retained parked/finished scope is false.
 func (scope *Scope) IsNativeSideQuestion(owner *Owner) bool {
-	return scope.BelongsTo(owner) && scope.sideContinuation != nil && scope.sideContinuation.owner == owner && scope.sideContinuation.authority != nil && scope.sideContinuation.executing.Load()
+	return scope.BelongsTo(owner) && scope.sideContinuation != nil && scope.sideContinuation.owner == owner && scope.sideContinuation.authority != nil && scope.sideContinuation.dreamAuthority == nil && scope.sideContinuation.executing.Load()
 }
 
 func (p *NativeSideQuestionModels) createContinuation(ctx context.Context, produce func(*Scope) error, complete func(*Scope, error), descendant bool) (*sideQuestionContinuation, error) {

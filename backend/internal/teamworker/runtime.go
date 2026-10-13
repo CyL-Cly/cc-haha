@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -22,6 +21,7 @@ type WorkerRequest struct {
 	ID, WorkDir, Model, Effort, PermissionMode string
 	ProviderID                                 *string
 	Worker                                     Start
+	Resume                                     bool
 }
 type RuntimeOptions struct {
 	Config             *teamstore.Config
@@ -37,10 +37,13 @@ type RuntimeOptions struct {
 	Release            func(context.Context, string, string, func() bool) (bool, error)
 	StopWorker         func(context.Context, string) error
 	// Snapshot updates the real leader's team context and SDK acknowledgment.
-	Snapshot   func(context.Context, string, string, json.RawMessage) error
-	Observe    func(string, func(protocol.JSONObject)) (func(), error)
-	SendLeader func(context.Context, string, string) (bool, error)
-	Log        func(error)
+	Snapshot            func(context.Context, string, string, json.RawMessage) error
+	Observe             func(string, func(protocol.JSONObject)) (func(), error)
+	SendLeader          func(context.Context, string, string) (bool, error)
+	Log                 func(error)
+	StartLeader         func(context.Context, string) error
+	AutoContinueDelays  []time.Duration
+	DependencyWakeDelay time.Duration
 }
 type Runtime struct {
 	options  RuntimeOptions
@@ -52,13 +55,24 @@ type Runtime struct {
 	wg       sync.WaitGroup
 }
 type launch struct {
-	plan            protocol.JSONObject
-	stopped         atomic.Bool
-	released        atomic.Bool
-	mu              sync.Mutex
-	children        []string
-	removeObservers []func()
-	cancel          context.CancelFunc
+	plan                      protocol.JSONObject
+	stopped                   atomic.Bool
+	released                  atomic.Bool
+	mu                        sync.Mutex
+	children                  []string
+	removeObservers           []func()
+	cancel                    context.CancelFunc
+	supervise                 sync.Mutex
+	workers                   map[string]*workerRuntime
+	createdAt                 json.RawMessage
+	permissionMode            string
+	pausedAt, resumeAllowedAt time.Time
+	running                   atomic.Bool
+	startups                  map[string]workerStartup
+}
+type workerStartup struct {
+	cancel context.CancelFunc
+	done   chan struct{}
 }
 type ExecutionInterruptedError struct{ error }
 
@@ -88,11 +102,17 @@ func NewRuntime(o RuntimeOptions) (*Runtime, error) {
 	if o.Validation.PermissionMode == nil || o.Validation.Routing == nil {
 		return nil, errors.New("Team runtime requires original leader permissions and saved-provider routing")
 	}
+	if o.AutoContinueDelays == nil {
+		o.AutoContinueDelays = []time.Duration{15 * time.Second, 45 * time.Second, 120 * time.Second, 300 * time.Second, 600 * time.Second}
+	}
+	if o.DependencyWakeDelay == 0 {
+		o.DependencyWakeDelay = 3 * time.Second
+	}
 	ctx, cancel := context.WithCancel(context.Background())
 	return &Runtime{options: o, launches: map[string]*launch{}, ctx: ctx, cancel: cancel}, nil
 }
 func (r *Runtime) ServiceBindings() teamplan.Runtime {
-	return teamplan.Runtime{Validate: r.Validate, Launch: r.Launch, Stop: r.Stop, IsRunning: func(_ context.Context, id string) (bool, error) { return r.IsRunning(id), nil }, NotifyLeader: r.NotifyLeader}
+	return teamplan.Runtime{Validate: r.Validate, Launch: r.Launch, Stop: r.Stop, IsRunning: func(_ context.Context, id string) (bool, error) { return r.IsRunning(id), nil }, NotifyLeader: r.NotifyLeader, StartLeader: r.options.StartLeader, Rehydrate: r.Rehydrate}
 }
 func (r *Runtime) Validate(ctx context.Context, plan protocol.JSONObject) (protocol.JSONObject, error) {
 	return ValidateRuntime(ctx, plan, r.options.Validation)
@@ -101,7 +121,7 @@ func (r *Runtime) IsRunning(id string) bool {
 	r.mu.Lock()
 	l := r.launches[id]
 	r.mu.Unlock()
-	return l != nil && !l.stopped.Load() && r.options.Connected(l.plan.String("sessionId"))
+	return l != nil && !l.stopped.Load() && l.running.Load()
 }
 
 // StartBarrier preserves the original sequential prepare/all-ready/release
@@ -247,9 +267,11 @@ func (r *Runtime) Launch(ctx context.Context, plan protocol.JSONObject) (result 
 		r.mu.Unlock()
 		return result, errors.New("Team leader must be connected before launching")
 	}
-	l := &launch{plan: plan.Clone(), children: []string{}, removeObservers: []func(){}}
+	l := &launch{plan: plan.Clone(), children: []string{}, removeObservers: []func(){}, workers: map[string]*workerRuntime{}}
 	r.launches[plan.String("planId")] = l
 	r.mu.Unlock()
+	l.supervise.Lock()
+	defer l.supervise.Unlock()
 	executionStarted := false
 	defer func() {
 		if failure != nil {
@@ -263,6 +285,7 @@ func (r *Runtime) Launch(ctx context.Context, plan protocol.JSONObject) (result 
 	if err != nil {
 		return result, err
 	}
+	l.permissionMode = permissionMode
 	var createdAt json.RawMessage
 	list := teamstore.SanitizeName(plan.String("teamName"))
 	if err = r.options.Tasks.WithTeamLifecycleLock(list, func() error {
@@ -281,6 +304,15 @@ func (r *Runtime) Launch(ctx context.Context, plan protocol.JSONObject) (result 
 		return result, err
 	}
 	members := rows(approved.Get("members"))
+	l.createdAt = append(json.RawMessage(nil), createdAt...)
+	startingTasks, err := r.options.Tasks.List(list)
+	if err != nil {
+		return result, err
+	}
+	waiting := map[string]bool{}
+	for _, member := range members {
+		waiting[member.String("id")] = waitsForDependencies(member.String("name"), startingTasks)
+	}
 	memberIDs := protocol.NewJSONObject()
 	_, err = StartBarrier(ctx, members, func(ctx context.Context, member protocol.JSONObject) (string, error) {
 		if r.cancelled(l) {
@@ -294,6 +326,7 @@ func (r *Runtime) Launch(ctx context.Context, plan protocol.JSONObject) (result 
 		l.children = append(l.children, id)
 		l.mu.Unlock()
 		memberIDs.Set(member.String("id"), raw(id))
+		l.workers[member.String("id")] = &workerRuntime{member: member.Clone(), id: id, woken: map[string]bool{}}
 		snapshot := object(member.Get("agentSnapshot"))
 		if !snapshot.IsObject() {
 			return "", fmt.Errorf("Missing approved preset for %s", member.String("name"))
@@ -341,6 +374,10 @@ func (r *Runtime) Launch(ctx context.Context, plan protocol.JSONObject) (result 
 					}
 					runtime := object(entry.Get("runtime"))
 					next := protocol.NewJSONObject(protocol.JSONField{Name: "agentId", Value: raw(entry.String("name") + "@" + plan.String("teamName"))}, protocol.JSONField{Name: "name", Value: entry.Get("name")}, protocol.JSONField{Name: "agentType", Value: entry.Get("agentType")}, protocol.JSONField{Name: "model", Value: runtime.Get("modelId")}, protocol.JSONField{Name: "providerId", Value: runtime.Get("providerId")}, protocol.JSONField{Name: "providerName", Value: entry.Get("providerName")}, protocol.JSONField{Name: "effortLevel", Value: runtime.Get("effortLevel")}, protocol.JSONField{Name: "planMemberId", Value: entry.Get("id")}, protocol.JSONField{Name: "joinedAt", Value: raw(r.options.Now().UnixMilli())}, protocol.JSONField{Name: "tmuxPaneId", Value: raw("")}, protocol.JSONField{Name: "cwd", Value: plan.Get("workDir")}, protocol.JSONField{Name: "subscriptions", Value: raw([]string{})}, protocol.JSONField{Name: "sessionId", Value: memberIDs.Get(entry.String("id"))}, protocol.JSONField{Name: "backendType", Value: raw("process")}, protocol.JSONField{Name: "isActive", Value: raw(true)})
+					if waiting[entry.String("id")] {
+						next.Set("isActive", raw(false))
+						next.Set("awaitingDependencies", raw(true))
+					}
 					entries = append(entries, next)
 				}
 				team.Set("members", raw(entries))
@@ -363,30 +400,20 @@ func (r *Runtime) Launch(ctx context.Context, plan protocol.JSONObject) (result 
 		l.mu.Lock()
 		l.removeObservers = append(l.removeObservers, remove)
 		l.mu.Unlock()
-		assigned := []protocol.JSONObject{}
-		for _, task := range rows(approved.Get("tasks")) {
-			if task.String("ownerId") == member.String("id") {
-				next := task.Clone()
-				next.Set("id", raw(mapping[task.String("id")]))
-				deps := []string{}
-				for _, dep := range stringsIn(task.Get("dependencies")) {
-					deps = append(deps, mapping[dep])
-				}
-				next.Set("dependencies", raw(deps))
-				assigned = append(assigned, next)
-			}
-		}
-		prefix := ""
-		if value := object(member.Get("agentSnapshot")).String("initialPrompt"); value != "" {
-			prefix = value + "\n"
-		}
-		text := prefix + member.String("prompt") + "\n\nApproved shared tasks (use TaskGet/TaskUpdate; respect dependencies):\n" + string(raw(assigned))
+		l.workers[member.String("id")].removeObserver = remove
+		text := memberBrief(member, members, rows(approved.Get("tasks")), mapping)
 		return r.options.Tasks.WithTeamLifecycleLock(list, func() error {
 			if l.stopped.Load() || !r.authorized(plan) {
 				return errors.New("Team launch authorization has been revoked")
 			}
 			executionStarted = true
 			l.released.Store(true)
+			worker := l.workers[member.String("id")]
+			worker.released = true
+			if waiting[member.String("id")] {
+				worker.brief = text
+				return nil
+			}
 			sent, err := r.options.Release(ctx, id, text, func() bool { return !l.stopped.Load() })
 			if err != nil {
 				return err
@@ -410,7 +437,8 @@ func (r *Runtime) Launch(ctx context.Context, plan protocol.JSONObject) (result 
 	r.wg.Add(1)
 	r.mu.Unlock()
 	go r.poll(pollctx, l, members, memberIDs, createdAt)
-	if _, err = r.options.SendLeader(ctx, plan.String("sessionId"), fmt.Sprintf("Approved team %s is running. Members and their shared tasks are ready. Continue coordinating the approved team; do not spawn these members again.", plan.String("teamName"))); err != nil {
+	l.running.Store(true)
+	if _, err = r.options.SendLeader(ctx, plan.String("sessionId"), launchNotice(plan.String("teamName"), members, waiting)); err != nil {
 		return result, err
 	}
 	return protocol.NewJSONObject(protocol.JSONField{Name: "memberIds", Value: raw(memberIDs)}), nil
@@ -426,42 +454,16 @@ func (r *Runtime) observeResult(l *launch, member protocol.JSONObject, id string
 	r.mu.Unlock()
 	go func() {
 		defer r.wg.Done()
-		teamName := l.plan.String("teamName")
-		if err := r.options.Tasks.WithTeamLifecycleLock(teamstore.SanitizeName(teamName), func() error {
-			team := r.options.Config.Read(teamName)
-			if team == nil || number(team.Get("createdAt")) != number(createdAt) {
-				return nil
-			}
-			entries := rows(team.Get("members"))
-			for i, entry := range entries {
-				if entry.String("sessionId") == id {
-					entry.Set("isActive", raw(false))
-					if !r.options.Connected(id) {
-						entry.Set("terminated", raw(true))
-					}
-					entries[i] = entry
-					team.Set("members", raw(entries))
-					return r.options.Config.Write(teamName, *team)
-				}
-			}
-			return nil
-		}); err != nil {
-			r.options.Log(fmt.Errorf("[TeamPlanRuntime] cannot update idle member: %w", err))
+		l.supervise.Lock()
+		defer l.supervise.Unlock()
+		if l.stopped.Load() {
+			return
 		}
-		reason := "available"
-		if !r.options.Connected(id) || string(message.Get("is_error")) == "true" {
-			reason = "failed"
-		}
-		notice := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: raw("idle_notification")}, protocol.JSONField{Name: "from", Value: member.Get("name")}, protocol.JSONField{Name: "timestamp", Value: raw(r.options.Now().UTC().Format("2006-01-02T15:04:05.000Z"))}, protocol.JSONField{Name: "idleReason", Value: raw(reason)})
-		if value := message.Get("result"); isString(value) {
-			units, _ := protocol.DecodeJavaScriptJSONString(value)
-			if len(units) > 1000 {
-				units = units[:1000]
+		worker := l.workers[member.String("id")]
+		if worker != nil {
+			if err := r.handleWorkerResult(r.ctx, l, worker, message); err != nil {
+				r.options.Log(err)
 			}
-			notice.Set("summary", protocol.QuoteJavaScriptUTF16(units))
-		}
-		if err := r.options.Mailbox.Write("team-lead", teamName, protocol.NewJSONObject(protocol.JSONField{Name: "from", Value: member.Get("name")}, protocol.JSONField{Name: "timestamp", Value: raw(r.options.Now().UTC().Format("2006-01-02T15:04:05.000Z"))}, protocol.JSONField{Name: "text", Value: raw(string(raw(notice)))})); err != nil {
-			r.options.Log(err)
 		}
 	}()
 }
@@ -493,69 +495,9 @@ func (r *Runtime) Poll(ctx context.Context, planID string, members []protocol.JS
 	if l == nil || l.stopped.Load() {
 		return nil
 	}
-	plan := l.plan
-	teamName := plan.String("teamName")
-	team := r.options.Config.Read(teamName)
-	if !r.options.Connected(plan.String("sessionId")) || team == nil || number(team.Get("createdAt")) != number(createdAt) {
-		return r.Stop(ctx, planID)
-	}
-	for _, member := range members {
-		id := ids.String(member.String("id"))
-		if !r.options.Connected(id) {
-			continue
-		}
-		unread, err := r.options.Mailbox.Unread(member.String("name"), teamName)
-		if err != nil {
-			return err
-		}
-		if len(unread) == 0 {
-			continue
-		}
-		if err = r.options.Tasks.WithTeamLifecycleLock(teamstore.SanitizeName(teamName), func() error {
-			team := r.options.Config.Read(teamName)
-			if team == nil || number(team.Get("createdAt")) != number(createdAt) {
-				return errors.New("Team generation has ended")
-			}
-			entries := rows(team.Get("members"))
-			for i, entry := range entries {
-				if entry.String("sessionId") == id {
-					entry.Set("isActive", raw(true))
-					entries[i] = entry
-					team.Set("members", raw(entries))
-					return r.options.Config.Write(teamName, *team)
-				}
-			}
-			return nil
-		}); err != nil {
-			return err
-		}
-		texts := []string{}
-		messageIDs, legacy := map[string]bool{}, map[string]bool{}
-		for _, value := range unread {
-			message := object(value)
-			texts = append(texts, `<teammate-message teammate_id="`+message.String("from")+`">`+"\n"+message.String("text")+"\n</teammate-message>")
-			if message.String("id") != "" {
-				messageIDs[message.String("id")] = true
-			} else {
-				legacy[string(raw([]json.RawMessage{message.Get("from"), message.Get("timestamp"), message.Get("text")}))] = true
-			}
-		}
-		sent, err := r.options.Release(ctx, id, strings.Join(texts, "\n"), nil)
-		if err != nil {
-			return err
-		}
-		if sent {
-			if err = r.options.Mailbox.MarkMatching(member.String("name"), teamName, func(message protocol.JSONObject) bool {
-				if message.String("id") != "" {
-					return messageIDs[message.String("id")]
-				}
-				return legacy[string(raw([]json.RawMessage{message.Get("from"), message.Get("timestamp"), message.Get("text")}))]
-			}); err != nil {
-				return err
-			}
-		}
-	}
-	return nil
+	l.supervise.Lock()
+	defer l.supervise.Unlock()
+	return r.superviseLaunch(ctx, l)
 }
 func (r *Runtime) Stop(ctx context.Context, id string) error {
 	r.mu.Lock()
@@ -573,7 +515,19 @@ func (r *Runtime) Stop(ctx context.Context, id string) error {
 	l.mu.Lock()
 	children := append([]string{}, l.children...)
 	remove := append([]func(){}, l.removeObservers...)
+	startups := []workerStartup{}
+	for _, startup := range l.startups {
+		startup.cancel()
+		startups = append(startups, startup)
+	}
 	l.mu.Unlock()
+	for _, startup := range startups {
+		select {
+		case <-startup.done:
+		case <-ctx.Done():
+			return context.Cause(ctx)
+		}
+	}
 	for _, stop := range remove {
 		if stop != nil {
 			stop()
@@ -645,6 +599,10 @@ func (r *Runtime) NotifyLeader(ctx context.Context, plan protocol.JSONObject, ki
 	return err
 }
 func (r *Runtime) StopParent(ctx context.Context, parent string) error {
+	ended, failure := r.options.Plans.FindForSession(parent)
+	if failure != nil {
+		return failure
+	}
 	stopOwned := func() {
 		r.mu.Lock()
 		ids := []string{}
@@ -694,6 +652,25 @@ func (r *Runtime) StopParent(ctx context.Context, parent string) error {
 		}
 	}
 	stopOwned()
+	if ended != nil && ended.String("state") == "running" {
+		latest, e := r.options.Plans.Read(ended.String("teamName"))
+		if e != nil {
+			return e
+		}
+		if latest != nil && latest.String("planId") == ended.String("planId") && latest.String("state") == "running" {
+			_, e = r.options.Plans.Mutate(latest.String("teamName"), teamplan.CurrentIdentity(*latest), func(v protocol.JSONObject) (protocol.JSONObject, error) {
+				v.Set("state", raw("interrupted"))
+				status := object(v.Get("launch"))
+				status.Set("status", raw("failed"))
+				status.Set("error", raw("The team was stopped."))
+				v.Set("launch", raw(status))
+				return v, nil
+			})
+			if e != nil {
+				return e
+			}
+		}
+	}
 	return nil
 }
 func (r *Runtime) Close(ctx context.Context) error {

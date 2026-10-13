@@ -577,7 +577,13 @@ func orderedFactory(factory *messages.Factory, assistant bool) (*Message, error)
 	item, err := parse(raw)
 	return &Message{item}, err
 }
-func (reducer *Reducer) Deserialize(history []*Message) (result Result, err error) {
+
+type DeserializeOptions struct{ Truncated bool }
+
+func (reducer *Reducer) Deserialize(history []*Message) (Result, error) {
+	return reducer.DeserializeWithOptions(history, DeserializeOptions{})
+}
+func (reducer *Reducer) DeserializeWithOptions(history []*Message, options DeserializeOptions) (result Result, err error) {
 	defer func() {
 		if err != nil {
 			reducer.options.OnError(err)
@@ -599,6 +605,9 @@ func (reducer *Reducer) Deserialize(history []*Message) (result Result, err erro
 	filtered, err = reducer.whitespace(filtered)
 	if err != nil {
 		return result, err
+	}
+	if options.Truncated {
+		return Result{Messages: filtered, TurnInterruptionState: Interruption{Kind: "none"}}, nil
 	}
 	state, err := interruption(filtered)
 	if err != nil {

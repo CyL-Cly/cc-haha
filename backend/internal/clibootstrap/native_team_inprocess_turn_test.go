@@ -145,7 +145,11 @@ func TestActualInProcessTeammateTwoFreshSidechainsShareTasksMessagesHistoryAndPa
 		t.Fatal(err)
 	}
 	inbox, err := os.ReadFile(filepath.Join(parent.options.Native.Environment["CLAUDE_CONFIG_DIR"], "teams", "MyTeam_", "inboxes", "team-lead.json"))
-	if err != nil || !strings.Contains(string(inbox), `"from": "worker"`) || !strings.Contains(string(inbox), `"color": "blue"`) || !strings.Contains(string(inbox), "second actual turn") {
+	var envelopes []protocol.JSONObject
+	if err == nil {
+		err = json.Unmarshal(inbox, &envelopes)
+	}
+	if err != nil || len(envelopes) != 2 || envelopes[1].String("from") != "worker" || envelopes[1].String("color") != "blue" || envelopes[1].String("text") != "second actual turn" {
 		t.Fatalf("actual physical teammate mailbox %s %v", inbox, err)
 	}
 }

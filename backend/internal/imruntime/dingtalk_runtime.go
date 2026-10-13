@@ -79,7 +79,8 @@ func NewDingTalkRuntime(ctx context.Context, o DingTalkRuntimeOptions) (*DingTal
 		return nil, err
 	}
 	r := &DingTalkRuntime{platformRuntimeCore: core, chats: map[string]*dingTalkRuntimeChat{}, permissionChats: map[string]string{}}
-	core.Attachments = NewDingTalkAttachmentStore(o.Config.Home)
+	core.Attachments = NewDingTalkConfiguredAttachmentStore(o.Config)
+	core.Attachments.Lifecycle = core.migration
 	core.Attachments.Now = core.Now
 	if o.NewAPI == nil {
 		o.NewAPI = NewDingTalkAPI
@@ -441,6 +442,11 @@ func (r *DingTalkRuntime) HandleCardCallback(value json.RawMessage) error {
 	return next(r.ctx)
 }
 func (r *DingTalkRuntime) PrepareCardCallback(ctx context.Context, value json.RawMessage) (func(context.Context) error, error) {
+	done, admitted := r.migration.Admit()
+	if !admitted {
+		return nil, nil
+	}
+	defer done(nil)
 	action := ParseDingTalkPermissionCardAction(value)
 	if action == nil {
 		return nil, nil
@@ -867,6 +873,11 @@ func (r *DingTalkRuntime) HandleRobotMessage(value json.RawMessage) error {
 	return next(r.ctx)
 }
 func (r *DingTalkRuntime) PrepareRobotMessage(ctx context.Context, value json.RawMessage) (func(context.Context) error, error) {
+	done, admitted := r.migration.Admit()
+	if !admitted {
+		return nil, nil
+	}
+	defer done(nil)
 	if !IsDingTalkDirectMessage(value) {
 		return nil, nil
 	}

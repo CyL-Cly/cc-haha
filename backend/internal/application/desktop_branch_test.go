@@ -101,8 +101,10 @@ func TestActualDesktopForkResumesSameCanonicalHarnessThenWritesAndReads(t *testi
 			}
 			if v.String("type") == "message_complete" {
 				completed = true
+				requestDesktopSessionSync(t, ws)
 			}
-			if completed && v.String("type") == "session_state" && v.String("turnState") == "idle" {
+			if completed && v.String("type") == "session_state" {
+				assertDesktopIdleSnapshot(t, v)
 				return
 			}
 		}

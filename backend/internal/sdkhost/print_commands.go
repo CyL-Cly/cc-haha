@@ -93,6 +93,8 @@ type ControlCommand struct {
 	// Terminal metadata comes from the same definitions. The original SDK
 	// control protocol deliberately excludes these UI discriminants.
 	Kind              string   `json:"-"`
+	Sensitive         bool     `json:"-"`
+	Aliases           []string `json:"-"`
 	RequiresArguments bool     `json:"-"`
 	ArgumentNames     []string `json:"-"`
 	Hidden            bool     `json:"-"`
@@ -115,7 +117,7 @@ func projectControlCommands(all []printCommandDefinition) []ControlCommand {
 		descriptionJSON := controlCommandDescriptionJSON(c)
 		var description string
 		_ = json.Unmarshal(descriptionJSON, &description)
-		out = append(out, ControlCommand{Name: name, Description: description, ArgumentHint: c.hint, rawName: nameJSON, rawDescription: descriptionJSON, Kind: c.kind, RequiresArguments: len(c.argNames) > 0, ArgumentNames: append([]string(nil), c.argNames...), Hidden: c.hidden})
+		out = append(out, ControlCommand{Name: name, Description: description, ArgumentHint: c.hint, rawName: nameJSON, rawDescription: descriptionJSON, Kind: c.kind, Aliases: append([]string(nil), c.aliases...), RequiresArguments: len(c.argNames) > 0, ArgumentNames: append([]string(nil), c.argNames...), Hidden: c.hidden})
 	}
 	return out
 }
@@ -170,8 +172,16 @@ func (s *PrintRegistry) RefreshMigratedCommands() {
 	s.commands = filterEnabledPrintCommands(migratedPrintCommands(), s.environment)
 	s.catalog.Commands = projectSystemCommands(s.commands)
 }
-func (s *PrintRegistry) ControlCommands() []ControlCommand { return projectControlCommands(s.commands) }
+func (s *PrintRegistry) ControlCommands() []ControlCommand {
+	if s.slashCommandsDisabled {
+		return []ControlCommand{}
+	}
+	return projectControlCommands(s.commands)
+}
 func (s *PrintRegistry) requireCostCommand() error {
+	if s.slashCommandsDisabled {
+		return cap("/cost absent from current real command registry")
+	}
 	for _, c := range s.commands {
 		if c.name == "cost" {
 			return nil

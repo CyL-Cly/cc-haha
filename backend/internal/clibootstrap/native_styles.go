@@ -18,6 +18,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/skillcommands"
 	"github.com/NanmiCoder/cc-haha/backend/internal/storage"
 	"github.com/NanmiCoder/cc-haha/backend/internal/systemprompt"
+	"github.com/NanmiCoder/cc-haha/backend/internal/windowshell"
 )
 
 // NativeProcessSettings owns the server process's complete CLI settings policy.
@@ -46,6 +47,7 @@ type NativeProcessSettings struct {
 	closed             bool
 	agentModelResolver NativeAgentMainLoopModelResolver
 	mergeCcHahaEnv     func(protocol.JSONObject) (protocol.JSONObject, error)
+	shells             *windowshell.Resolver
 }
 
 func NewNativeProcessSettings(n *NativeBoundary, platform string, sources State, stores ...*storage.Store) (*NativeProcessSettings, error) {

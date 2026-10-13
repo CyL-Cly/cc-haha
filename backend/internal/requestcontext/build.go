@@ -62,7 +62,8 @@ var supportedHostEnvironment = map[string]bool{
 	"API_TIMEOUT_MS": true, "CLAUDE_CODE_ENTRYPOINT": true, "CLAUDE_AGENT_SDK_VERSION": true, "CLAUDE_AGENT_SDK_CLIENT_APP": true,
 	"CLAUDE_CODE_CONTAINER_ID": true, "CLAUDE_CODE_REMOTE_SESSION_ID": true, "CLAUDE_CODE_ADDITIONAL_PROTECTION": true,
 	"CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST": true, "CC_HAHA_LOCAL_ACCESS_TOKEN": true,
-	"CLAUDE_CODE_EXTRA_BODY": true, "CLAUDE_CODE_EXTRA_METADATA": true, "CLAUDE_CODE_MAX_OUTPUT_TOKENS": true,
+	"CLAUDE_CODE_ACCOUNT_UUID": true,
+	"CLAUDE_CODE_EXTRA_BODY":   true, "CLAUDE_CODE_EXTRA_METADATA": true, "CLAUDE_CODE_MAX_OUTPUT_TOKENS": true,
 	"CLAUDE_CODE_PROVIDER_MAX_OUTPUT_TOKENS": true, "CLAUDE_CODE_DISABLE_THINKING": true, "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING": true,
 	"CC_HAHA_SEND_DISABLED_THINKING": true, "DISABLE_PROMPT_CACHING": true, "CLAUDE_CODE_ATTRIBUTION_HEADER": true,
 	"ANTHROPIC_BETAS": true, "CLAUDE_CODE_ALWAYS_ENABLE_EFFORT": true, "CLAUDE_CODE_EFFORT_LEVEL": true,
@@ -333,14 +334,22 @@ func (prepared *PreparedContext) BuildAttempt(attempt AttemptOptions) (*Result, 
 	if !boundClaude && strings.Contains(strings.ToLower(input.Options.Model), "[1m]") && !envTrue(input.Host.Env["CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS"]) {
 		betas = append(betas, "context-1m-2025-08-07")
 	}
+	if !boundClaude && input.Host.Profile == NativeDirectRelayProfile && input.Host.NativeThinkingSummaryBeta != nil && !nativeCustomBetaRelay(input.Host.Env) && !input.Host.NativeVertexBound && !input.Host.NativeBedrockBound {
+		betas, err = DirectCountingBetas(input.Options.Model, input.Host.Env, protocol.NewJSONObject())
+		if err != nil {
+			return nil, err
+		}
+	}
+	betas = insertThinkingSummaryBeta(betas, input.Host.NativeThinkingSummaryBeta)
+	if input.Host.NativeThinkingSummaryBeta != nil && !nativeCustomBetaRelay(input.Host.Env) && (strings.HasPrefix(input.Options.QuerySource, "repl_main_thread") || strings.HasPrefix(input.Options.QuerySource, "agent:") || input.Options.QuerySource == "sdk" || input.Options.QuerySource == "hook_agent" || input.Options.QuerySource == "verification_agent") {
+		betas = appendUnique(betas, "claude-code-20250219")
+	}
 	for _, raw := range strings.Split(input.Host.Env["ANTHROPIC_BETAS"], ",") {
 		if value := trim(raw); value != "" {
 			betas = appendUnique(betas, value)
 		}
 	}
-	for _, value := range input.Host.SDKBetas {
-		betas = appendUnique(betas, value)
-	}
+	betas = MergeSDKBetas(betas, input.Host.SDKBetas, nativeCustomBetaRelay(input.Host.Env))
 	if input.Host.NativeVertexBound {
 		betas, err = nativeVertexRequestBetas(input)
 		if err != nil {
@@ -362,6 +371,7 @@ func (prepared *PreparedContext) BuildAttempt(attempt AttemptOptions) (*Result, 
 	}
 	if input.Host.Profile == NativeDirectRelayProfile {
 		betas = nativeConfigureEffort(input, &output, betas)
+		betas = configureTaskBudget(input, &output, betas)
 	} else if envTrue(input.Host.Env["CLAUDE_CODE_ALWAYS_ENABLE_EFFORT"]) && output.Get("effort") == nil {
 		effort, numeric := appliedEffort(input)
 		if !numeric && (!envTrue(input.Host.Env["CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS"]) || localEffortProxy(input.Host.Env["ANTHROPIC_BASE_URL"])) {

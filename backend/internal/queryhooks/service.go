@@ -34,18 +34,19 @@ type Options struct {
 	Commands  *CommandBindings
 	// MergedSettings is the actual shared startup getInitialSettings producer.
 	// When absent, older finite resolver callers retain their original file-source profile.
-	MergedSettings       func() (*protocol.JSONObject, error)
-	PolicySettings       func() (*protocol.JSONObject, error)
-	PluginHooks          func() ([]protocol.JSONObject, error)
-	Profile              string
-	Settings             *clisettings.Service
-	SettingsState        *clisettings.State
-	OriginalEnv          map[string]string
-	MainSessionID        string
-	CurrentSessionID     func() string
-	SessionStartMetadata func(*cooperative.Scope) (json.RawMessage, json.RawMessage, error)
-	SessionStartBase     func(*cooperative.Scope, string) (protocol.JSONObject, error)
-	UpdateWatchPaths     func(*cooperative.Scope, []json.RawMessage) error
+	MergedSettings        func() (*protocol.JSONObject, error)
+	PolicySettings        func() (*protocol.JSONObject, error)
+	PluginHooks           func() ([]protocol.JSONObject, error)
+	Profile               string
+	Settings              *clisettings.Service
+	SettingsState         *clisettings.State
+	OriginalEnv           map[string]string
+	MainSessionID         string
+	CurrentSessionID      func() string
+	SessionStartMetadata  func(*cooperative.Scope) (json.RawMessage, json.RawMessage, error)
+	ForceSyncSessionStart bool
+	SessionStartBase      func(*cooperative.Scope, string) (protocol.JSONObject, error)
+	UpdateWatchPaths      func(*cooperative.Scope, []json.RawMessage) error
 	// The actual source policy/flag/plugin capabilities must be resolved by the
 	// owning startup. This slice admits only their explicit empty external state.
 	PolicyAbsent, FlagAbsent, PluginBaseAbsent bool
@@ -55,6 +56,7 @@ type Options struct {
 // Context borrows the real outer history/system/context objects. None is a
 // Source-prepared model request, and accepted live envelopes remain live.
 type Context struct {
+	ForceSyncExecution                                  bool
 	PromptToolNames                                     *[]string
 	HookIndex                                           *int
 	HookID, HookEvent, HookName                         string
@@ -72,6 +74,7 @@ type Context struct {
 	ComputerUseInactive, GoalInactive, TeammateInactive bool
 	CleanupComputerUse                                  func(context.Context) error
 	TeammateStop                                        func(context.Context, Context, queryloop.Emit) (queryloop.StopDecision, error)
+	StartAutoDream                                      func(CacheSafeParams) error
 }
 type CacheSafeParams struct {
 	Context  Context
@@ -215,6 +218,15 @@ func (service *Service) StopHooks(ctx context.Context, call Context, emit queryl
 	}
 	service.mu.Unlock()
 	// Source saves the actual context before cleanup, then reads Stop hooks
+	if call.AgentID == "" && call.StartAutoDream != nil {
+		messages := append([]queryloop.Message(nil), call.History...)
+		for _, assistant := range call.Assistants {
+			messages = append(messages, queryloop.Message{Assistant: assistant})
+		}
+		if err := call.StartAutoDream(CacheSafeParams{call, messages}); err != nil {
+			return queryloop.StopDecision{}, err
+		}
+	}
 	// afterward. An owner-native await must never retain the resolver mutex.
 	if !call.ComputerUseInactive && call.AgentID == "" {
 		_ = call.CleanupComputerUse(ctx)

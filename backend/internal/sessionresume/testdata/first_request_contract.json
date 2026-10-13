@@ -87,7 +87,7 @@
               ],
               [
                 "user-agent",
-                "claude-cli/2.1.281 (external, cli)"
+                "claude-cli/2.1.288 (external, cli)"
               ],
               [
                 "x-api-key",
@@ -115,7 +115,7 @@
               ],
               [
                 "x-stainless-package-version",
-                "0.80.0"
+                "0.128.0"
               ],
               [
                 "x-stainless-retry-count",
@@ -134,7 +134,7 @@
                 "600"
               ]
             ],
-            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"summary\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new answer\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.a0c; cc_entrypoint=unknown; cch=6a093;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"summary\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"new answer\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.288.951; cc_entrypoint=cli; cch=d6080;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
           }
         ]
       },
@@ -269,7 +269,7 @@
               ],
               [
                 "user-agent",
-                "claude-cli/2.1.281 (external, cli)"
+                "claude-cli/2.1.288 (external, cli)"
               ],
               [
                 "x-api-key",
@@ -297,7 +297,7 @@
               ],
               [
                 "x-stainless-package-version",
-                "0.80.0"
+                "0.128.0"
               ],
               [
                 "x-stainless-retry-count",
@@ -316,7 +316,7 @@
                 "600"
               ]
             ],
-            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"01234567 original question\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original answer\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.1b6; cc_entrypoint=unknown; cch=25470;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"01234567 original question\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original answer\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.288.d10; cc_entrypoint=cli; cch=0abeb;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
           }
         ]
       },
@@ -440,7 +440,7 @@
               ],
               [
                 "user-agent",
-                "claude-cli/2.1.281 (external, cli)"
+                "claude-cli/2.1.288 (external, cli)"
               ],
               [
                 "x-api-key",
@@ -468,7 +468,7 @@
               ],
               [
                 "x-stainless-package-version",
-                "0.80.0"
+                "0.128.0"
               ],
               [
                 "x-stainless-retry-count",
@@ -487,7 +487,7 @@
                 "600"
               ]
             ],
-            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"original interrupted\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"No response requested.\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.eab; cc_entrypoint=unknown; cch=14149;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"original interrupted\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"No response requested.\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.288.d7a; cc_entrypoint=cli; cch=c427e;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
           }
         ]
       },
@@ -643,7 +643,7 @@
               ],
               [
                 "user-agent",
-                "claude-cli/2.1.281 (external, cli)"
+                "claude-cli/2.1.288 (external, cli)"
               ],
               [
                 "x-api-key",
@@ -671,7 +671,7 @@
               ],
               [
                 "x-stainless-package-version",
-                "0.80.0"
+                "0.128.0"
               ],
               [
                 "x-stainless-retry-count",
@@ -690,7 +690,7 @@
                 "600"
               ]
             ],
-            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"0123\\ud80067 tail\"},{\"role\":\"assistant\",\"content\":[{\"future\":{\"z\":1,\"a\":\"\\udc00\"},\"type\":\"text\",\"text\":\"original answer\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.584; cc_entrypoint=unknown; cch=52265;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"0123\\ud80067 tail\"},{\"role\":\"assistant\",\"content\":[{\"future\":{\"z\":1,\"a\":\"\\udc00\"},\"type\":\"text\",\"text\":\"original answer\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.288.07d; cc_entrypoint=cli; cch=20cdd;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
           }
         ]
       },
@@ -870,7 +870,7 @@
               ],
               [
                 "user-agent",
-                "claude-cli/2.1.281 (external, cli)"
+                "claude-cli/2.1.288 (external, cli)"
               ],
               [
                 "x-api-key",
@@ -898,7 +898,7 @@
               ],
               [
                 "x-stainless-package-version",
-                "0.80.0"
+                "0.128.0"
               ],
               [
                 "x-stainless-retry-count",
@@ -917,7 +917,7 @@
                 "600"
               ]
             ],
-            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"original tool\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"tool_use\",\"id\":\"t\",\"name\":\"UnknownTool\",\"input\":{\"z\":1,\"a\":\"\\ud800\"}}]},{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"persisted read\"},{\"type\":\"text\",\"text\":\"Continue from where you left off.\"}]},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"No response requested.\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.eab; cc_entrypoint=unknown; cch=4575d;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"original tool\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"tool_use\",\"id\":\"t\",\"name\":\"UnknownTool\",\"input\":{\"z\":1,\"a\":\"\\ud800\"}}]},{\"role\":\"user\",\"content\":[{\"type\":\"tool_result\",\"tool_use_id\":\"t\",\"content\":\"persisted read\"},{\"type\":\"text\",\"text\":\"Continue from where you left off.\"}]},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"No response requested.\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.288.d7a; cc_entrypoint=cli; cch=0a8ac;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
           }
         ]
       },
@@ -1073,7 +1073,7 @@
               ],
               [
                 "user-agent",
-                "claude-cli/2.1.281 (external, cli)"
+                "claude-cli/2.1.288 (external, cli)"
               ],
               [
                 "x-api-key",
@@ -1101,7 +1101,7 @@
               ],
               [
                 "x-stainless-package-version",
-                "0.80.0"
+                "0.128.0"
               ],
               [
                 "x-stainless-retry-count",
@@ -1120,7 +1120,7 @@
                 "600"
               ]
             ],
-            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"auto original\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original answer\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.e33; cc_entrypoint=unknown; cch=15826;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"auto original\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original answer\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.288.66b; cc_entrypoint=cli; cch=20e32;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
           }
         ]
       },
@@ -1256,7 +1256,7 @@
               ],
               [
                 "user-agent",
-                "claude-cli/2.1.281 (external, cli)"
+                "claude-cli/2.1.288 (external, cli)"
               ],
               [
                 "x-api-key",
@@ -1284,7 +1284,7 @@
               ],
               [
                 "x-stainless-package-version",
-                "0.80.0"
+                "0.128.0"
               ],
               [
                 "x-stainless-retry-count",
@@ -1303,7 +1303,7 @@
                 "600"
               ]
             ],
-            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"bubble original\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original answer\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.3db; cc_entrypoint=unknown; cch=802b1;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"bubble original\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"original answer\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.288.072; cc_entrypoint=cli; cch=bc1ae;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
           }
         ]
       },
@@ -1455,7 +1455,7 @@
               ],
               [
                 "user-agent",
-                "claude-cli/2.1.281 (external, cli)"
+                "claude-cli/2.1.288 (external, cli)"
               ],
               [
                 "x-api-key",
@@ -1483,7 +1483,7 @@
               ],
               [
                 "x-stainless-package-version",
-                "0.80.0"
+                "0.128.0"
               ],
               [
                 "x-stainless-retry-count",
@@ -1502,7 +1502,7 @@
                 "600"
               ]
             ],
-            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"original tool\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"No response requested.\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.281.eab; cc_entrypoint=unknown; cch=f421a;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
+            "body": "{\"model\":\"fixture-model\",\"messages\":[{\"role\":\"user\",\"content\":\"original tool\"},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"No response requested.\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"next original prompt\\ud800\",\"cache_control\":{\"type\":\"ephemeral\"}}]}],\"system\":[{\"type\":\"text\",\"text\":\"x-anthropic-billing-header: cc_version=2.1.288.d7a; cc_entrypoint=cli; cch=f4b53;\"},{\"type\":\"text\",\"text\":\"You are a Claude agent, built on Anthropic's Claude Agent SDK.\",\"cache_control\":{\"type\":\"ephemeral\"}}],\"tools\":[],\"metadata\":{\"user_id\":\"{\\\"device_id\\\":\\\"fixture-resume-device\\\",\\\"account_uuid\\\":\\\"\\\",\\\"session_id\\\":\\\"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\\\"}\"},\"max_tokens\":32000,\"temperature\":1,\"stream\":true}"
           }
         ]
       },

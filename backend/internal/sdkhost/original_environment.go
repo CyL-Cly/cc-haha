@@ -52,14 +52,14 @@ func requestEnvironmentForProfile(original map[string]string, neutral bool) (map
 // Preserve presence and raw values. Only the actual partial-stream error branch
 // needs an implemented recovery policy; ordinary success must remain reachable.
 func producerPolicyFromOriginalEnvironment(original map[string]string, native ...bool) (*modelyield.StreamErrorPolicy, error) {
+	if len(native) > 0 && native[0] {
+		return modelyield.PreserveNativeStreamErrorPolicyOriginalEnvironment(original), nil
+	}
 	policy := map[string]string{}
 	for _, key := range []string{"CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK", "CLAUDE_STREAM_TRANSIENT_RETRY_MAX", "CLAUDE_ENABLE_STREAM_WATCHDOG"} {
 		if value, present := original[key]; present {
 			policy[key] = value
 		}
-	}
-	if len(native) > 0 && native[0] {
-		return modelyield.PreserveNativeStreamErrorPolicyOriginalEnvironment(policy), nil
 	}
 	return modelyield.PreserveStreamErrorPolicyOriginalEnvironment(policy), nil
 }

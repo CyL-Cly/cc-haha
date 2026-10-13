@@ -103,6 +103,12 @@ func mergeLaunch(info sessionInfo, raw json.RawMessage) (sessionInfo, error) {
 		delete(metadata, "effortLevel")
 		info.EffortLevel = ""
 	}
+	if fast := record.Get("openAIFastMode"); string(fast) == "true" || string(fast) == "false" {
+		var enabled bool
+		_ = json.Unmarshal(fast, &enabled)
+		info.OpenAIFastMode = &enabled
+		metadata["openAIFastMode"] = fast
+	}
 	info.Metadata, _ = json.Marshal(metadata)
 	return info, nil
 }

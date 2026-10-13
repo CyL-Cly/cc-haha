@@ -82,6 +82,18 @@ type PageOptions struct {
 	Cursor string
 	Limit  *float64
 	Full   bool
+	// Projection budgets leave the default chat/history contract unchanged.
+	Budget           *PageBudget
+	Measure          func(json.RawMessage) int64
+	CaptureOversized bool
+}
+type PageBudget struct {
+	Records, Rows int
+	Bytes         int64
+}
+type OversizedEntry struct {
+	ByteStart, ByteEnd int64
+	Head               []byte
 }
 type Entry struct {
 	Entry     json.RawMessage `json:"entry"`
@@ -138,8 +150,9 @@ func (page PageInfo) MarshalJSON() ([]byte, error) {
 }
 
 type Page struct {
-	Entries []Entry  `json:"entries"`
-	Page    PageInfo `json:"page"`
+	Entries   []Entry          `json:"entries"`
+	Page      PageInfo         `json:"page"`
+	Oversized []OversizedEntry `json:"-"`
 }
 
 type cursor struct {
@@ -412,6 +425,7 @@ func (reader *Reader) readPage(ctx context.Context, path string, options PageOpt
 	var outputBytes int64
 	renderedRows := 0
 	entries := []Entry{}
+	oversizedEntries := []OversizedEntry{}
 	recordLimit := float64(HistoryPageRecords)
 	byteBudget, rowBudget, scanBudget := int64(HistoryPageBytes), HistoryPageRows, int64(HistoryScanBytes)
 	if options.Full {
@@ -420,7 +434,12 @@ func (reader *Reader) readPage(ctx context.Context, path string, options PageOpt
 		rowBudget = HistoryFullRows
 		scanBudget = HistoryFullScanBytes
 	}
-	requested := float64(HistoryPageRecords)
+	if options.Budget != nil {
+		recordLimit = float64(max(1, int64(options.Budget.Records)))
+		byteBudget = max(1, options.Budget.Bytes)
+		rowBudget = int(max(1, int64(options.Budget.Rows)))
+	}
+	requested := recordLimit
 	if options.Full {
 		requested = HistoryFullRows
 	}
@@ -522,6 +541,17 @@ func (reader *Reader) readPage(ctx context.Context, path string, options PageOpt
 			break
 		}
 		if oversized {
+			if options.CaptureOversized && !skipping {
+				lineStart := start
+				if newer {
+					lineStart = previous
+				}
+				head := make([]byte, min(65536, end-lineStart))
+				if e := readExactly(ctx, file, head, lineStart, "History changed during oversized probe"); e != nil {
+					return Page{}, e
+				}
+				oversizedEntries = append(oversizedEntries, OversizedEntry{lineStart, end, head})
+			}
 			if !skipping {
 				omitted++
 			}
@@ -571,7 +601,11 @@ func (reader *Reader) readPage(ctx context.Context, path string, options PageOpt
 		if err != nil {
 			return Page{}, err
 		}
-		if (outputBytes+int64(len(serialized)) > byteBudget || renderedRows+rowCost > rowBudget) && len(entries) > 0 {
+		cost := int64(len(serialized))
+		if options.Measure != nil {
+			cost = max(0, options.Measure(entry))
+		}
+		if (outputBytes+cost > byteBudget || renderedRows+rowCost > rowBudget) && len(entries) > 0 {
 			position = previous
 			break
 		}
@@ -581,7 +615,7 @@ func (reader *Reader) readPage(ctx context.Context, path string, options PageOpt
 			byteStart = previous
 		}
 		entries = append(entries, Entry{entry, byteStart, end})
-		outputBytes += int64(len(serialized))
+		outputBytes += cost
 	}
 	after, err := file.Stat()
 	if err != nil {
@@ -650,7 +684,7 @@ func (reader *Reader) readPage(ctx context.Context, path string, options PageOpt
 			entries[left], entries[right] = entries[right], entries[left]
 		}
 	}
-	return Page{entries, PageInfo{NextCursor: next, PreviousCursor: previous, HasMore: lower > 0, HistoryComplete: lower == 0 && upper == c.size && omitted == 0 && !truncated, ContentTruncated: truncated, SourceVersion: fmt.Sprintf("%s:%s:%d:%s", c.dev, c.ino, c.size, c.mtime), ScannedBytes: scanned, OmittedOversizedEntries: omitted}}, nil
+	return Page{entries, PageInfo{NextCursor: next, PreviousCursor: previous, HasMore: lower > 0, HistoryComplete: lower == 0 && upper == c.size && omitted == 0 && !truncated, ContentTruncated: truncated, SourceVersion: fmt.Sprintf("%s:%s:%d:%s", c.dev, c.ino, c.size, c.mtime), ScannedBytes: scanned, OmittedOversizedEntries: omitted}, oversizedEntries}, nil
 }
 
 type StreamOptions struct {

@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -46,6 +47,15 @@ func TestActualDesktopApprovedTeamRuntimeBarrierTasksQuestionIdleMailboxWakeAndS
 		bodies[worker] = append(bodies[worker], body)
 		mu.Unlock()
 		if worker == "leader" {
+			messages := rowsForTeam(obj(body).Get("messages"))
+			last := ""
+			if len(messages) > 0 {
+				last = string(messages[len(messages)-1].Get("content"))
+			}
+			if strings.Contains(last, "CLEANUP_ACTUAL_TEAM") {
+				response(w, "leader-delete", "TeamDelete", map[string]any{}, "")
+				return
+			}
 			response(w, "leader-ready", "", nil, "leader ready")
 			return
 		}
@@ -60,18 +70,42 @@ func TestActualDesktopApprovedTeamRuntimeBarrierTasksQuestionIdleMailboxWakeAndS
 				t.Error("actual same pending reply lost", string(body))
 			}
 			response(w, "one-write", "Write", map[string]any{"file_path": filepath.Join(workspace, "team-one.txt"), "content": "ACTUAL_TEAM_ONE_GO"}, "")
+		case worker == "one" && round == 3:
+			mu.Lock()
+			downstream := rounds["two"]
+			mu.Unlock()
+			if downstream != 0 {
+				t.Error("downstream model ran before prerequisite completed")
+			}
+			response(w, "one-handoff", "SendMessage", map[string]any{"to": "two", "message": "HANDOFF_ACTUAL_TEAM_ONE_GO", "summary": "Upstream task result"}, "")
+		case worker == "one" && round == 4:
+			if !bytes.Contains(body, []byte("Message sent to two's inbox")) {
+				t.Error("handoff tool did not succeed", string(body))
+			}
+			response(w, "one-task-complete", "TaskUpdate", map[string]any{"taskId": "1", "status": "completed"}, "")
 		case worker == "two" && round == 1:
+			if !bytes.Contains(body, []byte("HANDOFF_ACTUAL_TEAM_ONE_GO")) || !bytes.Contains(body, []byte("Ready now (dependencies complete)")) {
+				t.Error("actual downstream input missing handoff/ready instructions", string(body))
+			}
 			response(w, "two-task", "TaskGet", map[string]string{"taskId": "2"}, "")
 		case worker == "two" && round == 2:
 			if !bytes.Contains(body, []byte("shared second")) {
 				t.Error("actual shared TaskGet missing", string(body))
 			}
 			response(w, "two-write", "Write", map[string]any{"file_path": filepath.Join(workspace, "team-two.txt"), "content": "ACTUAL_TEAM_TWO"}, "")
-		case worker == "one" && round == 4:
+		case worker == "one" && round == 6:
 			if !bytes.Contains(body, []byte("wake real same child")) || !bytes.Contains(body, []byte("teammate-message")) {
 				t.Error("actual timer inbox lost", string(body))
 			}
 			response(w, "one-wake-read", "Read", map[string]string{"file_path": filepath.Join(workspace, "team-one.txt")}, "")
+		case worker == "one" && round == 8 || worker == "two" && round == 4:
+			requestID := regexp.MustCompile(`shutdown-[0-9]+@` + worker).FindString(string(body))
+			if requestID == "" {
+				t.Error("actual process shutdown input lost its request ID", worker, string(body))
+				http.Error(w, "missing shutdown request", 500)
+				return
+			}
+			response(w, worker+"-approve-shutdown", "SendMessage", map[string]any{"to": "team-lead", "message": map[string]any{"type": "shutdown_response", "request_id": requestID, "approve": true}}, "")
 		default:
 			response(w, worker+"-complete", "", nil, "actual team worker complete")
 		}
@@ -79,7 +113,7 @@ func TestActualDesktopApprovedTeamRuntimeBarrierTasksQuestionIdleMailboxWakeAndS
 	defer model.Close()
 	o := nativeSessionOptions(t, model.URL)
 	workspace = o.WorkDir
-	o.Arguments.Tools = []string{"Read,Write,AskUserQuestion,TaskCreate,TaskGet,TaskList,TaskUpdate"}
+	o.Arguments.Tools = []string{"Read,Write,AskUserQuestion,TaskCreate,TaskGet,TaskList,TaskUpdate,TeamDelete"}
 	o.Environment["CLAUDE_CODE_ENABLE_TASKS"] = "1"
 	o.Environment["CC_HAHA_AGENT_TEAMS_ENABLED"] = "1"
 	o.Environment["DISABLE_TELEMETRY"] = "1"
@@ -122,12 +156,7 @@ func TestActualDesktopApprovedTeamRuntimeBarrierTasksQuestionIdleMailboxWakeAndS
 	}
 	providerID := obj(post("/api/providers", map[string]any{"presetId": "deepseek", "name": "Private actual team", "apiKey": "fake-team-key", "baseUrl": model.URL, "apiFormat": "anthropic", "models": map[string]string{"main": "fixture-model", "haiku": "", "sonnet": "", "opus": ""}}).Get("provider")).String("id")
 	parent := post("/api/sessions", map[string]any{"workDir": workspace, "permissionMode": "bypassPermissions"}).String("sessionId")
-	ws, err := websocket.Dial("ws"+strings.TrimPrefix(host.URL, "http")+"/ws/"+parent, "", host.URL)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer ws.Close()
-	ws.SetDeadline(time.Now().Add(30 * time.Second))
+	var ws *websocket.Conn
 	send := func(v any) {
 		t.Helper()
 		if err := websocket.Message.Send(ws, string(raw(v))); err != nil {
@@ -149,10 +178,6 @@ func TestActualDesktopApprovedTeamRuntimeBarrierTasksQuestionIdleMailboxWakeAndS
 				return v
 			}
 		}
-	}
-	send(map[string]any{"type": "user_message", "content": "initialize leader before approved team"})
-	receive("message_complete")
-	for receive("session_state").String("turnState") != "idle" {
 	}
 	configDir := o.Environment["CLAUDE_CONFIG_DIR"]
 	tasks, _ := taskstore.New(taskstore.Options{ConfigDir: configDir, PID: os.Getpid(), Now: time.Now})
@@ -188,6 +213,13 @@ func TestActualDesktopApprovedTeamRuntimeBarrierTasksQuestionIdleMailboxWakeAndS
 	action.Set("expectedRevision", plan.Get("revision"))
 	action.Set("requestId", raw("real-human-approval"))
 	post("/api/teams/actual-team/plan/approve", action)
+	// Approval starts the actual saved leader even before the UI connects.
+	ws, err = websocket.Dial("ws"+strings.TrimPrefix(host.URL, "http")+"/ws/"+parent, "", host.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer ws.Close()
+	ws.SetDeadline(time.Now().Add(30 * time.Second))
 	pending := receive("permission_request")
 	if pending.String("agentId") != "one@actual-team" {
 		t.Fatal("parent pending wrong actual identity", string(raw(pending)))
@@ -212,7 +244,7 @@ func TestActualDesktopApprovedTeamRuntimeBarrierTasksQuestionIdleMailboxWakeAndS
 		one, _ := os.ReadFile(filepath.Join(workspace, "team-one.txt"))
 		two, _ := os.ReadFile(filepath.Join(workspace, "team-two.txt"))
 		v, _ := plans.Read("actual-team")
-		return string(one) == "ACTUAL_TEAM_ONE_GO" && string(two) == "ACTUAL_TEAM_TWO" && v != nil && v.String("state") == "running" && len(rowsForTeam(mailbox.Read("team-lead", "actual-team"))) == 2
+		return string(one) == "ACTUAL_TEAM_ONE_GO" && string(two) == "ACTUAL_TEAM_TWO" && v != nil && v.String("state") == "running" && len(rowsForTeam(mailbox.ReadHistory("team-lead", "actual-team"))) >= 2
 	})
 	if err = mailbox.Write("one", "actual-team", protocol.NewJSONObject(field("from", "two"), field("timestamp", time.Now().UTC().Format(time.RFC3339Nano)), field("text", "wake real same child"))); err != nil {
 		t.Fatal(err)
@@ -221,20 +253,43 @@ func TestActualDesktopApprovedTeamRuntimeBarrierTasksQuestionIdleMailboxWakeAndS
 		mu.Lock()
 		count := rounds["one"]
 		mu.Unlock()
-		return count >= 5 && len(rowsForTeam(mailbox.Read("team-lead", "actual-team"))) >= 3
+		return count >= 7 && len(rowsForTeam(mailbox.ReadHistory("team-lead", "actual-team"))) >= 3
 	})
 	unread, err := mailbox.Unread("one", "actual-team")
 	if err != nil || len(unread) != 0 {
 		t.Fatal("accepted inbox not marked", unread, err)
 	}
+	// Actual desktop process approvals are intentionally excluded from the pane
+	// protocol. A worker's own SDK/owner close must retire its server registry,
+	// letting the real supervisor publish terminated state before TeamDelete.
+	for _, name := range []string{"one", "two"} {
+		request := protocol.NewJSONObject(field("type", "shutdown_request"), field("requestId", "shutdown-123@"+name), field("from", "team-lead"), field("timestamp", time.Now().UTC().Format(time.RFC3339Nano)))
+		if err := mailbox.Write(name, "actual-team", protocol.NewJSONObject(field("from", "team-lead"), field("timestamp", time.Now().UTC().Format(time.RFC3339Nano)), field("text", string(raw(request))))); err != nil {
+			t.Fatal(err)
+		}
+	}
+	await(func() bool {
+		current := config.Read("actual-team")
+		if current == nil {
+			return false
+		}
+		for _, member := range rowsForTeam(current.Get("members")) {
+			if member.String("backendType") == "process" && (string(member.Get("isActive")) != "false" || string(member.Get("terminated")) != "true" || s.TeamWorkerConnected(member.String("sessionId"))) {
+				return false
+			}
+		}
+		return true
+	})
+	send(map[string]any{"type": "user_message", "content": "CLEANUP_ACTUAL_TEAM"})
+	await(func() bool { return config.Read("actual-team") == nil })
+	receive("message_complete")
+	requestDesktopSessionSync(t, ws)
+	assertDesktopIdleSnapshot(t, receive("session_state"))
 	if err = s.Close(ctx); err != nil {
 		t.Fatal(err)
 	}
-	configAfter := config.Read("actual-team")
-	for _, member := range rowsForTeam(configAfter.Get("members")) {
-		if string(member.Get("terminated")) != "true" || string(member.Get("isActive")) != "false" {
-			t.Fatal("actual shutdown left active child", string(raw(member)))
-		}
+	if config.Read("actual-team") != nil {
+		t.Fatal("actual TeamDelete retained team directories")
 	}
 	if s.TeamRuntimeRunning(plan.String("planId")) {
 		t.Fatal("closed server retained launch ownership")

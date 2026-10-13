@@ -60,12 +60,17 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/systemprompt"
 	"github.com/NanmiCoder/cc-haha/backend/internal/teamsapi"
 	"github.com/NanmiCoder/cc-haha/backend/internal/tracecapture"
+	"github.com/NanmiCoder/cc-haha/backend/internal/trajectory"
 	"github.com/NanmiCoder/cc-haha/backend/internal/uipreferences"
 	"github.com/NanmiCoder/cc-haha/backend/internal/voice"
 	"github.com/NanmiCoder/cc-haha/backend/internal/workflow"
 )
 
 type Options struct {
+	AfterRuntimeTimer                               func(time.Duration, func()) RuntimeTimer
+	MigrationValidation                             bool
+	MigrationActivate                               func(context.Context) (*Server, error)
+	MigrationOwnedProcessIDs                        func() []int
 	Market                                          *marketapi.Service
 	InspectionModelOptions                          *modelaccounting.NativeCalculatorOptions
 	InspectionContextWindow                         func(context.Context, string, protocol.JSONObject) (float64, error)
@@ -131,6 +136,7 @@ type Options struct {
 }
 
 type runtimeSession struct {
+	disconnect          *disconnectLifecycle
 	slashCommands       []protocol.JSONObject
 	teamWorkerOrdinal   uint64
 	mu                  sync.Mutex
@@ -150,9 +156,13 @@ type runtimeSession struct {
 	wake                chan struct{}
 	admitted            chan struct{}
 	admitting           bool
+	registeredUserTurn  *registeredUserTurn
+	activeUserTurn      *registeredUserTurn
 }
 
 type Server struct {
+	teamEventMu             sync.Mutex
+	migration               migrationState
 	publicAccess            *publicaccess.Server
 	inspectionSnapshots     map[string]*inspectionPending
 	inspectionSnapshotOrder []string
@@ -176,6 +186,7 @@ type Server struct {
 	closeError              error
 	apiOperations           sync.WaitGroup
 	reader                  *sessionstore.Reader
+	trajectory              *trajectory.Service
 	metadata                *sessionmetadata.Reader
 	projection              *sessionprojection.Service
 	budget                  *sessionstore.Budget
@@ -245,6 +256,7 @@ func New(options Options) (*Server, error) {
 		server.budget = sessionstore.NewBudget()
 	}
 	server.reader = sessionstore.NewReaderWithBudget(nil, server.budget)
+	server.trajectory = trajectory.New(server.reader)
 	server.projection, err = sessionprojection.New(sessionprojection.Options{Reader: server.metadata, Budget: server.budget, Stat: projectionStat, ConfigDir: func() string { return options.ConfigDir }, Cwd: func() string { return options.WorkDir }, Platform: platform, ParseDate: sessionprojection.ParseDateUTC})
 	if err != nil {
 		cancel()
@@ -278,14 +290,19 @@ func New(options Options) (*Server, error) {
 			return nil, err
 		}
 	}
-	server.newPublicAccess()
 	server.newSDKState()
 	if err = server.newConversationAPI(); err != nil {
 		return nil, err
 	}
-	if err = server.newCollaborationHost(); err != nil {
-		cancel()
-		return nil, err
+	if options.MigrationValidation {
+		server.migration.active = true
+		server.migration.validation = true
+	} else {
+		server.newPublicAccess()
+		if err = server.newCollaborationHost(); err != nil {
+			cancel()
+			return nil, err
+		}
 	}
 	return server, nil
 }
@@ -293,7 +310,7 @@ func New(options Options) (*Server, error) {
 // Serve uses the already owned listener. Graceful shutdown does not complete
 // until the application sessions and their tool subprocesses have closed.
 func (server *Server) Serve(ctx context.Context, listener net.Listener) error {
-	server.setCollaborationEndpoint(listener.Addr())
+	server.setMigrationListener(listener.Addr())
 	host := &http.Server{Handler: server, ReadHeaderTimeout: 30 * time.Second}
 	stopped := make(chan struct{})
 	shutdownResult := make(chan error, 1)
@@ -368,6 +385,9 @@ func (server *Server) finalizeClose() {
 	}
 	var failures []error
 	server.waitAPIOperations()
+	if err := server.closeMigrationDelegate(ctx); err != nil {
+		failures = append(failures, err)
+	}
 	if server.sideQuestions != nil {
 		if e := server.sideQuestions.Close(ctx); e != nil {
 			failures = append(failures, e)
@@ -480,8 +500,15 @@ func closeRuntime(ctx context.Context, runtime *runtimeSession) error {
 		}
 		closing := make(chan struct{})
 		runtime.closing = closing
+		var afterClose func(error)
+		if runtime.disconnect != nil {
+			afterClose = runtime.disconnect.afterClose
+		}
 		runtime.mu.Unlock()
 		err := live.Close(ctx)
+		if afterClose != nil {
+			afterClose(err)
+		}
 		runtime.mu.Lock()
 		runtime.closeError = err
 		runtime.closing = nil
@@ -568,6 +595,17 @@ func segments(path string) []string {
 }
 
 func (server *Server) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+	if server.handleMigrationIngress(writer, request) {
+		return
+	}
+	if request.URL.Path != "/health" && !strings.HasPrefix(request.URL.Path, "/ws/") && !strings.HasPrefix(request.URL.Path, "/sdk/") {
+		done, ok := server.beginMigrationHTTPAdmission()
+		if !ok {
+			server.migrationAdmissionFailure(writer)
+			return
+		}
+		defer done()
+	}
 	if request.URL.EscapedPath() == desktopoauth.OpenAICodexRedirectPath || request.URL.EscapedPath() == "/callback/openai" {
 		if err := server.hahaOpenAIOAuthCallback(writer, request); err != nil {
 			writeError(writer, err)

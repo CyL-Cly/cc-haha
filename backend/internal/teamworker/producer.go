@@ -14,8 +14,11 @@ var EssentialTools = []string{"SendMessage", "TaskCreate", "TaskGet", "TaskList"
 
 type Start struct {
 	ParentSessionID, TeamName, MemberID, Name, SystemPrompt string
-	Tools                                                   *[]string
-	AgentDefinition                                         protocol.JSONObject
+	// Only the belonging desktop factory supplies the actual saved session ID.
+	// This is native launch evidence, not a field in persisted team proposals.
+	ResumeSessionID string `json:"-"`
+	Tools           *[]string
+	AgentDefinition protocol.JSONObject
 }
 type Preset struct {
 	Start                      Start

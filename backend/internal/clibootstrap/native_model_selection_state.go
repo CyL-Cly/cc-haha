@@ -37,5 +37,13 @@ func (m *MainPrint) applyNativeSelectedModelState(ctx context.Context, scope *co
 	if wasOff {
 		suffix += " · Fast mode OFF"
 	}
-	return suffix, m.Controller.ApplyTypedModelState(scope, model, fast)
+	if err = m.Controller.ApplyTypedModelState(scope, model, fast); err != nil {
+		return "", err
+	}
+	if m.options.Interactive && !pickerTrue(env["CLAUDE_CODE_REMOTE"]) {
+		if err = m.verifyNativeAutoGateOnOwner(scope); err != nil {
+			return "", err
+		}
+	}
+	return suffix, nil
 }

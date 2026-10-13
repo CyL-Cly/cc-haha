@@ -48,7 +48,8 @@ func (h *Host) requestDependencies(scope *cooperative.Scope) requestretry.Depend
 	if fast != nil {
 		proof, state, effect = fast.Proof, fast.State, fast.Effect
 	}
-	return requestretry.Dependencies{NativeFastModeProof: proof, NativeFastState: state, NativeFastEffect: effect, NativeFastError: fastError, NativeVertex: vertex, NativeBedrock: bedrock, NativeCloudError: cloudError, NativeAuthHelper: helper, NativeClaudeAuth: claude, NativeClaudeError: claudeError, NativeCodexOAuth: codex, NativeGrokOAuth: grok, Trace: h.options.Trace, TraceEnvironment: h.options.OriginalEnv, StreamOwner: h.options.Owner, StreamScope: scope, UUID: h.options.UUID, Now: h.options.Now, Random: func() float64 { return 0 }, TLSState: h.options.TLSState, ObserveRequest: h.options.ObserveRequest,
+	return requestretry.Dependencies{NativeThinkingSummaryBeta: h.nativeThinkingSummaryBetaCallback(), NativeFastModeProof: proof, NativeFastState: state, NativeFastEffect: effect, NativeFastError: fastError, NativeVertex: vertex, NativeBedrock: bedrock, NativeCloudError: cloudError, NativeAuthHelper: helper, NativeClaudeAuth: claude, NativeClaudeError: claudeError, NativeCodexOAuth: codex, NativeGrokOAuth: grok, PromptSnapshot: h.promptSnapshotObserver(scope), Trace: h.options.Trace, TraceEnvironment: h.options.OriginalEnv, StreamOwner: h.options.Owner, StreamScope: scope, UUID: h.options.UUID, Now: h.options.Now, Random: func() float64 { return 0 }, TLSState: h.options.TLSState, ObserveRequest: h.options.ObserveRequest,
+		NativeAccountUUID: h.nativeRequestAccountMetadata(scope), NativeRetryEnvironment: h.nativeRetryPolicyEnvironment(),
 		Sleep: func(ctx context.Context, millis float64) error {
 			_, err := scope.AwaitBytes(cooperative.RetryTimer, func(wait context.Context) ([]byte, error) {
 				timer := time.NewTimer(time.Duration(millis * float64(time.Millisecond)))

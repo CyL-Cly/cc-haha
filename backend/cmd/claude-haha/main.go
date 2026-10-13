@@ -15,6 +15,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/curepl"
 	"github.com/NanmiCoder/cc-haha/backend/internal/recovery"
 	"github.com/NanmiCoder/cc-haha/backend/internal/server/adapterlauncher"
+	"github.com/NanmiCoder/cc-haha/backend/internal/storagemetadata"
 	"github.com/NanmiCoder/cc-haha/backend/internal/voice"
 )
 
@@ -33,6 +34,16 @@ func main() {
 }
 
 func run(ctx context.Context, args []string) int {
+	if len(args) > 0 && args[0] == "--computer-use-mcp" {
+		return runComputerUseMCP(ctx)
+	}
+	if len(args) == 1 && args[0] == "--storage-relocation-worker" {
+		if err := storagemetadata.RunWorker(ctx, os.Stdin, os.Stdout); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return 1
+		}
+		return 0
+	}
 	if len(args) == 1 && args[0] == "--voice-worker" {
 		environment := processEnvironment()
 		_ = os.Unsetenv(voice.WorkerConfigEnv)
@@ -135,6 +146,7 @@ func run(ctx context.Context, args []string) int {
 			fmt.Fprint(os.Stderr, parsedCLI.Stderr)
 			return parsedCLI.ExitCode
 		}
+		defer holdInstalledCLIVersion()()
 		if strings.HasPrefix(parsedCLI.Parsed.Path, "claude plugin ") {
 			return runPluginCommand(ctx, args, parsedCLI.Parsed)
 		}
@@ -146,6 +158,12 @@ func run(ctx context.Context, args []string) int {
 		}
 		if strings.HasPrefix(parsedCLI.Parsed.Path, "claude mcp ") {
 			return runMCPCommand(ctx, args, *parsedCLI.Parsed)
+		}
+		if strings.HasPrefix(parsedCLI.Parsed.Path, "claude auto-mode ") {
+			return runAutoModeCommand(ctx, args, parsedCLI.Parsed)
+		}
+		if parsedCLI.Parsed.Path == "claude install" || parsedCLI.Parsed.Path == "claude update" || parsedCLI.Parsed.Path == "claude doctor" {
+			return runInstallationCommand(ctx, args, parsedCLI.Parsed)
 		}
 		if parsedCLI.Parsed.Path == "claude" {
 			cwd, err := os.Getwd()

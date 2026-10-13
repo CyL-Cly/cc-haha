@@ -16,6 +16,7 @@ import (
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/windowspaths"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"golang.org/x/text/unicode/norm"
@@ -53,7 +54,11 @@ type NativeStartup struct {
 }
 
 func NewNativeStartup(owner *cooperative.Owner, o NativeStartupOptions) (*NativeStartup, error) {
-	if owner == nil || !filepath.IsAbs(o.Home) || !filepath.IsAbs(o.CWD) || !filepath.IsAbs(o.OriginalCWD) || o.Environment == nil || o.Global == nil || o.Stat == nil || o.Lstat == nil || o.Realpath == nil {
+	absolute := filepath.IsAbs
+	if o.Platform == "windows" {
+		absolute = windowspaths.IsWindowsAbsolute
+	}
+	if owner == nil || !absolute(o.Home) || !absolute(o.CWD) || !absolute(o.OriginalCWD) || o.Environment == nil || o.Global == nil || o.Stat == nil || o.Lstat == nil || o.Realpath == nil {
 		return nil, errors.New("native permissions require owned home/cwd/environment/global/stat/lstat/realpath producers")
 	}
 	if o.Platform != "darwin" && o.Platform != "linux" && o.Platform != "windows" {
@@ -162,6 +167,9 @@ func (s *NativeStartup) mode(settings *protocol.JSONObject, r NativeStartupReque
 	notification := ""
 	selected := "default"
 	for _, mode := range candidates {
+		if mode == "auto" && s.autoEnabledState() == "disabled" {
+			continue
+		}
 		if mode == "bypassPermissions" && disabled {
 			if gate {
 				notification = "Bypass permissions mode was disabled by your organization policy"
@@ -173,12 +181,18 @@ func (s *NativeStartup) mode(settings *protocol.JSONObject, r NativeStartupReque
 		selected = mode
 		break
 	}
-	if selected == "auto" {
-		return "", "", false, cap("native startup auto classifier/gate consent and dangerous-rule preparation")
-	}
 	return selected, notification, (selected == "bypassPermissions" || r.AllowDangerouslySkipPermissions) && !disabled, nil
 }
 func (s *NativeStartup) expand(raw string) (string, error) {
+	if s.options.Platform == "windows" {
+		path, err := windowspaths.ExpandWindows(raw, s.options.CWD, s.options.Home)
+		if err != nil {
+			return "", err
+		}
+		// validateDirectoryForWorkspace resolves again after expandPath, dropping
+		// an absolute input's trailing separator before using its Map key.
+		return windowspaths.ResolveWindows(path, s.options.CWD), nil
+	}
 	if strings.ContainsRune(raw, 0) || strings.ContainsRune(s.options.CWD, 0) {
 		return "", errors.New("Path contains null bytes")
 	}
@@ -191,8 +205,6 @@ func (s *NativeStartup) expand(raw string) (string, error) {
 		value = s.options.Home
 	} else if strings.HasPrefix(value, "~/") {
 		value = filepath.Join(s.options.Home, value[2:])
-	} else if s.options.Platform == "windows" && len(value) > 2 && value[0] == '/' && value[2] == '/' && ((value[1] >= 'a' && value[1] <= 'z') || (value[1] >= 'A' && value[1] <= 'Z')) {
-		value = strings.ToUpper(value[1:2]) + ":" + strings.ReplaceAll(value[2:], "/", `\`)
 	}
 	if !filepath.IsAbs(value) {
 		value = filepath.Join(s.options.CWD, value)
@@ -215,6 +227,31 @@ func startupWorkingPath(path, root string) bool {
 	}
 	return !regexp.MustCompile(`(?:^|[\\/])\.\.(?:[\\/]|$)`).MatchString(rel) && !filepath.IsAbs(rel)
 }
+func (s *NativeStartup) workingPath(path, root string) bool {
+	if s.options.Platform != "windows" {
+		return startupWorkingPath(path, root)
+	}
+	path, pathErr := windowspaths.ExpandWindows(path, s.options.CWD, s.options.Home)
+	root, rootErr := windowspaths.ExpandWindows(root, s.options.CWD, s.options.Home)
+	if pathErr != nil || rootErr != nil {
+		return false
+	}
+	lower := cases.Lower(language.Und)
+	relative := windowspaths.RelativeWindows(lower.String(root), lower.String(path))
+	return relative == "" || relative != ".." && !regexp.MustCompile(`(?:^|[\\/])\.\.(?:[\\/]|$)`).MatchString(relative)
+}
+func (s *NativeStartup) dir(path string) string {
+	if s.options.Platform == "windows" {
+		return windowspaths.DirWindows(path)
+	}
+	return filepath.Dir(path)
+}
+func (s *NativeStartup) clean(path string) string {
+	if s.options.Platform == "windows" {
+		return windowspaths.CleanWindows(path)
+	}
+	return filepath.Clean(path)
+}
 func (s *NativeStartup) pwdAlias() string {
 	pwd := s.options.Environment("PWD")
 	if pwd == "" || pwd == s.options.OriginalCWD || strings.HasPrefix(pwd, "//") || strings.HasPrefix(pwd, `\\`) {
@@ -225,7 +262,7 @@ func (s *NativeStartup) pwdAlias() string {
 		return ""
 	}
 	resolved, e := s.options.Realpath(pwd)
-	if e != nil || resolved == pwd || resolved != filepath.Clean(s.options.OriginalCWD) {
+	if e != nil || resolved == pwd || resolved != s.clean(s.options.OriginalCWD) {
 		return ""
 	}
 	return pwd
@@ -286,12 +323,12 @@ func (s *NativeStartup) Prepare(scope *cooperative.Scope, settings *protocol.JSO
 			return NativeStartupResult{}, e
 		}
 		if !info.IsDir() {
-			warnings = append(warnings, fmt.Sprintf("%s is not a directory. Did you mean to add the parent directory %s?", raw, filepath.Dir(absolute)))
+			warnings = append(warnings, fmt.Sprintf("%s is not a directory. Did you mean to add the parent directory %s?", raw, s.dir(absolute)))
 			continue
 		}
 		covered := false
 		for _, root := range base {
-			if startupWorkingPath(absolute, root) {
+			if s.workingPath(absolute, root) {
 				covered = true
 				break
 			}

@@ -57,7 +57,7 @@ func (h *Host) queryPromptHookOnProducer(ctx context.Context, scope *cooperative
 			}
 		}
 	}
-	host := requestcontext.Host{Profile: requestcontext.NativeDirectRelayProfile, Env: h.requestEnvironment, DeviceID: deviceID, SessionID: h.options.Controller.SessionID(), NativeToolDefinitions: &definitions, SDKBetas: []string{}, TTLAllowlist: []string{}, ToolSchemas: h.toolSchemas}
+	host := requestcontext.Host{Profile: requestcontext.NativeDirectRelayProfile, Env: h.requestEnvironment, DeviceID: deviceID, SessionID: h.options.Controller.SessionID(), NativeToolDefinitions: &definitions, SDKBetas: h.options.SDKBetas, Workload: h.options.Workload, TTLAllowlist: []string{}, ToolSchemas: h.toolSchemas}
 	if h.options.Print.Tools != nil {
 		host.ToolSchemaHost, err = h.options.Print.Tools.SchemaHostForScope(scope, model, h.options.OriginalEnv["ANTHROPIC_BASE_URL"])
 		if err != nil {

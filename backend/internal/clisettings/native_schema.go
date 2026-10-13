@@ -49,7 +49,10 @@ func nativeRules(input protocol.JSONObject) (protocol.JSONObject, *protocol.JSON
 	for _, key := range nativeMCPKeys {
 		stripped.Delete(key)
 	}
-	for _, key := range []string{"attribution", "includeCoAuthoredBy", "apiKeyHelper", "awsCredentialExport", "awsAuthRefresh", "gcpAuthRefresh", "defaultShell", "outputStyle", "respectGitignore", "includeGitInstructions", "availableModels", "modelOverrides", "cleanupPeriodDays", "disableAgentSkillsDirectory", "autoMemoryDirectory", "webSearch", "skipWebFetchPreflight", "sandbox", "worktree", "fastMode", "fastModePerSessionOptIn"} {
+	for _, key := range nativeConsumerKeys {
+		stripped.Delete(key)
+	}
+	for _, key := range []string{"attribution", "includeCoAuthoredBy", "apiKeyHelper", "awsCredentialExport", "awsAuthRefresh", "gcpAuthRefresh", "defaultShell", "outputStyle", "respectGitignore", "includeGitInstructions", "availableModels", "modelOverrides", "cleanupPeriodDays", "disableAgentSkillsDirectory", "autoUpdatesChannel", "minimumVersion", "autoMemoryEnabled", "autoMemoryDirectory", "webSearch", "skipWebFetchPreflight", "sandbox", "worktree", "fastMode", "fastModePerSessionOptIn", "maxConcurrentSubagents"} {
 		stripped.Delete(key)
 	}
 	if language := input.Get("language"); language != nil {
@@ -149,6 +152,11 @@ func ValidateNativeJSONContent(content, file string) (*ParsedSettings, error) {
 	result.Errors = append(result.Errors, pluginErrors...)
 	mcpFields, mcpErrors := parseNativeMCPFields(input, file)
 	result.Errors = append(result.Errors, mcpErrors...)
+	consumerFields, consumerErrors := parseNativeConsumerSettings(input, file)
+	result.Errors = append(result.Errors, consumerErrors...)
+	for _, property := range consumerFields.OwnProperties() {
+		_ = mcpFields.SetPropertyJSON(property.NameJSON, property.Value)
+	}
 	hooks, hookErrors, e := parseNativeHooks(input.Get("hooks"), file)
 	if e != nil {
 		return nil, e
@@ -157,14 +165,17 @@ func ValidateNativeJSONContent(content, file string) (*ParsedSettings, error) {
 	result.Errors = append(result.Errors, nativeHTTPHookErrors(input, file)...)
 	result.Errors = append(result.Errors, nativeLoginErrors(input, file)...)
 	result.Errors = append(result.Errors, nativeCleanupErrors(input.Get("cleanupPeriodDays"), file)...)
+	result.Errors = append(result.Errors, nativeSubagentLimitErrors(input.Get("maxConcurrentSubagents"), file)...)
 	result.Errors = append(result.Errors, nativeTerminalShellErrors(input.Get("defaultShell"), file)...)
+	result.Errors = append(result.Errors, nativeInstallationChannelErrors(input.Get("autoUpdatesChannel"), file)...)
+	result.Errors = append(result.Errors, nativeInstallationMinimumErrors(input.Get("minimumVersion"), file)...)
 	sandbox, sandboxErrors := parseNativeSandbox(input.Get("sandbox"), file)
 	result.Errors = append(result.Errors, sandboxErrors...)
 	worktree, worktreeErrors := parseNativeWorktree(input.Get("worktree"), file)
 	result.Errors = append(result.Errors, worktreeErrors...)
 	webSearch, webErrors := parseNativeWebSearch(input.Get("webSearch"), file)
 	result.Errors = append(result.Errors, webErrors...)
-	for _, setting := range []struct{ name, expected string }{{"agentTeamsEnabled", "boolean"}, {"skipWebFetchPreflight", "boolean"}, {"respectGitignore", "boolean"}, {"includeGitInstructions", "boolean"}, {"includeCoAuthoredBy", "boolean"}, {"disableAgentSkillsDirectory", "boolean"}, {"autoMemoryDirectory", "string"}, {"outputStyle", "string"}, {"apiKeyHelper", "string"}, {"awsCredentialExport", "string"}, {"awsAuthRefresh", "string"}, {"gcpAuthRefresh", "string"}, {"fastMode", "boolean"}, {"fastModePerSessionOptIn", "boolean"}} {
+	for _, setting := range []struct{ name, expected string }{{"agentTeamsEnabled", "boolean"}, {"skipWebFetchPreflight", "boolean"}, {"respectGitignore", "boolean"}, {"includeGitInstructions", "boolean"}, {"includeCoAuthoredBy", "boolean"}, {"disableAgentSkillsDirectory", "boolean"}, {"autoMemoryEnabled", "boolean"}, {"autoMemoryDirectory", "string"}, {"outputStyle", "string"}, {"apiKeyHelper", "string"}, {"awsCredentialExport", "string"}, {"awsAuthRefresh", "string"}, {"gcpAuthRefresh", "string"}, {"fastMode", "boolean"}, {"fastModePerSessionOptIn", "boolean"}} {
 		if value := input.Get(setting.name); value != nil && receivedType(value) != setting.expected {
 			result.Errors = append(result.Errors, validationError(file, setting.name, setting.expected, receivedType(value)))
 		}
@@ -239,7 +250,7 @@ func ValidateNativeJSONContent(content, file string) (*ParsedSettings, error) {
 		encoded, _ = permissions.MarshalJSON()
 		result.Settings.Set("permissions", encoded)
 	}
-	for _, nativeKey := range append(append(append([]string{"attribution", "includeCoAuthoredBy", "apiKeyHelper", "awsCredentialExport", "awsAuthRefresh", "gcpAuthRefresh", "defaultShell", "respectGitignore", "includeGitInstructions", "cleanupPeriodDays", "availableModels", "modelOverrides", "agentTeamsEnabled", "disableAgentSkillsDirectory", "outputStyle", "autoMemoryDirectory", "language", "alwaysThinkingEnabled", "webSearch", "skipWebFetchPreflight", "sandbox", "worktree", "hooks", "fastMode", "fastModePerSessionOptIn"}, nativePluginKeys...), nativeMCPKeys...), append(append([]string{}, nativeHTTPHookKeys...), nativeLoginKeys...)...) {
+	for _, nativeKey := range append(append(append([]string{"attribution", "includeCoAuthoredBy", "apiKeyHelper", "awsCredentialExport", "awsAuthRefresh", "gcpAuthRefresh", "defaultShell", "respectGitignore", "includeGitInstructions", "cleanupPeriodDays", "availableModels", "modelOverrides", "maxConcurrentSubagents", "agentTeamsEnabled", "disableAgentSkillsDirectory", "outputStyle", "autoUpdatesChannel", "minimumVersion", "autoMemoryEnabled", "autoMemoryDirectory", "language", "alwaysThinkingEnabled", "webSearch", "skipWebFetchPreflight", "sandbox", "worktree", "hooks", "fastMode", "fastModePerSessionOptIn", "maxConcurrentSubagents"}, nativePluginKeys...), append(append([]string{}, nativeMCPKeys...), nativeConsumerKeys...)...), append(append([]string{}, nativeHTTPHookKeys...), nativeLoginKeys...)...) {
 		if input.Get(nativeKey) == nil {
 			continue
 		}

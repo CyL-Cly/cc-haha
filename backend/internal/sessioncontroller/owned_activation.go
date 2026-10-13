@@ -39,6 +39,7 @@ func (c *Controller) BeginActivate(scope *cooperative.Scope, input Activation) (
 		}
 	}
 	c.options.OnPhase("resume:start")
+	input.Resume.ResumeAt = input.ResumeAt
 	loaded, e := c.resume.BeginLoad(scope, input.Resume)
 	if e != nil {
 		complete(scope, e)
@@ -59,6 +60,22 @@ func (c *Controller) BeginActivate(scope *cooperative.Scope, input Activation) (
 				return nil
 			}
 		}
+		if input.RemoteEmptyStartup && (result == nil || len(result.Messages) == 0) {
+			if !c.options.NativeTools || !c.options.PublicPrint {
+				complete(next, cooperative.ErrRestricted)
+				return nil
+			}
+			fresh, failure := c.BeginActivateFreshOwned(next, FreshPrintProfile)
+			if failure != nil {
+				complete(next, failure)
+				return nil
+			}
+			_, failure = fresh.Then(next, func(after *cooperative.Scope, _ struct{}, failure error) error { complete(after, failure); return nil })
+			if failure != nil {
+				complete(next, failure)
+			}
+			return nil
+		}
 		if result == nil {
 			complete(next, errors.New("No conversation found"))
 			return nil
@@ -71,20 +88,6 @@ func (c *Controller) BeginActivate(scope *cooperative.Scope, input Activation) (
 				return nil
 			}
 			history = append(history, &record)
-		}
-		if input.ResumeAt != "" {
-			index := -1
-			for pos, m := range history {
-				if text(m.Get("uuid")) == input.ResumeAt {
-					index = pos
-					break
-				}
-			}
-			if index < 0 {
-				complete(next, errors.New("No message found with message.uuid of: "+input.ResumeAt))
-				return nil
-			}
-			history = history[:index+1]
 		}
 		restore := func(after *cooperative.Scope) {
 			if !input.ForkSession && text(result.Metadata.Get("sessionId")) != "" {

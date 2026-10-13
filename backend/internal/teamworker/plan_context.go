@@ -105,7 +105,7 @@ func SnapshotAgents(active []agentcatalog.Definition, prompt func(agentcatalog.D
 
 // ResolveProposal carries suggestions only. It cannot approve or launch a
 // member; the trusted human API must independently validate its frozen source.
-func ResolveProposal(proposal, catalog, leader protocol.JSONObject, environment map[string]string, parseModel func(string) (string, error)) (protocol.JSONObject, error) {
+func ResolveProposal(proposal, catalog, leader protocol.JSONObject, environment map[string]string, parseModel func(string) (string, error), configuredProvider ...func(string) bool) (protocol.JSONObject, error) {
 	if parseModel == nil {
 		return protocol.JSONObject{}, errors.New("Team proposal requires the real model alias parser")
 	}
@@ -123,7 +123,11 @@ func ResolveProposal(proposal, catalog, leader protocol.JSONObject, environment 
 			return protocol.JSONObject{}, errors.New(message)
 		}
 		runtime := object(member.Get("runtime"))
-		if !runtime.IsObject() {
+		suggested := runtime.IsObject() && runtime.String("providerId") == leader.String("providerId")
+		if runtime.IsObject() && len(configuredProvider) > 0 && configuredProvider[0] != nil {
+			suggested = suggested || configuredProvider[0](runtime.String("providerId"))
+		}
+		if !suggested {
 			runtime = leader.Clone()
 			model := leader.String("modelId")
 			configured := protocol.TrimJavaScriptString(environment["CLAUDE_CODE_SUBAGENT_MODEL"])

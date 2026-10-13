@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"strconv"
 	"strings"
 
@@ -136,11 +137,65 @@ func (s *Service) startTask(ctx context.Context, name string, in protocol.JSONOb
 		if e := s.options.ExpandTaskView(scope); e != nil {
 			return nil, e
 		}
-		future, e := native(s, scope, func() (*protocol.JSONObject, error) { return s.options.TaskStore.Get(list, in.Get("taskId")) })
+		team, member := "", ""
+		teammate := s.options.Team != nil && s.options.Team.IsTeammate
+		if s.options.Team != nil && s.options.Team.TeamName != nil {
+			team, err = s.options.Team.TeamName(scope)
+			if err != nil {
+				return nil, err
+			}
+		}
+		if teammate && s.options.Team.AgentName != nil {
+			member, err = s.options.Team.AgentName(scope)
+			if err != nil {
+				return nil, err
+			}
+		}
+		type checkedTask struct {
+			task    *protocol.JSONObject
+			refusal string
+		}
+		future, e := native(s, scope, func() (checkedTask, error) {
+			previous, e := s.options.TaskStore.Get(list, in.Get("taskId"))
+			if e != nil {
+				return checkedTask{}, e
+			}
+			status := in.String("status")
+			if team != "" && (status == "in_progress" || status == "completed") {
+				if s.options.Team.TaskExecutionApproved == nil {
+					return checkedTask{}, capability("Team task approval storage")
+				}
+				owner := in.String("owner")
+				if in.Get("owner") == nil && previous != nil {
+					owner = previous.String("owner")
+				}
+				approved, e := s.options.Team.TaskExecutionApproved(team, owner)
+				if e != nil {
+					return checkedTask{}, e
+				}
+				if !approved {
+					return checkedTask{previous, "The team is awaiting human review. Submit the plan with TeamPlan and wait for approval before executing tasks."}, nil
+				}
+			}
+			if teammate && previous != nil {
+				if e := s.options.TaskStore.CheckTeammateExecution(list, *previous, in); e != nil {
+					var blocked taskstore.ExecutionBlocked
+					if errors.As(e, &blocked) {
+						return checkedTask{previous, blocked.Error()}, nil
+					}
+					return checkedTask{}, e
+				}
+			}
+			return checkedTask{task: previous}, nil
+		})
 		if e != nil {
 			return nil, e
 		}
-		err = taskThen(scope, future, out, func(callback *cooperative.Scope, previous *protocol.JSONObject) error {
+		err = taskThen(scope, future, out, func(callback *cooperative.Scope, checked checkedTask) error {
+			if checked.refusal != "" {
+				return resolveTask(callback, out, taskRefusal(in.Get("taskId"), checked.refusal))
+			}
+			previous := checked.task
 			if previous == nil {
 				return resolveTask(callback, out, taskMissing(in.Get("taskId")))
 			}
@@ -167,11 +222,44 @@ func (s *Service) startTask(ctx context.Context, name string, in protocol.JSONOb
 					return resolveTask(callback, out, object(field("success", false), protocol.JSONField{Name: "taskId", Value: in.Get("taskId")}, field("updatedFields", []string{}), field("error", failure.Error())))
 				}
 			}
-			mutation, e := native(s, callback, func() (*taskstore.Mutation, error) { return s.options.TaskStore.Update(list, in.Get("taskId"), in) })
+			type updatedTask struct {
+				mutation        *taskstore.Mutation
+				refusal         string
+				assignmentError error
+			}
+			mutation, e := native(s, callback, func() (updatedTask, error) {
+				var result *taskstore.Mutation
+				var e error
+				if teammate {
+					result, e = s.options.TaskStore.UpdateForTeammate(list, in.Get("taskId"), in, member)
+				} else {
+					result, e = s.options.TaskStore.Update(list, in.Get("taskId"), in)
+				}
+				var blocked taskstore.ExecutionBlocked
+				if errors.As(e, &blocked) {
+					return updatedTask{refusal: blocked.Error()}, nil
+				}
+				if e != nil {
+					return updatedTask{}, e
+				}
+				if result != nil && team != "" && result.Task.String("status") != "completed" && result.Task.String("owner") != "" && !jsonSame(result.Task.Get("owner"), result.Previous.Get("owner")) && s.options.Team.TaskAssigned != nil {
+					if e := s.options.Team.TaskAssigned(team, result.Task); e != nil {
+						return updatedTask{mutation: result, assignmentError: e}, nil
+					}
+				}
+				return updatedTask{mutation: result}, nil
+			})
 			if e != nil {
 				return e
 			}
-			return taskThen(callback, mutation, out, func(done *cooperative.Scope, mutation *taskstore.Mutation) error {
+			return taskThen(callback, mutation, out, func(done *cooperative.Scope, updated updatedTask) error {
+				if updated.assignmentError != nil && s.options.Team.TaskAssignmentError != nil {
+					s.options.Team.TaskAssignmentError(done, updated.assignmentError)
+				}
+				if updated.refusal != "" {
+					return resolveTask(done, out, taskRefusal(in.Get("taskId"), updated.refusal))
+				}
+				mutation := updated.mutation
 				if mutation == nil {
 					return resolveTask(done, out, taskMissing(in.Get("taskId")))
 				}
@@ -186,6 +274,9 @@ func (s *Service) startTask(ctx context.Context, name string, in protocol.JSONOb
 		return nil, err
 	}
 	return out, nil
+}
+func taskRefusal(id json.RawMessage, reason string) json.RawMessage {
+	return object(field("success", false), protocol.JSONField{Name: "taskId", Value: id}, field("updatedFields", []string{}), field("error", reason))
 }
 func jsonSame(a, b json.RawMessage) bool {
 	if len(a) == 0 || len(b) == 0 {
@@ -276,7 +367,7 @@ func (t *taskText) ids(v json.RawMessage) {
 		t.value(id)
 	}
 }
-func mapTask(name string, data protocol.JSONObject, id json.RawMessage) (protocol.JSONObject, error) {
+func mapTask(name string, data protocol.JSONObject, id json.RawMessage, teammate ...bool) (protocol.JSONObject, error) {
 	var content taskText
 	switch name {
 	case "TaskCreate":
@@ -362,6 +453,11 @@ func mapTask(name string, data protocol.JSONObject, id json.RawMessage) (protoco
 		}
 		if boolean(data, "verificationNudgeNeeded", false) {
 			return protocol.JSONObject{}, capability("active TaskV2 verification agent")
+		}
+		var change protocol.JSONObject
+		_ = change.UnmarshalJSON(data.Get("statusChange"))
+		if len(teammate) > 0 && teammate[0] && change.String("to") == "completed" {
+			content.add("\n\nTask completed. Call TaskList now to find your next available task or see if your work unblocked others.")
 		}
 	}
 	return protocol.NewJSONObject(protocol.JSONField{Name: "tool_use_id", Value: id}, field("type", "tool_result"), protocol.JSONField{Name: "content", Value: protocol.QuoteJavaScriptUTF16(content)}), nil

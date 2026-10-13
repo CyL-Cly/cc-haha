@@ -56,7 +56,10 @@ func (d *DesktopSession) setRuntime(ctx context.Context, input protocol.JSONObje
 		}
 		return err
 	}
-	canSwitchInProcess := sameRuntimeProvider(currentProvider, selection.ProviderID) && (selection.EffortLevel == "" || selection.EffortLevel == currentEffort)
+	if d.acceptReplayedRuntime(selection) {
+		return nil
+	}
+	canSwitchInProcess := d.currentOpenAIFastMode() == selectionFast(selection.Selection) && sameRuntimeProvider(currentProvider, selection.ProviderID) && (selection.EffortLevel == "" || selection.EffortLevel == currentEffort)
 	if d.sideChat && !canSwitchInProcess {
 		d.rejectSideChatRestart("A temporary side chat cannot restart without losing its history. Open a new side chat to change provider or reasoning effort.")
 		return nil
@@ -100,6 +103,7 @@ func (d *DesktopSession) persistRuntimeSelection(ctx context.Context, engine *Se
 	if selection.EffortLevel != "" {
 		metadata.Set("effortLevel", raw(selection.EffortLevel))
 	}
+	metadata.Set("openAIFastMode", raw(selectionFast(selection.Selection)))
 	// AppendSessionMetadata enriches the shared record for transcript storage.
 	// The original host metadata callback received the earlier runtime-only
 	// bytes, captured before that append.
@@ -154,6 +158,9 @@ func (d *DesktopSession) restartRuntime(ctx context.Context, next providerconfig
 	if err != nil {
 		return err
 	}
+	finishTransition := d.beginRuntimeTransition()
+	defer finishTransition()
+	output := d.nextRuntimeOutput()
 	if err := previous.Close(ctx); err != nil {
 		return err
 	}
@@ -167,13 +174,14 @@ func (d *DesktopSession) restartRuntime(ctx context.Context, next providerconfig
 	o.Arguments.Model = next.ModelID
 	o.Arguments.EffortLevel = next.EffortLevel
 	o.RuntimeSelection = &next.Selection
-	o.OnSDK = d.output
+	o.OnSDK = output
 	engine, err := NewSession(d.ctx, o)
 	if err != nil {
 		// Restore the previous frozen native environment so a failed restart
 		// leaves a usable runtime, even if the active saved provider changed.
 		rollback := d.options
 		rollback.Native = previous.native
+		rollback.OnSDK = d.nextRuntimeOutput()
 		rollback.Arguments.SessionID = d.id
 		rollback.Arguments.Resume = ""
 		if hasConversation {
@@ -210,6 +218,9 @@ func (d *DesktopSession) broadcastAppliedRuntime(next providerconfig.RuntimeSele
 	if next.EffortLevel != "" {
 		fields = append(fields, field("effortLevel", next.EffortLevel))
 	}
+	if next.ProviderID != nil && *next.ProviderID == "openai-official" {
+		fields = append(fields, field("openAIFastMode", selectionFast(next.Selection)))
+	}
 	if next.RequestedConfig != nil {
 		fields = append(fields, field("requestedConfig", next.RequestedConfig))
 	}
@@ -229,4 +240,13 @@ func (d *DesktopSession) currentRuntimeIdentity() (*string, string) {
 }
 func (d *DesktopSession) rejectSideChatRestart(message string) {
 	d.emit(frame("error", field("code", "SIDE_CHAT_RUNTIME_RESTART_UNAVAILABLE"), field("message", message)))
+}
+
+func selectionFast(selection providerconfig.Selection) bool {
+	return selection.ProviderID != nil && *selection.ProviderID == "openai-official" && selection.OpenAIFastMode != nil && *selection.OpenAIFastMode
+}
+func (d *DesktopSession) currentOpenAIFastMode() bool {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	return d.options.RuntimeSelection != nil && selectionFast(*d.options.RuntimeSelection)
 }

@@ -26,7 +26,8 @@ type NativeComputerUseOptions struct {
 	AppRoot, Executable string
 	RuntimeOptions      *curepl.RuntimeOptions
 	NativeCall          func(context.Context, string, json.RawMessage) (json.RawMessage, error)
-	SkillWatchTiming    *skillwatcher.Timing // Timer primitive, hermetic fixtures only.
+	SkillWatchTiming    *skillwatcher.Timing             // Timer primitive, hermetic fixtures only.
+	WindowsOptions      *computeruse.WindowsToolsOptions // Coordinate/gate and OS primitives for the original Windows face.
 }
 type nativeComputerUse struct {
 	service     *computeruse.Service
@@ -79,8 +80,38 @@ func (m *MainPrint) newNativeComputerUse() error {
 	if e != nil || string(config["enabled"]) != "true" {
 		return nil
 	}
+	facadeOptions := computeruse.NativeToolsOptions{Service: service, CurrentSessionID: func() string {
+		if m.Controller != nil {
+			return m.Controller.SessionID()
+		}
+		return m.state.SessionID()
+	}, Now: n.Now, OnNotification: m.options.OnComputerUseNotification, NativeCall: options.NativeCall}
 	if m.options.Platform != "darwin" {
-		return mainCap("Windows Computer Use SDK tools and native compatibility transport")
+		windowsOptions := computeruse.WindowsToolsOptions{}
+		if options.WindowsOptions != nil {
+			windowsOptions = *options.WindowsOptions
+		}
+		windowsOptions.Native = facadeOptions
+		pixelTools, err := computeruse.NewWindowsTools(windowsOptions)
+		if err != nil {
+			return err
+		}
+		binder, err := computerusemcp.NewWindows(pixelTools)
+		if err != nil {
+			_ = pixelTools.Close(context.Background())
+			return err
+		}
+		m.computerUse.binder = binder
+		tools, err := binder.Tools(context.Background())
+		if err != nil {
+			return err
+		}
+		rules := append([]string{}, m.options.Arguments.AllowedTools...)
+		for _, tool := range tools {
+			rules = append(rules, "mcp__computer-use__"+tool.String("name"))
+		}
+		m.options.Arguments.AllowedTools = rules
+		return nil
 	}
 	launchable, e := service.ResolveLaunchableHelper(context.Background())
 	if e != nil || launchable == "" {
@@ -93,17 +124,6 @@ func (m *MainPrint) newNativeComputerUse() error {
 	kernel, e := curepl.NewRuntime(kernelOptions)
 	if e != nil {
 		return e
-	}
-	facadeOptions := computeruse.NativeToolsOptions{Service: service, CurrentSessionID: func() string {
-		if m.Controller != nil {
-			return m.Controller.SessionID()
-		}
-		return m.state.SessionID()
-	}, Now: n.Now, OnNotification: m.options.OnComputerUseNotification}
-	if options.NativeCall != nil {
-		facadeOptions.NativeCall = func(ctx context.Context, name string, args json.RawMessage) (json.RawMessage, error) {
-			return options.NativeCall(ctx, name, args)
-		}
 	}
 	facade, e := computeruse.NewNativeTools(facadeOptions)
 	if e != nil {

@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/NanmiCoder/cc-haha/backend/internal/httpapi"
 	"github.com/NanmiCoder/cc-haha/backend/internal/petaccess"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/sessioncollaboration"
@@ -29,9 +30,10 @@ type connection struct {
 }
 
 type admissionFrame struct {
-	socket *connection
-	raw    json.RawMessage
-	ctx    context.Context
+	socket   *connection
+	raw      json.RawMessage
+	ctx      context.Context
+	userTurn *registeredUserTurn
 }
 
 func (socket *connection) send(raw json.RawMessage) error {
@@ -73,7 +75,7 @@ func (server *Server) connect(id string, ws *websocket.Conn, kinds ...bool) {
 func (server *Server) connectSocket(id string, socket *connection, messageAllowed func() bool) {
 	ws := socket.ws
 	server.mu.Lock()
-	if server.closed || server.deleting[id] {
+	if server.closed || server.migration.active || server.deleting[id] {
 		server.mu.Unlock()
 		_ = ws.Close()
 		return
@@ -94,6 +96,7 @@ func (server *Server) connectSocket(id string, socket *connection, messageAllowe
 	}
 
 	if runtime != nil {
+		server.cancelDisconnect(runtime)
 		runtime.mu.Lock()
 		runtime.epoch++
 		if runtime.timer != nil {
@@ -183,7 +186,7 @@ func (server *Server) forwardPlanRuntimeApproval(id string, socket *connection, 
 
 func (server *Server) runtime(id string) (*runtimeSession, error) {
 	server.mu.Lock()
-	if server.deleting[id] {
+	if server.closed || server.migration.active || server.deleting[id] {
 		server.mu.Unlock()
 		return nil, context.Canceled
 	}
@@ -198,9 +201,10 @@ func (server *Server) runtime(id string) (*runtimeSession, error) {
 	}
 	runtimeContext, cancel := context.WithCancel(server.ctx)
 	value := &runtimeSession{ctx: runtimeContext, cancel: cancel, options: server.sessionOptions(info), wake: make(chan struct{}, 1), admitted: make(chan struct{})}
+	value.disconnectState().afterClose = func(err error) { server.flushClosingTaskNotifications(id, value, err) }
 	server.mu.Lock()
 	defer server.mu.Unlock()
-	if server.closed || server.deleting[id] {
+	if server.closed || server.migration.active || server.deleting[id] {
 		cancel()
 		return nil, context.Canceled
 	}
@@ -209,6 +213,7 @@ func (server *Server) runtime(id string) (*runtimeSession, error) {
 		return existing, nil
 	}
 	server.runtimes[id] = value
+	context.AfterFunc(runtimeContext, func() { server.cancelDisconnect(value) })
 	go server.admit(id, value)
 	return value, nil
 }
@@ -218,30 +223,41 @@ func (server *Server) runtime(id string) (*runtimeSession, error) {
 // active turn can still receive permission replies and cancellation.
 func (server *Server) enqueue(id string, socket *connection, raw json.RawMessage) {
 	var message protocol.JSONObject
-	if message.UnmarshalJSON(raw) == nil && message.String("type") == "user_message" {
-		server.conversations.Begin(id)
-	}
+	_ = message.UnmarshalJSON(raw)
 	runtime, err := server.runtime(id)
 	if err != nil {
 		socket.failure(err.Error(), "USER_TURN_FAILED")
 		return
 	}
+	server.mu.Lock()
 	runtime.mu.Lock()
-	if runtime.retired || runtime.ctx.Err() != nil {
+	if server.closed || server.migration.active || runtime.retired || runtime.ctx.Err() != nil {
 		runtime.mu.Unlock()
+		server.mu.Unlock()
 		return
+	}
+	if message.String("type") == "user_message" {
+		server.conversations.Begin(id)
+	}
+	var userTurn *registeredUserTurn
+	if message.String("type") == "user_message" {
+		userTurn = registerUserTurn(runtime)
 	}
 	inputContext := runtime.ctx
 	if input, ok := runtime.live.(PlanRuntimeApprovalSession); ok && message.String("type") == "user_message" {
 		inputContext = input.CaptureRuntimeInput(inputContext)
 	}
-	runtime.admission = append(runtime.admission, admissionFrame{socket: socket, raw: append(json.RawMessage(nil), raw...), ctx: inputContext})
+	runtime.disconnectState().cancelTimer()
+	runtime.disconnectState().rootActive = message.String("type") == "user_message"
+	runtime.disconnectState().rootWaiting = false
+	runtime.admission = append(runtime.admission, admissionFrame{socket: socket, raw: append(json.RawMessage(nil), raw...), ctx: inputContext, userTurn: userTurn})
 	runtime.epoch++
 	if runtime.timer != nil {
 		runtime.timer.Stop()
 		runtime.timer = nil
 	}
 	runtime.mu.Unlock()
+	server.mu.Unlock()
 	select {
 	case runtime.wake <- struct{}{}:
 	default:
@@ -271,9 +287,14 @@ func (server *Server) admit(id string, runtime *runtimeSession) {
 		runtime.admission[0] = admissionFrame{}
 		runtime.admission = runtime.admission[1:]
 		runtime.admitting = true
+		runtime.activeUserTurn = frame.userTurn
 		runtime.mu.Unlock()
 		server.forwardRuntime(id, runtime, frame.socket, frame.raw, frame.ctx)
 		runtime.mu.Lock()
+		settleRegisteredUserTurn(runtime, frame.userTurn)
+		if runtime.activeUserTurn == frame.userTurn {
+			runtime.activeUserTurn = nil
+		}
 		runtime.admitting = false
 		runtime.mu.Unlock()
 		server.armDisconnect(id)
@@ -329,6 +350,7 @@ func (server *Server) liveRuntime(id string, runtime *runtimeSession) (LiveSessi
 		runtime.opening = make(chan struct{})
 		opening := runtime.opening
 		runtime.mu.Unlock()
+		generation := server.beginDisconnectGeneration(runtime)
 		// Every reopened runtime reloads persisted metadata/history. The previous
 		// Agent may have appended turns or runtime overrides before eviction.
 		runtime.mu.Lock()
@@ -355,7 +377,7 @@ func (server *Server) liveRuntime(id string, runtime *runtimeSession) (LiveSessi
 				// stand in for the original active-client/runtime identity check.
 				options.CanContinueRuntime = func() bool {
 					server.mu.Lock()
-					owned := !server.closed && server.runtimes[id] == runtime && len(server.connections[id]) > 0
+					owned := !server.closed && !server.migration.active && server.runtimes[id] == runtime && len(server.connections[id]) > 0
 					server.mu.Unlock()
 					if !owned {
 						return false
@@ -364,7 +386,16 @@ func (server *Server) liveRuntime(id string, runtime *runtimeSession) (LiveSessi
 					defer runtime.mu.Unlock()
 					return !runtime.retired && runtime.ctx.Err() == nil && runtime.live == live && live != nil && runtime.closing == nil
 				}
-				live, err = server.options.Factory(runtime.ctx, options, func(raw json.RawMessage) { server.emitTeamWorker(id, raw) })
+				options.OnRuntimeClosed = func(ctx context.Context, ended LiveSession) error {
+					return server.retireSelfClosedRuntime(ctx, id, runtime, ended)
+				}
+				originalSDK := options.OnSDK
+				options.OnSDK = func(raw json.RawMessage) {
+					if server.observeDisconnectSDK(id, runtime, generation, raw) && originalSDK != nil {
+						originalSDK(raw)
+					}
+				}
+				live, err = server.options.Factory(runtime.ctx, options, func(raw json.RawMessage) { server.emitDisconnectGeneration(id, runtime, generation, raw) })
 			}
 		}
 		if err == nil && live == nil {
@@ -387,6 +418,19 @@ func (server *Server) liveRuntime(id string, runtime *runtimeSession) (LiveSessi
 		runtime.opening = nil
 		close(opening)
 		runtime.mu.Unlock()
+		if err == nil && options.TeamWorker == nil {
+			// MAIN's sessionStarted restoration is owned background work. Its
+			// failure is diagnostic and does not invalidate an opened session.
+			if done, admitted := server.beginMigrationHTTPAdmission(); admitted {
+				go func() {
+					defer done()
+					if failure := server.TeamLeadStarted(runtime.ctx, id); failure != nil {
+						server.options.OnUnhandled(httpapi.UnhandledError{Type: "team_lead_restore_failed", Severity: "error", Summary: "Team lead restoration failed for " + id, Error: failure})
+					}
+				}()
+			}
+		}
+		server.armDisconnect(id)
 		return live, err
 	}
 }
@@ -405,14 +449,19 @@ func (server *Server) forward(id string, socket *connection, raw json.RawMessage
 }
 
 func (server *Server) forwardRuntime(id string, runtime *runtimeSession, socket *connection, raw json.RawMessage, ingress ...context.Context) {
+	var incoming protocol.JSONObject
+	_ = incoming.UnmarshalJSON(raw)
+	if incoming.String("type") == "stop_generation" {
+		runtime.mu.Lock()
+		cancelRegisteredUserTurn(runtime)
+		runtime.mu.Unlock()
+	}
 	if handled, err := server.routeTeamPermission(runtime.ctx, id, raw); handled || err != nil {
 		if err != nil {
 			server.runtimeFailure(id, socket, err)
 		}
 		return
 	}
-	var incoming protocol.JSONObject
-	_ = incoming.UnmarshalJSON(raw)
 	if incoming.String("type") == "set_runtime_config" {
 		if handled, err := server.selectUnopenedSideChatRuntime(id, runtime, incoming); handled {
 			if err != nil {
@@ -439,7 +488,7 @@ func (server *Server) forwardRuntime(id string, runtime *runtimeSession, socket 
 		}
 	}
 	if incoming.String("type") == "stop_generation" {
-		if err := server.StopTeamWorkers(runtime.ctx, id); err != nil {
+		if err := server.PauseTeamWorkers(runtime.ctx, id); err != nil {
 			server.runtimeFailure(id, socket, err)
 			return
 		}
@@ -473,6 +522,9 @@ func (server *Server) forwardRuntime(id string, runtime *runtimeSession, socket 
 		}
 	}
 	live, err := server.liveRuntime(id, runtime)
+	if err == nil && incoming.String("type") == "user_message" && socket != nil {
+		err = server.TeamLeadUserMessage(runtime.ctx, id)
+	}
 	if err == nil {
 		if incoming.String("type") == "team_worker_input" {
 			worker, ok := live.(nativeTeamWorkerSession)
@@ -494,9 +546,13 @@ func (server *Server) forwardRuntime(id string, runtime *runtimeSession, socket 
 			err = live.Handle(ctx, append(json.RawMessage(nil), raw...))
 		}
 	}
+	if err == nil && incoming.String("type") == "stop_generation" {
+		server.bookendDisconnectTasks(id, runtime, "stopped")
+	}
 	if err != nil && runtime.ctx.Err() == nil {
 		server.runtimeFailure(id, socket, err)
 	}
+	server.armDisconnect(id)
 }
 
 func (server *Server) sendSnapshot(id string, socket *connection) {
@@ -504,18 +560,25 @@ func (server *Server) sendSnapshot(id string, socket *connection) {
 	runtime := server.runtimes[id]
 	server.mu.Unlock()
 	var live LiveSession
+	registered := false
 	if runtime != nil {
 		runtime.mu.Lock()
 		live = runtime.live
+		registered = hasRegisteredUserTurn(runtime)
 		runtime.mu.Unlock()
 	}
 	if live == nil {
-		_ = socket.object(map[string]any{"type": "session_state", "turnState": "idle", "activeBackgroundTaskIds": []string{}})
-		_ = socket.object(map[string]any{"type": "permission_requests_snapshot", "toolRequestIds": []string{}, "computerUseRequestIds": []string{}, "turnActive": false})
+		state := "idle"
+		if registered {
+			state = "running"
+		}
+		_ = socket.object(map[string]any{"type": "session_state", "turnState": state, "activeBackgroundTaskIds": []string{}})
+		_ = socket.object(map[string]any{"type": "permission_requests_snapshot", "toolRequestIds": []string{}, "computerUseRequestIds": []string{}, "turnActive": registered})
 		return
 	}
 	frames, err := live.Snapshot(server.ctx)
 	if err == nil {
+		frames = server.disconnectSnapshot(runtime, frames)
 		frames, err = server.teamSnapshot(server.ctx, id, frames)
 	}
 	if err != nil {
@@ -523,6 +586,18 @@ func (server *Server) sendSnapshot(id string, socket *connection) {
 		return
 	}
 	for _, raw := range frames {
+		if registered {
+			var frame protocol.JSONObject
+			if frame.UnmarshalJSON(raw) == nil {
+				switch frame.String("type") {
+				case "session_state":
+					frame.Set("turnState", json.RawMessage(`"running"`))
+				case "permission_requests_snapshot":
+					frame.Set("turnActive", json.RawMessage(`true`))
+				}
+				raw, _ = frame.MarshalJSON()
+			}
+		}
 		_ = socket.send(raw)
 	}
 }
@@ -570,48 +645,134 @@ func (server *Server) armDisconnect(id string) {
 	server.mu.Lock()
 	runtime := server.runtimes[id]
 	connected := len(server.connections[id]) > 0
-	closed := server.closed
+	closed := server.closed || server.migration.active
 	server.mu.Unlock()
-	if connected || closed || runtime == nil {
+	if runtime == nil {
+		return
+	}
+	if connected || closed {
+		server.cancelDisconnect(runtime)
 		return
 	}
 	runtime.mu.Lock()
-	live := runtime.live
-	retired := runtime.retired
-	worker := runtime.options.TeamWorker != nil
+	live, opening := runtime.live, runtime.opening != nil
+	retired, worker := runtime.retired || runtime.closing != nil, runtime.options.TeamWorker != nil
 	pending := runtime.admitting || len(runtime.admission) > 0
 	runtime.mu.Unlock()
-	if live == nil || retired || pending || worker || snapshotBusy(runtime.ctx, live) {
+	if retired || worker || live == nil && !opening {
 		return
 	}
+	if live != nil && server.closeLostDisconnectRuntime(id, runtime, live) {
+		return
+	}
+	opening = opening || disconnectRuntimeTransition(live) != nil
+	busy := false
+	if live != nil {
+		busy = snapshotBusy(runtime.ctx, live)
+	}
+	team := server.TeamHasPendingWork(id)
+	runtime.mu.Lock()
+	defer runtime.mu.Unlock()
+	if runtime.retired || runtime.live != live || runtime.closing != nil {
+		return
+	}
+	d := runtime.disconnectState()
+	kind := d.decision(pending, busy, team, opening)
+	if kind == "" {
+		d.cancelTimer()
+		return
+	}
+	// Progress must not restart the 31-minute clock. An expired startup
+	// decision likewise remains owned until its factory settles.
+	if d.kind == kind && (d.timer != nil || d.startupExpired) {
+		return
+	}
+	d.cancelTimer()
+	d.kind = kind
 	delay := 30 * time.Second
 	if server.grace != nil {
 		delay = time.Duration(server.grace.Milliseconds()) * time.Millisecond
 	}
-	runtime.mu.Lock()
-	defer runtime.mu.Unlock()
-	if runtime.retired || runtime.live != live {
-		return
+	if kind != "idle" {
+		delay = disconnectedWorkCeiling
 	}
 	runtime.epoch++
-	epoch := runtime.epoch
-	if runtime.timer != nil {
-		runtime.timer.Stop()
-	}
-	runtime.timer = time.AfterFunc(delay, func() { server.expireDisconnect(id, runtime, epoch) })
+	epoch, sequence := runtime.epoch, d.sequence
+	d.timer = server.afterRuntimeTimer(delay, func() { server.expireDisconnectDecision(id, runtime, epoch, sequence, kind) })
 }
 
+// Kept as the existing idle-timer test seam. Production callbacks also capture
+// the per-decision sequence and kind, so canceled callbacks cannot claim a
+// replacement timer from the same runtime.
 func (server *Server) expireDisconnect(id string, runtime *runtimeSession, epoch uint64) {
 	runtime.mu.Lock()
-	live := runtime.live
-	eligible := runtime.epoch == epoch && !runtime.retired && runtime.closing == nil && !runtime.admitting && len(runtime.admission) == 0
+	d := runtime.disconnectState()
+	sequence, kind := d.sequence, d.kind
 	runtime.mu.Unlock()
-	if live == nil || !eligible || snapshotBusy(runtime.ctx, live) {
+	server.expireDisconnectDecision(id, runtime, epoch, sequence, kind)
+}
+func (server *Server) expireDisconnectDecision(id string, runtime *runtimeSession, epoch, sequence uint64, kind string) {
+	server.mu.Lock()
+	runtime.mu.Lock()
+	d := runtime.disconnectState()
+	eligible := !server.closed && !server.migration.active && len(server.connections[id]) == 0 && server.runtimes[id] == runtime && !runtime.retired && runtime.closing == nil && runtime.epoch == epoch && d.sequence == sequence && d.kind == kind
+	live, opening := runtime.live, runtime.opening
+	if eligible && opening != nil {
+		d.timer = nil
+		d.startupExpired = true
+	}
+	runtime.mu.Unlock()
+	server.mu.Unlock()
+	if !eligible {
+		return
+	}
+	if opening == nil {
+		if pending := disconnectRuntimeTransition(live); pending != nil {
+			// This channel belongs to the internal Host replacement, rather than
+			// the outer desktop factory. Keep the same cleanup-decision ticket.
+			runtime.mu.Lock()
+			if d.sequence == sequence {
+				d.timer = nil
+				d.startupExpired = true
+			}
+			runtime.mu.Unlock()
+			go func() {
+				select {
+				case <-pending:
+					server.expireDisconnectDecision(id, runtime, epoch, sequence, kind)
+				case <-runtime.ctx.Done():
+				}
+			}()
+			return
+		}
+	}
+	if opening != nil {
+		// The factory is owned by runtime.ctx; Close joins it. This wait cannot
+		// promote a superseded timeout after reconnect or a new user turn.
+		go func() {
+			select {
+			case <-opening:
+				server.expireDisconnectDecision(id, runtime, epoch, sequence, kind)
+			case <-runtime.ctx.Done():
+			}
+		}()
+		return
+	}
+	if live == nil {
+		return
+	}
+	busy, team := snapshotBusy(runtime.ctx, live), server.TeamHasPendingWork(id)
+	runtime.mu.Lock()
+	pending := runtime.admitting || len(runtime.admission) > 0
+	current := d.decision(pending, busy, team, false)
+	runtime.mu.Unlock()
+	if current != kind {
+		server.armDisconnect(id)
 		return
 	}
 	server.mu.Lock()
 	runtime.mu.Lock()
-	if server.closed || len(server.connections[id]) > 0 || runtime.retired || runtime.epoch != epoch || runtime.live != live || runtime.closing != nil || runtime.admitting || len(runtime.admission) > 0 {
+	if server.closed || server.migration.active || len(server.connections[id]) > 0 || server.runtimes[id] != runtime || runtime.retired || runtime.epoch != epoch || d.sequence != sequence || d.kind != kind || runtime.live != live || runtime.closing != nil || d.decision(runtime.admitting || len(runtime.admission) > 0, busy, team, false) != kind {
 		runtime.mu.Unlock()
 		server.mu.Unlock()
 		return
@@ -622,14 +783,24 @@ func (server *Server) expireDisconnect(id string, runtime *runtimeSession, epoch
 		runtime.revokeCollaboration()
 		runtime.revokeCollaboration = nil
 	}
-	runtime.timer = nil
+	d.cancelTimer()
+	d.cliRunning, d.rootWaiting, d.rootActive = false, false, false
+	clear(d.tool)
+	clear(d.computer)
 	runtime.epoch++
 	closing := make(chan struct{})
 	runtime.closing = closing
 	runtime.mu.Unlock()
 	server.mu.Unlock()
-	_ = live.Close(runtime.ctx)
+	// Close reaps and joins the same native task group. Bookends follow its
+	// successful completion, so no UI terminal status claims a live process
+	// has stopped before the native cancellation has been acknowledged.
+	err := live.Close(runtime.ctx)
+	if err == nil {
+		server.bookendDisconnectTasks(id, runtime, "runtime_exit")
+	}
 	runtime.mu.Lock()
+	runtime.closeError = err
 	runtime.closing = nil
 	close(closing)
 	runtime.mu.Unlock()

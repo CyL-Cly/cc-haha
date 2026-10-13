@@ -16,6 +16,7 @@ import (
 var errAgentPromotedToBackground = errors.New("Agent foreground iteration promoted to independent background")
 
 type nativeAgentBackgroundRestart struct {
+	releaseSlot  func()
 	abortContext context.Context
 	worktree     *nativeAgentWorktree
 	prompt       *sdkhost.NativeAgentRestartPrompt

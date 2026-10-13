@@ -18,6 +18,7 @@ import (
 )
 
 type Pairing struct {
+	Lifecycle *MigrationLifecycle
 	ConfigDir string
 	NowMillis func() int64
 	Service   *adapterconfig.Service
@@ -144,7 +145,9 @@ func (p *Pairing) TryPair(platform, text, displayName string, user json.RawMessa
 	return true, nil
 }
 
-func (p *Pairing) write(document protocol.JSONObject) error {
+func (p *Pairing) write(document protocol.JSONObject) (err error) {
+	done := p.Lifecycle.Track()
+	defer func() { done(err) }()
 	path := filepath.Join(p.ConfigDir, "adapters.json")
 	if _, err := os.Stat(filepath.Dir(path)); os.IsNotExist(err) {
 		if err = os.MkdirAll(filepath.Dir(path), 0700); err != nil {

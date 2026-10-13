@@ -1,5 +1,5 @@
 import fs from 'node:fs'
-import { join } from 'node:path'
+import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { mock, spyOn } from 'bun:test'
 import { assertDisposableFixtureHome } from '../../scripts/quality-gate/go-parity/fixture-guard'
@@ -9,7 +9,9 @@ const input = await Bun.stdin.json()
 const home = assertDisposableFixtureHome(process.env.HOME, 'SDK initialize metadata')
 const printPath = fs.realpathSync(fileURLToPath(new URL('../../src/cli/print.ts', import.meta.url)))
 const mainPath = fs.realpathSync(fileURLToPath(new URL('../../src/main.tsx', import.meta.url)))
-const capabilities = await installClientFixtureCapabilities(home, { absentPaths: [...absentManagedSettingsFixturePaths(), '/Library/Application Support/ClaudeCode/.claude/skills', '/Library/Application Support/ClaudeCode/.claude/agents', '/Library/Application Support/ClaudeCode/.claude/output-styles', join(process.execPath, '..', 'rg'), '/usr/bin/rg', '/bin/rg', '/home/claude/.claude/remote/.oauth_token','/home/claude/.claude/remote/.api_key'] })
+const absent=[...absentManagedSettingsFixturePaths(), '/Library/Application Support/ClaudeCode/.claude/skills', '/Library/Application Support/ClaudeCode/.claude/agents', '/Library/Application Support/ClaudeCode/.claude/output-styles', join(process.execPath, '..', 'rg'), '/usr/bin/rg', '/bin/rg', '/home/claude/.claude/remote/.oauth_token','/home/claude/.claude/remote/.api_key']
+for(let directory=dirname(home);;directory=dirname(directory)){absent.push(join(directory,'.git'));if(directory===dirname(directory))break}
+const capabilities = await installClientFixtureCapabilities(home, { absentPaths: absent })
 // Only the external credential-store primitive is replaced. Its bytes are the
 // disposable physical Source credential fixture, parsed by the real auth code.
 const secure = join(home, '.claude', '.credentials.json')
@@ -70,6 +72,9 @@ if (initializeBegin < 0 || initializeEnd < 0) throw new Error('Original SDK init
 const initializeBody = new Bun.Transpiler({loader:'ts'}).transformSync(source.slice(initializeBegin, initializeEnd) + '\nreturn handleInitializeRequest\n')
 const cwd = await import('../../src/utils/cwd')
 const dependencies = {
+  AwsAuthStatusManager: (await import('../../src/utils/awsAuthStatusManager')).AwsAuthStatusManager,
+  randomUUID: (await import('node:crypto')).randomUUID,
+  getSessionId: state.getSessionId,
   parseAgentsFromJson: agentsModule.parseAgentsFromJson,
   getMainThreadAgentType: state.getMainThreadAgentType,
   setMainThreadAgentType: state.setMainThreadAgentType,
@@ -97,6 +102,13 @@ const output: any[] = []
 const options: any = input.options ?? {}
 const allCommands = headless.filterCommandsForHeadlessMode(await commandsModule.getCommands(process.cwd()))
 const allAgents = definitions.activeAgents.slice()
+if (input.authStatus !== undefined) {
+  if (input.sessionId) state.switchSession(input.sessionId)
+  await handle({subtype:'initialize'}, 'actual-init', false, {enqueue:(value:any)=>output.push(value)}, allCommands, models, io, input.authStatus, options, allAgents, ()=>({fastMode:false}))
+  await handle({subtype:'initialize'}, 'repeated-init', true, {enqueue:(value:any)=>output.push(value)}, allCommands, models, io, input.authStatus, options, allAgents, ()=>({fastMode:false}))
+  process.stdout.write(JSON.stringify({output,capabilities})+'\n')
+  process.exit(0)
+}
 if (input.controls) {
   const modelStart=source.indexOf('          const requestedModel = message.request.model')
   const modelEnd=source.indexOf("        } else if (message.request.subtype === 'set_max_thinking_tokens')",modelStart)

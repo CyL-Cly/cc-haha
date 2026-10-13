@@ -57,6 +57,10 @@ func NormalizeRuntimeSelection(ctx context.Context, options Options, input stora
 	if id != nil {
 		if *id == "openai-official" {
 			selection := RuntimeSelection{Selection: Selection{ProviderID: id, ModelID: model}}
+			var fast bool
+			if json.Unmarshal(input["openAIFastMode"], &fast) == nil && string(input["openAIFastMode"]) != "null" {
+				selection.OpenAIFastMode = &fast
+			}
 			if requestedEffort == nil {
 				return selection, nil
 			}
@@ -97,6 +101,10 @@ func NormalizeRuntimeSelection(ctx context.Context, options Options, input stora
 			defaults.RequestedConfig = storage.Object{"providerId": encode(*id), "modelId": encode(model)}
 			if requestedEffort != nil {
 				defaults.RequestedConfig["effortLevel"] = encode(*requestedEffort)
+			}
+			var fast bool
+			if json.Unmarshal(input["openAIFastMode"], &fast) == nil && string(input["openAIFastMode"]) != "null" {
+				defaults.RequestedConfig["openAIFastMode"] = encode(fast)
 			}
 			return defaults, nil
 		}

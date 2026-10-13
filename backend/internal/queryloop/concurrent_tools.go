@@ -170,6 +170,9 @@ func (batch *SerialToolBatch) prepareConcurrent(ctx context.Context, round Round
 	}
 	permission, err := batch.permission(ctx, *tool, processed, call)
 	if err != nil {
+		if fatalToolError(err) {
+			return nil, protocol.JSONObject{}, err
+		}
 		return failCall(err)
 	}
 	if permission.Behavior != "allow" || permission.Input == nil || !permission.Input.IsObject() {
@@ -213,7 +216,7 @@ func (batch *SerialToolBatch) completeConcurrent(ctx context.Context, done compl
 	if err != nil {
 		return fail(err)
 	}
-	mapped, err = ProcessSmallTextToolResult(mapped, p.tool.Name, p.tool.PersistenceThreshold)
+	mapped, err = batch.processToolResult(ctx, mapped, p.tool.Name, p.tool.PersistenceThreshold)
 	if err != nil {
 		return fail(err)
 	}
@@ -239,7 +242,7 @@ func (batch *SerialToolBatch) completeConcurrent(ctx context.Context, done compl
 	if changed {
 		mapped, err = mapTool(*p.tool, done.result.Data, p.id)
 		if err == nil {
-			mapped, err = ProcessSmallTextToolResult(mapped, p.tool.Name, p.tool.PersistenceThreshold)
+			mapped, err = batch.processToolResult(ctx, mapped, p.tool.Name, p.tool.PersistenceThreshold)
 		}
 		if err == nil {
 			options, err = permissionUserContent(mapped, p.permission, p.call.Messages)

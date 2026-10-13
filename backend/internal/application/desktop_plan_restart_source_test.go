@@ -570,7 +570,7 @@ func runActualPlanProviderRestart(t *testing.T, scenario string) {
 					n := runtime.Stack(stack, true)
 					_ = os.WriteFile(filepath.Join(evidence, "plan-native-failure-stacks.txt"), stack[:n], 0600)
 				}
-				t.Fatal("actual public", kind, "plan restart", failure)
+				t.Fatal("actual public", kind, "plan restart", failure, "native stderr",stderr)
 			}
 			if scenario == "close-restart" {
 				if len(x) != 0 {

@@ -51,7 +51,7 @@ func (s *Service) BeginSessionStart(scope *cooperative.Scope, owner *cooperative
 	}
 	if s.options.Commands != nil && s.options.Commands.Owner == owner {
 		_, e = owner.SubmitIndependent(context.Background(), cooperative.Read, func(next *cooperative.Scope) error {
-			input := NativeSessionStartInput{SessionID: sid, Source: trigger, Call: Context{Scope: next}}
+			input := NativeSessionStartInput{SessionID: sid, Source: trigger, Call: Context{Scope: next, ForceSyncExecution: s.options.ForceSyncSessionStart}}
 			if s.options.SessionStartBase != nil {
 				var baseErr error
 				input.Base, baseErr = s.options.SessionStartBase(next, sid)

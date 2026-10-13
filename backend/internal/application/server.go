@@ -67,6 +67,9 @@ type ServerOptions struct {
 // NewDesktopServer constructs real persistence and API services around the same
 // application factory. No TypeScript subprocess or fixture Session is used.
 func NewDesktopServer(o ServerOptions) (*server.Server, error) {
+	if o.Environment["CC_HAHA_MIGRATION_VALIDATION"] == "1" {
+		return newMigrationValidationServer(o)
+	}
 	if o.Stderr == nil {
 		o.Stderr = os.Stderr
 	}
@@ -304,7 +307,7 @@ func NewDesktopServer(o ServerOptions) (*server.Server, error) {
 		_ = nativeSettings.Close(context.Background())
 		return nil, err
 	}
-	base := Options{DesktopOAuthToken: oauth.EnsureFreshAccessToken, DesktopTeamsEnabled: service.GetAgentTeamsEnabled, SDKRecoverOfficialOAuth: func(ctx context.Context, rejected string) (*string, error) {
+	base := Options{DesktopOAuthToken: oauth.EnsureFreshAccessToken, DesktopOAuthAccountUUID: oauth.GetAccountUUID, DesktopTeamsEnabled: service.GetAgentTeamsEnabled, SDKRecoverOfficialOAuth: func(ctx context.Context, rejected string) (*string, error) {
 		doc, err := oauth.RecoverFromUnauthorized(ctx, rejected)
 		if err != nil || doc == nil {
 			return nil, err
@@ -372,7 +375,11 @@ func NewDesktopServer(o ServerOptions) (*server.Server, error) {
 	if err != nil {
 		return nil, err
 	}
-	providerProxy, err := providerproxytransport.New(providerproxytransport.Options{Provider: autoProviders.ProviderForProxy, Settings: userSettings, Environment: env, Version: o.Version, Trace: trace, TLS: proxyTLS})
+	providerProxy, err := providerproxytransport.New(providerproxytransport.Options{Provider: autoProviders.ProviderForProxy, Settings: userSettings, Environment: env, Version: o.Version, Trace: trace, TLS: proxyTLS, OnImageInputDisabled: func(_ context.Context, event providerproxytransport.ImageInputDisabled) {
+		// This bounded write stays inside the admitted HTTP work, so migration
+		// drains it together with the accepted proxy request. No token/body is logged.
+		_, _ = diagnostics.Record(diagnosticsapi.Input{Type: "openai_chat_image_input_disabled", Severity: "warning", Summary: "The upstream rejected image input for this model", SessionID: event.SessionID, Details: raw(map[string]any{"providerId": event.ProviderID, "model": event.Model, "status": event.Status})})
+	}})
 	if err != nil {
 		return nil, err
 	}
@@ -463,7 +470,12 @@ func NewDesktopServer(o ServerOptions) (*server.Server, error) {
 			_ = whatsappRegistration.Close(context.Background())
 		}
 	}()
-	market, err := marketapi.New(marketapi.Options{ConfigDir: o.ConfigDir, Environment: env, Settings: userSettings, Changed: nativeSettings.InvalidateSettingsCache})
+	market, err := marketapi.New(marketapi.Options{ConfigDir: o.ConfigDir, Environment: env, Settings: userSettings, Changed: func() {
+		nativeSettings.InvalidateSettingsCache()
+		if err := clibootstrap.NotifyNativeSkillCommandsChanged(o.ConfigDir); err != nil {
+			fmt.Fprintf(o.Stderr, "Skill command refresh admission failed: %v\n", err)
+		}
+	}})
 	if err != nil {
 		return nil, err
 	}

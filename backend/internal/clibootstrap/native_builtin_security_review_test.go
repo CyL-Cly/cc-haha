@@ -16,9 +16,22 @@ import (
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/requestcontext"
+	"github.com/NanmiCoder/cc-haha/backend/internal/windowshell"
 )
 
 func TestActualSecurityReviewRunsRealGitPromptCommandsThenReadAndModelReport(t *testing.T) {
+	for _, shell := range []string{"bash", "powershell"} {
+		t.Run(shell, func(t *testing.T) { testActualSecurityReviewShell(t, shell) })
+	}
+}
+
+func testActualSecurityReviewShell(t *testing.T, shell string) {
+	const executable = "/opt/homebrew/bin/pwsh"
+	if shell == "powershell" {
+		if _, err := os.Stat(executable); err != nil {
+			t.Skip("actual PowerShell required")
+		}
+	}
 	f := worktreeMainFixture(t)
 	f.write(t, filepath.Join(f.config, "settings.json"), `{"agentTeamsEnabled":false,"alwaysThinkingEnabled":false,"enabledPlugins":{"sample@mkt":false}}`)
 	f.n.Environment["CLAUDE_CODE_DISABLE_ATTACHMENTS"] = "1"
@@ -64,7 +77,13 @@ func TestActualSecurityReviewRunsRealGitPromptCommandsThenReadAndModelReport(t *
 	f.n.Environment["ANTHROPIC_BASE_URL"] = peer.URL
 	disabled := false
 	var diagnostics bytes.Buffer
-	m, err := NewMainPrint(MainPrintOptions{Arguments: PrintArguments{ComputerUse: &disabled, Model: "fixture-model", SystemPrompt: "actual security prompt shared Harness", Tools: []string{"Read,Bash"}, PermissionMode: "default", MaxTurns: 4, Thinking: requestcontext.Thinking{Type: "disabled"}, Sources: DefaultState()}, Native: f.n, PID: os.Getpid(), Version: "fixture", Platform: "darwin", Input: strings.NewReader(""), Output: io.Discard, Error: &diagnostics})
+	options := MainPrintOptions{Arguments: PrintArguments{ComputerUse: &disabled, Model: "fixture-model", SystemPrompt: "actual security prompt shared Harness", Tools: []string{"Read,Bash"}, PermissionMode: "default", MaxTurns: 4, Thinking: requestcontext.Thinking{Type: "disabled"}, Sources: DefaultState()}, Native: f.n, PID: os.Getpid(), Version: "fixture", Platform: "darwin", Input: strings.NewReader(""), Output: io.Discard, Error: &diagnostics}
+	if shell == "powershell" {
+		f.n.Environment["CLAUDE_CODE_POWERSHELL_PATH"] = executable
+		options.Arguments.Tools = []string{"Read,PowerShell"}
+		options.NativeShells = windowshell.New("windows", f.cwd, f.n.Environment, windowshell.Dependencies{PathExists: func(context.Context, string) bool { return false }, FileExists: func(_ context.Context, path string) bool { return path == executable }})
+	}
+	m, err := NewMainPrint(options)
 	if err != nil {
 		t.Fatal(err)
 	}

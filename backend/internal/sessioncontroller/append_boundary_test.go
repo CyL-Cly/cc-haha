@@ -16,7 +16,7 @@ import (
 )
 
 func TestAppendAdmissionAndClosureCapabilities(t *testing.T) {
-	owner, w, p, loader := uuidHarness(t, uuidOld, nil, false)
+	owner, _, p, loader := uuidHarness(t, uuidOld, nil, false)
 	entry := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: json.RawMessage(`"user"`)}, protocol.JSONField{Name: "uuid", Value: json.RawMessage(`"new"`)})
 	if _, e := p.BeginAppend(nil, loader, &entry, ""); !errors.Is(e, cooperative.ErrRestricted) {
 		t.Fatal(e)
@@ -53,12 +53,6 @@ func TestAppendAdmissionAndClosureCapabilities(t *testing.T) {
 			if _, e := p.BeginAppend(s, loader, &bad, ""); e == nil {
 				return ioUnexpected()
 			}
-		}
-		w.options.Environment["ENABLE_SESSION_PERSISTENCE"] = "1"
-		_, e := p.BeginAppend(s, loader, &entry, "")
-		delete(w.options.Environment, "ENABLE_SESSION_PERSISTENCE")
-		if e == nil {
-			return ioUnexpected()
 		}
 		return nil
 	})

@@ -121,8 +121,10 @@ func TestActualDesktopFactoryExternalSettingsWatcherChangesSameSessionAndCloses(
 			}
 			if message.String("type") == "message_complete" {
 				complete = true
+				requestDesktopSessionSync(t, ws)
 			}
-			if complete && message.String("type") == "session_state" && message.String("turnState") == "idle" {
+			if complete && message.String("type") == "session_state" {
+				assertDesktopIdleSnapshot(t, message)
 				return
 			}
 		}

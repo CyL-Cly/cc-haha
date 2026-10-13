@@ -407,7 +407,7 @@ func (server *Server) finalizeRepositorySessionLaunch(ctx context.Context, info 
 	if repository != nil {
 		value.Set("repository", repository)
 	}
-	for _, name := range []string{"permissionMode", "runtimeProviderId", "runtimeModelId", "effortLevel"} {
+	for _, name := range []string{"permissionMode", "runtimeProviderId", "runtimeModelId", "effortLevel", "openAIFastMode"} {
 		if v := metadata.Get(name); v != nil {
 			value.Set(name, v)
 		}
@@ -433,8 +433,11 @@ func (server *Server) finalizeRepositorySessionLaunch(ctx context.Context, info 
 		return e
 	}
 	_, e = file.Write(append(encoded, '\n'))
+	// Different path spellings can name the same live transcript on macOS or
+	// Windows; hard links have the same identity on other platforms too.
+	sameTranscript := target == info.Path || sameTranscriptFile(target, info.Path)
 	var title []byte
-	if target != info.Path {
+	if !sameTranscript {
 		if old, e := os.ReadFile(info.Path); e == nil {
 			for _, line := range bytes.Split(old, []byte{'\n'}) {
 				var entry protocol.JSONObject
@@ -457,7 +460,7 @@ func (server *Server) finalizeRepositorySessionLaunch(ctx context.Context, info 
 	server.noteSessionMutation(target)
 	// A repository launch can relocate the transcript. Only a metadata-only
 	// placeholder may be removed; existing conversation files remain protected.
-	if target != info.Path {
+	if !sameTranscript {
 		previous, e := server.scanSession(ctx, info.Path)
 		if errors.Is(e, os.ErrNotExist) {
 			return nil
@@ -473,4 +476,13 @@ func (server *Server) finalizeRepositorySessionLaunch(ctx context.Context, info 
 		}
 	}
 	return nil
+}
+
+func sameTranscriptFile(left, right string) bool {
+	a, err := os.Stat(left)
+	if err != nil {
+		return false
+	}
+	b, err := os.Stat(right)
+	return err == nil && os.SameFile(a, b)
 }

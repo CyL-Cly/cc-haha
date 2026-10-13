@@ -3,13 +3,15 @@
 package mcpclient
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"syscall"
+
+	"github.com/NanmiCoder/cc-haha/backend/internal/processpolicy"
 )
 
 func configureMCPProcess(cmd *exec.Cmd) { cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true} }
@@ -127,15 +129,12 @@ func prepareMCPCommand(cmd *exec.Cmd, env map[string]string, cwd string) error {
 	cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true, CmdLine: syscall.EscapeArg(shell) + " /d /s /c " + cmd.Args[4]}
 	return nil
 }
-func signalMCPProcess(cmd *exec.Cmd, level int) error {
-	args := []string{"/PID", strconv.Itoa(cmd.Process.Pid), "/T"}
-	if level == 2 {
-		args = append(args, "/F")
+func signalMCPProcess(cmd *exec.Cmd, _ int) error {
+	if cmd.Process == nil {
+		return os.ErrProcessDone
 	}
-	kill := exec.Command("taskkill", args...)
-	kill.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
-	if err := kill.Run(); err != nil {
-		return cmd.Process.Kill()
+	if processpolicy.KillWindowsProcessTree(context.Background(), cmd.Process.Pid, processpolicy.WindowsTreeKillOptions{}) {
+		return nil
 	}
-	return nil
+	return cmd.Process.Kill()
 }

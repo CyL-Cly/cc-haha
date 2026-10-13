@@ -25,7 +25,9 @@ import (
 // the same canonical Harness owner.
 func (m *MainPrint) nativeImageBindings() *builtintools.ImageBindings {
 	return &builtintools.ImageBindings{
-		Read: m.startNativeImageRead, MetadataMessage: m.nativeImageMetadataMessage,
+		NormalizeShellData: m.nativeNormalizeShellImage,
+		ReadPDF:            m.startNativePDFRead,
+		Read:               m.startNativeImageRead, MetadataMessage: m.nativeImageMetadataMessage,
 		Config: func(scope *cooperative.Scope) (*imagegeneration.Config, error) {
 			if !scope.BelongsTo(m.Owner) {
 				return nil, cooperative.ErrRestricted

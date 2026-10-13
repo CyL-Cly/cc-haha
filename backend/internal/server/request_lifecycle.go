@@ -33,7 +33,7 @@ func requestSignalContext(request *http.Request) context.Context {
 }
 func (server *Server) beginAPIOperation(request *http.Request) (*http.Request, func(), bool) {
 	server.mu.Lock()
-	if server.closed {
+	if server.closed || server.migration.active {
 		server.mu.Unlock()
 		return nil, nil, false
 	}
@@ -129,7 +129,7 @@ func (server *Server) serveAPILifecycle(writer http.ResponseWriter, request *htt
 	}
 	bound, done, ok := server.beginAPIOperation(request)
 	if !ok {
-		writer.WriteHeader(499)
+		server.migrationAdmissionFailure(writer)
 		return
 	}
 	if !settle {

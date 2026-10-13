@@ -189,7 +189,8 @@ func (client *Anthropic) createMessageAtPath(ctx context.Context, body any, path
 	if client.config.modelValidationJSON && client.config.modelValidationPrepared != nil {
 		client.config.modelValidationPrepared(&MessagesRequest{Path: path, Headers: headers.Clone(), Body: append([]byte(nil), encoded.Bytes()...)})
 	}
-	if (client.config.modelValidationJSON && client.config.OwnerNativeIO != nil || client.config.OpenAICodex != nil || client.config.GrokOAuth != nil || client.config.Bedrock != nil || client.config.Vertex != nil) && strings.HasSuffix(strings.SplitN(path, "?", 2)[0], "/v1/messages") {
+	messagePath := strings.SplitN(path, "?", 2)[0]
+	if (client.config.modelValidationJSON && client.config.OwnerNativeIO != nil || client.config.OpenAICodex != nil || client.config.GrokOAuth != nil || client.config.Bedrock != nil || client.config.Vertex != nil) && (strings.HasSuffix(messagePath, "/v1/messages") || client.config.Vertex != nil && strings.HasSuffix(messagePath, "/v1/messages/count_tokens")) {
 		var requestHeaders http.Header
 		if client.config.Bedrock != nil || client.config.Vertex != nil {
 			requestHeaders = headers

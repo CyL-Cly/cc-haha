@@ -84,12 +84,26 @@ func watchMembers(config protocol.JSONObject) ([]protocol.JSONObject, error) {
 			role = raw("member")
 		}
 		status := "running"
+		lastError, retry := memberFailure(member)
 		active := string(member.Get("isActive"))
 		if active == "false" {
 			status = "idle"
 		}
+		if lastError != nil && retry == nil {
+			status = "error"
+		}
 		row := protocol.NewJSONObject(protocol.JSONField{Name: "agentId", Value: id}, protocol.JSONField{Name: "role", Value: role}, field("status", status))
-		if active == "true" {
+		row.Set("lastError", raw(nil))
+		row.Set("autoRetry", raw(nil))
+		if lastError != nil {
+			row.Set("lastError", lastError)
+		}
+		if retry != nil {
+			row.Set("autoRetry", retry)
+		}
+		if string(member.Get("terminated")) == "true" {
+			row.Set("activity", raw("stopped"))
+		} else if active == "true" {
 			row.Set("activity", raw("active"))
 		} else if active == "false" {
 			row.Set("activity", raw("idle"))

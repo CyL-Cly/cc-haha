@@ -17,6 +17,9 @@ func (h *Host) captureSkillCallOverrides(opaque any) error {
 	}
 	copy := call.SkillOverrides.Clone()
 	h.askSkillOverrides = &copy
+	if copy.Get("model") != nil {
+		h.askFallbackModel = ""
+	}
 	model, e := h.skillMainModel(call.MainLoopModel)
 	if e != nil {
 		return e
@@ -25,6 +28,9 @@ func (h *Host) captureSkillCallOverrides(opaque any) error {
 	return nil
 }
 func (h *Host) skillMainModel(fallback string) (string, error) {
+	if h.askFallbackModel != "" {
+		return h.askFallbackModel, nil
+	}
 	if h.askSkillOverrides == nil || h.askSkillOverrides.Get("model") == nil {
 		return fallback, nil
 	}

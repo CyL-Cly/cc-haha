@@ -11,12 +11,12 @@ import (
 )
 
 type state struct {
-	workDir, cwd, repository, worktreeSession                            json.RawMessage
-	permissionMode, runtimeProviderID, runtimeModelID, effortLevel       json.RawMessage
-	customTitle, nonemptyCustomTitle, goalTitle, aiTitle, firstUserTitle json.RawMessage
-	createdAt, modifiedAt                                                json.RawMessage
-	count, launchCount                                                   int
-	teamWorker                                                           bool
+	workDir, cwd, repository, worktreeSession                                      json.RawMessage
+	permissionMode, runtimeProviderID, runtimeModelID, effortLevel, openAIFastMode json.RawMessage
+	customTitle, nonemptyCustomTitle, goalTitle, aiTitle, firstUserTitle           json.RawMessage
+	createdAt, modifiedAt                                                          json.RawMessage
+	count, launchCount                                                             int
+	teamWorker                                                                     bool
 }
 
 func null() json.RawMessage { return json.RawMessage("null") }
@@ -153,6 +153,9 @@ func (service *Service) apply(state *state, entry protocol.JSONObject) error {
 			state.runtimeModelID = model
 		}
 		state.effortLevel = ResolveSessionEffortLevel(entry, state.effortLevel)
+		if v := entry.Get("openAIFastMode"); string(v) == "true" || string(v) == "false" {
+			state.openAIFastMode = v
+		}
 	}
 	if repository := bytes.TrimSpace(entry.Get("repository")); len(repository) != 0 && (repository[0] == '{' || repository[0] == '[') {
 		state.repository = repository
@@ -219,7 +222,7 @@ func (state state) serialize() ([]byte, error) {
 	fields := protocol.NewJSONObject()
 	for _, field := range []protocol.JSONField{
 		{Name: "workDir", Value: state.workDir}, {Name: "cwd", Value: state.cwd}, {Name: "repository", Value: state.repository}, {Name: "worktreeSession", Value: state.worktreeSession},
-		{Name: "permissionMode", Value: state.permissionMode}, {Name: "runtimeProviderId", Value: state.runtimeProviderID}, {Name: "runtimeModelId", Value: state.runtimeModelID}, {Name: "effortLevel", Value: state.effortLevel},
+		{Name: "permissionMode", Value: state.permissionMode}, {Name: "runtimeProviderId", Value: state.runtimeProviderID}, {Name: "runtimeModelId", Value: state.runtimeModelID}, {Name: "effortLevel", Value: state.effortLevel}, {Name: "openAIFastMode", Value: state.openAIFastMode},
 		{Name: "customTitle", Value: state.customTitle}, {Name: "nonemptyCustomTitle", Value: state.nonemptyCustomTitle}, {Name: "goalTitle", Value: state.goalTitle}, {Name: "aiTitle", Value: state.aiTitle}, {Name: "firstUserTitle", Value: state.firstUserTitle},
 		{Name: "createdAt", Value: state.createdAt}, {Name: "modifiedAt", Value: state.modifiedAt},
 		{Name: "count", Value: json.RawMessage(strconv.Itoa(state.count))}, {Name: "launchCount", Value: json.RawMessage(strconv.Itoa(state.launchCount))}, {Name: "isTeamWorker", Value: json.RawMessage(strconv.FormatBool(state.teamWorker))},
@@ -235,8 +238,8 @@ func (state state) serialize() ([]byte, error) {
 	return protocol.ParseAndStringifyJavaScriptJSON(raw)
 }
 func shared(fields *protocol.JSONObject, state state) {
-	for _, field := range []protocol.JSONField{{Name: "permissionMode", Value: state.permissionMode}, {Name: "runtimeProviderId", Value: state.runtimeProviderID}, {Name: "runtimeModelId", Value: state.runtimeModelID}, {Name: "effortLevel", Value: state.effortLevel}, {Name: "repository", Value: state.repository}, {Name: "worktreeSession", Value: state.worktreeSession}} {
-		if field.Value != nil && (field.Name == "runtimeProviderId" || field.Name == "worktreeSession" || truthy(field.Value)) {
+	for _, field := range []protocol.JSONField{{Name: "permissionMode", Value: state.permissionMode}, {Name: "runtimeProviderId", Value: state.runtimeProviderID}, {Name: "runtimeModelId", Value: state.runtimeModelID}, {Name: "effortLevel", Value: state.effortLevel}, {Name: "openAIFastMode", Value: state.openAIFastMode}, {Name: "repository", Value: state.repository}, {Name: "worktreeSession", Value: state.worktreeSession}} {
+		if field.Value != nil && (field.Name == "openAIFastMode" || field.Name == "runtimeProviderId" || field.Name == "worktreeSession" || truthy(field.Value)) {
 			fields.Set(field.Name, field.Value)
 		}
 	}

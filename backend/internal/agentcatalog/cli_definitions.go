@@ -9,7 +9,7 @@ func (s *Service) InstallCLIDefinitions(scope *cooperative.Scope, definitions []
 		return err
 	}
 	for _, definition := range definitions {
-		if definition.Source != "flagSettings" || definition.Name == "" || definition.SystemPrompt == "" {
+		if definition.Source != "flagSettings" || definition.Name == "" && string(definition.Fields.Get("agentType")) != `""` || definition.SystemPrompt == "" {
 			return cap("parsed CLI Agent definition identity")
 		}
 	}

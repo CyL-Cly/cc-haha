@@ -1,0 +1,34 @@
+[
+  {
+    "command": "find $HOME/memory/ -type f | head -50; echo \"---\"; wc -c $HOME/memory/*",
+    "description": "Find memory files and sizes"
+  },
+  {
+    "command": "cd $HOME/.claude/projects/-private-tmp-go-main-sync-autodream-live-wnll3bli-home/ && for f in *.jsonl; do echo \"=== $f ===\"; grep -o '\"role\":\"user\",\"content\":\"[^\"]\\{0,300\\}' \"$f\" | head -20; done",
+    "description": "Extract user messages from transcripts"
+  },
+  {
+    "command": "grep -o '\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"[^\"]\\{0,400\\}' $HOME/.claude/projects/-private-tmp-go-main-sync-autodream-live-wnll3bli-home/*.jsonl",
+    "description": "Extract user prompt snippets"
+  },
+  {
+    "command": "grep -o '\"cwd\":\"[^\"]*\"' $HOME/.claude/projects/-private-tmp-go-main-sync-autodream-live-wnll3bli-home/1915f4b0-9870-4fdb-9d77-a60d741ba8af.jsonl | head -3",
+    "description": "Extract cwd from a transcript"
+  },
+  {
+    "command": "ls $HOME/pilot/ 2>/dev/null; echo \"---\"; ls $HOME/pilot/PAIR_unicode_00/source 2>/dev/null; echo \"--- tmp ---\"; find $HOME/tmp -type f 2>/dev/null | head",
+    "description": "Check eval source dirs exist"
+  },
+  {
+    "command": "rm $HOME/memory/rules-b.md",
+    "description": "Remove duplicate memory file rules-b.md"
+  },
+  {
+    "command": "cd $HOME/.claude/projects/-private-tmp-go-main-sync-autodream-live-v2-1ld4n322-home/ && for f in *.jsonl; do echo \"=== $f ===\"; python3 -c \"\nimport json,sys\nfor line in open('$f'):\n    try: d=json.loads(line)\n    except: continue\n    t=d.get('type')\n    if t=='user':\n        m=d.get('message',{})\n        c=m.get('content')\n        if isinstance(c,str): s=c\n        elif isinstance(c,list): s=' '.join(x.get('text','') for x in c if isinstance(x,dict) and x.get('type')=='text')\n        else: s=''\n        s=s.strip()\n        if s and not s.startswith('<'): print('USER:', s[:400])\n\"; done",
+    "description": "Extract user messages from transcripts"
+  },
+  {
+    "command": "cd $HOME/.claude/projects/-private-tmp-go-main-sync-autodream-live-v2-1ld4n322-home/ && grep -o '\"role\":\"user\",\"content\":\"[^\"]\\{0,300\\}' *.jsonl | head -60",
+    "description": "Grep user messages from transcripts"
+  }
+]

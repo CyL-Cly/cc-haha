@@ -28,4 +28,15 @@ for(const step of [{enabled:true,clear:true},{enabled:false,clear:false},{enable
  const descriptions=await Promise.all(tools.map(tool=>toolToAPISchema(tool,{tools,agents:[],model:'deepseek-flash',getToolPermissionContext:async()=>getEmptyToolPermissionContext()})))
  cache.push(descriptions.map(tool=>tool.description))
 }
-console.log(JSON.stringify({rows,mode:schema.properties.mode.enum,cache}))
+const {ExitPlanModeV2Tool}=await import(join(root,'src/tools/ExitPlanModeTool/ExitPlanModeV2Tool'))
+const swarmSchemas=[]
+const swarmTools=[AgentTool,ExitPlanModeV2Tool]
+for(const step of [{enabled:false,clear:true},{enabled:true,clear:false},{enabled:true,clear:true},{enabled:false,clear:false},{enabled:false,clear:true}]){
+ process.env.USER_TYPE='external';process.env.CC_HAHA_AGENT_TEAMS_ENABLED=step.enabled?'1':'0'
+ if(step.clear)clearToolSchemaCache()
+ const rendered=await Promise.all(swarmTools.map(tool=>toolToAPISchema(tool,{tools:swarmTools,agents:[],model:'deepseek-flash',getToolPermissionContext:async()=>getEmptyToolPermissionContext()})))
+ swarmSchemas.push(rendered.map(tool=>tool.input_schema))
+}
+const {zodToJsonSchema}=await import(join(root,'src/utils/zodToJsonSchema'))
+const agentLocalParsed=AgentTool.inputSchema.parse({description:'owned task',prompt:'read workspace',run_in_background:true,name:'owned-name'})
+console.log(JSON.stringify({rows,mode:schema.properties.mode.enum,cache,swarmSchemas,localAgentSchema:zodToJsonSchema(AgentTool.inputSchema),agentLocalParsed}))

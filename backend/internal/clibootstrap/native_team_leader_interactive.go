@@ -2,6 +2,7 @@ package clibootstrap
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
@@ -212,7 +213,9 @@ func (m *MainPrint) pollInteractiveLeaderInboxOnOwner(scope *cooperative.Scope) 
 	if err := m.Controller.QueueTeamInboxOnOwner(scope, read.Regular); err != nil {
 		return err
 	}
-	mark, err := nativeSkillWork(m, scope, func() (struct{}, error) { return struct{}{}, reader.MarkDelivered(team, read.DeferShutdown) })
+	mark, err := nativeSkillWork(m, scope, func() (struct{}, error) {
+		return struct{}{}, reader.MarkDelivered(team, read.DeferShutdown, read.Candidates)
+	})
 	if err != nil {
 		return err
 	}
@@ -321,7 +324,21 @@ func (m *MainPrint) nativeTeamMailboxAttachments(scope *cooperative.Scope, callA
 				rows = append(rows, row)
 			}
 		}
-		return rows, nil
+		candidates := []json.RawMessage{}
+		for _, row := range rows {
+			candidates = append(candidates, rawMain(row))
+		}
+		claimed, e := reader.Mailbox.Claim(agentName, team, candidates)
+		if e != nil {
+			return nil, e
+		}
+		owned := []protocol.JSONObject{}
+		for _, v := range claimed {
+			var row protocol.JSONObject
+			_ = row.UnmarshalJSON(v)
+			owned = append(owned, row)
+		}
+		return owned, nil
 	})
 	if err != nil {
 		return nil, err
@@ -336,17 +353,12 @@ func (m *MainPrint) nativeTeamMailboxAttachments(scope *cooperative.Scope, callA
 		return nil, nil
 	}
 	message := queryloop.Message{Record: m.factory.CreateAttachment(rawMain(attachment))}
-	mark, err := nativeSkillWork(m, scope, func() (struct{}, error) {
-		return struct{}{}, reader.Mailbox.MarkMatching(agentName, team, func(row protocol.JSONObject) bool { return !teamspawn.StructuredProtocolMessage(row.String("text")) })
-	})
-	if err != nil {
-		return nil, err
-	}
-	if _, err = mark.Await(scope); err != nil {
-		return nil, err
-	}
-	if err := m.Controller.ProcessTeamInboxOnOwner(scope, pending); err != nil {
-		return nil, err
+	// Match Source's final acknowledgement of the AppState batch only after
+	// the attachment exists. File rows were already atomically claimed above.
+	if len(pending) > 0 {
+		if err := m.Controller.ProcessTeamInboxOnOwner(scope, pending); err != nil {
+			return nil, err
+		}
 	}
 	return []queryloop.Message{message}, nil
 }

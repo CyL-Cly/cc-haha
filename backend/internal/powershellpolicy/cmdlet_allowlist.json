@@ -1,0 +1,695 @@
+{
+  "get-childitem": {
+    "safeFlags": [
+      "-Path",
+      "-LiteralPath",
+      "-Filter",
+      "-Include",
+      "-Exclude",
+      "-Recurse",
+      "-Depth",
+      "-Name",
+      "-Force",
+      "-Attributes",
+      "-Directory",
+      "-File",
+      "-Hidden",
+      "-ReadOnly",
+      "-System"
+    ]
+  },
+  "get-content": {
+    "safeFlags": [
+      "-Path",
+      "-LiteralPath",
+      "-TotalCount",
+      "-Head",
+      "-Tail",
+      "-Raw",
+      "-Encoding",
+      "-Delimiter",
+      "-ReadCount"
+    ]
+  },
+  "get-item": {
+    "safeFlags": [
+      "-Path",
+      "-LiteralPath",
+      "-Force",
+      "-Stream"
+    ]
+  },
+  "get-itemproperty": {
+    "safeFlags": [
+      "-Path",
+      "-LiteralPath",
+      "-Name"
+    ]
+  },
+  "test-path": {
+    "safeFlags": [
+      "-Path",
+      "-LiteralPath",
+      "-PathType",
+      "-Filter",
+      "-Include",
+      "-Exclude",
+      "-IsValid",
+      "-NewerThan",
+      "-OlderThan"
+    ]
+  },
+  "resolve-path": {
+    "safeFlags": [
+      "-Path",
+      "-LiteralPath",
+      "-Relative"
+    ]
+  },
+  "get-filehash": {
+    "safeFlags": [
+      "-Path",
+      "-LiteralPath",
+      "-Algorithm",
+      "-InputStream"
+    ]
+  },
+  "get-acl": {
+    "safeFlags": [
+      "-Path",
+      "-LiteralPath",
+      "-Audit",
+      "-Filter",
+      "-Include",
+      "-Exclude"
+    ]
+  },
+  "set-location": {
+    "safeFlags": [
+      "-Path",
+      "-LiteralPath",
+      "-PassThru",
+      "-StackName"
+    ]
+  },
+  "push-location": {
+    "safeFlags": [
+      "-Path",
+      "-LiteralPath",
+      "-PassThru",
+      "-StackName"
+    ]
+  },
+  "pop-location": {
+    "safeFlags": [
+      "-PassThru",
+      "-StackName"
+    ]
+  },
+  "select-string": {
+    "safeFlags": [
+      "-Path",
+      "-LiteralPath",
+      "-Pattern",
+      "-InputObject",
+      "-SimpleMatch",
+      "-CaseSensitive",
+      "-Quiet",
+      "-List",
+      "-NotMatch",
+      "-AllMatches",
+      "-Encoding",
+      "-Context",
+      "-Raw",
+      "-NoEmphasis"
+    ]
+  },
+  "convertto-json": {
+    "safeFlags": [
+      "-InputObject",
+      "-Depth",
+      "-Compress",
+      "-EnumsAsStrings",
+      "-AsArray"
+    ]
+  },
+  "convertfrom-json": {
+    "safeFlags": [
+      "-InputObject",
+      "-Depth",
+      "-AsHashtable",
+      "-NoEnumerate"
+    ]
+  },
+  "convertto-csv": {
+    "safeFlags": [
+      "-InputObject",
+      "-Delimiter",
+      "-NoTypeInformation",
+      "-NoHeader",
+      "-UseQuotes"
+    ]
+  },
+  "convertfrom-csv": {
+    "safeFlags": [
+      "-InputObject",
+      "-Delimiter",
+      "-Header",
+      "-UseCulture"
+    ]
+  },
+  "convertto-xml": {
+    "safeFlags": [
+      "-InputObject",
+      "-Depth",
+      "-As",
+      "-NoTypeInformation"
+    ]
+  },
+  "convertto-html": {
+    "safeFlags": [
+      "-InputObject",
+      "-Property",
+      "-Head",
+      "-Title",
+      "-Body",
+      "-Pre",
+      "-Post",
+      "-As",
+      "-Fragment"
+    ]
+  },
+  "format-hex": {
+    "safeFlags": [
+      "-Path",
+      "-LiteralPath",
+      "-InputObject",
+      "-Encoding",
+      "-Count",
+      "-Offset"
+    ]
+  },
+  "get-member": {
+    "safeFlags": [
+      "-InputObject",
+      "-MemberType",
+      "-Name",
+      "-Static",
+      "-View",
+      "-Force"
+    ]
+  },
+  "get-unique": {
+    "safeFlags": [
+      "-InputObject",
+      "-AsString",
+      "-CaseInsensitive",
+      "-OnType"
+    ]
+  },
+  "compare-object": {
+    "safeFlags": [
+      "-ReferenceObject",
+      "-DifferenceObject",
+      "-Property",
+      "-SyncWindow",
+      "-CaseSensitive",
+      "-Culture",
+      "-ExcludeDifferent",
+      "-IncludeEqual",
+      "-PassThru"
+    ]
+  },
+  "join-string": {
+    "safeFlags": [
+      "-InputObject",
+      "-Property",
+      "-Separator",
+      "-OutputPrefix",
+      "-OutputSuffix",
+      "-SingleQuote",
+      "-DoubleQuote",
+      "-FormatString"
+    ]
+  },
+  "get-random": {
+    "safeFlags": [
+      "-InputObject",
+      "-Minimum",
+      "-Maximum",
+      "-Count",
+      "-SetSeed",
+      "-Shuffle"
+    ]
+  },
+  "convert-path": {
+    "safeFlags": [
+      "-Path",
+      "-LiteralPath"
+    ]
+  },
+  "join-path": {
+    "safeFlags": [
+      "-Path",
+      "-ChildPath",
+      "-AdditionalChildPath"
+    ]
+  },
+  "split-path": {
+    "safeFlags": [
+      "-Path",
+      "-LiteralPath",
+      "-Qualifier",
+      "-NoQualifier",
+      "-Parent",
+      "-Leaf",
+      "-LeafBase",
+      "-Extension",
+      "-IsAbsolute"
+    ]
+  },
+  "get-hotfix": {
+    "safeFlags": [
+      "-Id",
+      "-Description"
+    ]
+  },
+  "get-itempropertyvalue": {
+    "safeFlags": [
+      "-Path",
+      "-LiteralPath",
+      "-Name"
+    ]
+  },
+  "get-psprovider": {
+    "safeFlags": [
+      "-PSProvider"
+    ]
+  },
+  "get-process": {
+    "safeFlags": [
+      "-Name",
+      "-Id",
+      "-Module",
+      "-FileVersionInfo",
+      "-IncludeUserName"
+    ]
+  },
+  "get-service": {
+    "safeFlags": [
+      "-Name",
+      "-DisplayName",
+      "-DependentServices",
+      "-RequiredServices",
+      "-Include",
+      "-Exclude"
+    ]
+  },
+  "get-computerinfo": {
+    "allowAllFlags": true
+  },
+  "get-host": {
+    "allowAllFlags": true
+  },
+  "get-date": {
+    "safeFlags": [
+      "-Date",
+      "-Format",
+      "-UFormat",
+      "-DisplayHint",
+      "-AsUTC"
+    ]
+  },
+  "get-location": {
+    "safeFlags": [
+      "-PSProvider",
+      "-PSDrive",
+      "-Stack",
+      "-StackName"
+    ]
+  },
+  "get-psdrive": {
+    "safeFlags": [
+      "-Name",
+      "-PSProvider",
+      "-Scope"
+    ]
+  },
+  "get-module": {
+    "safeFlags": [
+      "-Name",
+      "-ListAvailable",
+      "-All",
+      "-FullyQualifiedName",
+      "-PSEdition"
+    ]
+  },
+  "get-alias": {
+    "safeFlags": [
+      "-Name",
+      "-Definition",
+      "-Scope",
+      "-Exclude"
+    ]
+  },
+  "get-history": {
+    "safeFlags": [
+      "-Id",
+      "-Count"
+    ]
+  },
+  "get-culture": {
+    "allowAllFlags": true
+  },
+  "get-uiculture": {
+    "allowAllFlags": true
+  },
+  "get-timezone": {
+    "safeFlags": [
+      "-Name",
+      "-Id",
+      "-ListAvailable"
+    ]
+  },
+  "get-uptime": {
+    "allowAllFlags": true
+  },
+  "write-output": {
+    "safeFlags": [
+      "-InputObject",
+      "-NoEnumerate"
+    ],
+    "callback": "argLeaksValue"
+  },
+  "write-host": {
+    "safeFlags": [
+      "-Object",
+      "-NoNewline",
+      "-Separator",
+      "-ForegroundColor",
+      "-BackgroundColor"
+    ],
+    "callback": "argLeaksValue"
+  },
+  "start-sleep": {
+    "safeFlags": [
+      "-Seconds",
+      "-Milliseconds",
+      "-Duration"
+    ],
+    "callback": "argLeaksValue"
+  },
+  "format-table": {
+    "allowAllFlags": true,
+    "callback": "argLeaksValue"
+  },
+  "format-list": {
+    "allowAllFlags": true,
+    "callback": "argLeaksValue"
+  },
+  "format-wide": {
+    "allowAllFlags": true,
+    "callback": "argLeaksValue"
+  },
+  "format-custom": {
+    "allowAllFlags": true,
+    "callback": "argLeaksValue"
+  },
+  "measure-object": {
+    "allowAllFlags": true,
+    "callback": "argLeaksValue"
+  },
+  "select-object": {
+    "allowAllFlags": true,
+    "callback": "argLeaksValue"
+  },
+  "sort-object": {
+    "allowAllFlags": true,
+    "callback": "argLeaksValue"
+  },
+  "group-object": {
+    "allowAllFlags": true,
+    "callback": "argLeaksValue"
+  },
+  "where-object": {
+    "allowAllFlags": true,
+    "callback": "argLeaksValue"
+  },
+  "out-string": {
+    "allowAllFlags": true,
+    "callback": "argLeaksValue"
+  },
+  "out-host": {
+    "allowAllFlags": true,
+    "callback": "argLeaksValue"
+  },
+  "get-netadapter": {
+    "safeFlags": [
+      "-Name",
+      "-InterfaceDescription",
+      "-InterfaceIndex",
+      "-Physical"
+    ]
+  },
+  "get-netipaddress": {
+    "safeFlags": [
+      "-InterfaceIndex",
+      "-InterfaceAlias",
+      "-AddressFamily",
+      "-Type"
+    ]
+  },
+  "get-netipconfiguration": {
+    "safeFlags": [
+      "-InterfaceIndex",
+      "-InterfaceAlias",
+      "-Detailed",
+      "-All"
+    ]
+  },
+  "get-netroute": {
+    "safeFlags": [
+      "-InterfaceIndex",
+      "-InterfaceAlias",
+      "-AddressFamily",
+      "-DestinationPrefix"
+    ]
+  },
+  "get-dnsclientcache": {
+    "safeFlags": [
+      "-Entry",
+      "-Name",
+      "-Type",
+      "-Status",
+      "-Section",
+      "-Data"
+    ]
+  },
+  "get-dnsclient": {
+    "safeFlags": [
+      "-InterfaceIndex",
+      "-InterfaceAlias"
+    ]
+  },
+  "get-eventlog": {
+    "safeFlags": [
+      "-LogName",
+      "-Newest",
+      "-After",
+      "-Before",
+      "-EntryType",
+      "-Index",
+      "-InstanceId",
+      "-Message",
+      "-Source",
+      "-UserName",
+      "-AsBaseObject",
+      "-List"
+    ]
+  },
+  "get-winevent": {
+    "safeFlags": [
+      "-LogName",
+      "-ListLog",
+      "-ListProvider",
+      "-ProviderName",
+      "-Path",
+      "-MaxEvents",
+      "-FilterXPath",
+      "-Force",
+      "-Oldest"
+    ]
+  },
+  "get-cimclass": {
+    "safeFlags": [
+      "-ClassName",
+      "-Namespace",
+      "-MethodName",
+      "-PropertyName",
+      "-QualifierName"
+    ]
+  },
+  "git": {},
+  "gh": {},
+  "docker": {},
+  "ipconfig": {
+    "safeFlags": [
+      "/all",
+      "/displaydns",
+      "/allcompartments"
+    ],
+    "callback": "additionalCommandIsDangerousCallback"
+  },
+  "netstat": {
+    "safeFlags": [
+      "-a",
+      "-b",
+      "-e",
+      "-f",
+      "-n",
+      "-o",
+      "-p",
+      "-q",
+      "-r",
+      "-s",
+      "-t",
+      "-x",
+      "-y"
+    ]
+  },
+  "systeminfo": {
+    "safeFlags": [
+      "/FO",
+      "/NH"
+    ]
+  },
+  "tasklist": {
+    "safeFlags": [
+      "/M",
+      "/SVC",
+      "/V",
+      "/FI",
+      "/FO",
+      "/NH"
+    ]
+  },
+  "where.exe": {
+    "allowAllFlags": true
+  },
+  "hostname": {
+    "safeFlags": [
+      "-a",
+      "-d",
+      "-f",
+      "-i",
+      "-I",
+      "-s",
+      "-y",
+      "-A"
+    ],
+    "callback": "additionalCommandIsDangerousCallback"
+  },
+  "whoami": {
+    "safeFlags": [
+      "/user",
+      "/groups",
+      "/claims",
+      "/priv",
+      "/logonid",
+      "/all",
+      "/fo",
+      "/nh"
+    ]
+  },
+  "ver": {
+    "allowAllFlags": true
+  },
+  "arp": {
+    "safeFlags": [
+      "-a",
+      "-g",
+      "-v",
+      "-N"
+    ]
+  },
+  "route": {
+    "safeFlags": [
+      "print",
+      "PRINT",
+      "-4",
+      "-6"
+    ],
+    "callback": "additionalCommandIsDangerousCallback"
+  },
+  "getmac": {
+    "safeFlags": [
+      "/FO",
+      "/NH",
+      "/V"
+    ]
+  },
+  "file": {
+    "safeFlags": [
+      "-b",
+      "--brief",
+      "-i",
+      "--mime",
+      "-L",
+      "--dereference",
+      "--mime-type",
+      "--mime-encoding",
+      "-z",
+      "--uncompress",
+      "-p",
+      "--preserve-date",
+      "-k",
+      "--keep-going",
+      "-r",
+      "--raw",
+      "-v",
+      "--version",
+      "-0",
+      "--print0",
+      "-s",
+      "--special-files",
+      "-l",
+      "-F",
+      "--separator",
+      "-e",
+      "-P",
+      "-N",
+      "--no-pad",
+      "-E",
+      "--extension"
+    ]
+  },
+  "tree": {
+    "safeFlags": [
+      "/F",
+      "/A",
+      "/Q",
+      "/L"
+    ]
+  },
+  "findstr": {
+    "safeFlags": [
+      "/B",
+      "/E",
+      "/L",
+      "/R",
+      "/S",
+      "/I",
+      "/X",
+      "/V",
+      "/N",
+      "/M",
+      "/O",
+      "/P",
+      "/C",
+      "/G",
+      "/D",
+      "/A"
+    ]
+  },
+  "dotnet": {}
+}

@@ -36,6 +36,8 @@ type Dependencies struct {
 	Factory         *messages.Factory
 }
 type Input struct {
+	SDKBetas                                   []string
+	AutoCompact                                func(context.Context, []queryloop.Message) ([]queryloop.Message, error)
 	NativeClaudeProof                          *cooperative.NativeClaudeRequest
 	PlanOptions                                *attachments.PlanOptions
 	Profile                                    string
@@ -92,7 +94,7 @@ func New(dep Dependencies) (*Service, error) {
 }
 func (s *Service) SuppressWarning()        { s.mu.Lock(); defer s.mu.Unlock(); s.warning = true }
 func (s *Service) WarningSuppressed() bool { s.mu.Lock(); defer s.mu.Unlock(); return s.warning }
-func (s *Service) Run(_ context.Context, in Input) (Result, error) {
+func (s *Service) Run(ctx context.Context, in Input) (Result, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	out := Result{CurrentModel: in.MainLoopModel, Statistics: Statistics{BoundaryIndex: -1, WarningBefore: s.warning}}
@@ -155,7 +157,33 @@ func (s *Service) Run(_ context.Context, in Input) (Result, error) {
 					return out, e
 				}
 				if warning.auto {
-					return out, capError("active autocompact conversation/session-memory/hooks")
+					if in.AutoCompact == nil {
+						return out, capError("active autocompact conversation/session-memory/hooks")
+					}
+					// Hooks may themselves query this shared service. Suspend
+					// the warning lock while the original model producer runs.
+					s.mu.Unlock()
+					compacted, compactErr := in.AutoCompact(ctx, current)
+					s.mu.Lock()
+					if compactErr != nil {
+						if ctx.Err() != nil {
+							return out, compactErr
+						}
+						if in.ConsecutiveFailures != nil {
+							*in.ConsecutiveFailures++
+						}
+					} else if compacted != nil {
+						if in.ConsecutiveFailures != nil {
+							*in.ConsecutiveFailures = 0
+						}
+						current = compacted
+						rs, err = records(current)
+						if err != nil {
+							return out, err
+						}
+						s.warning = true
+						out.Statistics.WarningAfter = true
+					}
 				}
 			}
 		}
@@ -170,7 +198,7 @@ func (s *Service) Run(_ context.Context, in Input) (Result, error) {
 				return out, err
 			}
 		}
-		if mode != "default" && mode != "bypassPermissions" && mode != "plan" && mode != "acceptEdits" && mode != "dontAsk" {
+		if mode != "default" && mode != "bypassPermissions" && mode != "plan" && mode != "acceptEdits" && mode != "dontAsk" && mode != "auto" {
 			return out, capError("native runtime permission mode " + mode)
 		}
 		input := RuntimeModelInput{MainLoopModel: in.MainLoopModel, PermissionMode: mode}
@@ -281,6 +309,14 @@ func (s *Service) warningState(count float64, in Input, st *Statistics) (warning
 	effective, threshold := thresholds(in.OriginalEnvironment)
 	if in.Profile == NativeProcessProfile {
 		effective, threshold = nativeThresholds(in.MainLoopModel, in.OriginalEnvironment)
+		if len(in.SDKBetas) > 0 {
+			window, err := s.ContextWindowWithSDKBetas(in.MainLoopModel, in.OriginalEnvironment, in.SDKBetas)
+			if err != nil {
+				return warningResult{}, err
+			}
+			_, known := nativeContextWindow(in.MainLoopModel, in.OriginalEnvironment)
+			effective, threshold = nativeThresholdsForWindow(in.MainLoopModel, in.OriginalEnvironment, window, known)
+		}
 	}
 	// calculateTokenWarningState deliberately evaluates global enabled twice.
 	if _, err := s.autoEnabled(in, st); err != nil {
@@ -343,7 +379,7 @@ func validate(in Input) error {
 	} else if in.MainLoopModel != "fixture-model" && in.MainLoopModel != "deepseek-flash" {
 		return capError("model context/output/alias resolver " + in.MainLoopModel)
 	}
-	if in.PermissionMode != "default" && in.PermissionMode != "bypassPermissions" && (in.Profile != NativeProcessProfile || in.PermissionMode != "plan" && in.PermissionMode != "acceptEdits" && (in.PermissionMode != "dontAsk" || in.ResolveRuntimeModel == nil)) {
+	if in.PermissionMode != "default" && in.PermissionMode != "bypassPermissions" && (in.Profile != NativeProcessProfile || in.PermissionMode != "plan" && in.PermissionMode != "acceptEdits" && ((in.PermissionMode != "dontAsk" && in.PermissionMode != "auto") || in.ResolveRuntimeModel == nil)) {
 		return capError("nondefault permission runtime model selection")
 	}
 	if in.QuerySource == "" {

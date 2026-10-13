@@ -72,7 +72,15 @@ func (s *Service) handle(ctx context.Context, r *http.Request, parts []string) (
 		if limit > 100 {
 			limit = 100
 		}
-		return s.List(ctx, ListParams{strings.TrimSpace(q.Get("q")), source, security, installed, q.Get("cursor"), limit})
+		scope := first(q.Get("scope"), "catalog")
+		if scope != "catalog" && scope != "market" {
+			return nil, fail(400, "BAD_REQUEST", "Invalid scope: "+scope)
+		}
+		category := strings.TrimSpace(q.Get("category"))
+		if category == "all" {
+			category = ""
+		}
+		return s.List(ctx, ListParams{Q: strings.TrimSpace(q.Get("q")), Source: source, Security: security, Installed: installed, Cursor: q.Get("cursor"), Limit: limit, Scope: scope, Category: category})
 	}
 	if r.Method == "GET" && sub == "skills" && source != "" && slug != "" && (segment(parts, 5) == "" || segment(parts, 5) == "file") {
 		if !validSource(source) {
@@ -86,15 +94,19 @@ func (s *Service) handle(ctx context.Context, r *http.Request, parts []string) (
 		if strings.ContainsAny(slug, "/\\") || strings.Contains(slug, "..") {
 			return nil, fail(400, "BAD_REQUEST", "Invalid skill slug: "+slug)
 		}
+		owner, e := parseOwner(r.URL.Query().Get("owner"), source)
+		if e != nil {
+			return nil, e
+		}
 		if segment(parts, 5) == "file" {
 			path := r.URL.Query().Get("path")
 			if !validFile(path) {
 				return nil, fail(400, "BAD_REQUEST", "Invalid file path: "+path)
 			}
-			file, err := s.File(ctx, source, slug, path)
+			file, err := s.File(ctx, source, slug, path, owner)
 			return object{"file": file}, detailError(err)
 		}
-		skill, status, err := s.Detail(ctx, source, slug)
+		skill, status, err := s.Detail(ctx, source, slug, owner)
 		return object{"skill": skill, "sourceStatus": status}, detailError(err)
 	}
 	if r.Method == "POST" && (sub == "install" || sub == "uninstall") {
@@ -115,7 +127,11 @@ func (s *Service) handle(ctx context.Context, r *http.Request, parts []string) (
 			return nil, fail(400, "BAD_REQUEST", "Invalid skill id: "+first(id, "(missing)"))
 		}
 		if sub == "install" {
-			return s.Install(ctx, source, slug)
+			owner, err := parseOwner(obj(body)["owner"], source)
+			if err != nil {
+				return nil, err
+			}
+			return s.Install(ctx, source, slug, owner)
 		}
 		return s.Uninstall(ctx, source, slug)
 	}

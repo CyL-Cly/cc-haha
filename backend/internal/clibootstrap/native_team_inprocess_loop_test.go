@@ -166,10 +166,10 @@ func TestActualInProcessLoopReadsParentQueueAndPhysicalMailboxAcrossFreshChildre
 		if id == identity.AgentID || event.String("target_agent_id") != identity.AgentID || event.String("target_agent_scope_id") != `["actual-loop","`+identity.ParentSessionID+`",1700000000000]` {
 			t.Fatal("actual original per-run/outer identity routing", event)
 		}
-		if previous := runs[id]; previous != "" && previous != event.String("stream_id") {
-			t.Fatal("stream identity changed midturn")
+		if previous := runs[event.String("stream_id")]; previous != "" && previous != id {
+			t.Fatal("durable agent identity changed midturn")
 		}
-		runs[id] = event.String("stream_id")
+		runs[event.String("stream_id")] = id
 		if event.String("event_kind") == "complete" {
 			terminals++
 		}
@@ -202,7 +202,7 @@ func TestActualInProcessLoopReadsParentQueueAndPhysicalMailboxAcrossFreshChildre
 			}
 		}
 	}
-	if transcripts != 3 {
-		t.Fatal(fmt.Sprintf("expected 3 actual per-turn sidechains, got %d", transcripts))
+	if transcripts != 1 {
+		t.Fatal(fmt.Sprintf("expected 1 durable teammate transcript across fresh child graphs, got %d", transcripts))
 	}
 }

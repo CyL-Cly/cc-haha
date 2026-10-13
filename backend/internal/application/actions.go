@@ -17,6 +17,9 @@ func (s *Session) InvokeAction(ctx context.Context, action string, emit tui.Emit
 		if err != nil {
 			return err
 		}
+		if err = s.scheduleTerminalAutoConsent(ctx, emit); err != nil {
+			return err
+		}
 		if emit != nil {
 			return emit(tui.Event{Kind: tui.PermissionModeChanged, PermissionMode: mode})
 		}

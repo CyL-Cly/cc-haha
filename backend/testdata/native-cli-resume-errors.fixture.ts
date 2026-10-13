@@ -12,13 +12,41 @@ const input = JSON.parse(process.env.CC_HAHA_RESUME_ERROR_INPUT ?? 'null')
 const home = assertDisposableFixtureHome(input.homeDir, 'Actual resume load error CLI')
 if (process.env.CC_HAHA_RESUME_ERROR_FIXTURE !== '1') throw new Error('Missing JSON schema CLI fixture')
 const requests: any[] = []
+const workloadHeaders: Array<string | null> = []
 const subprocesses: any[] = []
 const server = Bun.serve({ hostname: '127.0.0.1', port: 0, async fetch(request) {
   const endpoint = new URL(request.url).pathname
   if (endpoint !== '/v1/messages') return new Response('{}', { status: 404 })
   const body = await request.json()
   requests.push(body)
+  workloadHeaders.push(request.headers.get('user-agent'))
   if (!input.success) throw new Error('Resume initialization entered the model')
+  if ((input.behavior === 'fallback' || input.behavior === 'fallback-tool') && requests.length <= 3 || input.behavior === 'fallback-stream' && requests.length >= 2 && requests.length <= 4) {
+    return new Response(JSON.stringify({ type: 'error', error: { type: 'overloaded_error', message: 'Private scripted overload' } }), { status: 529, headers: { 'content-type': 'application/json', 'retry-after-ms': '1' } })
+  }
+  if (input.behavior === 'fallback-stream' && requests.length === 1) {
+    const events = [
+      ['message_start', { type: 'message_start', message: { id: 'failed-partial-stream', type: 'message', role: 'assistant', model: (body as any).model, content: [], usage: { input_tokens: 1, output_tokens: 0 } } }],
+      ['content_block_start', { type: 'content_block_start', index: 0, content_block: { type: 'text', text: '' } }],
+      ['content_block_delta', { type: 'content_block_delta', index: 0, delta: { type: 'text_delta', text: 'FAILED_PARTIAL_STREAM' } }],
+      ['content_block_stop', { type: 'content_block_stop', index: 0 }],
+    ]
+    return new Response(events.map(([name, data]) => `event: ${name}\ndata: ${JSON.stringify(data)}\n\n`).join(''), { headers: { 'content-type': 'text/event-stream' } })
+  }
+  if (input.behavior === 'authentication-error') return new Response(JSON.stringify({ type: 'error', error: { type: 'authentication_error', message: 'Private scripted authentication failure' } }), { status: 401, headers: { 'content-type': 'application/json' } })
+  const write = (input.behavior === 'budget-tool' || input.behavior === 'budget-denied') && requests.length === 1 || input.behavior === 'fallback-tool' && requests.length === 4
+  if (write) {
+    if (typeof input.writePath !== 'string' || !input.writePath.startsWith(home + path.sep)) throw new Error('Tool fixture destination must belong to its private home')
+    const events = [
+      ['message_start', { type: 'message_start', message: { id: 'actual-budget-write', type: 'message', role: 'assistant', model: (body as any).model, content: [], usage: { input_tokens: 1, output_tokens: 0 } } }],
+      ['content_block_start', { type: 'content_block_start', index: 0, content_block: { type: 'tool_use', id: 'actual-budget-write-call', name: 'Edit', input: {} } }],
+      ['content_block_delta', { type: 'content_block_delta', index: 0, delta: { type: 'input_json_delta', partial_json: JSON.stringify({ file_path: input.writePath, old_string: '', new_string: 'ACTUAL_NATIVE_WRITE_BEFORE_LIMIT\n' }) } }],
+      ['content_block_stop', { type: 'content_block_stop', index: 0 }],
+      ['message_delta', { type: 'message_delta', delta: { stop_reason: 'tool_use', stop_sequence: null }, usage: { output_tokens: 1 } }],
+      ['message_stop', { type: 'message_stop' }],
+    ]
+    return new Response(events.map(([name, data]) => `event: ${name}\ndata: ${JSON.stringify(data)}\n\n`).join(''), { headers: { 'content-type': 'text/event-stream' } })
+  }
   const events = [
     ['message_start', { type: 'message_start', message: { id: 'normal-resume-response', type: 'message', role: 'assistant', model: 'fixture-model', content: [], usage: { input_tokens: 1, output_tokens: 0 } } }],
     ['content_block_start', { type: 'content_block_start', index: 0, content_block: { type: 'text', text: '' } }],
@@ -85,7 +113,7 @@ state.setCwdState(home)
 state.setOriginalCwd(home)
 state.setProjectRoot(home)
 process.argv = [process.execPath, new URL('../../src/entrypoints/cli.tsx', import.meta.url).pathname, ...input.args]
-process.on('exit', code => fs.writeFileSync(path.join(home, 'source-resume-error-receipt.json'), JSON.stringify({ code, requests, subprocesses, capabilities, sessionId: state.getSessionId() })))
+process.on('exit', code => fs.writeFileSync(path.join(home, 'source-resume-error-receipt.json'), JSON.stringify({ code, requests, workloadHeaders, subprocesses, capabilities, sessionId: state.getSessionId() })))
 setTimeout(() => process.exit(94), 25000).unref()
 // Await the original exported CLI entry/action so resume load rejection is
 // observed as a terminal failure rather than held alive by this peer server.

@@ -15,9 +15,10 @@ type PromptModelInput struct {
 	Prompt    json.RawMessage
 }
 type PromptBindings struct {
-	Owner       *cooperative.Owner
-	Query       func(context.Context, *cooperative.Scope, PromptModelInput) (protocol.JSONObject, error)
-	RestoreGoal func(context.Context, Context) (bool, error)
+	Owner              *cooperative.Owner
+	Query              func(context.Context, *cooperative.Scope, PromptModelInput) (protocol.JSONObject, error)
+	RestoreGoal        func(context.Context, Context) (bool, error)
+	TeamWorkInProgress func(context.Context, Context) (bool, error)
 }
 
 func (s *Service) HasNativePromptBindings(owner *cooperative.Owner) bool {

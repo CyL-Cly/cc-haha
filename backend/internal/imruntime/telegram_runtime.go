@@ -34,26 +34,30 @@ type telegramChat struct {
 	sessionSelection *SessionSelection
 }
 type TelegramRuntime struct {
-	options  TelegramRuntimeOptions
-	API      *TelegramAPI
-	Bridge   *Bridge
-	Client   *HTTPClient
-	Store    *SessionStore
-	Pairing  *Pairing
-	Delivery *TelegramDelivery
-	Media    *TelegramMedia
-	Dedup    *MessageDedup
-	Poller   *TelegramPoller
-	ctx      context.Context
-	cancel   context.CancelFunc
-	mu       sync.Mutex
-	chats    map[string]*telegramChat
-	closed   bool
-	wg       sync.WaitGroup
-	close    sync.Once
+	migration *MigrationLifecycle
+	options   TelegramRuntimeOptions
+	API       *TelegramAPI
+	Bridge    *Bridge
+	Client    *HTTPClient
+	Store     *SessionStore
+	Pairing   *Pairing
+	Delivery  *TelegramDelivery
+	Media     *TelegramMedia
+	Dedup     *MessageDedup
+	Poller    *TelegramPoller
+	ctx       context.Context
+	cancel    context.CancelFunc
+	mu        sync.Mutex
+	chats     map[string]*telegramChat
+	closed    bool
+	wg        sync.WaitGroup
+	close     sync.Once
 }
 
 func NewTelegramRuntime(ctx context.Context, options TelegramRuntimeOptions) (*TelegramRuntime, error) {
+	if err := migrationRuntimeAvailable(options.Config); err != nil {
+		return nil, err
+	}
 	if options.Config.Err != nil {
 		return nil, options.Config.Err
 	}
@@ -92,16 +96,20 @@ func NewTelegramRuntime(ctx context.Context, options TelegramRuntimeOptions) (*T
 	}
 	options.ServerHTTP = serverHTTP
 	options.MediaHTTP = mediaHTTP
+	ctx, lifecycle := newMigrationContext(ctx)
 	ctx, cancel := context.WithCancel(ctx)
-	r := &TelegramRuntime{options: options, API: api, ctx: ctx, cancel: cancel, chats: map[string]*telegramChat{}}
-	r.Bridge = NewBridge(ctx, options.Config, nil, options.Log)
+	r := &TelegramRuntime{migration: lifecycle, options: options, API: api, ctx: ctx, cancel: cancel, chats: map[string]*telegramChat{}}
+	r.Bridge = NewBridge(ctx, options.Config, nil, options.Log, BridgeOptions{Now: options.Now})
 	r.Client = NewHTTPClient(options.Config, serverHTTP)
 	r.Store = NewSessionStore(options.Config.ConfigDir)
+	r.Store.Lifecycle = lifecycle
 	r.Store.NowMillis = func() int64 { return options.Now().UnixMilli() }
 	r.Pairing = NewPairing(options.Config.ConfigDir, nil)
+	r.Pairing.Lifecycle = lifecycle
 	r.Pairing.NowMillis = func() int64 { return options.Now().UnixMilli() }
 	r.Delivery = NewTelegramDelivery(ctx, api, options.Delivery)
-	r.Media = &TelegramMedia{api, NewAttachmentStore(options.Config.Home), mediaHTTP}
+	r.Media = &TelegramMedia{api, NewConfiguredAttachmentStore(options.Config), mediaHTTP}
+	r.Media.Store.Lifecycle = lifecycle
 	r.Dedup = NewMessageDedup(ctx)
 	r.Dedup.Now = options.Now
 	r.Poller = &TelegramPoller{API: api, Handler: r.HandleUpdate, Log: options.Log}
@@ -242,6 +250,11 @@ func jsonID(value json.RawMessage) string {
 	return TextJSON(quoted).String()
 }
 func (r *TelegramRuntime) HandleUpdate(ctx context.Context, update protocol.JSONObject) error {
+	done, admitted := r.migration.Admit()
+	if !admitted {
+		return nil
+	}
+	defer done(nil)
 	if ctx.Err() != nil || r.ctx.Err() != nil {
 		return nil
 	}
@@ -527,7 +540,7 @@ func (r *TelegramRuntime) HandleServerMessage(id string, message protocol.JSONOb
 					if session := r.Store.Get(id); session != nil {
 						work = session.WorkDir
 					}
-					image := LoadSafeOutboundImage(pending, work)
+					image := LoadSafeOutboundImage(pending, work, r.options.Config.ConfigDir)
 					if image.OK {
 						if err := r.API.SendPhoto(r.ctx, id, image.Buffer, pending.Alt); err != nil && r.ctx.Err() == nil {
 							r.options.Log("[Telegram] dispatchOutboundMedia failed: " + err.Error())

@@ -23,7 +23,7 @@ func TestNativeSettingsApplyRulesAndBypassAgainstActualSource(t *testing.T) {
 	rows := []map[string]any{}
 	got := []json.RawMessage{}
 	for _, managed := range []bool{false, true} {
-		for _, mode := range []string{"default", "acceptEdits", "bypassPermissions"} {
+		for _, mode := range []string{"default", "acceptEdits", "bypassPermissions", "auto"} {
 			for _, disable := range []bool{false, true} {
 				owner, _, gate := setup(t, "")
 				policy := protocol.NewJSONObject()
@@ -32,12 +32,17 @@ func TestNativeSettingsApplyRulesAndBypassAgainstActualSource(t *testing.T) {
 					policy.Set("allowManagedPermissionRulesOnly", []byte("true"))
 				}
 				global := protocol.NewJSONObject()
-				producer, err := NewNativeStartup(owner, NativeStartupOptions{Home: home, CWD: home, OriginalCWD: home, Platform: "darwin", Environment: func(string) string { return "" }, Global: func() (*protocol.JSONObject, error) { return &global, nil }, Policy: func() (*protocol.JSONObject, error) { return &policy, nil }, Stat: os.Stat, Lstat: os.Lstat, Realpath: filepath.EvalSymlinks})
+				next := protocol.NewJSONObject()
+				producer, err := NewNativeStartup(owner, NativeStartupOptions{SettingsForSource: func(name string) (*protocol.JSONObject, error) {
+					if name == "userSettings" {
+						return &next, nil
+					}
+					return nil, nil
+				}, InitialSettings: func() (*protocol.JSONObject, error) { return &next, nil }, Home: home, CWD: home, OriginalCWD: home, Platform: "darwin", Environment: func(string) string { return "" }, Global: func() (*protocol.JSONObject, error) { return &global, nil }, Policy: func() (*protocol.JSONObject, error) { return &policy, nil }, Stat: os.Stat, Lstat: os.Lstat, Realpath: filepath.EvalSymlinks})
 				if err != nil {
 					t.Fatal(err)
 				}
 				settings := protocol.NewJSONObject()
-				next := protocol.NewJSONObject()
 				if disable {
 					next.Set("permissions", []byte(`{"disableBypassPermissionsMode":"disable"}`))
 				}
@@ -93,7 +98,7 @@ func TestNativeSettingsApplyRulesAndBypassAgainstActualSource(t *testing.T) {
 	fixture, _ := filepath.Abs("../../../scripts/quality-gate/go-parity/native-settings-apply.fixture.ts")
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	command := exec.CommandContext(ctx, bun, "--no-env-file", fixture)
+	command := exec.CommandContext(ctx, bun, "--no-env-file", "--feature=TRANSCRIPT_CLASSIFIER", fixture)
 	command.Dir = home
 	command.Env = []string{"HOME=" + home, "USERPROFILE=" + home, "CLAUDE_CONFIG_DIR=" + filepath.Join(home, ".claude"), "TMPDIR=" + home, "PATH=/usr/bin:/bin", "CC_HAHA_FIXTURE_TEMP_ROOT=" + filepath.Dir(home), "CC_HAHA_SETTINGS_APPLY_FIXTURE=1", "BUN_OPTIONS=--no-env-file"}
 	payload, _ := json.Marshal(map[string]any{"rows": rows})

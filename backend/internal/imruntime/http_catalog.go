@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/url"
 	"sort"
 	"strings"
@@ -23,25 +22,36 @@ func EncodeURIComponent(value string) string {
 	}
 	return result.String()
 }
+
+// REST failures use the original client's template interpolation, including
+// omitted, null and non-string message values; JSONObject.String is only a
+// typed field accessor and would erase those observable error messages.
+func httpErrorMessage(data protocol.JSONObject) string {
+	value, err := protocol.JavaScriptStringJSON(data.Get("message"))
+	if err != nil {
+		return "undefined"
+	}
+	return TextJSON(value).String()
+}
 func (c *HTTPClient) Checked(ctx context.Context, method, path string, body json.RawMessage, label string) (protocol.JSONObject, error) {
 	data, status, err := c.Request(ctx, method, path, body)
 	if err != nil {
 		return data, err
 	}
 	if status < 200 || status >= 300 {
-		return data, fmt.Errorf("%s: %s", label, data.String("message"))
+		return data, fmt.Errorf("%s: %s", label, httpErrorMessage(data))
 	}
 	return data, nil
 }
 func (c *HTTPClient) Change(ctx context.Context, method, path string, body json.RawMessage) error {
-	data, status, err := c.Request(ctx, method, path, body)
-	if status >= 200 && status < 300 && (err == nil || err == io.EOF || err == io.ErrUnexpectedEOF) {
+	data, status, err := c.request(ctx, method, path, body, false)
+	if status >= 200 && status < 300 && err == nil {
 		return nil
 	}
 	if err != nil {
 		return err
 	}
-	return fmt.Errorf("Request failed: %s", data.String("message"))
+	return fmt.Errorf("Request failed: %s", httpErrorMessage(data))
 }
 func (c *HTTPClient) Git(ctx context.Context, id string) (protocol.JSONObject, error) {
 	return c.Checked(ctx, "GET", "/api/sessions/"+EncodeURIComponent(id)+"/git-info", nil, "Failed to load git info")
@@ -55,7 +65,7 @@ func (c *HTTPClient) Tasks(ctx context.Context, id string) ([]protocol.JSONObjec
 		return nil, err
 	}
 	if status < 200 || status >= 300 {
-		return nil, fmt.Errorf("Failed to load tasks: %s", data.String("message"))
+		return nil, fmt.Errorf("Failed to load tasks: %s", httpErrorMessage(data))
 	}
 	return collectJSONArray(data.Get("tasks")), nil
 }

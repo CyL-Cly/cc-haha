@@ -40,7 +40,9 @@ func (m *MainPrint) nativePromptHookBindings() *queryhooks.PromptBindings {
 	if m.options.Native == nil || !m.options.Native.NativeProcess {
 		return nil
 	}
-	return &queryhooks.PromptBindings{Owner: m.Owner, Query: func(ctx context.Context, scope *cooperative.Scope, input queryhooks.PromptModelInput) (protocol.JSONObject, error) {
+	return &queryhooks.PromptBindings{Owner: m.Owner, TeamWorkInProgress: func(ctx context.Context, call queryhooks.Context) (bool, error) {
+		return m.nativeTeamWorkInProgress(call.Scope)
+	}, Query: func(ctx context.Context, scope *cooperative.Scope, input queryhooks.PromptModelInput) (protocol.JSONObject, error) {
 		if !scope.BelongsTo(m.Owner) || m.Host == nil {
 			return protocol.JSONObject{}, cooperative.ErrRestricted
 		}

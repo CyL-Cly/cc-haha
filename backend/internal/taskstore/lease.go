@@ -27,9 +27,9 @@ func (s *Service) lock(target string) (func() error, error) {
 }
 
 // AcquireMailboxLease uses the original teammate mailbox's explicit lock path
-// and ten retries, sharing the same proper-lockfile-compatible lease primitive.
+// and thirty retries, sharing the same proper-lockfile-compatible lease primitive.
 func (s *Service) AcquireMailboxLease(target string) (func() error, error) {
-	return s.lockWithOptions(target, target+".lock", 10, true)
+	return s.lockWithOptions(target, target+".lock", 30, true)
 }
 
 // Team config creation locks config.json before that file exists. Source uses

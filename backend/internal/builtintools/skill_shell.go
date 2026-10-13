@@ -10,6 +10,14 @@ import (
 // temporary getAppState overlay. The owner, caches, native binding and real
 // registered Call are unchanged; no process-wide permission state is mutated.
 func (s *Service) PromptShellPermission(scope *cooperative.Scope, in *protocol.JSONObject, permission protocol.JSONObject) (queryloop.ToolPermission, error) {
+	return s.promptNamedShellPermission(scope, "Bash", in, permission)
+}
+
+func (s *Service) PromptPowerShellPermission(scope *cooperative.Scope, in *protocol.JSONObject, permission protocol.JSONObject) (queryloop.ToolPermission, error) {
+	return s.promptNamedShellPermission(scope, "PowerShell", in, permission)
+}
+
+func (s *Service) promptNamedShellPermission(scope *cooperative.Scope, name string, in *protocol.JSONObject, permission protocol.JSONObject) (queryloop.ToolPermission, error) {
 	if e := s.check(scope); e != nil {
 		return queryloop.ToolPermission{}, e
 	}
@@ -21,5 +29,5 @@ func (s *Service) PromptShellPermission(scope *cooperative.Scope, in *protocol.J
 		}
 		return permission.Clone(), nil
 	}
-	return borrowed.PermissionDecision(scope, "Bash", in)
+	return borrowed.PermissionDecision(scope, name, in)
 }

@@ -5,6 +5,7 @@ package modelyield
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"io"
@@ -113,9 +114,10 @@ func Run(ctx context.Context, input requestretry.Input, deps Dependencies) (Outc
 }
 
 type producerLifecycle struct {
-	opened  func(*provider.OwnedMessageStream)
-	feed    func([]byte) error
-	finally func(bool, *string) error
+	opened   func(*provider.OwnedMessageStream)
+	feed     func([]byte) error
+	finally  func(bool, *string) error
+	fallback func(json.RawMessage) error
 }
 
 func runOwned(ctx context.Context, input requestretry.Input, deps Dependencies, owner *cooperative.Owner, scope *cooperative.Scope) (Outcome, error) {
@@ -137,7 +139,7 @@ func beginProducerLifecycle(input requestretry.Input, deps Dependencies, owner *
 		if opened == nil {
 			opened = func(*provider.OwnedMessageStream) {}
 		}
-		life = &producerLifecycle{opened: opened, feed: func(raw []byte) error { return attempt.Observe(scope, raw) }, finally: func(normal bool, id *string) error { return attempt.Finish(scope, normal, id) }}
+		life = &producerLifecycle{opened: opened, feed: func(raw []byte) error { return attempt.Observe(scope, raw) }, finally: func(normal bool, id *string) error { return attempt.Finish(scope, normal, id) }, fallback: func(raw json.RawMessage) error { return attempt.ObserveFallback(scope, raw) }}
 	}
 	return life, nil
 }
@@ -321,7 +323,11 @@ func runOwnedLifecycle(ctx context.Context, input requestretry.Input, deps Depen
 			_ = stream.Close()
 		}
 		if lifeOpened && life != nil {
-			if failure := life.finally(normalCompletion, stream.RequestID); resultErr == nil && failure != nil {
+			var originalID *string
+			if stream != nil {
+				originalID = stream.RequestID
+			}
+			if failure := life.finally(normalCompletion, originalID); resultErr == nil && failure != nil {
 				resultErr = failure
 			}
 		}
@@ -347,6 +353,24 @@ func runOwnedLifecycle(ctx context.Context, input requestretry.Input, deps Depen
 		return Outcome{Reason: "caller_aborted"}, nil
 	}
 	if err != nil {
+		var creation *provider.SDKStreamError
+		if input.Context.Host.Profile == requestcontext.NativeDirectRelayProfile && errors.As(err, &creation) && creation.Status != nil && *creation.Status == 404 {
+			rejected, failure := retrypolicy.HasPolicyRejection(err)
+			if failure != nil {
+				return Outcome{}, failure
+			}
+			if !rejected {
+				outcome, failure := runNativeNonstreamFallback(ctx, input, deps, requestDeps, domain, factory, mediaHistory, nil, "404_stream_creation", err, func(raw json.RawMessage) error {
+					if life != nil {
+						lifeOpened = true
+						return life.fallback(raw)
+					}
+					return nil
+				})
+				normalCompletion = failure == nil && outcome.Reason == "returned" && !outcome.Terminal
+				return outcome, failure
+			}
+		}
 		var terminal *streamhistory.Envelope
 		var failure error
 		matched := false
@@ -364,7 +388,11 @@ func runOwnedLifecycle(ctx context.Context, input requestretry.Input, deps Depen
 			}
 			// Allocate only after the resumed final retry notice, using this
 			// attempt's shared Factory and captured actual prepared history.
-			terminal, failure = apipresentation.CreationFailure(err, domain, factory)
+			if input.Context.Host.Profile == requestcontext.NativeDirectRelayProfile {
+				terminal, failure = apipresentation.NativeCreationFailure(err, domain, factory, mediaPresentationOptions(input, mediaHistory))
+			} else {
+				terminal, failure = apipresentation.CreationFailure(err, domain, factory)
+			}
 		}
 		if failure != nil {
 			return Outcome{}, failure
@@ -405,6 +433,18 @@ func runOwnedLifecycle(ctx context.Context, input requestretry.Input, deps Depen
 	if err != nil {
 		return Outcome{}, err
 	}
+	var watchdog *nativeStreamWatchdog
+	if input.Context.Host.Profile == requestcontext.NativeDirectRelayProfile && deps.StreamPolicy != nil && deps.StreamPolicy.native {
+		env := deps.StreamPolicy.OriginalEnvironment()
+		if env["API_TIMEOUT_MS"] == "" {
+			env["API_TIMEOUT_MS"] = input.Context.Host.Env["API_TIMEOUT_MS"]
+		}
+		watchdog, err = newNativeStreamWatchdog(scope, owned, stream, env)
+		if err != nil {
+			return Outcome{}, err
+		}
+		defer watchdog.close()
+	}
 	emit := func(update streamhistory.Update) error {
 		if finishing && update.Envelope != nil && update.Envelope.APIError {
 			terminalAPIError = true
@@ -433,6 +473,9 @@ func runOwnedLifecycle(ctx context.Context, input requestretry.Input, deps Depen
 			return Outcome{}, failure
 		}
 		if failure == nil {
+			if failure = watchdog.record(part); failure != nil {
+				return Outcome{}, failure
+			}
 			if life != nil {
 				if failure = life.feed(part); failure != nil {
 					return Outcome{}, failure
@@ -480,7 +523,7 @@ func runOwnedLifecycle(ctx context.Context, input requestretry.Input, deps Depen
 		// The original caller signal wins over an incidental transport failure,
 		// after preserving consumer ownership. Flush through the same live
 		// assembler so visible text survives and pending tools stay uncommitted.
-		if ctx.Err() != nil || stream.AbortCause() != nil {
+		if ctx.Err() != nil || stream.AbortCause() != nil && (watchdog == nil || watchdog.failure == nil) {
 			if failure = scope.Frame(cooperative.FrameAbort, func() error { return controller.Abort(emit) }); failure != nil {
 				if consumerStopped {
 					return Outcome{Reason: "consumer_stopped"}, nil
@@ -489,8 +532,20 @@ func runOwnedLifecycle(ctx context.Context, input requestretry.Input, deps Depen
 			}
 			return Outcome{Reason: "caller_aborted"}, nil
 		}
+		if watchdog != nil && watchdog.failure != nil {
+			failure = watchdog.failure
+		}
+		if errors.Is(failure, io.EOF) && input.Context.Host.Profile == requestcontext.NativeDirectRelayProfile {
+			now, e := fields.now()
+			if e != nil {
+				return Outcome{}, e
+			}
+			if early := controller.EndOfStream(now - fields.start); early != nil {
+				failure = early
+			}
+		}
 		if !errors.Is(failure, io.EOF) {
-			nativePolicy := input.Context.Host.Profile == requestcontext.NativeDirectRelayProfile && deps.StreamPolicy != nil && deps.StreamPolicy.native && !streamPolicyTruthy(deps.StreamPolicy.original["CLAUDE_ENABLE_STREAM_WATCHDOG"])
+			nativePolicy := input.Context.Host.Profile == requestcontext.NativeDirectRelayProfile && deps.StreamPolicy != nil && deps.StreamPolicy.native
 			if deps.StreamPolicy == nil || !deps.StreamPolicy.disabled && !nativePolicy {
 				return Outcome{}, unsupported("partial-stream error, retry and commit buffer")
 			}
@@ -502,21 +557,21 @@ func runOwnedLifecycle(ctx context.Context, input requestretry.Input, deps Depen
 				return Outcome{}, unsupported("stream policy rejection presentation")
 			}
 			if nativePolicy && !rejected {
-				retry, e := nativeTransientStreamRetry(stream, failure, state)
+				kind, e := nativeTransientStreamRetry(stream, failure, state, deps.StreamPolicy)
 				if e != nil {
 					return Outcome{}, e
 				}
-				if retry {
+				if kind != "" {
 					buffered := []streamhistory.Update{}
 					if e := scope.Frame(cooperative.FrameFinish, func() error {
-						return controller.FlushProducerError(func(update streamhistory.Update) error {
+						return controller.FlushProducerErrorWithoutToolUse(func(update streamhistory.Update) error {
 							buffered = append(buffered, update)
 							return nil
 						})
 					}); e != nil {
 						return Outcome{}, e
 					}
-					return Outcome{}, &transientStreamError{original: failure, buffered: buffered, mediaHistory: mediaHistory}
+					return Outcome{}, &transientStreamError{original: failure, buffered: buffered, mediaHistory: mediaHistory, kind: kind}
 				}
 			}
 			if retry, e := retrypolicy.IsRetryableStreamTransportError(failure); e != nil {
@@ -530,7 +585,22 @@ func runOwnedLifecycle(ctx context.Context, input requestretry.Input, deps Depen
 				return Outcome{}, unsupported("actual transient stream retry")
 			}
 			if nativePolicy && !rejected && !deps.StreamPolicy.disableFallback && !state.CrossedSideEffectBoundary {
-				return Outcome{}, unsupported("actual streaming to non-streaming fallback")
+				var early *streamhistory.StreamEndedEarlyError
+				incomplete := errors.As(failure, &early) && early.Reason == "incomplete"
+				if !state.CommittedOutput && !state.ServerToolUseStarted && !incomplete {
+					cause := "stream_error"
+					if watchdog != nil && watchdog.failure != nil {
+						cause = "watchdog"
+					}
+					outcome, err := runNativeNonstreamFallback(ctx, input, deps, requestDeps, domain, factory, mediaHistory, stream.RequestID, cause, failure, func(raw json.RawMessage) error {
+						if life != nil {
+							return life.fallback(raw)
+						}
+						return nil
+					})
+					normalCompletion = err == nil && outcome.Reason == "returned" && !outcome.Terminal
+					return outcome, err
+				}
 			}
 			// Source outer catch drains before constructing the terminal. Its
 			// UUID/Date allocation must remain after the resumed assistant yield.

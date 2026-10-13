@@ -90,7 +90,7 @@ func New(o Options) (*Service, error) {
 	if o.Owner == nil || !o.NativeBinding.Owns(o.Owner) || o.Cache == nil || !o.Cache.Owns(o.Owner) || !filepath.IsAbs(o.Home) || !filepath.IsAbs(o.CWD) || o.PID <= 0 || o.NowMillis == nil || o.Environment == nil || o.PermissionContext == nil || o.HostState == nil {
 		return nil, capability("unresolved shared owner/native binding/cache/paths/clocks/permission producer")
 	}
-	if o.Host.Platform != "darwin" && o.Host.Platform != "linux" {
+	if o.Host.Platform != "darwin" && o.Host.Platform != "linux" && o.Host.Platform != "windows" {
 		return nil, capability("native Windows path, permission and replacement semantics")
 	}
 	if o.Files == nil {
@@ -156,7 +156,7 @@ func (s *Service) hostCheck(scope *cooperative.Scope) error {
 	if h.LOCCounterEnabled {
 		return capability("enabled existing bootstrap LOC counter")
 	}
-	if !h.NonInteractive {
+	if !h.NonInteractive && s.options.FileHistoryTrack == nil {
 		return capability("interactive file-history/global configuration")
 	}
 	if h.TeamMemoryEnabled {

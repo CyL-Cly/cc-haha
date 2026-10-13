@@ -17,7 +17,7 @@ func nativeMCPToolMetadata(def toolschema.Definition) protocol.JSONObject {
 	}
 	maximum := json.RawMessage(`100000`)
 	switch def.Name {
-	case "Bash":
+	case "Bash", "PowerShell":
 		maximum = json.RawMessage(`30000`)
 	case "Grep":
 		maximum = json.RawMessage(`20000`)
@@ -25,7 +25,7 @@ func nativeMCPToolMetadata(def toolschema.Definition) protocol.JSONObject {
 		maximum = json.RawMessage(`null`)
 	}
 	value.Set("maxResultSizeChars", maximum)
-	if def.Name == "Bash" || def.Name == "Grep" || def.Name == "Read" || def.Name == "Edit" || def.Name == "Write" || def.Name == "TodoWrite" {
+	if def.Name == "Bash" || def.Name == "PowerShell" || def.Name == "Grep" || def.Name == "Read" || def.Name == "Edit" || def.Name == "Write" || def.Name == "TodoWrite" {
 		value.Set("strict", json.RawMessage(`true`))
 	}
 	if def.ShouldDefer {
@@ -59,6 +59,18 @@ func nativeMCPOutputSchema(name string) json.RawMessage {
 	properties := protocol.NewJSONObject()
 	add := func(key, kind, description string) { properties.Set(key, rawMain(mcpSchemaField(kind, description))) }
 	switch name {
+	case "PowerShell":
+		add("stdout", "string", "The standard output of the command")
+		add("stderr", "string", "The standard error output of the command")
+		add("interrupted", "boolean", "Whether the command was interrupted")
+		add("returnCodeInterpretation", "string", "Semantic interpretation for non-error exit codes with special meaning")
+		add("isImage", "boolean", "Flag to indicate if stdout contains image data")
+		add("persistedOutputPath", "string", "Path to persisted full output when too large for inline")
+		add("persistedOutputSize", "number", "Total output size in bytes when persisted")
+		add("backgroundTaskId", "string", "ID of the background task if command is running in background")
+		add("backgroundedByUser", "boolean", "True if the user manually backgrounded the command with Ctrl+B")
+		add("assistantAutoBackgrounded", "boolean", "True if the command was auto-backgrounded by the assistant-mode blocking budget")
+		return rawMain(mcpObjectSchema(properties, []string{"stdout", "stderr", "interrupted"}, true))
 	case "Bash":
 		add("stdout", "string", "The standard output of the command")
 		add("stderr", "string", "The standard error output of the command")

@@ -30,6 +30,9 @@ func (m *MainPrint) newNativeMCP() error {
 	if err != nil {
 		return err
 	}
+	if err = m.initializeNativeCLIMCP(); err != nil {
+		return err
+	}
 	var parent *MainPrint
 	if d := m.options.DetachedAgent; d != nil {
 		parent = d.authParent
@@ -58,7 +61,7 @@ func (m *MainPrint) newNativeMCP() error {
 	if err != nil {
 		return err
 	}
-	m.mcpRuntime, err = mcpruntime.New(mcpruntime.Options{SDK: m.nativeSDKMCPBindings, PrepareHTTP: m.claudeAIMCP.PrepareHTTP, CWD: n.CWD, Version: m.options.Version, Environment: n.Environment, Enabled: m.nativeSettings.MCPExecutionEnabled, Authenticate: auth.Authenticate, ClearOAuth: auth.Clear, Auth: func(ctx context.Context, name string, config protocol.JSONObject) (mcpclient.AuthProvider, error) {
+	m.mcpRuntime, err = mcpruntime.New(mcpruntime.Options{HeadersPolicy: m.nativeMCPHeadersPolicy, SessionIngressToken: m.nativeMCPIngressToken, PID: m.options.PID, SDK: m.nativeSDKMCPBindings, PrepareHTTP: m.claudeAIMCP.PrepareHTTP, CWD: n.CWD, Version: m.options.Version, Environment: n.Environment, Enabled: m.nativeSettings.MCPExecutionEnabled, Authenticate: auth.Authenticate, ClearOAuth: auth.Clear, Auth: func(ctx context.Context, name string, config protocol.JSONObject) (mcpclient.AuthProvider, error) {
 		if config.String("type") != "http" && config.String("type") != "sse" {
 			return nil, nil
 		}

@@ -5,7 +5,6 @@ import (
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/mcpconfig"
-	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 )
 
 func (m *MainPrint) newNativeClaudeAIMCP() (*CLIClaudeAIMCP, error) {
@@ -28,8 +27,5 @@ func (m *MainPrint) newNativeClaudeAIMCP() (*CLIClaudeAIMCP, error) {
 }
 
 func (m *MainPrint) nativeAllMCPConfigurations(ctx context.Context) (mcpconfig.Result, error) {
-	if m.claudeAIMCP == nil {
-		return m.mcpConfigurations.AllConfigurations(ctx, protocol.NewJSONObject())
-	}
-	return m.claudeAIMCP.All(ctx, m.mcpConfigurations)
+	return m.nativeCLIAllMCPConfigurations(ctx)
 }

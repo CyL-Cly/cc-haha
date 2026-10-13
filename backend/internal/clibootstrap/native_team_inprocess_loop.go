@@ -3,7 +3,6 @@ package clibootstrap
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/NanmiCoder/cc-haha/backend/internal/agentcatalog"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
@@ -11,6 +10,8 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/sessioncontroller"
 	"github.com/NanmiCoder/cc-haha/backend/internal/teamspawn"
 	"github.com/NanmiCoder/cc-haha/backend/internal/teamstore"
+	"github.com/NanmiCoder/cc-haha/backend/internal/teamworker"
+	"time"
 )
 
 func inProcessParentCall[T any](ctx context.Context, m *MainPrint, run func(*cooperative.Scope) (T, error)) (T, error) {
@@ -31,7 +32,7 @@ func (m *MainPrint) updateInProcessTask(ctx context.Context, id string, update f
 // runNativeInProcessLoop consumes the actual registered AppState task. The
 // spawning producer owns cancellation/cleanup; every iteration uses the shared
 // independent MainPrint Agent graph, then waits on the same physical inbox.
-func (m *MainPrint) runNativeInProcessLoop(ctx context.Context, taskID string, identity sessioncontroller.InProcessTeammateIdentity, definition *agentcatalog.Definition, model, prompt, description string) error {
+func (m *MainPrint) runNativeInProcessLoop(ctx context.Context, taskID string, identity sessioncontroller.InProcessTeammateIdentity, definition *agentcatalog.Definition, model, prompt, description string, resumes ...*nativeInProcessResume) (returned error) {
 	task, err := inProcessParentCall(ctx, m, func(scope *cooperative.Scope) (*sessioncontroller.BackgroundTask, error) {
 		return m.Controller.BackgroundTaskOnOwner(scope, taskID)
 	})
@@ -79,7 +80,35 @@ func (m *MainPrint) runNativeInProcessLoop(ctx context.Context, taskID string, i
 		return err
 	}
 	history := []protocol.JSONObject{}
-	current := teamspawn.TeammateMessage("team-lead", prompt, "", description)
+	lastDeliveredResult := ""
+	defer func() {
+		if returned != nil && ctx.Err() == nil {
+			result, has, _ := teamspawn.TeammateTurnResult(history)
+			if result == lastDeliveredResult {
+				has = false
+			}
+			if reportErr := m.sendNativeInProcessTurnReport(context.Background(), identity, history, "failed", returned.Error(), result, has); reportErr != nil {
+				_, _ = fmt.Fprintln(m.options.Error, reportErr)
+			}
+		}
+	}()
+	from := "team-lead"
+	if len(resumes) > 0 && resumes[0] != nil {
+		history = append(history, resumes[0].History...)
+		from = resumes[0].From
+	}
+	if identity.ResumableAgentID == "" {
+		identity.ResumableAgentID, err = nativeAgentID()
+		if err != nil {
+			return err
+		}
+	}
+	delays := m.options.NativeInProcessAutoContinueDelays
+	if delays == nil {
+		delays = teamspawn.AutoContinueDelays
+	}
+	attempts := 0
+	current := teamspawn.TeammateMessage(from, prompt, "", description)
 	streamScopeID := nativeTeamStreamScope(config.Read(identity.TeamName))
 	if err = m.appendNativeInProcessPrompt(ctx, taskID, current); err != nil {
 		return err
@@ -172,8 +201,98 @@ func (m *MainPrint) runNativeInProcessLoop(ctx context.Context, taskID string, i
 		if ctx.Err() != nil {
 			return nil
 		}
-		if failure != nil && !workWasAborted {
+		turnFailure, err := teamspawn.ClassifyTeammateTurnFailure(run.NewMessages)
+		if err != nil {
+			return err
+		}
+		if failure != nil && !workWasAborted && turnFailure == nil {
 			return failure
+		}
+		retryCancelled := false
+		if !workWasAborted && turnFailure != nil && turnFailure.Transient && attempts < len(delays) {
+			attempts++
+			retry, cancelRetry := context.WithCancelCause(ctx)
+			if _, err = inProcessParentCall(ctx, m, func(scope *cooperative.Scope) (struct{}, error) {
+				return struct{}{}, m.Controller.SetInProcessWorkCancelOnOwner(scope, taskID, cancelRetry)
+			}); err != nil {
+				cancelRetry(err)
+				return err
+			}
+			claim := false
+			next, waitErr := inbox.Wait(ctx, teamspawn.WaitOptions{Deadline: time.Now().Add(delays[attempts-1]), CancelContext: retry, ClaimTasks: &claim})
+			cancelRetry(nil)
+			if _, err = inProcessParentCall(context.Background(), m, func(scope *cooperative.Scope) (struct{}, error) {
+				return struct{}{}, m.Controller.SetInProcessWorkCancelOnOwner(scope, taskID, nil)
+			}); err != nil {
+				return err
+			}
+			if waitErr != nil {
+				return waitErr
+			}
+			if next.String("type") == "timeout" {
+				current = teamworker.FormatTeammateAutoContinuePrompt(turnFailure.Reason, attempts, len(delays))
+				if err = m.appendNativeInProcessPrompt(ctx, taskID, current); err != nil {
+					return err
+				}
+				continue
+			}
+			if next.String("type") != "cancelled" {
+				current, err = m.takeNativeInProcessNextPrompt(ctx, taskID, next)
+				if err != nil {
+					return err
+				}
+				if next.String("type") == "aborted" {
+					return nil
+				}
+				attempts = 0
+				continue
+			}
+			retryCancelled = true
+		}
+		if turnFailure == nil {
+			attempts = 0
+		}
+		result, hasResult, err := teamspawn.TeammateTurnResult(history)
+		if err != nil {
+			return err
+		}
+		if workWasAborted {
+			hasResult = false
+		}
+		failureReason := ""
+		var failureReasonRaw json.RawMessage
+		if turnFailure != nil {
+			failureReason = turnFailure.Reason
+			failureReasonRaw = turnFailure.ReasonRaw
+			if retryCancelled {
+				failureReason = nativeTeammateFailureNote(failureReason, "(automatic retry cancelled)")
+				failureReasonRaw = nativeTeammateFailureNoteRawJSON(failureReasonRaw, "(automatic retry cancelled)")
+			} else if turnFailure.Transient {
+				failureReason = nativeTeammateFailureNote(failureReason, "(automatic retries exhausted; message "+identity.AgentName+" to continue)")
+				failureReasonRaw = nativeTeammateFailureNoteRawJSON(failureReasonRaw, "(automatic retries exhausted; message "+identity.AgentName+" to continue)")
+			}
+		}
+		if !workWasAborted {
+			delivery, mailErr := inbox.PollMailbox()
+			if mailErr != nil {
+				_, _ = fmt.Fprintln(m.options.Error, mailErr)
+			}
+			if delivery != nil {
+				if hasResult || turnFailure != nil {
+					if err = m.sendNativeInProcessTurnReport(ctx, identity, history, "", failureReason, result, hasResult, failureReasonRaw); err != nil {
+						return err
+					}
+					if hasResult {
+						lastDeliveredResult = result
+					}
+				}
+				current, err = m.takeNativeInProcessNextPrompt(ctx, taskID, *delivery)
+				if err != nil {
+					return err
+				}
+				attempts = 0
+				continue
+			}
 		}
 		if workWasAborted {
 			if err = m.appendInProcessInterrupt(ctx, taskID); err != nil {
@@ -186,24 +305,18 @@ func (m *MainPrint) runNativeInProcessLoop(ctx context.Context, taskID string, i
 		if err != nil {
 			return err
 		}
-		stamp := m.options.Native.Now().UTC().Format("2006-01-02T15:04:05.000Z")
 		idleReason := "available"
 		if workWasAborted {
 			idleReason = "interrupted"
-		}
-		notification := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoteMain("idle_notification")}, protocol.JSONField{Name: "from", Value: quoteMain(identity.AgentName)}, protocol.JSONField{Name: "timestamp", Value: quoteMain(stamp)}, protocol.JSONField{Name: "idleReason", Value: quoteMain(idleReason)})
-		summary, err := teamspawn.LastPeerDMSummary(history)
-		if err != nil {
-			return err
-		}
-		notification.Set("summary", summary)
-		envelope := protocol.NewJSONObject(protocol.JSONField{Name: "from", Value: quoteMain(identity.AgentName)}, protocol.JSONField{Name: "text", Value: quoteMain(string(rawMain(notification)))}, protocol.JSONField{Name: "timestamp", Value: quoteMain(stamp)})
-		if identity.Color != "" {
-			envelope.Set("color", quoteMain(identity.Color))
+		} else if turnFailure != nil {
+			idleReason = "failed"
 		}
 		if !wasAlreadyIdle {
-			if err = mailbox.Write("team-lead", identity.TeamName, envelope); err != nil {
+			if err = m.sendNativeInProcessTurnReport(ctx, identity, history, idleReason, failureReason, result, hasResult, failureReasonRaw); err != nil {
 				return err
+			}
+			if hasResult {
+				lastDeliveredResult = result
 			}
 		}
 		next, err := inbox.Wait(ctx)
@@ -213,27 +326,14 @@ func (m *MainPrint) runNativeInProcessLoop(ctx context.Context, taskID string, i
 			}
 			return err
 		}
-		switch next.String("type") {
-		case "aborted":
-			return nil
-		case "new_message":
-			if next.String("from") == "user" {
-				current = next.String("message")
-			} else {
-				current = teamspawn.TeammateMessage(next.String("from"), next.String("message"), next.String("color"), next.String("summary"))
-				if err = m.appendNativeInProcessPrompt(ctx, taskID, current); err != nil {
-					return err
-				}
-			}
-		case "shutdown_request":
-			request, _ := next.Object("request")
-			current = teamspawn.TeammateMessage(request.String("from"), next.String("originalMessage"), "", "")
-			if err = m.appendNativeInProcessPrompt(ctx, taskID, current); err != nil {
-				return err
-			}
-		default:
-			return errors.New("Invalid original teammate wait result")
+		current, err = m.takeNativeInProcessNextPrompt(ctx, taskID, next)
+		if err != nil {
+			return err
 		}
+		if next.String("type") == "aborted" {
+			return nil
+		}
+		attempts = 0
 	}
 	return nil
 }

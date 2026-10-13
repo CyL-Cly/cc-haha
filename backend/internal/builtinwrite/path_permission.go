@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
+	"github.com/NanmiCoder/cc-haha/backend/internal/nativepaths"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"golang.org/x/text/unicode/norm"
 	"io/fs"
@@ -31,6 +32,9 @@ func (s *Service) expand(input json.RawMessage) (string, error) {
 	path, e := scalar(input)
 	if e != nil {
 		return "", e
+	}
+	if s.options.Host.Platform == "windows" {
+		return nativepaths.ExpandWindows(path, s.options.CWD, s.options.Home)
 	}
 	if strings.ContainsRune(path, 0) || strings.ContainsRune(s.options.CWD, 0) {
 		return "", errors.New("Path contains null bytes")
@@ -73,6 +77,9 @@ func (s *Service) Backfill(input *protocol.JSONObject) error {
 // The resolved Source context is read on the original Owner on every decision.
 // Unsupported ignore patterns and missing settings roots cannot become allows.
 func (s *Service) rules(scope *cooperative.Scope, context protocol.JSONObject, path string, wholeOnly bool) (wholeDeny, editDeny bool, err error) {
+	if s.options.Host.Platform == "windows" {
+		return s.windowsDenyRules(context, path, wholeOnly)
+	}
 	var bySource map[string][]string
 	if e := json.Unmarshal(context.Get("alwaysDenyRules"), &bySource); e != nil {
 		return false, false, capability("actual alwaysDenyRules source map")
@@ -205,7 +212,30 @@ func (s *Service) Permission(scope *cooperative.Scope, input protocol.JSONObject
 	if e := s.check(scope); e != nil {
 		return "", e
 	}
-	if unc(input.Get("file_path")) {
+	if s.options.Host.Platform == "windows" {
+		path, err := s.expand(input.Get("file_path"))
+		if err != nil {
+			return "", err
+		}
+		context, err := s.options.PermissionContext(scope)
+		if err != nil {
+			return "", err
+		}
+		whole, deny, err := s.windowsDenyRules(context, path, false)
+		if err != nil {
+			return "", err
+		}
+		if whole || deny {
+			return "deny", nil
+		}
+		if context.String("mode") == "bypassPermissions" || context.String("mode") == "plan" && string(context.Get("isBypassPermissionsModeAvailable")) == "true" {
+			return "allow", nil
+		}
+		// The real tool catalog supplies the full shared resolver including
+		// acceptEdits safety. This standalone writer never invents a grant.
+		return "ask", nil
+	}
+	if s.options.Host.Platform != "windows" && unc(input.Get("file_path")) {
 		return "", capability("UNC/NTLM network-path permission handling")
 	}
 	path, e := s.expand(input.Get("file_path"))

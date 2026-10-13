@@ -23,6 +23,9 @@ type Input struct {
 }
 
 type PermissionDecision struct {
+	// EditedPrefix is presentation input only. The actual owning permission
+	// host validates its request and creates/persists the rule after approval.
+	EditedPrefix      *string
 	Allowed           bool
 	PermissionUpdates json.RawMessage
 	UpdatedInput      json.RawMessage
@@ -51,9 +54,11 @@ type PermissionRequest struct {
 // Choices are supplied by the permission host. The terminal does not build
 // rules or guess how edited tool input should be persisted.
 type PermissionChoice struct {
-	Key      string
-	Label    string
-	Decision PermissionDecision
+	Editable     bool
+	InitialValue string
+	Key          string
+	Label        string
+	Decision     PermissionDecision
 }
 
 type EventKind string
@@ -74,12 +79,15 @@ const (
 	TurnFailed             EventKind = "turn_failed"
 	ModelPickerOpened      EventKind = "model_picker_opened"
 	ModelPickerClosed      EventKind = "model_picker_closed"
+	DoctorOpened           EventKind = "doctor_opened"
+	IDEPickerOpened        EventKind = "ide_picker_opened"
 	CommandsChanged        EventKind = "commands_changed"
 	ThinkingPickerOpened   EventKind = "thinking_picker_opened"
 	ThinkingPickerClosed   EventKind = "thinking_picker_closed"
 	LocalUserMessages      EventKind = "local_user_messages"
 	LocalProcessedMessages EventKind = "local_processed_messages"
 	LocalCommandOutput     EventKind = "local_command_output"
+	MemorySaved            EventKind = "memory_saved"
 	TeammateInboxChanged   EventKind = "teammate_inbox_changed"
 	TeammateMessages       EventKind = "teammate_messages"
 	TeammateTurnStarted    EventKind = "teammate_turn_started"
@@ -87,6 +95,7 @@ const (
 )
 
 type Event struct {
+	Redacted       bool
 	Background     bool
 	TurnID         string
 	Kind           EventKind
@@ -101,6 +110,7 @@ type Event struct {
 	Cancelled      bool
 	Err            error
 	ModelPicker    *ModelPicker
+	IDEPicker      *IDEPicker
 	Commands       []Completion
 	ThinkingPicker *ThinkingPicker
 	NoticeTimeout  time.Duration

@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func TestActualSourceMailboxLeaseHonorsExplicitSymlinkPathAndTenRetries(t *testing.T) {
+func TestActualSourceMailboxLeaseHonorsExplicitSymlinkPathAndThirtyRetries(t *testing.T) {
 	bun := os.Getenv("CC_HAHA_SOURCE_BUN")
 	if bun == "" {
 		t.Skip("actual Source Bun")
@@ -59,7 +59,7 @@ func TestActualSourceMailboxLeaseHonorsExplicitSymlinkPathAndTenRetries(t *testi
 			if !scanner.Scan() || !strings.Contains(scanner.Text(), `"ready":true`) {
 				t.Fatal("Source mailbox lock not ready", scanner.Text())
 			}
-			if !strings.Contains(scanner.Text(), `"retries":10`) {
+			if !strings.Contains(scanner.Text(), `"retries":30`) {
 				t.Fatal(scanner.Text())
 			}
 			s, e := New(Options{ConfigDir: config, PID: os.Getpid(), Now: time.Now})
@@ -72,8 +72,8 @@ func TestActualSourceMailboxLeaseHonorsExplicitSymlinkPathAndTenRetries(t *testi
 				_ = release()
 				t.Fatal("native mailbox ignored actual Source explicit lease")
 			}
-			if elapsed := time.Since(start); elapsed < 400*time.Millisecond || elapsed > 2*time.Second {
-				t.Fatal("ten-retry policy changed", elapsed)
+			if elapsed := time.Since(start); elapsed < 2*time.Second || elapsed > 4*time.Second {
+				t.Fatal("thirty-retry policy changed", elapsed)
 			}
 			_, _ = stdin.Write([]byte("release\n"))
 			if !scanner.Scan() || !strings.Contains(scanner.Text(), `"released":true`) {

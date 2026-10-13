@@ -11,7 +11,7 @@ func (s *State) ReloadSettings(scope *cooperative.Scope, settings *protocol.JSON
 	if s == nil || !s.nativeProcess || !scope.BelongsTo(s.owner) {
 		return cooperative.ErrRestricted
 	}
-	if err := ValidateNativeWithBindings(settings, s.nativePluginBindings, s.nativeMCPBindings, s.nativeWebFetchBindings, s.nativeWebSearchBindings, s.nativeStartup.Owns(s.owner), s.nativeWorktreeBindings, s.nativeHookBindings, s.nativeSystemContextBindings, s.nativeTeamExecutionBindings, s.nativeAuthHelperBindings, s.nativeCloudSettingsBindings, s.nativeWorkflowKeywordBindings, s.nativeInternalReadBindings, s.nativeSandboxBindings, s.nativeModelCommandBindings, s.nativeMainAgentBindings); err != nil {
+	if err := ValidateNativeWithBindings(settings, s.nativePluginBindings, s.nativeMCPBindings, s.nativeWebFetchBindings, s.nativeWebSearchBindings, s.nativeStartup.Owns(s.owner), s.nativeWorktreeBindings, s.nativeHookBindings, s.nativeSystemContextBindings, s.nativeTeamExecutionBindings, s.nativeAuthHelperBindings, s.nativeCloudSettingsBindings, s.nativeWorkflowKeywordBindings, s.nativeInternalReadBindings, s.nativeSandboxBindings, s.nativeModelCommandBindings, s.nativeMainAgentBindings, s.nativePlanBindings, s.nativeSpinnerBindings, s.nativeThinkingSummaryBindings, s.nativeAutoDreamBindings); err != nil {
 		return err
 	}
 	next := s.context.Clone()

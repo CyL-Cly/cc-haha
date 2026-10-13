@@ -44,7 +44,7 @@ type RegisteredTool struct {
 	CallJSON             func(context.Context, protocol.JSONObject, JSONToolCallContext) (ToolCallResult, error)
 	StartCallJSON        func(context.Context, protocol.JSONObject, JSONToolCallContext) (*ownerasync.OwnerFuture[ToolCallResult], error)
 	MapResultJSON        func(json.RawMessage, json.RawMessage) (protocol.JSONObject, error)
-	PersistenceThreshold float64 // Resolved host threshold, including experiment overrides.
+	PersistenceThreshold float64 // Declared tool cap; the native result consumer applies Source overrides and the global clamp.
 }
 
 type ToolCallContext struct {
@@ -138,6 +138,8 @@ type ToolPermission struct {
 	Metadata           json.RawMessage // Original local permission-UI metadata.
 }
 type ToolBatchCapabilities struct {
+	ProcessToolResult           func(context.Context, protocol.JSONObject, string, float64) (protocol.JSONObject, error)
+	ToolAllowedNow              func(string) bool
 	OmitSuccessfulToolUseResult bool // Actual Source agentId && !preserveToolUseResults.
 	OmitMCPMeta                 bool // Original tool executor keeps MCP metadata only on main thread.
 	Owner                       *cooperative.Owner
@@ -242,6 +244,9 @@ func BindNativeMCP(tool RegisteredTool, runtime *mcpruntime.Service) (Registered
 func (batch *SerialToolBatch) findJSON(name json.RawMessage) *RegisteredTool {
 	for index := range batch.tools {
 		tool := &batch.tools[index]
+		if batch.capabilities.ToolAllowedNow != nil && !batch.capabilities.ToolAllowedNow(tool.Name) {
+			continue
+		}
 		if matchesName(name, tool.Name, tool.Aliases) {
 			return tool
 		}
@@ -295,6 +300,9 @@ func (batch *SerialToolBatch) LookupBackfillJSON(name json.RawMessage) (Backfill
 func (batch *SerialToolBatch) find(name string) *RegisteredTool {
 	for index := range batch.tools {
 		tool := &batch.tools[index]
+		if batch.capabilities.ToolAllowedNow != nil && !batch.capabilities.ToolAllowedNow(tool.Name) {
+			continue
+		}
 		if tool.Name == name {
 			return tool
 		}
@@ -582,6 +590,9 @@ func (batch *SerialToolBatch) executeSequential(ctx context.Context, round Round
 		}
 		permission, err := batch.permission(ctx, *tool, processed, callContext)
 		if err != nil {
+			if fatalToolError(err) {
+				return nil, err
+			}
 			if batch.general {
 				if err := failedCall(err); err != nil {
 					return nil, err
@@ -647,7 +658,7 @@ func (batch *SerialToolBatch) executeSequential(ctx context.Context, round Round
 			}
 			return nil, err
 		}
-		mapped, err = ProcessSmallTextToolResult(mapped, tool.Name, tool.PersistenceThreshold)
+		mapped, err = batch.processToolResult(ctx, mapped, tool.Name, tool.PersistenceThreshold)
 		if err != nil {
 			if batch.general {
 				if err := innerFailedCall(err); err != nil {
@@ -685,7 +696,7 @@ func (batch *SerialToolBatch) executeSequential(ctx context.Context, round Round
 		if changed {
 			mapped, err = mapTool(*tool, result.Data, id)
 			if err == nil {
-				mapped, err = ProcessSmallTextToolResult(mapped, tool.Name, tool.PersistenceThreshold)
+				mapped, err = batch.processToolResult(ctx, mapped, tool.Name, tool.PersistenceThreshold)
 			}
 			if err == nil {
 				options, err = permissionUserContent(mapped, permission, round.History)
@@ -844,6 +855,13 @@ func jsWhitespace(unit uint16) bool {
 	return unit >= 9 && unit <= 13 || unit == 0x20 || unit == 0xa0 || unit == 0x1680 || unit >= 0x2000 && unit <= 0x200a || unit == 0x2028 || unit == 0x2029 || unit == 0x202f || unit == 0x205f || unit == 0x3000 || unit == 0xfeff
 }
 
+func (batch *SerialToolBatch) processToolResult(ctx context.Context, block protocol.JSONObject, name string, threshold float64) (protocol.JSONObject, error) {
+	if batch.capabilities.ProcessToolResult != nil {
+		return batch.capabilities.ProcessToolResult(ctx, block, name, threshold)
+	}
+	return ProcessSmallTextToolResult(block, name, threshold)
+}
+
 // ProcessSmallTextToolResult ports empty-result correction and the exact JS
 // UTF-16 size decision. Persistence, media and structured result policies are
 // explicit unported boundaries, not silent truncation or an identity fallback.
@@ -954,6 +972,12 @@ func NormalizeToolResultWithSearch(message Message, toolSearchEnabled bool) ([]M
 			}
 			continue
 		}
+		if block.String("type") == "document" {
+			if err := requestcontext.ValidateDocumentBlock(block); err != nil {
+				return nil, unsupported("tool result document normalization", err)
+			}
+			continue
+		}
 		if block.String("type") != "tool_result" {
 			return nil, unsupported("tool result media normalization", ErrUnsupported)
 		}
@@ -971,6 +995,10 @@ func NormalizeToolResultWithSearch(message Message, toolSearchEnabled bool) ([]M
 			} else if part.String("type") == "image" {
 				if err := requestcontext.ValidateProcessedImageBlock(part); err != nil {
 					return nil, unsupported("nested tool result media normalization", err)
+				}
+			} else if part.String("type") == "document" {
+				if err := requestcontext.ValidateDocumentBlock(part); err != nil {
+					return nil, unsupported("nested tool result document normalization", err)
 				}
 			} else if part.String("type") != "text" {
 				return nil, unsupported("nested tool result media normalization", ErrUnsupported)

@@ -17,9 +17,12 @@ import (
 )
 
 type DesktopSession struct {
+	outputGeneration         uint64
+	runtimeTransition        chan struct{}
 	planRestart              *desktopPlanRestart
 	acceptedPlanApprovals    map[string]*Session
 	canContinueRuntime       func() bool
+	onRuntimeClosed          func(context.Context, server.LiveSession) error
 	sdk                      *desktopSDKState
 	autoQuestionUnbind       func()
 	engine                   *Session
@@ -27,6 +30,7 @@ type DesktopSession struct {
 	mu                       sync.Mutex
 	projection               *Projection
 	running                  bool
+	foregroundPending        bool
 	cliRunning               bool
 	admission                sync.Mutex
 	runtimeMu                sync.Mutex
@@ -45,7 +49,7 @@ type DesktopSession struct {
 
 func DesktopFactory(base Options) server.SessionFactory {
 	return func(ctx context.Context, options server.SessionOptions, emit server.Emit) (server.LiveSession, error) {
-		d := &DesktopSession{canContinueRuntime: options.CanContinueRuntime, emit: emit, projection: NewProjection(), ctx: ctx, id: options.ID, sideChat: options.SideChat != nil, updateLaunchMetadata: options.UpdateLaunchMetadata, onSDK: options.OnSDK, resolveSessionReferences: options.ResolveSessionReferences}
+		d := &DesktopSession{canContinueRuntime: options.CanContinueRuntime, onRuntimeClosed: options.OnRuntimeClosed, emit: emit, projection: NewProjection(), ctx: ctx, id: options.ID, sideChat: options.SideChat != nil, updateLaunchMetadata: options.UpdateLaunchMetadata, onSDK: options.OnSDK, resolveSessionReferences: options.ResolveSessionReferences}
 		o := base
 		o.HookEvents = true
 		// Original conversationService always launches its SDK with
@@ -58,6 +62,7 @@ func DesktopFactory(base Options) server.SessionFactory {
 		for key, value := range options.Environment {
 			o.Environment[key] = value
 		}
+		delete(o.Environment, "CC_HAHA_OPENAI_FAST_MODE")
 		// Source keeps SDK auth identity for custom providers and stamps desktop
 		// ownership separately. claude-desktop auth identity is official-only.
 		o.Environment["CC_HAHA_TRANSCRIPT_ENTRYPOINT"] = "claude-desktop"
@@ -74,6 +79,11 @@ func DesktopFactory(base Options) server.SessionFactory {
 		if options.Resume {
 			o.Arguments.Resume = options.ID
 			o.Arguments.SessionID = ""
+			if o.TeamWorker != nil {
+				worker := *o.TeamWorker
+				worker.ResumeSessionID = options.ID
+				o.TeamWorker = &worker
+			}
 		}
 		if side := options.SideChat; side != nil {
 			o.Arguments.SessionID = side.CLISessionID
@@ -98,6 +108,11 @@ func DesktopFactory(base Options) server.SessionFactory {
 					return nil, err
 				}
 				selection.ProviderID = &id
+			}
+			var fast bool
+			if value := meta.Get("openAIFastMode"); string(value) == "true" || string(value) == "false" {
+				_ = json.Unmarshal(value, &fast)
+				selection.OpenAIFastMode = &fast
 			}
 			o.RuntimeSelection = selection
 			o.Arguments.EffortLevel = selection.EffortLevel
@@ -167,7 +182,7 @@ func DesktopFactory(base Options) server.SessionFactory {
 		if o.TeamWorker != nil {
 			o.RequestTeammateShutdown = func(ctx context.Context) error { return d.requestTeammateShutdown(ctx, engine) }
 		}
-		o.OnSDK = d.output
+		o.OnSDK = d.nextRuntimeOutput()
 		o.OnCommandsChanged = func(commands []sdkhost.ControlCommand) error {
 			d.emit(frame("system_notification", field("subtype", "slash_commands"), field("data", server.NormalizeSessionSlashCommands(raw(commands)))))
 			return nil
@@ -198,13 +213,33 @@ func DesktopFactory(base Options) server.SessionFactory {
 }
 
 func (d *DesktopSession) output(raw json.RawMessage) error {
+	return d.outputForGeneration(raw, 0)
+}
+func (d *DesktopSession) outputForGeneration(raw json.RawMessage, generation uint64) error {
 	d.mu.Lock()
+	if generation != 0 && (d.closed || d.outputGeneration != generation) {
+		terminal := obj(raw)
+		ownedTerminal := d.closed && d.outputGeneration == generation && terminal.String("type") == "system" && terminal.String("subtype") == "task_notification"
+		status := terminal.String("status")
+		ownedTerminal = ownedTerminal && (status == "completed" || status == "failed" || status == "stopped" || status == "killed")
+		onSDK := d.onSDK
+		d.mu.Unlock()
+		if ownedTerminal && onSDK != nil {
+			onSDK(append(json.RawMessage(nil), raw...))
+		}
+		return nil
+	}
 	if state := obj(raw); state.String("type") == "result" && d.planRestart != nil && d.planRestart.engine == d.engine {
 		select {
 		case <-d.planRestart.result:
 		default:
 			close(d.planRestart.result)
 		}
+	}
+	if state := obj(raw); state.String("type") == "result" {
+		// The result settles the registered user turn before its network frame
+		// is sent. CLI/background cleanup can continue after this boundary.
+		d.foregroundPending = false
 	}
 	if state := obj(raw); state.String("type") == "system" && state.String("subtype") == "session_state_changed" {
 		if value := state.String("state"); value == "running" || value == "idle" {
@@ -290,7 +325,7 @@ func (d *DesktopSession) Handle(ctx context.Context, data json.RawMessage) error
 			return nil
 		}
 		d.mu.Lock()
-		d.running = true
+		d.running, d.foregroundPending = true, true
 		d.projection.Stopped = false
 		d.mu.Unlock()
 		d.runtimeMu.Unlock()
@@ -309,12 +344,15 @@ func (d *DesktopSession) Handle(ctx context.Context, data json.RawMessage) error
 				close(d.planRestart.returned)
 			}
 		}
-		d.running = false
+		d.running, d.foregroundPending = false, false
 		d.mu.Unlock()
 		if planInterrupted && errors.Is(err, context.Canceled) {
 			err = nil
 		}
-		d.emit(frame("session_state", field("turnState", "idle")))
+		// Source publishes session_state only in response to sync_state. A
+		// normal result already projected message_complete and replayed pending
+		// teammate approvals; an unsolicited idle snapshot clears those prompts
+		// again and triggers the renderer's terminal-history replacement.
 		if restartErr := d.applyDeferredRuntime(ctx); err == nil {
 			err = restartErr
 		}
@@ -370,7 +408,7 @@ func (d *DesktopSession) Handle(ctx context.Context, data json.RawMessage) error
 			return err
 		}
 		engine.Cancel()
-		return nil
+		return engine.process.StopAllBackgroundTasks(ctx)
 	case "prewarm_session":
 		return nil // The factory already initialized this real shared host.
 	case "set_permission_mode":
@@ -428,7 +466,7 @@ func (d *DesktopSession) events(event tui.Event) error {
 }
 func (d *DesktopSession) Snapshot(context.Context) ([]json.RawMessage, error) {
 	d.mu.Lock()
-	running := d.running || d.cliRunning
+	running := d.foregroundPending && !d.projection.Stopped
 	d.mu.Unlock()
 	state := "idle"
 	if running {

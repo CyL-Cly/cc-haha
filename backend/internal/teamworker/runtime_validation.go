@@ -64,7 +64,7 @@ func ValidateRuntime(ctx context.Context, plan protocol.JSONObject, o Validation
 		}
 		for _, entry := range existing {
 			if entry.String("name") == name {
-				return protocol.JSONObject{}, fmt.Errorf("Member already exists: %s", name)
+				return protocol.JSONObject{}, fmt.Errorf("Member already exists: %s. Message the existing member to give it more work; a stopped member restarts from its saved conversation.", name)
 			}
 		}
 		var snapshot protocol.JSONObject

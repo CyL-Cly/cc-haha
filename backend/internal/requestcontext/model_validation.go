@@ -53,7 +53,9 @@ func NativeModelValidationRequest(input Context, settings protocol.JSONObject) (
 	if isp && !envTrue(env["DISABLE_INTERLEAVED_THINKING"]) {
 		betas = append(betas, "interleaved-thinking-2025-05-14")
 	}
-	if first && isp && !truthy(settings.Get("showThinkingSummaries")) {
+	if input.Host.NativeThinkingSummaryBeta != nil {
+		betas = insertThinkingSummaryBeta(betas, input.Host.NativeThinkingSummaryBeta)
+	} else if first && isp && !truthy(settings.Get("showThinkingSummaries")) {
 		betas = append(betas, "redact-thinking-2026-02-12")
 	}
 	management := provider == "foundry" || provider == "firstParty" && trusted && !strings.Contains(canonical, "claude-3-") || provider != "firstParty" && containsAny(canonical, "claude-fable-5", "claude-sonnet-5", "claude-opus-4", "claude-sonnet-4", "claude-haiku-4")
@@ -78,21 +80,18 @@ func NativeModelValidationRequest(input Context, settings protocol.JSONObject) (
 	history := []protocol.JSONObject{object(field("type", quoted("user")), field("message", rawObject(message)))}
 	system := []protocol.JSONObject{}
 	if !envFalse(env["CLAUDE_CODE_ATTRIBUTION_HEADER"]) {
-		entrypoint, exists := env["CLAUDE_CODE_ENTRYPOINT"]
-		if !exists {
-			entrypoint = "unknown"
-		}
 		workload := ""
 		if input.Host.Workload != "" {
 			workload = " cc_workload=" + input.Host.Workload + ";"
 		}
-		system = append(system, object(field("type", quoted("text")), field("text", quoted("x-anthropic-billing-header: cc_version="+compatibilityVersion+"."+fingerprint(history)+"; cc_entrypoint="+entrypoint+"; cch=00000;"+workload))))
+		system = append(system, object(field("type", quoted("text")), field("text", quoted("x-anthropic-billing-header: cc_version="+compatibilityVersion+"."+fingerprint(history)+"; cc_entrypoint=cli; cch=00000;"+workload))))
 	}
 	system = append(system, object(field("type", quoted("text")), field("text", quoted(cliPrefix))))
-	metadata, err := CountingMetadata(env, input.Host.DeviceID, input.Host.SessionID)
+	metadataJSON, err := metadata(input)
 	if err != nil {
 		return protocol.JSONObject{}, err
 	}
+	metadataValue := objectEnvironment(string(metadataJSON))
 	max := float64(1)
 	_, required, adaptive := nativeThinkingSupport(input)
 	var thinking json.RawMessage
@@ -111,7 +110,7 @@ func NativeModelValidationRequest(input Context, settings protocol.JSONObject) (
 		thinking = json.RawMessage(`{"type":"disabled"}`)
 	}
 	encode := func(v any) json.RawMessage { b, _ := json.Marshal(v); return b }
-	params := object(field("model", quoted(regexp.MustCompile(`(?i)\[(1|2)m\]`).ReplaceAllString(model, ""))), field("max_tokens", rawNumber(max)), field("system", encode(system)), field("messages", encode([]protocol.JSONObject{message})), field("metadata", rawObject(metadata)))
+	params := object(field("model", quoted(regexp.MustCompile(`(?i)\[(1|2)m\]`).ReplaceAllString(model, ""))), field("max_tokens", rawNumber(max)), field("system", encode(system)), field("messages", encode([]protocol.JSONObject{message})), field("metadata", rawObject(metadataValue)))
 	if len(betas) > 0 {
 		params.Set("betas", encode(betas))
 	}

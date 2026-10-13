@@ -63,7 +63,7 @@ func TestFileHistoryOuterTrackingBeforeAppend(t *testing.T) {
 }
 
 func TestFileHistoryOriginalBindingLifetimeBufferResetAndPolicySkip(t *testing.T) {
-	for _, kind := range []string{"buffer-reset", "policy-skip", "invalid", "append-cap", "closed"} {
+	for _, kind := range []string{"buffer-reset", "policy-skip", "invalid", "enabled-no-url", "closed"} {
 		t.Run(kind, func(t *testing.T) {
 			owner, writer, pending, loader := uuidHarness(t, "", nil, false)
 			pendingCall(t, owner, cooperative.Read, func(s *cooperative.Scope) error {
@@ -75,7 +75,7 @@ func TestFileHistoryOriginalBindingLifetimeBufferResetAndPolicySkip(t *testing.T
 				switch kind {
 				case "policy-skip":
 					writer.options.Environment["CLAUDE_CODE_SKIP_PROMPT_HISTORY"] = "1"
-				case "append-cap":
+				case "enabled-no-url":
 					writer.options.Environment["ENABLE_SESSION_PERSISTENCE"] = "1"
 				case "invalid":
 					snapshot = nil
@@ -87,7 +87,7 @@ func TestFileHistoryOriginalBindingLifetimeBufferResetAndPolicySkip(t *testing.T
 					return e
 				}
 				_, e = f.Await(s)
-				if kind == "invalid" || kind == "append-cap" || kind == "closed" {
+				if kind == "invalid" || kind == "closed" {
 					if e == nil {
 						t.Error("rejected original boundary fulfilled")
 					}
@@ -97,7 +97,7 @@ func TestFileHistoryOriginalBindingLifetimeBufferResetAndPolicySkip(t *testing.T
 				if pending.tracked != 0 {
 					t.Error("finally leaked outer tracking", pending.tracked)
 				}
-				if kind == "buffer-reset" {
+				if kind == "buffer-reset" || kind == "enabled-no-url" {
 					if len(writer.liveFileHistoryEntries) != 1 || len(writer.pending) != 1 {
 						t.Error("unmaterialized live reference lost")
 					}

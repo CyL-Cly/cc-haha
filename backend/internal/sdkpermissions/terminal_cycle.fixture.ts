@@ -8,9 +8,7 @@ if(process.env.CC_HAHA_TERMINAL_CYCLE_FIXTURE!=='1')throw new Error('Unowned ter
 const capabilities=await installClientFixtureCapabilities(home,{absentPaths:absentManagedSettingsFixturePaths()})
 await import('../../../preload')
 await mkdir(join(home,'.claude'),{recursive:true})
-// The active classifier is an independent, explicitly unported leaf. Exercise
-// the real live gate's inactive profile, with and without its compiled feature.
-await writeFile(join(home,'.claude/settings.json'),JSON.stringify({disableAutoMode:'disable',future:{preserved:true}}))
+await writeFile(join(home,'.claude/settings.json'),JSON.stringify(input.live ? {future:{preserved:true}} : {disableAutoMode:'disable',future:{preserved:true}}))
 const state=await import('../../../src/bootstrap/state');state.setCwdState(home);state.setOriginalCwd(home);state.setProjectRoot(home)
 const config=await import('../../../src/utils/config');config.enableConfigs()
 const {getNextPermissionMode}=await import('../../../src/utils/permissions/getNextPermissionMode')

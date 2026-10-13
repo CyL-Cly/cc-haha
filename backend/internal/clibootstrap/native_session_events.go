@@ -9,7 +9,17 @@ import (
 )
 
 func (m *MainPrint) nativeSessionStateOptions() sessionstate.Options {
-	return sessionstate.Options{EmitEvents: func() bool {
+	return sessionstate.Options{OnState: func(_ *cooperative.Scope, state string, details *protocol.JSONObject) error {
+		if m.remoteIO != nil {
+			m.remoteIO.ReportState(state, details)
+		}
+		return nil
+	}, OnMetadata: func(_ *cooperative.Scope, value protocol.JSONObject) error {
+		if m.remoteIO != nil {
+			m.remoteIO.ReportMetadata(value)
+		}
+		return nil
+	}, EmitEvents: func() bool {
 		var value string
 		_ = json.Unmarshal(m.environment.Get("CLAUDE_CODE_EMIT_SESSION_STATE_EVENTS"), &value)
 		return envTruthyNative(value)

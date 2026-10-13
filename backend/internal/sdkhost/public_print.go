@@ -23,6 +23,19 @@ import (
 )
 
 type PrintOptions struct {
+	NativeToolResult              func(context.Context, *cooperative.Scope, protocol.JSONObject, string, float64) (protocol.JSONObject, error)
+	NativeThinkingSummaryBeta     func(*cooperative.Scope, string) (bool, error)
+	NativeSpinnerVerb             func(*cooperative.Scope) (string, error)
+	NativeAutoDream               func(*cooperative.Scope, queryhooks.CacheSafeParams, NativeAutoDreamQuery) error
+	CloseNativeAutoDream          func(context.Context) error
+	MaxBudgetUSD                  *float64
+	TaskBudget                    *float64
+	FallbackModel                 string
+	ModelDisplayName              func(string) (string, error)
+	CompactCleanup                func(*cooperative.Scope) error
+	CompactExcludedFiles          func(*cooperative.Scope) ([]string, error)
+	CompactAttachments            func(context.Context, *cooperative.Scope, []protocol.JSONObject) ([]protocol.JSONObject, error)
+	ToolAllowedNow                func(string) bool
 	NativeMainAgentSettings       func(*cooperative.Scope) bool
 	PermissionPromptToolName      string
 	NativeTypedModelSettings      func(*cooperative.Scope) bool
@@ -203,6 +216,28 @@ func (h *Host) initializePrintCatalog(scope *cooperative.Scope) error {
 			return e
 		}
 	}
+	if name := h.options.Print.PermissionPromptToolName; name != "" && name != "stdio" {
+		filteredDefs := defs[:0:0]
+		filteredTools := registered[:0:0]
+		for _, definition := range defs {
+			keep := true
+			for _, tool := range registered {
+				if tool.Name == definition.Name && nativePermissionNameMatches(tool, name) {
+					keep = false
+					break
+				}
+			}
+			if keep {
+				filteredDefs = append(filteredDefs, definition)
+			}
+		}
+		for _, tool := range registered {
+			if !nativePermissionNameMatches(tool, name) {
+				filteredTools = append(filteredTools, tool)
+			}
+		}
+		defs, registered = filteredDefs, filteredTools
+	}
 	h.definitions, h.registered = defs, registered
 	if e := h.captureToolSearchCatalogue(scope); e != nil {
 		return e
@@ -286,6 +321,9 @@ func nativePreflightEnvironment(name string) bool {
 	}
 }
 func (h *Host) installPrintBatch(scope *cooperative.Scope, loop *queryloop.Host, mainLoopModel string, hookContext func(queryloop.Round) queryhooks.Context) error {
+	return h.installPrintBatchWithPermission(scope, loop, mainLoopModel, hookContext, nil)
+}
+func (h *Host) installPrintBatchWithPermission(scope *cooperative.Scope, loop *queryloop.Host, mainLoopModel string, hookContext func(queryloop.Round) queryhooks.Context, custom func(context.Context, queryloop.RegisteredTool, *protocol.JSONObject, queryloop.JSONToolCallContext) (queryloop.ToolPermission, error)) error {
 	hooks := h.options.Print.Hooks
 	h.nativePermissionHookContext = hookContext
 	sid := h.options.Controller.SessionID
@@ -296,6 +334,12 @@ func (h *Host) installPrintBatch(scope *cooperative.Scope, loop *queryloop.Host,
 	var preEffects func(context.Context, queryloop.RegisteredTool, *protocol.JSONObject, queryloop.JSONToolCallContext, func(queryloop.Message) error) (queryloop.PreToolEffects, error)
 	var postEffects func(context.Context, queryloop.RegisteredTool, *protocol.JSONObject, queryloop.ToolCallResult, queryloop.JSONToolCallContext, func(queryloop.Message) error) (queryloop.PostToolEffects, error)
 	var failureEffects func(context.Context, queryloop.RegisteredTool, *protocol.JSONObject, error, queryloop.JSONToolCallContext) ([]queryloop.Message, error)
+	var processResult func(context.Context, protocol.JSONObject, string, float64) (protocol.JSONObject, error)
+	if h.options.Print.NativeToolResult != nil {
+		processResult = func(ctx context.Context, block protocol.JSONObject, name string, threshold float64) (protocol.JSONObject, error) {
+			return h.options.Print.NativeToolResult(ctx, scope, block, name, threshold)
+		}
+	}
 	if h.options.Print.NativeProcess && hooks.HasNativeCommandBindings(h.options.Owner) {
 		preEffects = func(ctx context.Context, tool queryloop.RegisteredTool, in *protocol.JSONObject, call queryloop.JSONToolCallContext, progress func(queryloop.Message) error) (queryloop.PreToolEffects, error) {
 			return h.nativePreToolHooks(ctx, scope, tool, in, call, hookContext, progress)
@@ -307,7 +351,7 @@ func (h *Host) installPrintBatch(scope *cooperative.Scope, loop *queryloop.Host,
 			return h.nativeFailureToolHooks(ctx, scope, tool, in, failure, call, hookContext)
 		}
 	}
-	batch, e := constructor(h.registered, queryloop.ToolBatchCapabilities{OmitSuccessfulToolUseResult: h.isAgent() && !h.options.Print.PreserveToolUseResults, OmitMCPMeta: h.isAgent(), Owner: h.options.Owner, Scope: scope, MaxConcurrency: h.toolConcurrency(), JSON: &queryloop.JSONToolBatchCapabilities{
+	batch, e := constructor(h.registered, queryloop.ToolBatchCapabilities{ProcessToolResult: processResult, ToolAllowedNow: h.options.Print.ToolAllowedNow, OmitSuccessfulToolUseResult: h.isAgent() && !h.options.Print.PreserveToolUseResults, OmitMCPMeta: h.isAgent(), Owner: h.options.Owner, Scope: scope, MaxConcurrency: h.toolConcurrency(), JSON: &queryloop.JSONToolBatchCapabilities{
 		PreToolEffects:     preEffects,
 		PostToolEffects:    postEffects,
 		FailureToolEffects: failureEffects,
@@ -321,7 +365,14 @@ func (h *Host) installPrintBatch(scope *cooperative.Scope, loop *queryloop.Host,
 			return in, nil
 		},
 		ResolvePermission: func(ctx context.Context, tool queryloop.RegisteredTool, in *protocol.JSONObject, call queryloop.JSONToolCallContext) (queryloop.ToolPermission, error) {
-			return h.resolvePrintToolPermission(ctx, scope, tool, in, call)
+			if custom != nil {
+				return custom(ctx, tool, in, call)
+			}
+			decision, err := h.resolvePrintToolPermission(ctx, scope, tool, in, call)
+			if err == nil {
+				h.recordPermissionDenial(tool, in, call, decision)
+			}
+			return decision, err
 		},
 		PostTool: func(_ context.Context, _ queryloop.RegisteredTool, _ *protocol.JSONObject, _ queryloop.ToolCallResult, _ queryloop.JSONToolCallContext) ([]queryloop.Message, error) {
 			if e := hooks.EmptyEvent("PostToolUse", sid()); e != nil {

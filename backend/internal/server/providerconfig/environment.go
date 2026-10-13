@@ -245,6 +245,9 @@ func (service *Service) ResolveRuntimeEnvironment(ctx context.Context, baseEnv m
 	for key, value := range baseEnv {
 		result[key] = value
 	}
+	if selection != nil {
+		delete(result, "CC_HAHA_OPENAI_FAST_MODE")
+	}
 	var id string
 	if selection == nil {
 		index, err := service.ReadIndex(ctx)
@@ -284,6 +287,9 @@ func (service *Service) ResolveRuntimeEnvironment(ctx context.Context, baseEnv m
 		if strings.HasPrefix(strings.ToLower(strings.TrimSpace(selection.ModelID)), "claude") {
 			result["CLAUDE_CODE_ATTRIBUTION_HEADER"] = "1"
 		}
+	}
+	if id == "openai-official" && selection != nil && selection.OpenAIFastMode != nil && *selection.OpenAIFastMode {
+		result["CC_HAHA_OPENAI_FAST_MODE"] = "1"
 	}
 	// EffortLevel is passed separately to the shared session/SDK control. Source
 	// providerRuntimeEnv has no effort environment variable to invent here.

@@ -178,7 +178,11 @@ func (server *Server) localFile(writer http.ResponseWriter, request *http.Reques
 	default:
 		path = "/" + path
 	}
-	resolved := server.filesystemPath(path)
+	resolved, err := server.relocatedFilesystemPath(path)
+	if err != nil {
+		previewText(writer, request, 500, "invalid storage relocation metadata")
+		return
+	}
 	canonical, err := filepath.EvalSymlinks(resolved)
 	if err != nil {
 		if !server.filesystemAllowed(resolved) {

@@ -31,6 +31,7 @@ var BuiltInIDs = []string{"claude-official", "openai-official", "grok-official"}
 type Selection struct {
 	ProviderID           *string
 	ModelID, EffortLevel string
+	OpenAIFastMode       *bool
 }
 type Options struct {
 	Store                   *storage.Store

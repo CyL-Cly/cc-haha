@@ -15,12 +15,22 @@ import (
 type ProcessOptions struct {
 	CWD         string
 	Environment map[string]string
+	// Command is an optional native spawn primitive. The caller still runs the
+	// original exit/timeout/trim consumer; tests use it to exercise Windows argv
+	// on a private physical command peer when no Windows machine is available.
+	Command func(context.Context, string, map[string]string) (*exec.Cmd, error)
 }
 
 // Execute is execa(shell:true,reject:false)'s credential-command primitive.
 // The caller supplies the actual trusted process cwd and environment snapshot.
 func Execute(ctx context.Context, command string, options ProcessOptions) (string, error) {
-	cmd, err := shellCommand(ctx, command)
+	var cmd *exec.Cmd
+	var err error
+	if options.Command != nil {
+		cmd, err = options.Command(ctx, command, options.Environment)
+	} else {
+		cmd, err = shellCommand(ctx, command, options)
+	}
 	if err != nil {
 		return "", err
 	}

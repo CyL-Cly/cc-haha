@@ -72,6 +72,9 @@ type Options struct {
 	LiveSDKSettings      func(*cooperative.Scope) (*protocol.JSONObject, protocol.JSONObject, error)
 }
 type Controller struct {
+	commandLifecycle            func(json.RawMessage, string)
+	permissionModeChanged       func(*cooperative.Scope, string, string) error
+	commandLifecycleIDs         []json.RawMessage
 	leaderTeamName              string
 	nativeFileHistory           *filehistory.Service
 	fileHistorySink             *FileHistorySink
@@ -126,6 +129,9 @@ type Activation struct {
 	Resume         resumestate.Input
 	ForkSession    bool
 	ResumeAt       string
+	// Original URL/CCR loadInitialMessages treats a remotely hydrated empty
+	// transcript as startup, before resume restoration or SID adoption.
+	RemoteEmptyStartup bool
 }
 type Admission struct {
 	Duplicate       bool
@@ -279,6 +285,7 @@ func (controller *Controller) activate(scope *cooperative.Scope, input Activatio
 		return capability("repeated headless startup activation")
 	}
 	controller.options.OnPhase("resume:start")
+	input.Resume.ResumeAt = input.ResumeAt
 	result, err := controller.resume.Load(input.Resume)
 	if err != nil {
 		return err
@@ -297,19 +304,6 @@ func (controller *Controller) activate(scope *cooperative.Scope, input Activatio
 			return err
 		}
 		history = append(history, &record)
-	}
-	if input.ResumeAt != "" {
-		index := -1
-		for position, message := range history {
-			if text(message.Get("uuid")) == input.ResumeAt {
-				index = position
-				break
-			}
-		}
-		if index < 0 {
-			return errors.New("No message found with message.uuid of: " + input.ResumeAt)
-		}
-		history = history[:index+1]
 	}
 	sid := text(result.Metadata.Get("sessionId"))
 	if !input.ForkSession && sid != "" {
@@ -711,6 +705,10 @@ func (controller *Controller) acceptNext(scope *cooperative.Scope) (*protocol.JS
 	}
 	for _, candidate := range batch {
 		if candidate.UUID != nil {
+			if controller.commandLifecycle != nil {
+				controller.commandLifecycleIDs = append(controller.commandLifecycleIDs, append(json.RawMessage(nil), candidate.UUID...))
+				controller.commandLifecycle(candidate.UUID, "started")
+			}
 			controller.options.OnPhase("lifecycle:started")
 		}
 	}

@@ -147,7 +147,7 @@ func TestActualOpenAICLIRefreshToolsTurnStateAndCanonicalTranscript(t *testing.T
 	}))
 	defer proxy.Close()
 	delete(f.n.Environment, "ANTHROPIC_BASE_URL")
-	for key, value := range map[string]string{"OPENAI_CODEX_OAUTH_FILE": tokenPath, "CC_HAHA_OPENAI_OAUTH_PROVIDER": "1", "ANTHROPIC_MODEL": "gpt-6-sol", "NODE_EXTRA_CA_CERTS": caPath, "HTTPS_PROXY": proxy.URL, "NO_PROXY": "*", "PATH": "/usr/bin:/bin", "CLAUDE_CODE_DISABLE_ATTACHMENTS": "1", "CLAUDE_CODE_MAX_RETRIES": "0", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"} {
+	for key, value := range map[string]string{"OPENAI_CODEX_OAUTH_FILE": tokenPath, "CC_HAHA_OPENAI_OAUTH_PROVIDER": "1", "CC_HAHA_OPENAI_FAST_MODE": "1", "ANTHROPIC_MODEL": "gpt-6-sol", "NODE_EXTRA_CA_CERTS": caPath, "HTTPS_PROXY": proxy.URL, "NO_PROXY": "*", "PATH": "/usr/bin:/bin", "CLAUDE_CODE_DISABLE_ATTACHMENTS": "1", "CLAUDE_CODE_MAX_RETRIES": "0", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"} {
 		f.n.Environment[key] = value
 	}
 	disabled := false
@@ -191,6 +191,9 @@ func TestActualOpenAICLIRefreshToolsTurnStateAndCanonicalTranscript(t *testing.T
 		}
 		if h.Get("session-id") == "" || h.Get("session-id") != h.Get("thread-id") {
 			t.Error("original identity lost", h)
+		}
+		if requestBodies[i].String("service_tier") != "priority" {
+			t.Error("Fast preference did not reach native CLI physical request", i)
 		}
 		if requestBodies[i].String("model") != "gpt-6-sol" {
 			t.Error("model routing changed")

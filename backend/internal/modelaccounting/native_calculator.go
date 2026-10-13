@@ -42,7 +42,7 @@ var nativeModelCosts = map[string]nativeCosts{
 }
 
 func NewNativeCalculator(model string, o NativeCalculatorOptions) (*Calculator, error) {
-	if model == "" || o.Environment == nil || o.Settings == nil || o.Global == nil {
+	if o.Environment == nil || o.Settings == nil || o.Global == nil {
 		return nil, errors.New("native accounting requires original model/environment/settings/global getters")
 	}
 	// Source's application-inference-profile backing model needs its real AWS

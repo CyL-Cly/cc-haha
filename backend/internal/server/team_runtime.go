@@ -104,7 +104,7 @@ func (s *Server) observeTeamSDK(id string, data json.RawMessage) {
 func (s *Server) observeTeamOutput(id string, callback func(protocol.JSONObject)) (func(), error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.closed || s.runtimes[id] == nil {
+	if s.closed || s.migration.active || s.runtimes[id] == nil {
 		return nil, errors.New("CLI session is not running")
 	}
 	state := s.teamRuntimeStateLocked()
@@ -128,7 +128,7 @@ func (s *Server) observeTeamOutput(id string, callback func(protocol.JSONObject)
 func (s *Server) NativeSessionConnected(id string) bool {
 	s.mu.Lock()
 	runtime := s.runtimes[id]
-	closed := s.closed
+	closed := s.closed || s.migration.active
 	s.mu.Unlock()
 	if closed || runtime == nil {
 		return false
@@ -155,7 +155,7 @@ func (s *Server) WaitTeamWorkersStopped(ctx context.Context, parent string) erro
 	}
 }
 
-func (s *Server) stopTeamPlanParent(ctx context.Context, parent string) error {
+func (s *Server) stopTeamPlanParent(ctx context.Context, parent string, pause ...bool) error {
 	s.mu.Lock()
 	state := s.teamRuntimeStateLocked()
 	runtime := state.runtime
@@ -183,6 +183,9 @@ func (s *Server) stopTeamPlanParent(ctx context.Context, parent string) error {
 		}
 		s.mu.Unlock()
 	}()
+	if len(pause) > 0 && pause[0] {
+		return runtime.PauseParent(ctx, parent)
+	}
 	return runtime.StopParent(ctx, parent)
 }
 func (s *Server) closeTeamRuntime(ctx context.Context) error {
@@ -282,7 +285,12 @@ func (s *Server) BindTeamSessionCallbacks(o *teamworker.RuntimeOptions) {
 	o.WaitWorkersStopped = s.WaitTeamWorkersStopped
 	o.Validation.PermissionMode = s.teamPermissionMode
 	o.Prepare = func(ctx context.Context, w teamworker.WorkerRequest) (string, error) {
-		return s.PrepareTeamWorker(ctx, TeamWorkerLaunch{ID: w.ID, WorkDir: w.WorkDir, Model: w.Model, Effort: w.Effort, PermissionMode: w.PermissionMode, ProviderID: w.ProviderID, Worker: w.Worker})
+		if w.Resume {
+			if e := s.WaitTeamWorkersStopped(ctx, w.Worker.ParentSessionID); e != nil {
+				return "", e
+			}
+		}
+		return s.PrepareTeamWorker(ctx, TeamWorkerLaunch{ID: w.ID, WorkDir: w.WorkDir, Model: w.Model, Effort: w.Effort, PermissionMode: w.PermissionMode, ProviderID: w.ProviderID, Worker: w.Worker, Resume: w.Resume})
 	}
 	o.Release = func(ctx context.Context, id, text string, canSend func() bool) (bool, error) {
 		if !s.NativeSessionConnected(id) {
@@ -297,4 +305,39 @@ func (s *Server) BindTeamSessionCallbacks(o *teamworker.RuntimeOptions) {
 	o.Snapshot = s.applyTeamRuntimeSnapshot
 	o.Observe = s.observeTeamOutput
 	o.SendLeader = s.sendTeamLeader
+	o.StartLeader = func(ctx context.Context, id string) error { _, e := s.live(id); return e }
+}
+
+func (s *Server) TeamLeadUserMessage(ctx context.Context, id string) error {
+	s.mu.Lock()
+	var runtime *teamworker.Runtime
+	if s.teams != nil {
+		runtime = s.teams.runtime
+	}
+	s.mu.Unlock()
+	if runtime == nil {
+		return nil
+	}
+	return runtime.NoteLeadUserMessage(ctx, id)
+}
+func (s *Server) TeamLeadStarted(ctx context.Context, id string) error {
+	s.mu.Lock()
+	var runtime *teamworker.Runtime
+	if s.teams != nil {
+		runtime = s.teams.runtime
+	}
+	s.mu.Unlock()
+	if runtime == nil {
+		return nil
+	}
+	return runtime.LeadStarted(ctx, id)
+}
+func (s *Server) TeamHasPendingWork(id string) bool {
+	s.mu.Lock()
+	var runtime *teamworker.Runtime
+	if s.teams != nil {
+		runtime = s.teams.runtime
+	}
+	s.mu.Unlock()
+	return runtime != nil && runtime.HasPendingWork(id)
 }

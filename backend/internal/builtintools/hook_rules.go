@@ -107,7 +107,7 @@ func (s *Service) CheckHookRulePermissions(scope *cooperative.Scope, name string
 			return nil, e
 		}
 		forms := []string{path}
-		if canonical := resolved(path); canonical != path {
+		if canonical := s.permissionResolved(path); canonical != path {
 			forms = append(forms, canonical)
 		}
 		ruleName, action := "Edit", "edit"

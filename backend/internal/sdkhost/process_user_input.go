@@ -51,6 +51,9 @@ func slashParts(content json.RawMessage) (name, args string, slash bool, err err
 	return name, args, true, nil
 }
 func (h *Host) validatePrintUserInput(content json.RawMessage) error {
+	if h.options.Print != nil && h.options.Print.Registry != nil && h.options.Print.Registry.SlashCommandsDisabled() {
+		return nil
+	}
 	if h.terminalBash != nil && bytes.Equal(content, h.terminalBash.content) {
 		_, err := protocol.DecodeJavaScriptJSONString(content)
 		return err
@@ -58,6 +61,9 @@ func (h *Host) validatePrintUserInput(content json.RawMessage) error {
 	name, _, slash, e := slashParts(content)
 	if e != nil || !slash {
 		return e
+	}
+	if name == "compact" && h.options.Print.NativeProcess {
+		return nil
 	}
 	if name == "release-notes" || name == "context" || name == "heapdump" || name == "effort" && h.options.Print.NativeInteractive {
 		if h.options.Print.NativeLocalCommand == nil {
@@ -137,8 +143,18 @@ func (h *Host) processQueuedPrintInputBase(scope *cooperative.Scope, content, uu
 		}
 		return nil, e
 	}
+	if h.options.Print.Registry.SlashCommandsDisabled() {
+		result, err := h.processNativePromptInput(scope, name, args, uuid)
+		if result != nil && err == nil {
+			return result, retainSlashPrecedingBlocks(result, content)
+		}
+		return result, err
+	}
 	if e = h.validatePrintUserInput(content); e != nil {
 		return nil, e
+	}
+	if name == "compact" && h.options.Print.NativeProcess {
+		return h.processCompactInput(scope, args)
 	}
 	if name == "release-notes" || name == "context" || name == "heapdump" || name == "effort" && h.options.Print.NativeInteractive {
 		return h.processNativeLocalInput(scope, name, args)
@@ -172,7 +188,7 @@ func (h *Host) processQueuedPrintInputBase(scope *cooperative.Scope, content, uu
 	if e != nil {
 		return nil, e
 	}
-	resolver := modelaccounting.RestoredModelResolver{Environment: h.options.OriginalEnv, Settings: h.options.Startup.GetInitialSettings, Global: h.options.Global.Get}
+	resolver := modelaccounting.RestoredModelResolver{Environment: h.options.OriginalEnv, Settings: h.options.Startup.GetInitialSettings, Global: h.options.Global.Get, SDKBetas: h.options.SDKBetas}
 	text, e := h.sessionAccounting.FormatTotalCost(scope, modelaccounting.CostPresentation{NowMillis: h.options.NowMillis, StartMillis: h.options.Print.ProcessStartMillis, LinesAdded: added, LinesRemoved: removed, Dim: false, CanonicalName: resolver.Canonical})
 	if e != nil {
 		return nil, e

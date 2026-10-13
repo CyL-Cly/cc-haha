@@ -73,7 +73,7 @@ func (m *MainPrint) nativeHookCommandBindings() *queryhooks.CommandBindings {
 					environment["CLAUDE_ENV_FILE"] = path
 				}
 			}
-			return queryhooks.RunCommandProcess(ctx, queryhooks.CommandProcessRequest{AllowAsync: m.asyncHooks != nil, OutputDirectory: directory, ShellResolver: bindings.ShellResolver, Progress: progress, Hook: hook, Input: input, CWD: state.CWD, OriginalCWD: state.OriginalCWD, ProjectRoot: state.ProjectRoot, Platform: m.options.Platform, Environment: environment, NowMillis: n.NowMillis})
+			return queryhooks.RunCommandProcess(ctx, queryhooks.CommandProcessRequest{AllowAsync: m.asyncHooks != nil && !call.ForceSyncExecution, OutputDirectory: directory, ShellResolver: bindings.ShellResolver, Progress: progress, Hook: hook, Input: input, CWD: state.CWD, OriginalCWD: state.OriginalCWD, ProjectRoot: state.ProjectRoot, Platform: m.options.Platform, Environment: environment, NowMillis: n.NowMillis})
 		})
 		if e != nil {
 			return queryhooks.CommandOutput{}, e

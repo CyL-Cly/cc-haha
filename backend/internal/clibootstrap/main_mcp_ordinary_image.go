@@ -13,7 +13,7 @@ import (
 )
 
 func (m *NativeMCPToolContext) ordinaryImageBindings() *builtintools.ImageBindings {
-	return &builtintools.ImageBindings{Read: func(ctx context.Context, scope *cooperative.Scope, path string, tokens float64) (*ownerasync.OwnerFuture[json.RawMessage], error) {
+	return &builtintools.ImageBindings{NormalizeShellData: m.nativeMCPNormalizeShellImage, ReadPDF: m.startNativeMCPPDFRead, Read: func(ctx context.Context, scope *cooperative.Scope, path string, tokens float64) (*ownerasync.OwnerFuture[json.RawMessage], error) {
 		n := m.command.Native
 		work, e := nativeOwnedWork(m.command.Owner, m.binding, scope, func() (nativeImageRead, error) {
 			if e := context.Cause(ctx); e != nil {

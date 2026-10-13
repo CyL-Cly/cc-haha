@@ -21,6 +21,10 @@ func (h *Host) ValidateNativeModel(ctx context.Context, scope *cooperative.Scope
 			return err
 		}
 		input := requestretry.Input{Context: requestcontext.Context{Options: requestcontext.Options{Model: model, QuerySource: "model_validation"}, Host: requestcontext.Host{Profile: requestcontext.NativeDirectRelayProfile, Env: h.requestEnvironment, DeviceID: device, SessionID: h.options.Controller.SessionID()}}, Runtime: h.options.Runtime}
+		input.Context.Host.NativeThinkingSummaryBeta, err = h.nativeThinkingSummaryBeta(producer, model)
+		if err != nil {
+			return err
+		}
 		deps := h.requestDependencies(producer)
 		if h.options.NativeValidationAuth != nil {
 			deps.NativeClaudeAuth, deps.NativeClaudeError = h.options.NativeValidationAuth(producer)

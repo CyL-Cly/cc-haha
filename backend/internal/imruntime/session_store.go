@@ -17,6 +17,7 @@ type SessionEntry struct {
 	UpdatedAt int64  `json:"updatedAt"`
 }
 type SessionStore struct {
+	Lifecycle *MigrationLifecycle
 	Path      string
 	NowMillis func() int64
 	mu        sync.Mutex
@@ -49,7 +50,9 @@ func (s *SessionStore) Get(chat string) *SessionEntry {
 	}
 	return &entry
 }
-func (s *SessionStore) write(data protocol.JSONObject) error {
+func (s *SessionStore) write(data protocol.JSONObject) (err error) {
+	done := s.Lifecycle.Track()
+	defer func() { done(err) }()
 	if err := os.MkdirAll(filepath.Dir(s.Path), 0777); err != nil {
 		return err
 	}

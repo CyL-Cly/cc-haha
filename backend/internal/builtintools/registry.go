@@ -3,12 +3,14 @@ package builtintools
 import (
 	"context"
 	"encoding/json"
+	"math"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/ownerasync"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/queryloop"
 	"github.com/NanmiCoder/cc-haha/backend/internal/toolschema"
+	"github.com/NanmiCoder/cc-haha/backend/internal/windowshell"
 )
 
 func (s *Service) Catalog(scope *cooperative.Scope) ([]toolschema.Definition, []queryloop.RegisteredTool, error) {
@@ -43,6 +45,10 @@ func (s *Service) Catalog(scope *cooperative.Scope) ([]toolschema.Definition, []
 		}
 	}
 	names := nativeBaseToolNames(images)
+	names, e = s.shellCatalogNames(names)
+	if e != nil {
+		return nil, nil, e
+	}
 	for _, name := range names {
 		if teamTool(name) {
 			if !s.HasTeamBindings() {
@@ -110,7 +116,7 @@ func (s *Service) Catalog(scope *cooperative.Scope) ([]toolschema.Definition, []
 				continue
 			}
 		}
-		if skillSimple(s.options.Environment["CLAUDE_CODE_SIMPLE"]) && name != "Bash" && name != "Read" && name != "Edit" {
+		if skillSimple(s.options.Environment["CLAUDE_CODE_SIMPLE"]) && name != "Bash" && name != "PowerShell" && name != "Read" && name != "Edit" {
 			continue
 		}
 		if name == "Skill" && !s.HasSkillBindings() {
@@ -155,6 +161,22 @@ func (s *Service) Catalog(scope *cooperative.Scope) ([]toolschema.Definition, []
 		if e != nil {
 			return nil, nil, e
 		}
+		if name == "PowerShell" {
+			definition = toolschema.PowerShellDefinition(s.options.Environment)
+		}
+		if name == "Agent" && taskEnvironmentTruthy(s.options.Environment["CLAUDE_CODE_DISABLE_BACKGROUND_TASKS"]) {
+			// Source constructs this local Zod schema with the startup flag.
+			// Keep the parser, API schema and compaction budget on that same
+			// definition; API-only filtering would still charge the hidden field.
+			input := *definition.InputSchema
+			input.Fields = make([]toolschema.Field, 0, len(definition.InputSchema.Fields)-1)
+			for _, field := range definition.InputSchema.Fields {
+				if field.Name != "run_in_background" {
+					input.Fields = append(input.Fields, field)
+				}
+			}
+			definition.InputSchema = &input
+		}
 		tool := queryloop.RegisteredTool{Name: name, AlwaysLoad: definition.AlwaysLoad, ShouldDefer: definition.ShouldDefer, SearchHint: definition.SearchHint, PersistenceThreshold: 100000, ParseInput: func(in protocol.JSONObject) (protocol.JSONObject, error) {
 			return toolschema.ParseInput(definition, in)
 		}, IsConcurrencySafe: func(protocol.JSONObject) bool {
@@ -177,10 +199,33 @@ func (s *Service) Catalog(scope *cooperative.Scope) ([]toolschema.Definition, []
 			}
 			return queryloop.ToolCallResult{Data: data}, e
 		}, MapResultJSON: func(data, id json.RawMessage) (protocol.JSONObject, error) { return MapResult(name, data, id) }}
+		if taskTool(name) {
+			tool.MapResultJSON = func(data, id json.RawMessage) (protocol.JSONObject, error) {
+				var result protocol.JSONObject
+				if e := result.UnmarshalJSON(data); e != nil {
+					return protocol.JSONObject{}, e
+				}
+				return mapTask(name, result, id, s.options.Team != nil && s.options.Team.IsTeammate)
+			}
+		}
+		if name == "Read" {
+			tool.PersistenceThreshold = math.Inf(1)
+		}
+		if name == "Grep" {
+			tool.PersistenceThreshold = 20_000
+		}
 		if name == "Bash" {
 			tool.PersistenceThreshold = 30_000
 			tool.CallJSON = s.callBash
 			tool.MapResultJSON = s.mapBashResult
+		}
+		if name == "PowerShell" {
+			tool.PersistenceThreshold = 30_000
+			tool.CallJSON = s.callPowerShell
+			tool.MapResultJSON = s.mapPowerShellResult
+			tool.ValidateInput = func(_ context.Context, _ protocol.JSONObject, opaque any) error {
+				return s.validatePowerShell(scopeFor(opaque))
+			}
 		}
 		if imageTool(name) {
 			tool.ValidateInput = nil
@@ -417,7 +462,15 @@ func (s *Service) SchemaHost(model, baseURL string) *toolschema.Host {
 			view[key] = value
 		}
 	}
+	if value, ok := s.options.Environment["BASH_MAX_OUTPUT_LENGTH"]; ok {
+		view["BASH_MAX_OUTPUT_LENGTH"] = value
+	}
 	host := &toolschema.Host{MainLoopModel: model, BaseURL: baseURL, BashEnvironment: view, QuestionPreviewFormat: s.options.QuestionPreviewFormat, PlanUserType: s.options.Environment["USER_TYPE"]}
+	if s.options.Shells != nil {
+		if shells, ready := s.options.Shells.Snapshot(); ready {
+			host.PowerShellEdition = windowshell.Edition(shells.PowerShell)
+		}
+	}
 	if s.HasTeamBindings() {
 		host.TeamReviewRequired = s.options.Team.ReviewRequired
 	}
@@ -517,6 +570,8 @@ func (s *Service) Call(ctx context.Context, name string, in protocol.JSONObject,
 		return s.grep(ctx, in, scope)
 	case "Bash":
 		return s.bash(ctx, in, scope)
+	case "PowerShell":
+		return s.powerShell(ctx, in, scope)
 	case "Write":
 		return s.options.Write.Call(ctx, in, scope)
 	case "TodoWrite":

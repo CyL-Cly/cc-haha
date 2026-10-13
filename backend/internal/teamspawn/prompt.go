@@ -3,6 +3,7 @@ package teamspawn
 import (
 	"encoding/json"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/teamstore"
 )
 
 const TeammateSystemPromptAddendum = "\n# Agent Teammate Communication\n\nIMPORTANT: You are running as an agent in a team. To communicate with anyone on your team:\n- Use the SendMessage tool with `to: \"<name>\"` to send messages to specific teammates\n- Use the SendMessage tool with `to: \"*\"` sparingly for team-wide broadcasts\n\nJust writing a response in text is not visible to others on your team - you MUST use the SendMessage tool.\n\nThe user interacts primarily with the team lead. Your work is coordinated through the task system and teammate messaging.\n"
@@ -31,10 +32,10 @@ func SystemPrompt(base []json.RawMessage, custom, override json.RawMessage, mode
 func TeammateMessage(from, content, color, summary string) string {
 	attributes := ""
 	if color != "" {
-		attributes += " color=\"" + color + "\""
+		attributes += " color=\"" + teamstore.EscapeXMLAttr(color) + "\""
 	}
 	if summary != "" {
-		attributes += " summary=\"" + summary + "\""
+		attributes += " summary=\"" + teamstore.EscapeXMLAttr(summary) + "\""
 	}
-	return "<teammate-message teammate_id=\"" + from + "\"" + attributes + ">\n" + content + "\n</teammate-message>"
+	return "<teammate-message teammate_id=\"" + teamstore.EscapeXMLAttr(from) + "\"" + attributes + ">\n" + content + "\n</teammate-message>"
 }

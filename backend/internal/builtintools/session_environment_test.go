@@ -37,7 +37,7 @@ func TestSessionEnvironmentOriginalBashEvalStageReadsPhysicalFilesMemoAndShortCi
 	result := call(t, s, owner, "Bash", input(`{"command":"hook_probe; printf ':%s' \"$HOOK_VALUE\""}`))
 	var value protocol.JSONObject
 	_ = value.UnmarshalJSON(result)
-	if value.String("stdout") != "alias-result:original hook value\n" {
+	if value.String("stdout") != "alias-result:original hook value" {
 		t.Fatal("actual environment/alias eval", string(result))
 	}
 	if err = os.WriteFile(path, []byte("export HOOK_VALUE='changed'"), 0600); err != nil {
@@ -45,13 +45,13 @@ func TestSessionEnvironmentOriginalBashEvalStageReadsPhysicalFilesMemoAndShortCi
 	}
 	result = call(t, s, owner, "Bash", input(`{"command":"printf '%s' \"$HOOK_VALUE\""}`))
 	_ = value.UnmarshalJSON(result)
-	if value.String("stdout") != "original hook value\n" {
+	if value.String("stdout") != "original hook value" {
 		t.Fatal("process memo was ignored", string(result))
 	}
 	service.Invalidate()
 	result = call(t, s, owner, "Bash", input(`{"command":"printf '%s' \"$HOOK_VALUE\""}`))
 	_ = value.UnmarshalJSON(result)
-	if value.String("stdout") != "changed\n" {
+	if value.String("stdout") != "changed" {
 		t.Fatal("memo invalidation missing", string(result))
 	}
 	if err = os.WriteFile(path, []byte("false"), 0600); err != nil {

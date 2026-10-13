@@ -22,6 +22,8 @@ type SDKStreamError struct {
 	MessageJSON                json.RawMessage
 	Status                     *int
 	RequestID                  *string
+	WorkspaceID                *string
+	Type                       json.RawMessage
 	Payload                    json.RawMessage
 	RawData                    string
 	Headers                    http.Header
@@ -165,7 +167,7 @@ func sdkRequestError(cause error) error {
 		return cause
 	}
 	encoded, _ := json.Marshal(cause.Error())
-	return &SDKStreamError{Kind: kind, Class: class, Name: "Error", Message: cause.Error(), MessageJSON: encoded}
+	return &SDKStreamError{Kind: kind, Class: class, Name: "Error", Message: cause.Error(), MessageJSON: encoded, Type: json.RawMessage(`null`)}
 }
 
 // AbortCause distinguishes the SDK's quiet iterator termination from success.

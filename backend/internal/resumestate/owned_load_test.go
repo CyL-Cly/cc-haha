@@ -163,7 +163,16 @@ func TestOwnedPublicCapabilitiesAndAdmissionAreSeparate(t *testing.T) {
 		t.Fatal(e)
 	}
 	if e := o.Run(context.Background(), func(scope *cooperative.Scope) error {
-		for _, input := range []Input{{}, {Source: quote(oldSID)}, {Source: []byte(`{"messages":[],"sessionId":"x","fullPath":"/unsupported"}`)}, {Source: []byte(`[]`)}, {Source: []byte(`{"messages":3}`)}, {Source: []byte(`{"messages":[],"fileHistorySnapshots":[3]}`)}, {Original: &OriginalLog{}, Source: []byte("null")}} {
+		// An omitted source is the Source public --continue selector, now
+		// consumed by owned discovery. It is not an unsupported input shape.
+		continued, e := s.BeginLoad(scope, Input{})
+		if e != nil {
+			return e
+		}
+		if v, e := continued.Await(scope); e != nil || v != nil {
+			t.Errorf("empty actual continue discovery: value=%v error=%v", v, e)
+		}
+		for _, input := range []Input{{Source: quote(oldSID)}, {Source: []byte(`{"messages":[],"sessionId":"x","fullPath":"/unsupported"}`)}, {Source: []byte(`[]`)}, {Source: []byte(`{"messages":3}`)}, {Source: []byte(`{"messages":[],"fileHistorySnapshots":[3]}`)}, {Original: &OriginalLog{}, Source: []byte("null")}} {
 			f, e := s.BeginLoad(scope, input)
 			if e != nil {
 				t.Errorf("async body threw at admission: %v", e)

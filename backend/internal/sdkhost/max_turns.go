@@ -26,8 +26,6 @@ func (h *Host) maxTurnsResultOnOwner(scope *cooperative.Scope, message queryloop
 	if err != nil {
 		return protocol.JSONObject{}, err
 	}
-	// Public/neutral admission currently supports only non-fast execution and
-	// allow-only tool permission feedback; active denials remain refused upstream.
 	return protocol.NewJSONObject(
 		protocol.JSONField{Name: "type", Value: quote("result")},
 		protocol.JSONField{Name: "subtype", Value: quote("error_max_turns")},
@@ -40,7 +38,7 @@ func (h *Host) maxTurnsResultOnOwner(scope *cooperative.Scope, message queryloop
 		protocol.JSONField{Name: "total_cost_usd", Value: snapshot.Get("totalCostUSD")},
 		protocol.JSONField{Name: "usage", Value: raw(usage)},
 		protocol.JSONField{Name: "modelUsage", Value: snapshot.Get("modelUsage")},
-		protocol.JSONField{Name: "permission_denials", Value: raw([]any{})},
+		protocol.JSONField{Name: "permission_denials", Value: h.permissionDenialsJSON()},
 		protocol.JSONField{Name: "fast_mode_state", Value: quote("off")},
 		protocol.JSONField{Name: "uuid", Value: quote(h.options.UUID())},
 		protocol.JSONField{Name: "errors", Value: raw([]string{fmt.Sprintf("Reached maximum number of turns (%d)", max)})},

@@ -40,6 +40,14 @@ func TestNativePermissionStartupMatchesActualSourceModesPathsAndProvenance(t *te
 		rows = append(rows, map[string]any{"env": map[string]string{"CLAUDE_CODE_REMOTE": "yes"}, "settings": map[string]any{"permissions": map[string]any{"defaultMode": mode}}})
 	}
 	rows = append(rows, map[string]any{"skip": true, "env": map[string]string{"USER_TYPE": "ant", "CLAUDE_INTERNAL_FC_OVERRIDES": `{"tengu_disable_bypass_permissions_mode":true}`}}, map[string]any{"skip": true, "env": map[string]string{"USER_TYPE": "ant", "CLAUDE_INTERNAL_FC_OVERRIDES": `{"tengu_disable_bypass_permissions_mode":false}`}, "configOverrides": map[string]any{"tengu_disable_bypass_permissions_mode": true}}, map[string]any{"skip": true, "env": map[string]string{"USER_TYPE": "ant"}, "configOverrides": map[string]any{"tengu_disable_bypass_permissions_mode": "yes"}}, map[string]any{"skip": true, "env": map[string]string{"USER_TYPE": "external"}, "configOverrides": map[string]any{"tengu_disable_bypass_permissions_mode": true}})
+	for _, enabled := range []any{"disabled", "enabled", "opt-in", "invalid", nil} {
+		config := map[string]any{"tengu_auto_mode_config": map[string]any{"enabled": enabled}}
+		encoded, _ := json.Marshal(config)
+		for _, user := range []string{"ant", "external"} {
+			rows = append(rows, map[string]any{"mode": "auto", "env": map[string]string{"USER_TYPE": user, "CLAUDE_INTERNAL_FC_OVERRIDES": string(encoded)}})
+			rows = append(rows, map[string]any{"mode": "auto", "env": map[string]string{"USER_TYPE": user}, "configOverrides": config})
+		}
+	}
 	paths := []string{"~/outside", "../outside/nested/", filepath.Join(home, "outside"), "", " ", "../missing", "../plain-file", filepath.Join(home, "project"), "../project/sub", "../outside/nested"}
 	rows = append(rows, map[string]any{"settings": map[string]any{"permissions": map[string]any{"additionalDirectories": paths}}, "addDirs": []string{filepath.Join(home, "second"), filepath.Join(home, "second/sub")}}, map[string]any{"env": map[string]string{"PWD": filepath.Join(home, "project-alias")}, "addDirs": []string{filepath.Join(home, "outside"), filepath.Join(home, "project-alias/sub")}}, map[string]any{"env": map[string]string{"PWD": filepath.Join(home, "outside")}}, map[string]any{"settings": map[string]any{"permissions": map[string]any{"disableAutoMode": "disable"}}})
 	fixture, _ := filepath.Abs("testdata/dontask-initializer-source.fixture.ts")
@@ -59,7 +67,6 @@ func TestNativePermissionStartupMatchesActualSourceModesPathsAndProvenance(t *te
 	var source struct {
 		Rows []struct {
 			Mode                           struct{ Mode, Notification string }
-			Unported                       bool
 			Directories                    [][]json.RawMessage
 			InstructionDirectories         []string
 			Warnings                       []string
@@ -98,13 +105,6 @@ func TestNativePermissionStartupMatchesActualSourceModesPathsAndProvenance(t *te
 			actual, e = producer.Prepare(scope, &settings, NativeStartupRequest{Mode: mode, DangerouslySkipPermissions: skip, AllowDangerouslySkipPermissions: allow, AdditionalDirectories: dirs})
 			return e
 		})
-		if source.Rows[i].Unported {
-
-			if e == nil {
-				t.Errorf("case%d unported classifier silently admitted", i)
-			}
-			continue
-		}
 		if e != nil {
 			t.Errorf("case%d %v", i, e)
 			continue

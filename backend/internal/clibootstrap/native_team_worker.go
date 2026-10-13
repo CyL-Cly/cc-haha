@@ -42,7 +42,8 @@ func (m *MainPrint) configureNativeTeamWorker(initial *protocol.JSONObject) erro
 	if start == nil {
 		return nil
 	}
-	if !m.options.Native.NativeProcess || m.options.DetachedAgent != nil || m.options.AgentID != "" || m.options.Arguments.Resume != "" || start.ParentSessionID == "" || start.MemberID == "" {
+	resume := m.options.Arguments.Resume
+	if !m.options.Native.NativeProcess || m.options.DetachedAgent != nil || m.options.AgentID != "" || resume != "" && resume != start.ResumeSessionID || start.ParentSessionID == "" || start.MemberID == "" {
 		return mainCap("approved standalone Team worker startup identity")
 	}
 	preset, err := teamworker.Build(*start, m.options.Arguments.Model, m.options.Native.Environment["USER_TYPE"], initial != nil && systemprompt.AutoMemoryEnabled(m.environment, *initial))
@@ -248,6 +249,19 @@ func (m *MainPrint) sendNativeTeamMessage(ctx context.Context, scope *cooperativ
 	if _, structured := in.Object("message"); structured {
 		return m.sendNativeStructuredTeamMessage(ctx, scope, in)
 	}
+	future, handled, resumeErr := m.tryResumeNativeInProcessTarget(scope, ctx, in)
+	if handled || resumeErr != nil {
+		if resumeErr != nil {
+			out, err := ownerasync.NewOwnerFuture[queryloop.ToolCallResult](m.Owner)
+			if err != nil {
+				return nil, err
+			}
+			response := nativeInProcessObject(rawMain(map[string]any{"success": false, "message": fmt.Sprintf("Failed to resume teammate %q — nothing was sent: %s", in.String("to"), resumeErr.Error())}))
+			return out, out.Resolve(scope, queryloop.ToolCallResult{Data: rawMain(response)})
+		}
+		return future, nil
+	}
+
 	var err error
 	team := m.teamWorker
 	name, sender := m.nativeLeaderTeamName(), "team-lead"
@@ -339,15 +353,30 @@ func (m *MainPrint) sendNativeTeamMessage(ctx context.Context, scope *cooperativ
 				result.Set("message", quoteMain("No teammates to broadcast to (you are the only team member)"))
 				return queryloop.ToolCallResult{Data: rawMain(result)}, nil
 			}
+			failed, delivered := []string{}, []string{}
 			for _, recipient := range recipients {
 				if err := mailbox.Write(recipient, name, envelope); err != nil {
-					return queryloop.ToolCallResult{}, err
+					failed = append(failed, recipient)
+				} else {
+					delivered = append(delivered, recipient)
 				}
+			}
+			if len(failed) > 0 {
+				result.Set("success", rawMain(false))
+				result.Set("recipients", rawMain(delivered))
+				text := fmt.Sprintf("Failed to write to the inbox of %s — nothing was sent. Try again.", strings.Join(failed, ", "))
+				if len(delivered) > 0 {
+					text = fmt.Sprintf("Message broadcast to %d of %d teammate(s): %s. Failed to write to the inbox of %s — they did not receive it. Message them directly instead of broadcasting again.", len(delivered), len(recipients), strings.Join(delivered, ", "), strings.Join(failed, ", "))
+				}
+				result.Set("message", quoteMain(text))
+				return queryloop.ToolCallResult{Data: rawMain(result)}, nil
 			}
 			result.Set("message", quoteMain(fmt.Sprintf("Message broadcast to %d teammate(s): %s", len(recipients), strings.Join(recipients, ", "))))
 			routing.Set("target", quoteMain("@team"))
 		} else if err := mailbox.Write(to, name, envelope); err != nil {
-			return queryloop.ToolCallResult{}, err
+			result.Set("success", rawMain(false))
+			result.Set("message", quoteMain(fmt.Sprintf("Failed to write to %s's inbox — nothing was sent. Try again.", to)))
+			return queryloop.ToolCallResult{Data: rawMain(result)}, nil
 		}
 		result.Set("routing", rawMain(routing))
 		return queryloop.ToolCallResult{Data: rawMain(result)}, nil

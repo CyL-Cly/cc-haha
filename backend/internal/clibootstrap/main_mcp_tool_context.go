@@ -17,12 +17,14 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/modelselection"
 	"github.com/NanmiCoder/cc-haha/backend/internal/ownerasync"
+	"github.com/NanmiCoder/cc-haha/backend/internal/pdfread"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/queryhooks"
 	"github.com/NanmiCoder/cc-haha/backend/internal/queryloop"
 	"github.com/NanmiCoder/cc-haha/backend/internal/sdkhost"
 	"github.com/NanmiCoder/cc-haha/backend/internal/sessionplans"
 	"github.com/NanmiCoder/cc-haha/backend/internal/tlsconfig"
+	"github.com/NanmiCoder/cc-haha/backend/internal/toolerrors"
 	"github.com/NanmiCoder/cc-haha/backend/internal/toolschema"
 	"github.com/NanmiCoder/cc-haha/backend/internal/toolsearch"
 	"github.com/NanmiCoder/cc-haha/backend/internal/workflow"
@@ -48,6 +50,9 @@ type NativeMCPToolContext struct {
 	refs                ownerasync.NativeReferences
 	binding             *ownerasync.NativeBinding
 	cache               *builtinwrite.FileStateCache
+	nativePDFReader     *pdfread.Reader
+	nativePDFLife       nativePDFLifetime
+	nativePDFSessionID  string
 	tools               *builtintools.Service
 	schemas             *toolschema.Session
 	mu                  sync.Mutex
@@ -111,7 +116,12 @@ func NewNativeMCPToolContext(command *MainCommand, platform string, debug, verbo
 	if err != nil {
 		return nil, err
 	}
-	options := builtintools.Options{Owner: command.Owner, NativeBinding: m.binding, Cache: m.cache, Write: writer, Home: n.Home, CWD: n.CWD, Platform: platform, NowMillis: n.NowMillis, Environment: n.Environment, PermissionContext: permission, NonInteractive: true}
+	options := builtintools.Options{CountTokensOnOwner: m.nativeMCPReadTokenCount, Owner: command.Owner, NativeBinding: m.binding, Cache: m.cache, Write: writer, Home: n.Home, CWD: n.CWD, Platform: platform, NowMillis: n.NowMillis, Environment: n.Environment, PermissionContext: permission, NonInteractive: true}
+	options.Images = &builtintools.ImageBindings{ReadPDF: m.startNativeMCPPDFRead}
+	options, err = m.nativeMCPShellOptions(options)
+	if err != nil {
+		return nil, err
+	}
 	if !envTruthyNative(n.Environment["CLAUDE_CODE_SIMPLE"]) {
 		options, err = m.ordinaryOptions(options)
 		if err != nil {
@@ -246,15 +256,10 @@ func (m *NativeMCPToolContext) Call(ctx context.Context, name string, args json.
 		}
 		value, err := selected.CallJSON(ctx, input, queryloop.JSONToolCallContext{Opaque: call})
 		if err != nil {
-			result = mcpToolError(err.Error())
+			result = mcpToolErrorJSON(toolerrors.MCPErrorJSON(err))
 			return nil
 		}
-		if selected.Name == "Bash" {
-			value.Data, err = builtintools.OriginalBashCallData(value.Data)
-			if err != nil {
-				return err
-			}
-		}
+
 		text, err := protocol.ParseAndStringifyJavaScriptJSON(value.Data)
 		if err != nil {
 			return err
@@ -263,6 +268,9 @@ func (m *NativeMCPToolContext) Call(ctx context.Context, name string, args json.
 		return nil
 	})
 	return result, err
+}
+func mcpToolErrorJSON(text json.RawMessage) protocol.JSONObject {
+	return protocol.NewJSONObject(protocol.JSONField{Name: "isError", Value: json.RawMessage(`true`)}, protocol.JSONField{Name: "content", Value: rawMain([]protocol.JSONObject{protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoteMain("text")}, protocol.JSONField{Name: "text", Value: text})})})
 }
 func mcpToolError(text string) protocol.JSONObject {
 	text = strings.TrimFunc(text, protocol.IsJavaScriptWhitespace)
@@ -275,6 +283,7 @@ func (m *NativeMCPToolContext) Close(ctx context.Context) error {
 	if m == nil {
 		return nil
 	}
+	m.nativePDFLife.close()
 	m.mu.Lock()
 	m.closed = true
 	m.mu.Unlock()
@@ -309,7 +318,7 @@ func (m *NativeMCPToolContext) schemaHost(scope *cooperative.Scope) toolschema.H
 			now = date
 		}
 	}
-	return toolschema.Host{BaseURL: m.command.Native.Environment["ANTHROPIC_BASE_URL"], MainLoopModel: m.model, BashEnvironment: m.command.Native.Environment, AgentDefinitions: []toolschema.AgentPromptDefinition{}, QuestionPreviewFormat: "", PlanUserType: m.command.Native.Environment["USER_TYPE"], WorkflowConcurrency: min(16, max(2, runtime.NumCPU()-2)), WorkflowSizeGuideline: guideline, WebSearchMonthYear: now.Format("January 2006")}
+	return toolschema.Host{PowerShellEdition: m.tools.SchemaHost(m.model, m.command.Native.Environment["ANTHROPIC_BASE_URL"]).PowerShellEdition, BaseURL: m.command.Native.Environment["ANTHROPIC_BASE_URL"], MainLoopModel: m.model, BashEnvironment: m.command.Native.Environment, AgentDefinitions: []toolschema.AgentPromptDefinition{}, QuestionPreviewFormat: "", PlanUserType: m.command.Native.Environment["USER_TYPE"], WorkflowConcurrency: min(16, max(2, runtime.NumCPU()-2)), WorkflowSizeGuideline: guideline, WebSearchMonthYear: now.Format("January 2006")}
 }
 
 // MCP handlers are independent JS async calls. The owner still serializes every

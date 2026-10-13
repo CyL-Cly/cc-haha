@@ -16,7 +16,7 @@ func desktopTraceEnvironment(ctx context.Context, o Options) (map[string]string,
 	for key, value := range o.Environment {
 		env[key] = value
 	}
-	for _, key := range []string{"CC_HAHA_TRACE_PROVIDER_ID", "CC_HAHA_TRACE_PROVIDER_NAME", "CC_HAHA_TRACE_PROVIDER_FORMAT"} {
+	for _, key := range []string{"CC_HAHA_TRACE_PROVIDER_ID", "CC_HAHA_TRACE_PROVIDER_NAME", "CC_HAHA_TRACE_PROVIDER_FORMAT", "CC_HAHA_OPENAI_FAST_MODE"} {
 		delete(env, key)
 	}
 	if o.Trace == nil || !o.Trace.Settings(ctx).Enabled {

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/windowshell"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -22,8 +23,10 @@ func TestNativeCustomAgentAvailableToolsMatchActualSource(t *testing.T) {
 	f := newNativePluginFixture(t)
 	_ = os.MkdirAll(f.n.Temp, 0700)
 	cases := []struct {
-		Env      map[string]string `json:"env"`
-		Settings map[string]any    `json:"settings"`
+		Env         map[string]string `json:"env"`
+		Settings    map[string]any    `json:"settings"`
+		Platform    string            `json:"platform,omitempty"`
+		GitBashPath string            `json:"gitBashPath,omitempty"`
 	}{
 		{}, {Env: map[string]string{"ANTHROPIC_MODEL": "deepseek-flash", "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic"}},
 		{Env: map[string]string{"ANTHROPIC_BASE_URL": "https://API.ANTHROPIC.COM:443"}},
@@ -43,6 +46,10 @@ func TestNativeCustomAgentAvailableToolsMatchActualSource(t *testing.T) {
 		{Settings: map[string]any{"model": "deepseek-flash", "webSearch": map[string]any{"mode": "anthropic", "braveApiKey": "fixture"}}},
 		{Settings: map[string]any{"model": "deepseek-flash", "webSearch": map[string]any{"mode": "invalid", "braveApiKey": "fixture"}}},
 		{Env: map[string]string{"ANTHROPIC_MODEL": "deepseek-flash"}, Settings: map[string]any{"model": "sonnet", "availableModels": []string{"sonnet"}}},
+		{Platform: "windows"},
+		{Platform: "windows", GitBashPath: `C:\Program Files\Git\bin\bash.exe`},
+		{Platform: "windows", GitBashPath: `C:\Program Files\Git\bin\bash.exe`, Env: map[string]string{"CLAUDE_CODE_USE_POWERSHELL_TOOL": "true"}},
+		{Platform: "windows", Env: map[string]string{"CLAUDE_CODE_USE_POWERSHELL_TOOL": "false"}},
 	}
 	fixture, _ := filepath.Abs("../../../scripts/quality-gate/go-parity/native-agent-tools.fixture.ts")
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -83,7 +90,14 @@ func TestNativeCustomAgentAvailableToolsMatchActualSource(t *testing.T) {
 		if err != nil || model != source.Rows[i].Model {
 			t.Fatalf("Source model case%d %s %v want%s", i, model, err, source.Rows[i].Model)
 		}
-		names, err := nativeCustomAgentToolNames("darwin", f.n.Environment, &source.Rows[i].Settings, model)
+		platform := "darwin"
+		var shells []windowshell.Availability
+		if row.Platform == "windows" {
+			platform = "windows"
+			setting, defined := row.Env["CLAUDE_CODE_USE_POWERSHELL_TOOL"]
+			shells = append(shells, windowshell.ResolveAvailability(platform, row.GitBashPath, row.Env["USER_TYPE"], setting, defined))
+		}
+		names, err := nativeCustomAgentToolNames(platform, f.n.Environment, &source.Rows[i].Settings, model, shells...)
 		if err != nil || !reflect.DeepEqual(names, source.Rows[i].Tools) {
 			t.Errorf("case%d Go %v %v Source %v", i, names, err, source.Rows[i].Tools)
 		}

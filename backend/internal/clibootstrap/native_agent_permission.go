@@ -24,6 +24,9 @@ func (m *MainPrint) independentAgentPermissionResolver() nativeAgentPermissionRe
 		if in == nil || !scope.BelongsTo(child.Owner) {
 			return queryloop.ToolPermission{}, cooperative.ErrRestricted
 		}
+		if d := child.options.DetachedAgent; d != nil && d.isBackgrounded != nil && d.isBackgrounded() && d.PermissionMode != "bubble" {
+			return queryloop.ToolPermission{Behavior: "deny", Input: in, Message: quoteMain("Permission prompts are unavailable for a background agent.")}, nil
+		}
 		input := in.Clone()
 		descriptor := queryloop.RegisteredTool{Name: tool.Name, Aliases: append([]string(nil), tool.Aliases...), IsMCP: tool.IsMCP, SearchHint: append(json.RawMessage(nil), tool.SearchHint...), AlwaysLoad: tool.AlwaysLoad, ShouldDefer: tool.ShouldDefer}
 		agentType := ""

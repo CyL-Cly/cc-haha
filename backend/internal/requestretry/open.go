@@ -11,6 +11,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/attachments"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/messages"
+	"math"
 	"net/http"
 	"strings"
 	"time"
@@ -40,9 +41,10 @@ func (failure *CapabilityError) Error() string {
 func unsupported(boundary string) error { return &CapabilityError{Boundary: boundary} }
 
 type Input struct {
-	Context requestcontext.Context
-	Runtime provider.SourceRuntime
-	Auth    OriginalAuthInputs
+	FallbackModel string `json:"FallbackModel,omitempty"`
+	Context       requestcontext.Context
+	Runtime       provider.SourceRuntime
+	Auth          OriginalAuthInputs
 	// ResolvedFastMode is sampled by the actual original host AppState on owner.
 	// nil requires the legacy explicit disable flag; true remains unsupported.
 	ResolvedFastMode *bool `json:"ResolvedFastMode,omitempty"`
@@ -65,16 +67,21 @@ type NativeOpenIOFactory interface {
 }
 
 type Dependencies struct {
-	NativeFastModeProof *cooperative.NativeFastModeRequest
-	NativeFastState     *retrypolicy.FastState
-	NativeFastEffect    func(retrypolicy.FastEffect) error
-	NativeFastError     error
-	NativeBedrock       *NativeBedrock
-	NativeVertex        *NativeVertex
-	NativeCloudError    error
-	NativeAuthHelper    *NativeAuthHelper
-	NativeClaudeAuth    *NativeClaudeAuth
-	NativeClaudeError   error
+	NativeThinkingSummaryBeta func(*cooperative.Scope, string) (*bool, error)
+	NativeRetryEnvironment    map[string]string
+	NativeFastModeProof       *cooperative.NativeFastModeRequest
+	NativeFastState           *retrypolicy.FastState
+	NativeFastEffect          func(retrypolicy.FastEffect) error
+	NativeFastError           error
+	NativeBedrock             *NativeBedrock
+	NativeVertex              *NativeVertex
+	NativeCloudError          error
+	NativeAuthHelper          *NativeAuthHelper
+	NativeClaudeAuth          *NativeClaudeAuth
+	NativeClaudeError         error
+	NativeAccountUUID         func() (string, error)
+	NativeCompactSource       *cooperative.NativeCompactModels
+	APIAttemptBudget          *APIAttemptBudget
 	// The host installs the original credential consumer for this current ASK.
 	// Main turns may already carry their shared turn-state binding in Host.
 	NativeCodexOAuth *provider.OpenAICodexConfig
@@ -86,6 +93,7 @@ type Dependencies struct {
 	NativeAgentHookSource    *cooperative.NativeAgentHookModels
 	NativeInsightsSource     *cooperative.NativeInsightsModels
 	NativeSideQuestionSource *cooperative.NativeSideQuestionModels
+	NativeAutoDreamSource    *cooperative.NativeAutoDreamModels
 	// StreamOwner/StreamScope bind the current admitted model stack. They carry
 	// no prepared inputs and must be refreshed for every original ASK.
 	StreamOwner *cooperative.Owner
@@ -117,6 +125,8 @@ type Dependencies struct {
 	// before GetClient. That Result is reused by the first physical attempt.
 	// It is not an alternate constructor or a callback for subsequent retries.
 	OnParamsPrepared func(*requestcontext.Result) error
+	// PromptSnapshot only observes the actual prepared request; it must not await disk.
+	PromptSnapshot   func(json.RawMessage)
 	ObserveRequest   func(string, http.Header, json.RawMessage)
 	ObserveFailure   func(error)
 	Trace            *tracecapture.Service
@@ -160,6 +170,10 @@ func validated(input Input, deps Dependencies) error {
 		return deps.NativeCloudError
 	}
 	native := input.Context.Host.Profile == requestcontext.NativeDirectRelayProfile
+	compact := native && input.Context.Options.QuerySource == "compact" && deps.NativeCompactSource.Owns(deps.StreamOwner)
+	if deps.APIAttemptBudget != nil && (!compact || deps.StreamScope == nil || !deps.StreamScope.BelongsTo(deps.StreamOwner)) {
+		return cooperative.ErrRestricted
+	}
 	if deps.NativeVertex != nil && (!native || !deps.NativeVertex.Owns(deps.StreamOwner, deps.StreamScope)) {
 		return cooperative.ErrRestricted
 	}
@@ -252,8 +266,9 @@ func validated(input Input, deps Dependencies) error {
 			agentHook := native && querySource == "hook_agent" && deps.NativeAgentHookSource.Owns(deps.StreamOwner)
 			insights := native && querySource == "insights" && deps.NativeInsightsSource.Owns(deps.StreamOwner)
 			sideQuestion := native && querySource == "side_question" && deps.NativeSideQuestionSource.Owns(deps.StreamOwner)
+			autoDream := native && querySource == "auto_dream" && deps.NativeAutoDreamSource.Current(deps.StreamScope)
 			entry := input.Context.Host.Env[name]
-			if (entry != "sdk" && entry != "sdk-cli" && (!native || entry != "cli" && !(entry == "mcp" && (web || child && querySource == "workflow_agent")) && !(entry == "claude-desktop" && deps.NativeClaudeAuth.Owns(deps.StreamOwner, deps.StreamScope)))) || input.Context.Options.QuerySource != "sdk" && !child && !web && !hook && !agentHook && !insights && !sideQuestion {
+			if ((entry != "sdk" && entry != "sdk-cli" && (!native || entry != "cli" && !(entry == "mcp" && (web || child && querySource == "workflow_agent")) && !(entry == "claude-desktop" && deps.NativeClaudeAuth.Owns(deps.StreamOwner, deps.StreamScope)))) || input.Context.Options.QuerySource != "sdk" && !child && !web && !hook && !agentHook && !insights && !sideQuestion && !autoDream) && !compact {
 				return unsupported("original runtime entrypoint value")
 			}
 			continue
@@ -328,7 +343,16 @@ func validated(input Input, deps Dependencies) error {
 		if native && messages.IsNativeAPIRetryRecord(envelope) {
 			continue
 		}
+		if native && messages.IsNativeStreamRecoveryRecord(envelope) {
+			continue
+		}
 		if native && messages.IsNativeUserPromptBlockedRecord(envelope) {
+			continue
+		}
+		if native && messages.IsNativeModelFallbackRecord(envelope) {
+			continue
+		}
+		if native && messages.IsNativeMemorySavedRecord(envelope) {
 			continue
 		}
 		// Original compact markers remain in the host history until Prepare.
@@ -462,6 +486,24 @@ func resolveOriginalEnvKey(input Input) (*string, error) {
 }
 
 func Open(ctx context.Context, input Input, deps Dependencies) (*provider.RawMessageStream, error) {
+	return openMessages(ctx, input, deps, nil)
+}
+
+type nativeFallbackOperation struct {
+	response   provider.MessageResponse
+	initial529 float64
+}
+
+func CreateNativeFallback(ctx context.Context, input Input, deps Dependencies, initial529 float64) (provider.MessageResponse, error) {
+	if input.Context.Host.Profile != requestcontext.NativeDirectRelayProfile || deps.StreamScope == nil || !deps.StreamScope.BelongsTo(deps.StreamOwner) {
+		return provider.MessageResponse{}, cooperative.ErrRestricted
+	}
+	fallback := &nativeFallbackOperation{initial529: initial529}
+	_, err := openMessages(ctx, input, deps, fallback)
+	return fallback.response, err
+}
+
+func openMessages(ctx context.Context, input Input, deps Dependencies, fallback *nativeFallbackOperation) (*provider.RawMessageStream, error) {
 	if deps.NativeFastError != nil {
 		return nil, deps.NativeFastError
 	}
@@ -501,6 +543,16 @@ func Open(ctx context.Context, input Input, deps Dependencies) (*provider.RawMes
 		return nil, err
 	}
 	request := input.Context
+	if deps.NativeAccountUUID != nil {
+		if input.Context.Host.Profile != requestcontext.NativeDirectRelayProfile || deps.StreamScope == nil || !deps.StreamScope.BelongsTo(deps.StreamOwner) {
+			return nil, cooperative.ErrRestricted
+		}
+		account, err := deps.NativeAccountUUID()
+		if err != nil {
+			return nil, err
+		}
+		request.Host.OAuthAccountUUID = &account
+	}
 	request.Host.Env = map[string]string{}
 	clientEnv := map[string]string{}
 	policyEnv := map[string]string{}
@@ -515,6 +567,19 @@ func Open(ctx context.Context, input Input, deps Dependencies) (*provider.RawMes
 			clientEnv[name] = value
 			if !tlsEnvironment[name] && !provider.IsNativeProxyEnvironment(name) && !IsOpenAIClientEnvironment(name) {
 				request.Host.Env[name] = value
+			}
+		}
+	}
+	if deps.NativeRetryEnvironment != nil {
+		if input.Context.Host.Profile != requestcontext.NativeDirectRelayProfile || deps.StreamScope == nil || !deps.StreamScope.BelongsTo(deps.StreamOwner) {
+			return nil, cooperative.ErrRestricted
+		}
+		for key, value := range deps.NativeRetryEnvironment {
+			switch key {
+			case "FALLBACK_FOR_ALL_PRIMARY_MODELS", "USER_TYPE", "IS_SANDBOX", "CLAUDE_CODE_REMOTE":
+				policyEnv[key] = value
+			default:
+				return nil, unsupported("unrecognized native retry policy environment " + key)
 			}
 		}
 	}
@@ -540,6 +605,9 @@ func Open(ctx context.Context, input Input, deps Dependencies) (*provider.RawMes
 		if err != nil {
 			return nil, err
 		}
+		if deps.PromptSnapshot != nil && firstResult.PreparedRequest != nil {
+			deps.PromptSnapshot(firstResult.PreparedRequest.Body)
+		}
 		if deps.OnParamsPrepared != nil {
 			if err = deps.OnParamsPrepared(firstResult); err != nil {
 				return nil, err
@@ -548,7 +616,10 @@ func Open(ctx context.Context, input Input, deps Dependencies) (*provider.RawMes
 	}
 	thinking, _ := json.Marshal(map[string]string{"type": input.Context.Thinking.Type})
 	querySource := request.Options.QuerySource
-	options := retrypolicy.AttemptOptions{Model: request.Options.Model, ThinkingConfig: thinking, QuerySource: &querySource, FastMode: input.ResolvedFastMode}
+	options := retrypolicy.AttemptOptions{Model: request.Options.Model, ThinkingConfig: thinking, QuerySource: &querySource, FastMode: input.ResolvedFastMode, FallbackModel: input.FallbackModel}
+	if fallback != nil {
+		options.InitialConsecutive529Errors = fallback.initial529
+	}
 	host := retrypolicy.AttemptHost{Profile: retrypolicy.AttemptDirectRelayProfile, Env: policyEnv, Fast: &retrypolicy.FastState{}}
 	if input.Context.Host.NativeFastModeProof.Owns(deps.StreamOwner) {
 		if deps.NativeFastState == nil || deps.NativeFastEffect == nil {
@@ -559,6 +630,7 @@ func Open(ctx context.Context, input Input, deps Dependencies) (*provider.RawMes
 	var prepared *provider.MessagesRequest
 	callbacks := retrypolicy.AttemptDependencies[*provider.Anthropic]{
 		UUID: deps.UUID, Now: deps.Now, Random: deps.Random, Sleep: deps.Sleep, FastEffect: deps.NativeFastEffect,
+		ConsumeAttempt: deps.APIAttemptBudget.Consume,
 		Yield: func(notice retrypolicy.RetryNotice) error {
 			action, err := deps.Notice(ctx, notice)
 			if err != nil {
@@ -599,6 +671,28 @@ func Open(ctx context.Context, input Input, deps Dependencies) (*provider.RawMes
 			}
 		}
 		prepared = result.PreparedRequest
+		if fallback != nil {
+			var err error
+			prepared, err = prepareNativeFallback(result, request.Host.NativeCodexOAuth != nil || request.Host.NativeGrokOAuth != nil)
+			if err != nil {
+				return nil, err
+			}
+			timeout := retrypolicy.DefaultMaximum(input.Context.Host.Env["API_TIMEOUT_MS"])
+			if input.Context.Host.Env["API_TIMEOUT_MS"] == "" || math.IsNaN(timeout) || timeout == 0 {
+				timeout = 300000
+			}
+			await := deps.BodyIOAwait
+			if await == nil {
+				await = func(_ provider.OwnerIOWait, work func(context.Context) ([]byte, error)) ([]byte, error) {
+					return deps.StreamScope.AwaitBytes(cooperative.StreamNext, work)
+				}
+			}
+			fallback.response, err = client.CreateNativePreparedJSON(ctx, prepared, timeout, await)
+			if err != nil && deps.ObserveFailure != nil {
+				deps.ObserveFailure(err)
+			}
+			return nil, err
+		}
 		stream, err := client.OpenMessagesStream(ctx, prepared)
 		if err != nil && deps.ObserveFailure != nil {
 			deps.ObserveFailure(err)

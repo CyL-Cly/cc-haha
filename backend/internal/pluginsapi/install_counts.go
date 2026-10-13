@@ -40,7 +40,7 @@ func (r *MarketplaceResolver) installCounts(ctx context.Context) map[string]json
 	if err != nil {
 		return nil
 	}
-	req.Header.Set("User-Agent", "axios/1.14.0")
+	req.Header.Set("User-Agent", "axios/1.15.2")
 	req.Header.Set("Accept", "application/json, text/plain, */*")
 	req.Header.Set("Accept-Encoding", "gzip, compress, deflate, br")
 	response, err := r.options.Client.Do(req)

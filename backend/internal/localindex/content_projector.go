@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -69,8 +70,7 @@ type ContentProjectorOptions struct {
 	OnCommitStarted func()
 }
 type ContentProjector struct {
-	o         ContentProjectorOptions
-	admission chan struct{}
+	o ContentProjectorOptions
 }
 
 func NewContentProjector(o ContentProjectorOptions) (*ContentProjector, error) {
@@ -95,7 +95,7 @@ func NewContentProjector(o ContentProjectorOptions) (*ContentProjector, error) {
 	if o.Verify == nil {
 		o.Verify = VerifyFingerprint
 	}
-	return &ContentProjector{o: o, admission: make(chan struct{}, 1)}, nil
+	return &ContentProjector{o: o}, nil
 }
 
 var xmlBlocks = regexp2.MustCompile(`<([a-z][\w-]*)(?:\s[^>]*)?>[\s\S]*?</\1>\s*`, regexp2.ECMAScript|regexp2.IgnoreCase)
@@ -334,17 +334,21 @@ func readContentLines(ctx context.Context, f *os.File, start, end, startingLine 
 	}
 }
 func (p *ContentProjector) Project(ctx context.Context, c ContentCandidate) (ContentProjectResult, error) {
-	select {
-	case p.admission <- struct{}{}:
-		defer func() { <-p.admission }()
-	case <-ctx.Done():
-		return ContentProjectResult{}, ctx.Err()
+	release, e := searchProjectionBudget.acquire(ctx)
+	if e != nil {
+		return ContentProjectResult{}, e
 	}
+	defer release()
 	var result ContentProjectResult
 	err := p.o.Budget.With(ctx, sessionstore.MetadataLane, func() error { var e error; result, e = p.project(ctx, c); return e })
 	return result, err
 }
 func (p *ContentProjector) Delete(ctx context.Context, path string) (ContentProjectResult, error) {
+	release, e := searchProjectionBudget.acquire(ctx)
+	if e != nil {
+		return ContentProjectResult{}, e
+	}
+	defer release()
 	err := p.o.Index.DeleteSource(ctx, path)
 	return ContentProjectResult{Kind: "deleted"}, err
 }
@@ -372,7 +376,8 @@ func (p *ContentProjector) project(ctx context.Context, c ContentCandidate) (Con
 			return resultChange(change), nil
 		}
 		if change.Kind == "deleted" {
-			return p.Delete(ctx, c.Path)
+			err := p.o.Index.DeleteSource(ctx, c.Path)
+			return ContentProjectResult{Kind: "deleted"}, err
 		}
 		if change.Kind == "unchanged" {
 			if old.ProjectPath != c.ProjectPath || old.OwnerSessionID != c.OwnerSessionID || old.OwnerTranscriptPath != c.OwnerTranscriptPath || old.ModifiedAtMs != c.ModifiedAtMs {
@@ -492,9 +497,6 @@ func (p *ContentProjector) projectToSpool(ctx context.Context, c ContentCandidat
 		state = "pending"
 	}
 	source := ContentSource{c.Path, c.ProjectPath, c.OwnerSessionID, c.OwnerTranscriptPath, c.ModifiedAtMs, commit.Size, commit.MtimeMs, commit.FileIdentity, SerializeFingerprint(*commit), reduction.indexedBytes, reduction.indexedLines, p.o.ParserVersion, state, errorCode, p.o.Now().UnixMilli()}
-	if p.o.OnCommitStarted != nil {
-		p.o.OnCommitStarted()
-	}
 	err = p.o.Index.ApplySource(ctx, source, action == "append", func(yield func(ContentDocument) error) error {
 		rows, e := spool.QueryContext(ctx, `SELECT jsonlLine,byteStart,byteLength,segmentIndex,role,messageId,timestamp,body,normalizedBody FROM documents ORDER BY seq`)
 		if e != nil {
@@ -511,6 +513,20 @@ func (p *ContentProjector) projectToSpool(ctx context.Context, c ContentCandidat
 			}
 		}
 		return rows.Err()
+	}, func() (err error) {
+		defer func() {
+			if reason := recover(); reason != nil {
+				if e, ok := reason.(error); ok {
+					err = e
+				} else {
+					err = fmt.Errorf("%v", reason)
+				}
+			}
+		}()
+		if p.o.OnCommitStarted != nil {
+			p.o.OnCommitStarted()
+		}
+		return context.Cause(ctx)
 	})
 	if err != nil {
 		return ContentProjectResult{}, nil, err

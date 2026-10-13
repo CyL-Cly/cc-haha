@@ -91,9 +91,6 @@ func nativeModel(model string) (string, error) {
 	case "opusplan", "fable", "sonnet", "haiku", "opus", "best":
 		return "", capError("native main model must be resolved by original startup alias consumer")
 	}
-	if normalized == "" {
-		return "", capError("empty native main model")
-	}
 	return model, nil
 }
 func nativeModelKey(model string) string {
@@ -168,6 +165,9 @@ func nativeContextWindow(model string, env map[string]string) (float64, bool) {
 }
 func nativeThresholds(model string, env map[string]string) (float64, float64) {
 	window, known := nativeContextWindow(model, env)
+	return nativeThresholdsForWindow(model, env, window, known)
+}
+func nativeThresholdsForWindow(model string, env map[string]string, window float64, known bool) (float64, float64) {
 	if override := parseInteger(env["CLAUDE_CODE_AUTO_COMPACT_WINDOW"]); override > 0 {
 		if known {
 			window = math.Min(window, override)

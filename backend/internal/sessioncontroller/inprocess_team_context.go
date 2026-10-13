@@ -8,6 +8,7 @@ import "github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 type InProcessTeammateIdentity struct {
 	TeamName, AgentName, AgentID string
 	ParentSessionID, Color       string
+	ResumableAgentID             string
 	PlanModeRequired             bool
 }
 

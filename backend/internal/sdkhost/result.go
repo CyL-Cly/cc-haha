@@ -24,6 +24,7 @@ func (h *Host) resultOnOwner(scope *cooperative.Scope, last queryloop.Message, u
 	}
 	result, e := projectResult(last, usage, lastStop, start, h.options.Controller.SessionID(), accounting, including, h.options.NowMillis, h.options.UUID, turns)
 	if e == nil {
+		result.Set("permission_denials", h.permissionDenialsJSON())
 		h.nativeJSONSchemaResult(&result)
 	}
 	return result, e

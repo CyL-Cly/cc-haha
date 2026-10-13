@@ -41,7 +41,7 @@ type sidReadJob struct {
 // Public SID uses the same original transcript reducer as Writer UUID loading.
 // Only immutable syscall requests cross the physical native boundary; selection,
 // cache priming, plan/history/hooks and restoration remain on the owning scope.
-func (s *Service) beginOwnedSID(scope *cooperative.Scope, rawSID json.RawMessage) (*ownerasync.OwnerFuture[*Result], error) {
+func (s *Service) beginOwnedSID(scope *cooperative.Scope, rawSID json.RawMessage, resumeAt string) (*ownerasync.OwnerFuture[*Result], error) {
 	out, e := ownerasync.NewOwnerFuture[*Result](s.owned.state.Owner())
 	if e != nil {
 		return nil, e
@@ -109,9 +109,12 @@ func (s *Service) beginOwnedSID(scope *cooperative.Scope, rawSID json.RawMessage
 			resolveOwned(out, next, (*Result)(nil), failure)
 			return nil
 		}
+		// loadConversationForResume(source:string) retains the requested SID,
+		// even when a remotely hydrated entry carries another sessionId.
+		log.sourceSessionID = append(json.RawMessage(nil), rawSID...)
 		// This graph is produced here from own native disk data. No caller-supplied
 		// prepared LogOption enters the public selector.
-		loaded, failure := s.BeginLoad(next, Input{Original: log})
+		loaded, failure := s.BeginLoad(next, Input{Original: log, ResumeAt: resumeAt})
 		if failure != nil {
 			resolveOwned(out, next, (*Result)(nil), failure)
 			return nil

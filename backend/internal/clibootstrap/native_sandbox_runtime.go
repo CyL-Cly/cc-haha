@@ -382,7 +382,25 @@ func (m *MainPrint) nativeSandboxBindings() *builtintools.BashSandboxBindings {
 	if !m.options.Native.NativeProcess {
 		return nil
 	}
-	return &builtintools.BashSandboxBindings{Owner: m.Owner, AutoAllow: func(scope *cooperative.Scope, in protocol.JSONObject) (bool, error) {
+	return &builtintools.BashSandboxBindings{Owner: m.Owner, PowerShellPolicy: m.nativePowerShellSandboxPolicy, WritePaths: func(scope *cooperative.Scope) (*builtintools.BashSandboxWritePaths, error) {
+		if scope == nil || !scope.BelongsTo(m.Owner) || m.sandbox == nil {
+			return nil, cooperative.ErrRestricted
+		}
+		settings, err := m.Startup.GetInitialSettings()
+		if err != nil {
+			return nil, err
+		}
+		state := m.sandbox
+		availability := sandboxruntime.ResolveAvailability(sandboxruntime.AvailabilityInput{Settings: *settings, InitialSettings: state.initial, Platform: state.platform, Supported: state.supported, DependencyErrors: state.dependencies})
+		if !availability.Enabled {
+			return nil, nil
+		}
+		write := sandboxruntime.FilesystemWriteRestriction(sandboxruntime.FilesystemConfig{}, state.platform, m.options.Native.Home)
+		if state.manager != nil {
+			write = state.manager.WriteConfig()
+		}
+		return &builtintools.BashSandboxWritePaths{AllowOnly: write.AllowOnly, DenyWithinAllow: write.DenyWithinAllow}, nil
+	}, AutoAllow: func(scope *cooperative.Scope, in protocol.JSONObject) (bool, error) {
 		if scope == nil || !scope.BelongsTo(m.Owner) || m.sandbox == nil {
 			return false, cooperative.ErrRestricted
 		}

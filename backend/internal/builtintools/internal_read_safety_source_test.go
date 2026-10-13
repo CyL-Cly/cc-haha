@@ -49,7 +49,7 @@ func TestInternalReadPortableSafetyAgainstOriginalWindowsWSLAndUnixPredicate(t *
 	}
 	s, _, _, _ := fixture(t)
 	s.options.Platform = "windows"
-	if _, e = New(s.options); e == nil {
-		t.Fatal("whole Windows runtime guard removed")
+	if _, e = New(s.options); e != nil {
+		t.Fatal("closed Windows native filesystem/shell bindings rejected", e)
 	}
 }

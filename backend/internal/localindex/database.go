@@ -49,8 +49,8 @@ type Database struct {
 	connection     *sql.Conn
 	readConnection *sql.Conn
 	mu             sync.RWMutex
-	writeMu        sync.Mutex
-	readMu         sync.Mutex
+	writeMu        cancellableMutex
+	readMu         cancellableMutex
 	closed         atomic.Bool
 }
 type Operation struct {
@@ -102,7 +102,7 @@ func OpenDatabase(ctx context.Context, o DatabaseOptions) (*Database, error) {
 	if err = connection.QueryRowContext(ctx, "PRAGMA user_version").Scan(&version); err != nil {
 		return fail(err)
 	}
-	maximum := 6
+	maximum := 7
 	code, message := "LOCAL_INDEX_SCHEMA_UNSUPPORTED", "Unsupported local index database schema"
 	if o.Kind == Content {
 		maximum = 1
@@ -110,6 +110,7 @@ func OpenDatabase(ctx context.Context, o DatabaseOptions) (*Database, error) {
 		message = "Unsupported search content database schema"
 	}
 	if o.Kind == Trace {
+		maximum = 6
 		code = "TRACE_INDEX_SCHEMA_UNSUPPORTED"
 		message = "Unsupported trace index database schema"
 	}
@@ -218,12 +219,16 @@ func (d *Database) with(ctx context.Context, write, transaction bool, fn func(*O
 	}
 	connection := d.connection
 	if !write && d.readConnection != nil {
-		d.readMu.Lock()
-		defer d.readMu.Unlock()
+		if e := d.readMu.lock(ctx); e != nil {
+			return e
+		}
+		defer d.readMu.unlock()
 		connection = d.readConnection
 	} else {
-		d.writeMu.Lock()
-		defer d.writeMu.Unlock()
+		if e := d.writeMu.lock(ctx); e != nil {
+			return e
+		}
+		defer d.writeMu.unlock()
 	}
 	op := &Operation{database: d, ctx: ctx, write: write, connection: connection}
 	op.ctx = context.WithValue(ctx, operationContextKey{}, op)

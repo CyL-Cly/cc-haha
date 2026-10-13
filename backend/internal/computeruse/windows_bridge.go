@@ -118,14 +118,20 @@ func windowsEnvelope(result CommandResult, command string) (json.RawMessage, err
 	}
 	if !truthyRaw(envelope["ok"]) {
 		detail, _ := decodeObject(envelope["error"])
-		message := "Python helper " + command + " failed"
+		message := pixelQuoted("Python helper " + command + " failed")
 		if truthyRaw(detail["message"]) {
-			message = jsString(detail["message"])
+			message, err = protocol.JavaScriptStringJSON(detail["message"])
+			if err != nil {
+				return nil, err
+			}
 		}
 		if code := detail["code"]; truthyRaw(code) && string(code) != `"runtime_error"` {
-			message = jsString(code) + ": " + message
+			message, err = protocol.JoinJavaScriptValuesJSON([]json.RawMessage{code, pixelQuoted(": "), message}, "")
+			if err != nil {
+				return nil, err
+			}
 		}
-		return nil, errors.New(message)
+		return nil, &NativeToolError{MessageJSON: message}
 	}
 	return envelope["result"], nil
 }

@@ -1,10 +1,15 @@
 {
-  "sdkVersion": "0.80.0",
+  "sdkVersion": "0.128.0",
   "engineVersion": "1.3.14",
-  "source": "actual fixed rawHTTP loopback Stream.fromSSEResponse; status profiles use actual client.messages.create maxRetries=0; Connection close is excluded as known pending",
+  "source": {
+    "reference": "6d21316ec4635f29ecbaa43e1a5574bfd31d7155",
+    "sdk": "0.128.0",
+    "bun": "1.3.14",
+    "revision": "0d9b296af33f2b851fcbf4df3e9ec89751734ba4"
+  },
   "cases": [
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "six-message-events-and-legacy",
@@ -568,7 +573,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "event-name-dispatch-keeps-wrong-body-types",
@@ -811,7 +816,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "recognized-events-yield-all-json-value-types",
@@ -1152,7 +1157,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "yield-object-numbers-order-duplicates-and-utf16",
@@ -1337,7 +1342,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "valid-array-beyond-encoding-json-depth-limit",
@@ -21410,7 +21415,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "ping-unknown-empty-and-data-only-ignore-invalid-json",
@@ -21574,7 +21579,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "unknown-done-does-not-end-later-known-event",
@@ -21700,7 +21705,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "event-only-recognized-parses-empty-data",
@@ -21779,7 +21784,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "event-only-unknown-is-ignored",
@@ -21893,7 +21898,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "event-field-without-colon-is-empty",
@@ -21985,7 +21990,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "last-event-field-wins",
@@ -22082,7 +22087,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "multiline-data-comments-and-unknown-fields",
@@ -22206,7 +22211,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "completion-invalid-json-stops-before-next-event",
@@ -22323,7 +22328,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-empty",
@@ -22409,7 +22414,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-done",
@@ -22501,7 +22506,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-bareidentifier",
@@ -22595,7 +22600,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-objectkey",
@@ -22688,7 +22693,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-trailingcomma",
@@ -22782,7 +22787,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-arraycomma",
@@ -22872,7 +22877,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-unterminatedstring",
@@ -22963,7 +22968,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-control",
@@ -23066,7 +23071,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-badescape",
@@ -23156,7 +23161,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-badunicode",
@@ -23250,7 +23255,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-badnumber",
@@ -23338,7 +23343,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-trailingtoken",
@@ -23435,7 +23440,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-incompleteobject",
@@ -23526,7 +23531,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-object-open",
@@ -23613,7 +23618,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-array-open",
@@ -23700,7 +23705,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-object-close",
@@ -23787,7 +23792,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-array-close",
@@ -23874,7 +23879,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-colon",
@@ -23961,7 +23966,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-comma",
@@ -24048,7 +24053,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-at",
@@ -24135,7 +24140,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-null-extra",
@@ -24226,7 +24231,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-minus",
@@ -24313,7 +24318,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-minus-dot",
@@ -24402,7 +24407,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-dot",
@@ -24490,7 +24495,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-decimal",
@@ -24578,7 +24583,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-exponent",
@@ -24666,7 +24671,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-exponent-sign",
@@ -24755,7 +24760,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-double-minus",
@@ -24844,7 +24849,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-array-no-comma",
@@ -24935,7 +24940,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-missing-colon",
@@ -25028,7 +25033,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-missing-comma",
@@ -25127,7 +25132,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-double-comma-object",
@@ -25222,7 +25227,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-commas-array",
@@ -25312,7 +25317,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-double-comma-array",
@@ -25404,7 +25409,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-two-values",
@@ -25500,7 +25505,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-comment",
@@ -25595,7 +25600,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-singlequote",
@@ -25686,7 +25691,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-array-exponent",
@@ -25776,7 +25781,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-object-exponent",
@@ -25870,7 +25875,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-missing-value",
@@ -25962,7 +25967,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-comma-in-colon-slot",
@@ -26055,7 +26060,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-object-key-eof",
@@ -26145,7 +26150,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-string-escape-eof",
@@ -26236,7 +26241,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-array-null-extra",
@@ -26329,7 +26334,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-object-leading-zero",
@@ -26423,7 +26428,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-array-decimal",
@@ -26515,7 +26520,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-object-at",
@@ -26605,7 +26610,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-plus",
@@ -26693,7 +26698,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-parenthesis",
@@ -26782,7 +26787,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-non-ascii-token",
@@ -26870,7 +26875,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-short-unicode-escape",
@@ -26962,7 +26967,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-emoji-token",
@@ -27052,7 +27057,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-control-nul",
@@ -27143,7 +27148,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "syntax-control-tab",
@@ -27234,7 +27239,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-error-full-body",
@@ -27444,7 +27449,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-error-top-string-message",
@@ -27619,7 +27624,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-error-top-object-message",
@@ -27786,7 +27791,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-error-top-number-message",
@@ -27923,7 +27928,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-error-top-falsy-message",
@@ -28070,7 +28075,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-error-null",
@@ -28189,7 +28194,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-error-false",
@@ -28309,7 +28314,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-error-zero",
@@ -28430,7 +28435,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-error-number",
@@ -28555,7 +28560,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-error-string",
@@ -28677,7 +28682,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-error-array",
@@ -28810,7 +28815,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-error-invalid",
@@ -28929,7 +28934,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-error-empty",
@@ -29044,7 +29049,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-deep-error-selected-shallow-message",
@@ -49174,7 +49179,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-deep-error-message-after-deep-field",
@@ -69304,7 +69309,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-deep-error-duplicate-top-message",
@@ -89452,7 +89457,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-deep-error-escaped-property-names",
@@ -109600,7 +109605,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-deep-error-duplicate-escaped-top-message",
@@ -129761,7 +129766,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-deep-error-escaped-first-top-message",
@@ -149914,7 +149919,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-deep-error-selected-object-message",
@@ -170086,7 +170091,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-deep-error-selected-overflow-message",
@@ -190215,7 +190220,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-deep-error-falsy-message-keeps-full-payload",
@@ -210340,7 +210345,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-deep-error-null-message-keeps-full-payload",
@@ -230464,7 +230469,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "http-deep-error-selected-shallow-message",
@@ -250575,7 +250580,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "http-deep-error-duplicate-escaped-top-message",
@@ -270717,7 +270722,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-error-request-id-absent",
@@ -270830,7 +270835,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-error-empty-request-id-dropped-by-bun-fetch",
@@ -270947,7 +270952,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "sse-error-mixed-case-request-id-last-nonempty",
@@ -271080,7 +271085,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-headers-same-request-id",
@@ -271162,7 +271167,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-headers-same-future",
@@ -271244,7 +271249,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-headers-mixed-future",
@@ -271326,7 +271331,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-headers-empty-future",
@@ -271400,7 +271405,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-headers-empty-after-future",
@@ -271482,7 +271487,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-headers-empty-before-future",
@@ -271564,7 +271569,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-headers-whitespace-future",
@@ -271638,7 +271643,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-headers-same-content-type",
@@ -271716,7 +271721,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-headers-mixed-content-type",
@@ -271790,7 +271795,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-headers-empty-content-type",
@@ -271864,7 +271869,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-headers-same-set-cookie",
@@ -271950,7 +271955,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-headers-mixed-set-cookie",
@@ -272036,7 +272041,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-headers-empty-set-cookie",
@@ -272110,7 +272115,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-headers-combined-request-id",
@@ -272188,7 +272193,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-cache-control-duplicate",
@@ -272270,7 +272275,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-cache-control-empty-after",
@@ -272352,7 +272357,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-server-duplicate",
@@ -272434,7 +272439,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-server-empty-after",
@@ -272516,7 +272521,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-date-duplicate",
@@ -272594,7 +272599,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-date-empty-after",
@@ -272672,7 +272677,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-retry-after-duplicate",
@@ -272754,7 +272759,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-retry-after-empty-after",
@@ -272836,7 +272841,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-www-authenticate-duplicate",
@@ -272918,7 +272923,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-www-authenticate-empty-after",
@@ -273000,7 +273005,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-location-duplicate",
@@ -273082,7 +273087,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-location-empty-after",
@@ -273164,7 +273169,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-x-request-id-duplicate",
@@ -273246,7 +273251,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-x-request-id-empty-after",
@@ -273328,7 +273333,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-x-anthropic-future-duplicate",
@@ -273410,7 +273415,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-x-anthropic-future-empty-after",
@@ -273492,7 +273497,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-anthropic-ratelimit-requests-limit-duplicate",
@@ -273574,7 +273579,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-anthropic-ratelimit-requests-limit-empty-after",
@@ -273656,7 +273661,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-anthropic-ratelimit-tokens-limit-duplicate",
@@ -273738,7 +273743,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-anthropic-ratelimit-tokens-limit-empty-after",
@@ -273820,7 +273825,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-content-encoding-duplicate",
@@ -273902,7 +273907,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-content-encoding-empty-after",
@@ -273984,7 +273989,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-access-control-allow-origin-duplicate",
@@ -274066,7 +274071,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "response-probe-access-control-allow-origin-empty-after",
@@ -274148,7 +274153,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "http-204-bodyless-stream",
@@ -274181,7 +274186,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "http-205-bodyless-stream",
@@ -274214,7 +274219,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "http-400-sdk-api-error",
@@ -274373,7 +274378,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "http-401-sdk-api-error",
@@ -274532,7 +274537,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "http-403-sdk-api-error",
@@ -274691,7 +274696,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "http-404-sdk-api-error",
@@ -274850,7 +274855,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "http-409-sdk-api-error",
@@ -275009,7 +275014,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "http-422-sdk-api-error",
@@ -275168,7 +275173,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "http-429-sdk-api-error",
@@ -275327,7 +275332,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "http-500-sdk-api-error",
@@ -275486,7 +275491,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "http-418-sdk-api-error",
@@ -275645,7 +275650,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "http-invalid-json-body",
@@ -275717,7 +275722,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "http-null-body",
@@ -275791,7 +275796,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "http-empty-body",
@@ -275858,7 +275863,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "http-false-body",
@@ -275933,7 +275938,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "eof-\"\"",
@@ -276009,7 +276014,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "eof-\"\\n\"",
@@ -276086,7 +276091,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "eof-\"\\r\"",
@@ -276163,7 +276168,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "eof-\"\\r\\n\"",
@@ -276241,7 +276246,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "eof-\"\\n\\n\"",
@@ -276324,7 +276329,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "eof-\"\\r\\r\"",
@@ -276407,7 +276412,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "eof-\"\\r\\n\\r\\n\"",
@@ -276492,7 +276497,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "eof-\"\\n\\r\"",
@@ -276575,7 +276580,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "mixed-line-delimiters-and-fragmented-crlf",
@@ -276723,7 +276728,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "bom-on-every-decoded-line",
@@ -276820,7 +276825,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "invalid-utf8-replacement-within-json-string",
@@ -276900,7 +276905,7 @@
       }
     },
     {
-      "sdkVersion": "0.80.0",
+      "sdkVersion": "0.128.0",
       "engineVersion": "1.3.14",
       "scenario": {
         "name": "invalid-utf8-in-json-token-keeps-syntax-error",

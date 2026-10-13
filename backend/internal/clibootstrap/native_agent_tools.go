@@ -10,6 +10,7 @@ import (
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/agentcatalog"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/windowshell"
 	weburl "github.com/nlnwa/whatwg-url/url"
 )
 
@@ -45,16 +46,33 @@ func (p *NativeProcessSettings) CustomAgentTools(ctx context.Context) ([]string,
 	if err != nil {
 		return nil, err
 	}
+	if windowshell.IsWindows(p.platform) {
+		if p.shells == nil {
+			p.shells = windowshell.NewNative(p.platform, p.n.CWD, env)
+		}
+		view := p.shells.Warm(ctx)
+		if err := context.Cause(ctx); err != nil {
+			return nil, err
+		}
+		return nativeCustomAgentToolNames(p.platform, env, settings, model, view.Availability)
+	}
 	return nativeCustomAgentToolNames(p.platform, env, settings, model)
 }
 
-func nativeCustomAgentToolNames(platform string, env map[string]string, settings *protocol.JSONObject, model string) ([]string, error) {
-	// Windows' Source pool is conditional on a real Git Bash installation. Do
-	// not invent an available shell before the shared Windows resolver is bound.
-	if platform != "darwin" && platform != "linux" {
-		return nil, mainCap("Agent available-tools Windows Git Bash/PowerShell resolver")
+func nativeCustomAgentToolNames(platform string, env map[string]string, settings *protocol.JSONObject, model string, shells ...windowshell.Availability) ([]string, error) {
+	availability := windowshell.Availability{Bash: true}
+	if windowshell.IsWindows(platform) {
+		if len(shells) != 1 {
+			return nil, mainCap("actual Agent available-tools Windows shell discovery")
+		}
+		availability = shells[0]
+	} else if platform != "darwin" && platform != "linux" {
+		return nil, mainCap("Agent available-tools platform " + platform)
 	}
-	names := []string{"Bash"}
+	names := []string{}
+	if availability.Bash {
+		names = append(names, "Bash")
+	}
 	embedded := nativeEnvTruthy(env["EMBEDDED_SEARCH_TOOLS"])
 	switch env["CLAUDE_CODE_ENTRYPOINT"] {
 	case "sdk-ts", "sdk-py", "sdk-cli", "local-agent":
@@ -75,6 +93,9 @@ func nativeCustomAgentToolNames(platform string, env map[string]string, settings
 	names = append(names, "Skill", "EnterWorktree", "ExitWorktree")
 	if nativeAgentToolSearchEnabled(env) {
 		names = append(names, "ToolSearch")
+	}
+	if availability.PowerShell {
+		names = append(names, "PowerShell")
 	}
 	definition := agentcatalog.Definition{Fields: protocol.NewJSONObject()}
 	resolved := agentcatalog.ResolveTools(definition, names, true, false).ResolvedTools

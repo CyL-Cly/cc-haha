@@ -111,8 +111,8 @@ func TestActualDesktopSideQuestionAPIAbortAndCloseOwnOnlyFork(t *testing.T) {
 			t.Fatal(e)
 		}
 		receive("message_complete")
-		for state := receive("session_state"); state.String("turnState") != "idle"; state = receive("session_state") {
-		}
+		requestDesktopSessionSync(t, ws)
+		assertDesktopIdleSnapshot(t, receive("session_state"))
 	}
 	turn("seed parent")
 	path := "/api/sessions/" + id + "/side-question"

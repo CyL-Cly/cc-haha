@@ -240,6 +240,12 @@ func NewDingTalkAttachmentStore(home string) *AttachmentStore {
 	store.Random = func() string { return dingTalkRandomSuffix(dingTalkRandom(), 6) }
 	return store
 }
+
+func NewDingTalkConfiguredAttachmentStore(config Config) *AttachmentStore {
+	store := NewConfiguredAttachmentStore(config)
+	store.Random = func() string { return dingTalkRandomSuffix(dingTalkRandom(), 6) }
+	return store
+}
 func (a *DingTalkAPI) Gateway(ctx context.Context) (string, protocol.JSONObject, error) {
 	body := protocol.NewJSONObject(protocol.JSONField{Name: "clientId", Value: a.o.Credentials.Get("clientId")}, protocol.JSONField{Name: "clientSecret", Value: a.o.Credentials.Get("clientSecret")}, dingTalkField("ua", ""), dingTalkField("subscriptions", []any{protocol.NewJSONObject(dingTalkField("type", "EVENT"), dingTalkField("topic", "*")), protocol.NewJSONObject(dingTalkField("type", "CALLBACK"), dingTalkField("topic", DingTalkRobotTopic)), protocol.NewJSONObject(dingTalkField("type", "CALLBACK"), dingTalkField("topic", DingTalkCardTopic))}))
 	resp, done, e := a.request(ctx, "POST", DingTalkGatewayURL, dingTalkWire(body), nil, true)

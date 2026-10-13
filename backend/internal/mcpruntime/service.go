@@ -8,26 +8,33 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"os"
 	"path/filepath"
 	"slices"
+	"strconv"
 	"strings"
 	"sync"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/mcpclient"
+	"github.com/NanmiCoder/cc-haha/backend/internal/mcpheaders"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/remoteio"
 	"github.com/NanmiCoder/cc-haha/backend/internal/textsanitization"
 )
 
 type Options struct {
-	SDK          func(context.Context, string, protocol.JSONObject) (*mcpclient.SDKControlBindings, error)
-	CWD, Version string
-	Environment  map[string]string
-	HTTPClient   *http.Client
-	PrepareHTTP  func(context.Context, protocol.JSONObject, mcpclient.Config) (mcpclient.Config, *http.Client, error)
-	Auth         func(context.Context, string, protocol.JSONObject) (mcpclient.AuthProvider, error)
-	Enabled      func(context.Context, string, protocol.JSONObject) (bool, error)
-	Authenticate func(context.Context, string, protocol.JSONObject, func(string) error) error
-	ClearOAuth   func(context.Context, string, protocol.JSONObject) error
+	PID                 int
+	HeadersPolicy       func(context.Context) (mcpheaders.Options, error)
+	SessionIngressToken func() string
+	SDK                 func(context.Context, string, protocol.JSONObject) (*mcpclient.SDKControlBindings, error)
+	CWD, Version        string
+	Environment         map[string]string
+	HTTPClient          *http.Client
+	PrepareHTTP         func(context.Context, protocol.JSONObject, mcpclient.Config) (mcpclient.Config, *http.Client, error)
+	Auth                func(context.Context, string, protocol.JSONObject) (mcpclient.AuthProvider, error)
+	Enabled             func(context.Context, string, protocol.JSONObject) (bool, error)
+	Authenticate        func(context.Context, string, protocol.JSONObject, func(string) error) error
+	ClearOAuth          func(context.Context, string, protocol.JSONObject) error
 }
 type Connection struct {
 	Name, Status string
@@ -78,6 +85,12 @@ func New(o Options) (*Service, error) {
 		env[k] = v
 	}
 	o.Environment = env
+	if o.SessionIngressToken == nil {
+		o.SessionIngressToken = remoteio.NewIngressAuth(env).Token
+	}
+	if o.PID == 0 {
+		o.PID = os.Getpid()
+	}
 	return &Service{options: o, entries: map[string]*pending{}, sdkAttempts: map[*pending]bool{}, sdkCurrent: map[string]*pending{}, toolCache: map[string]*toolDiscovery{}, discoveries: map[*toolDiscovery]bool{}}, nil
 }
 func (s *Service) key(name string, config protocol.JSONObject) string {
@@ -85,7 +98,7 @@ func (s *Service) key(name string, config protocol.JSONObject) string {
 	return string(protocol.StringifyValidatedJavaScriptJSON(data))
 }
 func configFor(value protocol.JSONObject) (mcpclient.Config, error) {
-	out := mcpclient.Config{Type: value.String("type"), Command: value.String("command"), URL: value.String("url"), Env: map[string]string{}, Headers: map[string]string{}}
+	out := mcpclient.Config{AuthToken: value.String("authToken"), Type: value.String("type"), Command: value.String("command"), URL: value.String("url"), Env: map[string]string{}, Headers: map[string]string{}}
 	if value.Get("args") != nil {
 		if err := json.Unmarshal(value.Get("args"), &out.Args); err != nil {
 			return out, err
@@ -172,6 +185,15 @@ func (s *Service) connect(ctx context.Context, key, name string, config protocol
 	value := Connection{Name: name, Config: config, Status: "failed", Tools: []protocol.JSONObject{}, entry: entry, runtime: s}
 	var failure error
 	parsed, err := configFor(config)
+	if err == nil && (parsed.Type == "ws" || parsed.Type == "http" || parsed.Type == "sse") {
+		policy := mcpheaders.Options{Environment: s.options.Environment, CWD: s.options.CWD, Run: mcpheaders.NativeRun}
+		if s.options.HeadersPolicy != nil {
+			policy, err = s.options.HeadersPolicy(ctx)
+		}
+		if err == nil {
+			parsed.Headers = mcpheaders.Resolve(ctx, name, config, policy)
+		}
+	}
 	httpClient := s.options.HTTPClient
 	if err == nil && config.String("type") == "claudeai-proxy" && s.options.PrepareHTTP != nil {
 		parsed, httpClient, err = s.options.PrepareHTTP(ctx, config.Clone(), parsed)
@@ -185,7 +207,7 @@ func (s *Service) connect(ctx context.Context, key, name string, config protocol
 		if err != nil {
 			failure = err
 		} else {
-			options := mcpclient.Options{Name: name, Version: s.options.Version, Environment: s.options.Environment, CWD: s.options.CWD, HTTPClient: httpClient, Auth: auth, OnClose: func(bool) { s.peerClosed(key, entry) }}
+			options := mcpclient.Options{SessionIngressToken: s.options.SessionIngressToken, Name: name, Version: s.options.Version, Environment: s.options.Environment, CWD: s.options.CWD, HTTPClient: httpClient, Auth: auth, OnClose: func(bool) { s.peerClosed(key, entry) }}
 			if parsed.Type == "sdk" && s.options.SDK != nil {
 				options.SDK, err = s.options.SDK(ctx, name, config.Clone())
 			}
@@ -202,6 +224,11 @@ func (s *Service) connect(ctx context.Context, key, name string, config protocol
 				}
 			} else {
 				value.Client, value.Status = client, "connected"
+				if parsed.Type == "ws-ide" || parsed.Type == "sse-ide" {
+					// Source issues this notification without awaiting an IDE reply.
+					// The client owns the send and the transport's actual close path.
+					_ = client.Notify(ctx, "ide_connected", protocol.NewJSONObject(protocol.JSONField{Name: "pid", Value: json.RawMessage(strconv.Itoa(s.options.PID))}))
+				}
 			}
 		}
 	}

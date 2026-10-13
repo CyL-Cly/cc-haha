@@ -44,8 +44,18 @@ func (s *Service) ReadWorkbenchMessages(team string) ([]protocol.JSONObject, err
 	}
 	files := []string{}
 	for _, entry := range entries {
-		if strings.HasSuffix(entry.Name(), ".json") {
-			files = append(files, entry.Name())
+		if strings.HasSuffix(entry.Name(), ".json") || strings.HasSuffix(entry.Name(), ".history.jsonl") {
+			file := strings.TrimSuffix(entry.Name(), ".history.jsonl") + ".json"
+			if strings.HasSuffix(entry.Name(), ".json") {
+				file = entry.Name()
+			}
+			found := false
+			for _, old := range files {
+				found = found || old == file
+			}
+			if !found {
+				files = append(files, file)
+			}
 		}
 	}
 	sort.Slice(files, func(i, j int) bool { return utf16Less(raw(files[i]), raw(files[j])) })
@@ -54,12 +64,9 @@ func (s *Service) ReadWorkbenchMessages(team string) ([]protocol.JSONObject, err
 	occurrences := map[string]int{}
 	for _, file := range files {
 		recipient := strings.TrimSuffix(file, ".json")
-		data, err := os.ReadFile(filepath.Join(directory, file))
-		if err != nil {
-			continue
-		}
+		data := s.options.Mailbox.ReadHistoryAtPath(filepath.Join(directory, file))
 		var items []json.RawMessage
-		if json.Unmarshal(protocol.DecodeJavaScriptUTF8(data), &items) != nil {
+		if json.Unmarshal(data, &items) != nil {
 			continue
 		}
 		for _, item := range items {

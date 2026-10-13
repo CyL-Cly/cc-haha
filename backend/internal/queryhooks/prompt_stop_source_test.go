@@ -40,6 +40,10 @@ func TestNativePromptStopAggregationMatchesActualSource(t *testing.T) {
 		hook := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: commandJSON("prompt")}, protocol.JSONField{Name: "prompt", Value: commandJSON(prompt)}, protocol.JSONField{Name: "model", Value: commandJSON("fixture-model")}, protocol.JSONField{Name: "timeout", Value: commandJSON(0.01)})
 		rows = append(rows, protocol.NewJSONObject(protocol.JSONField{Name: "hook", Value: commandJSON(hook)}, protocol.JSONField{Name: "waitAbort", Value: commandJSON(true)}))
 	}
+	for _, prompt := range []string{"ordinary prompt", goalstate.CreateHook("finish actual work").Prompt} {
+		hook := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: commandJSON("prompt")}, protocol.JSONField{Name: "prompt", Value: commandJSON(prompt)}, protocol.JSONField{Name: "model", Value: commandJSON("fixture-model")}, protocol.JSONField{Name: "timeout", Value: commandJSON(1)})
+		rows = append(rows, protocol.NewJSONObject(protocol.JSONField{Name: "hook", Value: commandJSON(hook)}, protocol.JSONField{Name: "response", Value: commandJSON(`{"ok":false,"reason":"reviewers are still working"}`)}, protocol.JSONField{Name: "teamWork", Value: commandJSON(true)}))
+	}
 	home := t.TempDir()
 	fixture, _ := filepath.Abs("testdata/prompt-stop.fixture.ts")
 	ctx, cancel := context.WithTimeout(context.Background(), 25*time.Second)
@@ -62,7 +66,7 @@ func TestNativePromptStopAggregationMatchesActualSource(t *testing.T) {
 		hook, _ := row.Object("hook")
 		s := &Service{options: Options{MainSessionID: "goal-source-session", UUID: func() string { return "fixture" }, Commands: &CommandBindings{Owner: owner, Factory: factory, Timestamp: func() string { return "fixture" }, NowMillis: func() float64 { return 0 }, Store: &CommandStore{events: map[string]map[string][]commandMatcher{}}, Input: func(context.Context, Context) (protocol.JSONObject, error) {
 			return protocol.NewJSONObject(protocol.JSONField{Name: "session_id", Value: commandJSON("goal-source-session")}), nil
-		}}, Prompts: &PromptBindings{Owner: owner, Query: func(ctx context.Context, _ *cooperative.Scope, _ PromptModelInput) (protocol.JSONObject, error) {
+		}}, Prompts: &PromptBindings{Owner: owner, TeamWorkInProgress: func(context.Context, Context) (bool, error) { return string(row.Get("teamWork")) == "true", nil }, Query: func(ctx context.Context, _ *cooperative.Scope, _ PromptModelInput) (protocol.JSONObject, error) {
 			if string(row.Get("waitAbort")) == "true" {
 				<-ctx.Done()
 				return protocol.JSONObject{}, ctx.Err()

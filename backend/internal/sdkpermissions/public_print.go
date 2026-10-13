@@ -16,7 +16,7 @@ func initializePrint(scope *cooperative.Scope, owner *cooperative.Owner, setting
 	if gate == nil || !in.NativeProcess && ((in.Platform != "darwin" && in.Platform != "linux") || !in.NonInteractive || (in.Model != "fixture-model" && in.Model != "deepseek-flash") || (in.Mode != "default" && in.Mode != "bypassPermissions")) || len(in.AdditionalDirectories) > 0 && !in.NativeStartup.Owns(owner) {
 		return nil, cap("normal print registry/model/permission profile")
 	}
-	if in.NativeProcess && (in.Model == "" || (in.Platform != "darwin" && in.Platform != "linux" && in.Platform != "windows") || (in.Mode != "default" && in.Mode != "bypassPermissions" && in.Mode != "acceptEdits" && in.Mode != "plan" && in.Mode != "dontAsk")) {
+	if in.NativeProcess && (in.Model == "" || (in.Platform != "darwin" && in.Platform != "linux" && in.Platform != "windows") || (in.Mode != "default" && in.Mode != "bypassPermissions" && in.Mode != "acceptEdits" && in.Mode != "plan" && in.Mode != "dontAsk" && in.Mode != "auto")) {
 		return nil, cap("native platform/model/permission mode")
 	}
 	if in.NativeProcess && len(in.BaseToolsCLI) == 0 && !in.NativeDefaultCatalogBindings {
@@ -114,7 +114,17 @@ func initializePrint(scope *cooperative.Scope, owner *cooperative.Owner, setting
 			}
 		}
 	}
-	return &State{owner: owner, settings: settings, context: ctx, nativeProcess: in.NativeProcess, nativePluginBindings: in.NativePluginBindings, nativeMCPBindings: in.NativeMCPBindings, nativeWebFetchBindings: in.NativeWebFetchBindings, nativeWebSearchBindings: in.NativeWebSearchBindings, nativeWorktreeBindings: in.NativeWorktreeBindings, nativeHookBindings: in.NativeHookBindings, nativeSystemContextBindings: in.NativeSystemContextBindings, nativeTeamExecutionBindings: in.NativeTeamExecutionBindings, nativeAuthHelperBindings: in.NativeAuthHelperBindings, nativeCloudSettingsBindings: in.NativeCloudSettingsBindings, nativeWorkflowKeywordBindings: in.NativeWorkflowKeywordBindings, nativeInternalReadBindings: in.NativeInternalReadBindings, nativeSandboxBindings: in.NativeSandboxBindings, nativeModelCommandBindings: in.NativeModelCommandBindings, nativeMainAgentBindings: in.NativeMainAgentBindings, nativeStartup: in.NativeStartup}, nil
+	state := &State{owner: owner, settings: settings, context: ctx, nativeProcess: in.NativeProcess, nativePluginBindings: in.NativePluginBindings, nativeMCPBindings: in.NativeMCPBindings, nativeWebFetchBindings: in.NativeWebFetchBindings, nativeWebSearchBindings: in.NativeWebSearchBindings, nativeWorktreeBindings: in.NativeWorktreeBindings, nativeHookBindings: in.NativeHookBindings, nativeSystemContextBindings: in.NativeSystemContextBindings, nativeTeamExecutionBindings: in.NativeTeamExecutionBindings, nativeAuthHelperBindings: in.NativeAuthHelperBindings, nativeCloudSettingsBindings: in.NativeCloudSettingsBindings, nativeWorkflowKeywordBindings: in.NativeWorkflowKeywordBindings, nativeInternalReadBindings: in.NativeInternalReadBindings, nativeSandboxBindings: in.NativeSandboxBindings, nativeModelCommandBindings: in.NativeModelCommandBindings, nativeMainAgentBindings: in.NativeMainAgentBindings, nativePlanBindings: in.NativePlanBindings, nativeSpinnerBindings: in.NativeSpinnerBindings, nativeThinkingSummaryBindings: in.NativeThinkingSummaryBindings, nativeAutoDreamBindings: in.NativeAutoDreamBindings, nativeStartup: in.NativeStartup}
+	if in.NativeProcess && in.Mode == "auto" {
+		if in.NativeStartup == nil || in.NativeStartup.options.SettingsForSource == nil {
+			return nil, cap("auto startup without original native settings")
+		}
+		state.autoModeActive = true
+		if e := state.stripStartupAutoRules(); e != nil {
+			return nil, e
+		}
+	}
+	return state, nil
 }
 
 // Source parseToolListFromCLI uses comma/ASCII-space separators outside
@@ -209,7 +219,7 @@ func nativeToolList(items []string, mcpBinding ...bool) ([]string, error) {
 				if !boundPlan {
 					return cap("CLI PlanMode tool without actual shared host")
 				}
-			case "Read", "Write", "Edit", "NotebookEdit", "Bash", "Glob", "Grep", "Agent", "TodoWrite", "AskUserQuestion", "TaskCreate", "TaskGet", "TaskUpdate", "TaskList":
+			case "Read", "Write", "Edit", "NotebookEdit", "Bash", "PowerShell", "Glob", "Grep", "Agent", "TodoWrite", "AskUserQuestion", "TaskCreate", "TaskGet", "TaskUpdate", "TaskList":
 			default:
 				if !boundMCP || !strings.HasPrefix(name, "mcp__") {
 					return cap("CLI tool registry/rule " + name)

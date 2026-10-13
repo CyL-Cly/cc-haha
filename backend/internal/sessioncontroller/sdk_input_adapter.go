@@ -67,10 +67,7 @@ func (a *SerialASK) admitParsedSDK(scope *cooperative.Scope, input protocol.JSON
 	if err != nil {
 		return nil, err
 	}
-	if priority == "now" {
-		return nil, capability("dynamic SDK cancellation/admission")
-	}
-	if envTruthy(a.controller.options.ResumeOptions.Environment["CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING"]) && !envTruthy(a.controller.options.ResumeOptions.Environment["CLAUDE_CODE_DISABLE_FILE_CHECKPOINTING"]) {
+	if a.controller.nativeFileHistory == nil && envTruthy(a.controller.options.ResumeOptions.Environment["CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING"]) && !envTruthy(a.controller.options.ResumeOptions.Environment["CLAUDE_CODE_DISABLE_FILE_CHECKPOINTING"]) {
 		return nil, capability("active file-history snapshot creation before query")
 	}
 	if err := a.prime(scope); err != nil {

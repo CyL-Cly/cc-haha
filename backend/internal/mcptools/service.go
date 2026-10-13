@@ -326,6 +326,14 @@ func descriptionLimit(env map[string]string) int {
 	return int(n)
 }
 func (s *Service) Catalog(scope *cooperative.Scope) ([]toolschema.Definition, []queryloop.RegisteredTool, error) {
+	return s.catalog(scope, true)
+}
+
+// PermissionPromptCatalog reflects Source appState.mcp.tools before model-only deny filtering.
+func (s *Service) PermissionPromptCatalog(scope *cooperative.Scope) ([]toolschema.Definition, []queryloop.RegisteredTool, error) {
+	return s.catalog(scope, false)
+}
+func (s *Service) catalog(scope *cooperative.Scope, filterDenied bool) ([]toolschema.Definition, []queryloop.RegisteredTool, error) {
 	if !scope.BelongsTo(s.options.Owner) {
 		return nil, nil, cooperative.ErrRestricted
 	}
@@ -356,7 +364,7 @@ func (s *Service) Catalog(scope *cooperative.Scope) ([]toolschema.Definition, []
 					denied = denied || ruleMatches(rule, name, peer.Name)
 				}
 			}
-			if denied {
+			if filterDenied && denied {
 				continue
 			}
 			prompt := metadata.Get("description")

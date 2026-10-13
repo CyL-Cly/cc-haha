@@ -178,6 +178,11 @@ func (s *Service) validateEdit(in protocol.JSONObject, scope *cooperative.Scope,
 	if deny {
 		return errors.New("File is in a directory that is denied by your permission settings.")
 	}
+	if s.options.Platform == "windows" && (strings.HasPrefix(p, `\\`) || strings.HasPrefix(p, "//")) {
+		// Matching deny rules is lexical. Never stat an UNC path before the
+		// existing tool permission resolver admits it (Source FileEditTool).
+		return nil
+	}
 	if filepath.Base(p) == "settings.json" && (strings.Contains(p, string(filepath.Separator)+".claude"+string(filepath.Separator)) || under(filepath.Join(s.options.Home, ".claude"), p)) {
 		return capability("settings-file edit schema and permission validation")
 	}

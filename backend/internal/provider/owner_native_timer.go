@@ -3,6 +3,7 @@ package provider
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -276,7 +277,7 @@ func (driver *OwnerNativeIO) openResponse(caller, ctx context.Context, request *
 }
 
 func nativeOwnerConnectionFailure(err error) error {
-	return &SDKStreamError{Kind: "request_connection", Class: "APIConnectionError", Name: "Error", Message: "Connection error.", MessageJSON: []byte(`"Connection error."`), Cause: err}
+	return &SDKStreamError{Kind: "request_connection", Class: "APIConnectionError", Name: "Error", Message: "Connection error.", MessageJSON: []byte(`"Connection error."`), Type: json.RawMessage(`null`), Cause: err}
 }
 
 // nativeOwnerHeaders preserves the original physical rows for the existing Bun

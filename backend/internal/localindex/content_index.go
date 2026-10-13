@@ -197,8 +197,13 @@ func insertContentDocument(op *Operation, path string, d ContentDocument) error 
 }
 
 // ApplySource accepts a bounded iterator so projection never retains an entire transcript.
-func (i *ContentIndex) ApplySource(ctx context.Context, s ContentSource, appendOnly bool, documents func(func(ContentDocument) error) error) error {
+func (i *ContentIndex) ApplySource(ctx context.Context, s ContentSource, appendOnly bool, documents func(func(ContentDocument) error) error, started ...func() error) error {
 	return i.db.Transaction(ctx, func(op *Operation) error {
+		if len(started) > 0 && started[0] != nil {
+			if e := started[0](); e != nil {
+				return e
+			}
+		}
 		if appendOnly {
 			r, e := op.Get("SELECT path FROM search_sources WHERE path = ?", s.Path)
 			if e != nil {

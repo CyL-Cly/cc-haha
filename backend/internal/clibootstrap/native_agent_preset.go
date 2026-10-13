@@ -203,8 +203,8 @@ func (p *nativeAgentPreset) skillPrompt(ctx context.Context, child *MainPrint, s
 			return "", e
 		}
 		inv.ExecuteShell = func(ctx context.Context, request skillcommands.ShellRequest) (string, error) {
-			if request.Shell == "powershell" && inv.Platform != "win32" {
-				return "", fmt.Errorf("PowerShell is required to execute commands in %s. Install or enable PowerShell, or declare `shell: bash` and use Bash syntax.", request.SlashCommand)
+			if err := p.parent.validateNativePromptShell(parentScope, request); err != nil {
+				return "", err
 			}
 			if !embeddedPromptBlock.MatchString(request.Text) && !embeddedPromptInline.MatchString(request.Text) {
 				return request.Text, context.Cause(ctx)

@@ -7,6 +7,7 @@ import (
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/bootstrapstate"
 	"github.com/NanmiCoder/cc-haha/backend/internal/builtintools"
+	"github.com/NanmiCoder/cc-haha/backend/internal/builtinwrite"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/modelaccounting"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
@@ -18,6 +19,9 @@ import (
 // callback crosses through an owner-local native future; it never borrows a
 // foreign Bootstrap, Scope, permission State, or accounting Session.
 type NativeDetachedAgentOptions struct {
+	inheritedFileCache      []builtinwrite.CachedFile
+	isBackgrounded          func() bool
+	backgroundToolNames     map[string]bool
 	sourceMCP               *NativeMCPToolContext
 	authParent              *MainPrint
 	Bootstrap               bootstrapstate.Snapshot

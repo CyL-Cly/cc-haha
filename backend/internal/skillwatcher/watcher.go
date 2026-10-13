@@ -19,6 +19,9 @@ type Timing struct {
 }
 type Options struct {
 	Paths []string
+	// Native entry points reconcile these exact missing targets on stat polls.
+	// No parent tree is watched; unrelated config/home files remain excluded.
+	ReconcileMissingPaths bool
 	// Reload receives one representative path per batch. Dynamic loads bypass
 	// ConfigChange and disk-cache invalidation, exactly as the original signal.
 	Reload  func(context.Context, string, bool) error
@@ -62,7 +65,7 @@ func Start(o Options) (*Watcher, error) {
 			return nil, errors.New("skill watcher paths must be absolute")
 		}
 		// Source only includes paths that existed when initialize ran.
-		if info, e := os.Stat(path); e == nil && (info.Mode().IsRegular() || info.IsDir()) {
+		if info, e := os.Stat(path); e == nil && (info.Mode().IsRegular() || info.IsDir()) || o.ReconcileMissingPaths && errors.Is(e, fs.ErrNotExist) {
 			paths = append(paths, path)
 		}
 	}

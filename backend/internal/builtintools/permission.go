@@ -60,6 +60,9 @@ func (s *Service) deniedPath(c protocol.JSONObject, name, p string) (bool, error
 	return s.pathRule(c, "alwaysDenyRules", name, p)
 }
 func (s *Service) toolPath(name string, in protocol.JSONObject) (string, error) {
+	if name == "Read" {
+		return s.readPath(in)
+	}
 	if name == "NotebookEdit" {
 		return s.notebookPath(in)
 	}
@@ -73,6 +76,9 @@ func (s *Service) pathRule(c protocol.JSONObject, key, name, p string) (bool, er
 	return s.matchPathRule(c, key, name, p, true)
 }
 func (s *Service) matchPathRule(c protocol.JSONObject, key, name, p string, canonical bool) (bool, error) {
+	if s.options.Platform == "windows" {
+		return s.matchWindowsPathRule(c, key, name, p)
+	}
 	read := name == "Read" || name == "Glob" || name == "Grep"
 	ruleName := "Edit"
 	if read {
@@ -175,6 +181,10 @@ func globMatch(pattern, path string) bool {
 	return e == nil && r.MatchString(path)
 }
 func (s *Service) Permission(scope *cooperative.Scope, name string, in protocol.JSONObject) (string, error) {
+	if name == "PowerShell" {
+		decision, err := s.powerShellPermissionDecision(scope, &in)
+		return decision.Behavior, err
+	}
 	if e := s.check(scope); e != nil {
 		return "", e
 	}
@@ -331,6 +341,9 @@ func (s *Service) Permission(scope *cooperative.Scope, name string, in protocol.
 			key = "path"
 		}
 		p, e := s.path(in, key)
+		if name == "Read" {
+			p, e = s.readPath(in)
+		}
 		if e != nil {
 			return "", e
 		}
@@ -380,6 +393,25 @@ func (s *Service) Permission(scope *cooperative.Scope, name string, in protocol.
 // PermissionDecision retains the Source resolver's model-visible denial text.
 // The behavior-only seam remains for the original finite Write profile.
 func (s *Service) PermissionDecision(scope *cooperative.Scope, name string, in *protocol.JSONObject) (queryloop.ToolPermission, error) {
+	if name == "PowerShell" {
+		return s.powerShellPermissionDecision(scope, in)
+	}
+	if name == "Read" {
+		if err := s.check(scope); err != nil {
+			return queryloop.ToolPermission{}, err
+		}
+		original, err := s.path(*in, "file_path")
+		if err != nil {
+			return queryloop.ToolPermission{}, err
+		}
+		path, err := s.readPath(*in)
+		if err != nil {
+			return queryloop.ToolPermission{}, err
+		}
+		if in.Get("file_path") != nil && path != original {
+			in.Set("file_path", quote(path))
+		}
+	}
 	if name == "Bash" {
 		decision, e := s.sandboxAutoPermission(scope, in)
 		if e != nil {

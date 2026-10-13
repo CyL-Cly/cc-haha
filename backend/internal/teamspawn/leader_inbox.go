@@ -35,7 +35,8 @@ func (l LeaderInbox) Read(team string, snapshot protocol.JSONObject) (LeadMailbo
 	if len(unread) == 0 {
 		return result, nil
 	}
-	if err = l.Mailbox.MarkAll("team-lead", team); err != nil {
+	unread, err = l.Mailbox.Claim("team-lead", team, unread)
+	if err != nil {
 		return result, err
 	}
 	messages := make([]protocol.JSONObject, len(unread))

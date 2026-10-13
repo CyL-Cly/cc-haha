@@ -44,11 +44,13 @@ type Options struct {
 	OnRefreshFailure          func(expected bool, error error)
 	// Explicit production transport/fixture seam; nil uses resolved official
 	// endpoints. It cannot silently redirect credentials via environment.
-	Config        func() (Config, error)
-	FetchProfile  func(context.Context, string) (protocol.JSONObject, error)
-	Refresh       func(context.Context, string, json.RawMessage) (protocol.JSONObject, error)
-	LoadCLITokens func(context.Context) (*protocol.JSONObject, error)
-	ReadTokenFD   func(context.Context) (string, error)
+	Config            func() (Config, error)
+	FetchProfile      func(context.Context, string) (protocol.JSONObject, error)
+	FetchAccountUUID  func(context.Context, string) (string, error)
+	AccountLookupWait time.Duration // Private clock-bound fixtures; production uses 3 seconds.
+	Refresh           func(context.Context, string, json.RawMessage) (protocol.JSONObject, error)
+	LoadCLITokens     func(context.Context) (*protocol.JSONObject, error)
+	ReadTokenFD       func(context.Context) (string, error)
 	// Explicit paths allow the original FD/CCR reader to run in disposable
 	// fixtures. Production defaults are the original OS descriptor and CCR path.
 	TokenFDPath       func(int64) string
@@ -99,6 +101,14 @@ type Service struct {
 	catalogHTTPOnce          sync.Once
 	catalogHTTP              *http.Client
 	catalogHTTPError         error
+	accountUUID              string
+	accountRetryAt           int64
+	accountGeneration        uint64
+	accountLookup            *accountUUIDLookup
+	accountLife              context.Context
+	accountCancel            context.CancelFunc
+	accountWorkers           sync.WaitGroup
+	accountClosed            bool
 }
 
 func New(o Options) (*Service, error) {
@@ -181,6 +191,13 @@ func New(o Options) (*Service, error) {
 func (s *Service) OpenAI() *OpenAIService { return s.openAI }
 func (s *Service) Grok() *GrokService     { return s.grok }
 func (s *Service) Close() error {
+	s.mu.Lock()
+	s.accountClosed = true
+	if s.accountCancel != nil {
+		s.accountCancel()
+	}
+	s.mu.Unlock()
+	s.accountWorkers.Wait()
 	if s.grok != nil {
 		s.grok.Close()
 	}
@@ -247,6 +264,7 @@ func (s *Service) saveDocument(ctx context.Context, value *Document) error {
 	return fs.Rename(tmp, path)
 }
 func (s *Service) DeleteTokens(ctx context.Context) error {
+	s.forgetAccountUUID()
 	if err := ctx.Err(); err != nil {
 		return err
 	}
@@ -315,7 +333,7 @@ func (s *Service) CompleteSession(ctx context.Context, code, state string) (*Doc
 		return nil, err
 	}
 	body := record(field("grant_type", "authorization_code"), field("code", code), field("redirect_uri", "http://localhost:"+jsNumber(session.ServerPort)+"/callback"), field("client_id", c.ClientID), field("code_verifier", session.CodeVerifier), field("state", state))
-	response, err := s.requestJSON(ctx, "POST", c.TokenURL, body, "", 15*time.Second, false)
+	response, err := s.requestJSON(ctx, "POST", c.TokenURL, body, "", 15*time.Second, true)
 	if err != nil {
 		return nil, err
 	}

@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/agentcatalog"
 	"github.com/NanmiCoder/cc-haha/backend/internal/analytics"
@@ -34,6 +35,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/gitbranch"
 	"github.com/NanmiCoder/cc-haha/backend/internal/grokauth"
 	"github.com/NanmiCoder/cc-haha/backend/internal/imagegeneration"
+	"github.com/NanmiCoder/cc-haha/backend/internal/installationdiagnostics"
 	"github.com/NanmiCoder/cc-haha/backend/internal/mcpconfig"
 	"github.com/NanmiCoder/cc-haha/backend/internal/mcpruntime"
 	"github.com/NanmiCoder/cc-haha/backend/internal/mcptools"
@@ -41,12 +43,14 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/modelaccounting"
 	"github.com/NanmiCoder/cc-haha/backend/internal/modelselection"
 	"github.com/NanmiCoder/cc-haha/backend/internal/ownerasync"
+	"github.com/NanmiCoder/cc-haha/backend/internal/pdfread"
 	"github.com/NanmiCoder/cc-haha/backend/internal/pluginoptions"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/provider"
 	"github.com/NanmiCoder/cc-haha/backend/internal/queryhooks"
 	"github.com/NanmiCoder/cc-haha/backend/internal/queryloop"
 	"github.com/NanmiCoder/cc-haha/backend/internal/querypreflight"
+	"github.com/NanmiCoder/cc-haha/backend/internal/remoteio"
 	"github.com/NanmiCoder/cc-haha/backend/internal/requestcontext"
 	"github.com/NanmiCoder/cc-haha/backend/internal/resumestate"
 	"github.com/NanmiCoder/cc-haha/backend/internal/runtimecleanup"
@@ -74,14 +78,32 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/usercontext"
 	"github.com/NanmiCoder/cc-haha/backend/internal/webfetch"
 	"github.com/NanmiCoder/cc-haha/backend/internal/websearch"
+	"github.com/NanmiCoder/cc-haha/backend/internal/windowshell"
 	"github.com/NanmiCoder/cc-haha/backend/internal/workflow"
 	"github.com/NanmiCoder/cc-haha/backend/internal/worktree"
 )
 
 type PrintArguments struct {
-	Agent                    string
-	PermissionPromptToolName string
-	ResumeWithoutValue       bool
+	IDE                                            bool
+	FromPR                                         json.RawMessage
+	Prefill                                        string
+	RewindFiles                                    string
+	Init, InitOnly, Maintenance                    bool
+	MaxBudgetUSD, TaskBudget                       *float64
+	FallbackModel, Workload                        string
+	EnableAuthStatus                               bool
+	SDKURL                                         string
+	Continue                                       bool
+	SystemPromptFile, AppendSystemPromptFile, Name string
+	EnableAutoMode                                 bool
+	Agent                                          string
+	AgentsJSON                                     string
+	Betas                                          []string
+	MCPConfigs                                     []string
+	StrictMCPConfig                                bool
+	DisableSlashCommands                           bool
+	PermissionPromptToolName                       string
+	ResumeWithoutValue                             bool
 	// Source debug.ts reads raw argv, independent of Commander boolean coercion.
 	DebugArguments                         []string
 	DebugFormatted                         bool
@@ -94,7 +116,7 @@ type PrintArguments struct {
 	ComputerUse                            *bool
 	Model, SystemPrompt, SessionID, Resume string
 	HasCustomSystemPrompt                  bool
-	Tools, AllowedTools                    []string
+	Tools, AllowedTools, DisallowedTools   []string
 	MaxTurns                               int
 	Replay                                 bool
 	ForkSession                            bool
@@ -189,157 +211,186 @@ func uuidMain() string {
 }
 
 type MainPrintOptions struct {
-	StartSandboxNetworkPermission func(context.Context, *cooperative.Scope, queryloop.RegisteredTool, *protocol.JSONObject, queryloop.JSONToolCallContext) (*ownerasync.OwnerFuture[bool], error)
-	NativeDesktopNetworkBound     bool
-	PublicPrintLoadErrors         bool
-	TeamPaneSetup                 func(context.Context, *cooperative.Scope, teamspawn.PaneSetupPrompt) (string, error)
-	Interactive                   bool
-	OnLeaderInboxReady            func() error
-	OnInteractiveTeamTurn         func(bool) error
-	OnEnvironmentHookMessage      func(string, bool)
-	OnLocalInputMessages          func([]protocol.JSONObject) error
-	NativeModelFastConfig         *desktopoauth.Config
-	OnNativeFastModeNotification  func(protocol.JSONObject) error
-	HookEvents                    bool
-	TeamWorker                    *teamworker.Start
-	PaneTeammate                  *teamspawn.PaneIdentity
-	RequestTeammateShutdown       func(context.Context) error
-	ForegroundShellProgress       bool
-	DetachedAgent                 *NativeDetachedAgentOptions
-	Trace                         *tracecapture.Service
-	ComputerUse                   *NativeComputerUseOptions
-	OnComputerUseNotification     func(context.Context, string, string)
-	OnCommandsChanged             func([]sdkhost.ControlCommand) error
-	OnPermissionModeChanged       func(context.Context, string) error
-	AgentID                       string
-	OnQueryYield                  func(*cooperative.Scope, *queryloop.Yield) error
-	OnCanonicalTranscriptMutation func(string) error
-	QuerySource                   string
-	AgentContext                  *modelaccounting.AgentContextBinding
-	OnlyToolNames                 *[]string
-	AgentEffort                   json.RawMessage
-	AgentEffortOverridesEnv       bool
-	Arguments                     PrintArguments
-	Native                        *NativeBoundary
-	PID                           int
-	Version, Platform             string
-	Input                         io.Reader
-	Output                        io.Writer
-	Error                         io.Writer
-	OnOutput                      func([]byte) error
-	ResolvePermission             func(context.Context, *cooperative.Scope, queryloop.RegisteredTool, *protocol.JSONObject, queryloop.JSONToolCallContext) (queryloop.ToolPermission, error)
-	AnalyticsHTTP                 func(context.Context, analytics.Request) (analytics.Response, error) // isolated HTTP primitive in maintainer evidence
+	thinkingSummaryState              *nativeThinkingSummaryState
+	readCountProfiles                 *nativeBedrockProfileState
+	CloudAuthStatus                   *cloudauth.AuthStatusManager
+	SessionIngressAuth                *remoteio.IngressAuth
+	NativeInProcessAutoContinueDelays []time.Duration
+	OrdinarySubagents                 *SubagentConcurrency
+	StartSandboxNetworkPermission     func(context.Context, *cooperative.Scope, queryloop.RegisteredTool, *protocol.JSONObject, queryloop.JSONToolCallContext) (*ownerasync.OwnerFuture[bool], error)
+	NativeDesktopNetworkBound         bool
+	PublicPrintLoadErrors             bool
+	TeamPaneSetup                     func(context.Context, *cooperative.Scope, teamspawn.PaneSetupPrompt) (string, error)
+	Interactive                       bool
+	OnLeaderInboxReady                func() error
+	OnInteractiveTeamTurn             func(bool) error
+	OnEnvironmentHookMessage          func(string, bool)
+	OnLocalInputMessages              func([]protocol.JSONObject) error
+	NativeModelFastConfig             *desktopoauth.Config
+	OnNativeFastModeNotification      func(protocol.JSONObject) error
+	HookEvents                        bool
+	TeamWorker                        *teamworker.Start
+	PaneTeammate                      *teamspawn.PaneIdentity
+	RequestTeammateShutdown           func(context.Context) error
+	ForegroundShellProgress           bool
+	DetachedAgent                     *NativeDetachedAgentOptions
+	Trace                             *tracecapture.Service
+	ComputerUse                       *NativeComputerUseOptions
+	OnComputerUseNotification         func(context.Context, string, string)
+	OnCommandsChanged                 func([]sdkhost.ControlCommand) error
+	OnPermissionModeChanged           func(context.Context, string) error
+	AgentID                           string
+	OnQueryYield                      func(*cooperative.Scope, *queryloop.Yield) error
+	OnCanonicalTranscriptMutation     func(string) error
+	QuerySource                       string
+	AgentContext                      *modelaccounting.AgentContextBinding
+	OnlyToolNames                     *[]string
+	AgentEffort                       json.RawMessage
+	AgentEffortOverridesEnv           bool
+	Arguments                         PrintArguments
+	Native                            *NativeBoundary
+	NativeShells                      *windowshell.Resolver
+	PID                               int
+	Version, Platform                 string
+	Input                             io.Reader
+	Output                            io.Writer
+	Error                             io.Writer
+	OnOutput                          func([]byte) error
+	ResolvePermission                 func(context.Context, *cooperative.Scope, queryloop.RegisteredTool, *protocol.JSONObject, queryloop.JSONToolCallContext) (queryloop.ToolPermission, error)
+	AnalyticsHTTP                     func(context.Context, analytics.Request) (analytics.Response, error) // isolated HTTP primitive in maintainer evidence
 }
 type MainPrint struct {
-	commandBinding           *ownerasync.NativeBinding
-	sandbox                  *nativeSandboxRuntime
-	fileAnalytics            *analytics.Service
-	analyticsParent          *MainPrint
-	insightsHistory          *sessionhistory.Loader
-	teamWorker               *nativeTeamWorkerState
-	teamState                *nativeTeamState
-	teamLeader               *nativeTeamLeaderState
-	fileHistory              *filehistory.Service
-	options                  MainPrintOptions
-	processStartMillis       float64
-	nativeModelSelector      *modelselection.Selector
-	nativePermissionStartup  *sdkpermissions.NativeStartup
-	nativePermissionInitial  sdkpermissions.NativeStartupResult
-	webFetch                 *webfetch.Service
-	userImages               imagegeneration.UserImages
-	grokImages               *grokauth.Service
-	nativeImageHTTP          *cooperative.NativeImageHTTP
-	webSearch                *websearch.Service
-	modelPicker              *nativeModelPickerState
-	ultracode                *nativeUltracodeState
-	projectConfigKeys        map[string]string
-	Owner                    *cooperative.Owner
-	Global                   *cliglobalconfig.Service
-	Startup                  *clistartupenv.Service
-	Controller               *sessioncontroller.Controller
-	Host                     *sdkhost.Host
-	Registry                 *sdkhost.PrintRegistry
-	Cleanup                  *runtimecleanup.Registry
-	Worker                   *sessionstate.State
-	nativeSDKStateEvents     []protocol.JSONObject
-	Activity                 *sessionactivity.Tracker
-	Git                      *gitbranch.Service
-	watch                    *gitbranch.NativePollWatch
-	settings                 *clisettings.Service
-	settingState             *clisettings.State
-	environment              *clistartupenv.Environment
-	factory                  *messages.Factory
-	state                    *bootstrapstate.State
-	hook                     *queryhooks.Service
-	hookEnvironment          *sessionenvironment.Service
-	asyncHooks               *queryhooks.AsyncRegistry
-	asyncHooksBorrowed       bool
-	environmentWatcher       *environmentwatch.Watcher
-	settingsWatcher          *settingswatch.Watcher
-	standaloneProxy          *nativeStandaloneProxy
-	tls                      *tlsconfig.State
-	openAIAuth               *NativeOpenAIAuth
-	apiKeyHelper             *authhelper.Cache
-	apiKeyHelperBorrowed     bool
-	awsCredentials           *authhelper.CloudCache
-	awsSSOState              *cloudauth.SSOState
-	awsINIState              *cloudauth.AWSFileCache
-	gcpCredentials           *authhelper.CloudCache
-	cloudCredentialsBorrowed bool
-	diagnostics              *diagnostics.Process
-	errorLog                 *errorlog.Service
-	errorLogSink             *errorlog.NativeSink
-	closed                   bool
-	outputMu                 sync.Mutex
-	outputs                  [][]byte
-	wake                     chan struct{}
-	finish                   chan struct{}
-	outputDone               chan struct{}
-	outputError              error
-	shuttingDown             bool
-	sessionEndRan            bool
-	initialized              bool
-	modelCommandRuntime      *nativeModelCommandRuntime
-	prompt                   *systemprompt.Service
-	styles                   *systemprompt.StyleLoader
-	userContext              *usercontext.Service
-	systemContext            *ownerasync.OwnerFuture[protocol.JSONObject]
-	nativeTokenCountLife     *nativeTokenCountLifetime
-	memoryPaths              *usercontext.MemoryPaths
-	mainThreadAgent          *nativeMainThreadAgentState
-	agentChild               bool
-	detachedConstructed      bool
-	agents                   *agentcatalog.Service
-	agentHosts               []*sdkhost.Host
-	taskStore                *taskstore.Service
-	nativeSettings           *NativeProcessSettings
-	toolSearch               *toolsearch.Service
-	skillCommands            *skillcommands.Service
-	workflowDefinitions      *workflow.Service
-	nativeSynthetic          *sdkhost.NativeSyntheticOutput
-	nativeJSONSchema         *sdkhost.NativeJSONSchema
-	secure                   *securestorage.Store
-	pluginOptions            *pluginoptions.Service
-	mcpConfigurations        *mcpconfig.Service
-	claudeAIMCP              *CLIClaudeAIMCP
-	claudeAIMCPBorrowed      bool
-	sdkMCPState              *sdkhost.NativeSDKMCPState
-	sdkMCPControlTail        *sdkhost.OwnerFuture[struct{}]
-	mcpRuntime               *mcpruntime.Service
-	mcpBorrowed              bool
-	mcpTools                 *mcptools.Service
-	computerUse              *nativeComputerUse
-	computerUseSkillGate     nativeComputerUseSkillGate
-	skillWatcher             *nativeSkillWatcher
-	plans                    *sessionplans.Service
-	nativeTools              *builtintools.Service
-	worktreeState            *nativeWorktreeState
-	dynamicSkillDirTriggers  []string
-	skillListing             *nativeSkillListingState
-	nativeLocalCommands      *nativeLocalCommandState
-	nativeGoals              *nativeGoalRuntime
-	ownsTrace                bool
-	taskOutputDirectory      string
+	doctorPackages                             *installationdiagnostics.Packages
+	remoteIO                                   *remoteio.Service
+	nativeIngress                              *remoteio.Ingress
+	nativeIngressLife                          nativeRemoteLifetime
+	nativeResumeParsedSID                      string
+	nativeResumeIsURL                          bool
+	nativeUltraplan, nativeModeChangeUltraplan bool
+	nativeSDKBetas                             []string
+	nativeDynamicMCP                           protocol.JSONObject
+	ideIntegration                             *nativeIDERuntime
+	idePicker                                  *nativeIDEPending
+	ideOnboarding                              *nativeIDEPending
+	ideUI                                      *nativeIDEUI
+	nativeAutoModeFlag                         bool
+	nativeAutoConsent                          *NativeAutoConsent
+	commandBinding                             *ownerasync.NativeBinding
+	sandbox                                    *nativeSandboxRuntime
+	fileAnalytics                              *analytics.Service
+	analyticsParent                            *MainPrint
+	insightsHistory                            *sessionhistory.Loader
+	teamWorker                                 *nativeTeamWorkerState
+	teamState                                  *nativeTeamState
+	teamLeader                                 *nativeTeamLeaderState
+	nativeInProcess                            *nativeInProcessResumeState
+	fileHistory                                *filehistory.Service
+	options                                    MainPrintOptions
+	processStartMillis                         float64
+	nativeModelSelector                        *modelselection.Selector
+	nativePermissionStartup                    *sdkpermissions.NativeStartup
+	nativePermissionInitial                    sdkpermissions.NativeStartupResult
+	webFetch                                   *webfetch.Service
+	userImages                                 imagegeneration.UserImages
+	grokImages                                 *grokauth.Service
+	nativeImageHTTP                            *cooperative.NativeImageHTTP
+	webSearch                                  *websearch.Service
+	modelPicker                                *nativeModelPickerState
+	ultracode                                  *nativeUltracodeState
+	projectConfigKeys                          map[string]string
+	Owner                                      *cooperative.Owner
+	Global                                     *cliglobalconfig.Service
+	Startup                                    *clistartupenv.Service
+	Controller                                 *sessioncontroller.Controller
+	Host                                       *sdkhost.Host
+	Registry                                   *sdkhost.PrintRegistry
+	Cleanup                                    *runtimecleanup.Registry
+	Worker                                     *sessionstate.State
+	nativeSDKStateEvents                       []protocol.JSONObject
+	Activity                                   *sessionactivity.Tracker
+	Git                                        *gitbranch.Service
+	watch                                      *gitbranch.NativePollWatch
+	settings                                   *clisettings.Service
+	settingState                               *clisettings.State
+	environment                                *clistartupenv.Environment
+	factory                                    *messages.Factory
+	state                                      *bootstrapstate.State
+	hook                                       *queryhooks.Service
+	hookEnvironment                            *sessionenvironment.Service
+	asyncHooks                                 *queryhooks.AsyncRegistry
+	asyncHooksBorrowed                         bool
+	environmentWatcher                         *environmentwatch.Watcher
+	settingsWatcher                            *settingswatch.Watcher
+	standaloneProxy                            *nativeStandaloneProxy
+	tls                                        *tlsconfig.State
+	openAIAuth                                 *NativeOpenAIAuth
+	apiKeyHelper                               *authhelper.Cache
+	apiKeyHelperBorrowed                       bool
+	awsCredentials                             *authhelper.CloudCache
+	awsSSOState                                *cloudauth.SSOState
+	awsINIState                                *cloudauth.AWSFileCache
+	gcpCredentials                             *authhelper.CloudCache
+	cloudCredentialsBorrowed                   bool
+	diagnostics                                *diagnostics.Process
+	errorLog                                   *errorlog.Service
+	errorLogSink                               *errorlog.NativeSink
+	closed                                     bool
+	outputMu                                   sync.Mutex
+	outputs                                    [][]byte
+	wake                                       chan struct{}
+	finish                                     chan struct{}
+	outputDone                                 chan struct{}
+	outputError                                error
+	shuttingDown                               bool
+	sessionEndRan                              bool
+	initialized                                bool
+	modelCommandRuntime                        *nativeModelCommandRuntime
+	prompt                                     *systemprompt.Service
+	styles                                     *systemprompt.StyleLoader
+	userContext                                *usercontext.Service
+	systemContext                              *ownerasync.OwnerFuture[protocol.JSONObject]
+	nativeTokenCountLife                       *nativeTokenCountLifetime
+	autoDream                                  *nativeAutoDreamRuntime
+	memoryPaths                                *usercontext.MemoryPaths
+	mainThreadAgent                            *nativeMainThreadAgentState
+	agentChild                                 bool
+	detachedConstructed                        bool
+	agents                                     *agentcatalog.Service
+	agentHosts                                 []*sdkhost.Host
+	taskStore                                  *taskstore.Service
+	nativeSettings                             *NativeProcessSettings
+	toolSearch                                 *toolsearch.Service
+	skillCommands                              *skillcommands.Service
+	workflowDefinitions                        *workflow.Service
+	nativeSynthetic                            *sdkhost.NativeSyntheticOutput
+	nativeJSONSchema                           *sdkhost.NativeJSONSchema
+	secure                                     *securestorage.Store
+	pluginOptions                              *pluginoptions.Service
+	mcpConfigurations                          *mcpconfig.Service
+	claudeAIMCP                                *CLIClaudeAIMCP
+	claudeAIMCPBorrowed                        bool
+	sdkMCPState                                *sdkhost.NativeSDKMCPState
+	sdkMCPControlTail                          *sdkhost.OwnerFuture[struct{}]
+	mcpRuntime                                 *mcpruntime.Service
+	mcpBorrowed                                bool
+	mcpTools                                   *mcptools.Service
+	computerUse                                *nativeComputerUse
+	computerUseSkillGate                       nativeComputerUseSkillGate
+	skillWatcher                               *nativeSkillWatcher
+	plans                                      *sessionplans.Service
+	nativeTools                                *builtintools.Service
+	nativeHints                                *nativeHintRuntime
+	nativeFileCache                            *builtinwrite.FileStateCache
+	nativePDFReader                            *pdfread.Reader
+	nativePDFLife                              nativePDFLifetime
+	nativeReadCountLife                        nativePDFLifetime
+	worktreeState                              *nativeWorktreeState
+	dynamicSkillDirTriggers                    []string
+	skillListing                               *nativeSkillListingState
+	nativeLocalCommands                        *nativeLocalCommandState
+	nativeGoals                                *nativeGoalRuntime
+	ownsTrace                                  bool
+	taskOutputDirectory                        string
 }
 
 // NewMainPrint constructs the actual one-owner production graph. The only
@@ -365,6 +416,11 @@ func NewMainPrint(o MainPrintOptions) (*MainPrint, error) {
 	if e := n.TransportOrigin(); e != nil {
 		return nil, e
 	}
+	var startupError error
+	o, startupError = resolveNativeCLIStartupPromptFiles(o)
+	if startupError != nil {
+		return nil, startupError
+	}
 	if existing := n.Environment["CLAUDE_CODE_ENTRYPOINT"]; existing != "" && existing != "sdk-cli" && !n.NativeProcess {
 		return nil, mainCap("existing runtime entrypoint " + existing)
 	}
@@ -375,7 +431,22 @@ func NewMainPrint(o MainPrintOptions) (*MainPrint, error) {
 	n.Environment["COREPACK_ENABLE_AUTO_PIN"] = "0"
 	n.Environment["NoDefaultCurrentDirectoryInExePath"] = "1"
 	processStartMillis := n.NowMillis()
+	if o.OrdinarySubagents == nil {
+		o.OrdinarySubagents = &SubagentConcurrency{}
+	}
+	if o.readCountProfiles == nil {
+		o.readCountProfiles = &nativeBedrockProfileState{values: map[string]*nativeBedrockProfileLookup{}}
+	}
+	if o.thinkingSummaryState == nil {
+		o.thinkingSummaryState = &nativeThinkingSummaryState{interactive: o.Interactive, values: map[string]bool{}}
+	}
 	m := &MainPrint{options: o, processStartMillis: processStartMillis, Owner: cooperative.New(), wake: make(chan struct{}, 1), finish: make(chan struct{}), outputDone: make(chan struct{})}
+	if m.options.CloudAuthStatus == nil {
+		m.options.CloudAuthStatus = cloudauth.NewAuthStatusManager()
+	}
+	if m.options.SessionIngressAuth == nil {
+		m.options.SessionIngressAuth = remoteio.NewIngressAuthWithDirectory(n.Environment, n.CCRCredentialDirectory)
+	}
 	m.agentChild = o.DetachedAgent != nil
 	m.mainThreadAgent = &nativeMainThreadAgentState{requestedModel: o.Arguments.Model, requestedPrompt: o.Arguments.SystemPrompt}
 	m.detachedConstructed = o.DetachedAgent != nil
@@ -543,6 +614,9 @@ func NewMainPrint(o MainPrintOptions) (*MainPrint, error) {
 		e = m.Owner.Run(context.Background(), func(scope *cooperative.Scope) error {
 			var err error
 			o.Arguments.Model, m.nativeModelSelector, err = m.resolveNativeModel(context.Background(), scope, initialSettings, o.Arguments.Model)
+			if err == nil {
+				err = m.resolveNativeFallbackModel()
+			}
 			return err
 		})
 		if e != nil {
@@ -612,6 +686,7 @@ func NewMainPrint(o MainPrintOptions) (*MainPrint, error) {
 	hookOptions.Agents = m.nativeAgentHookBindings()
 	hookOptions.HTTP = m.nativeHTTPHookBindings()
 	hookOptions.UpdateWatchPaths = m.updateNativeEnvironmentWatchPaths
+	hookOptions.ForceSyncSessionStart = o.Arguments.InitOnly
 	hookOptions.SessionStartBase = m.nativeSessionStartBase
 	hookOptions.SessionStartMetadata = m.nativeSessionStartMetadata
 	hookOptions.CurrentSessionID = func() string {
@@ -658,6 +733,9 @@ func NewMainPrint(o MainPrintOptions) (*MainPrint, error) {
 			return fail(e)
 		}
 		o = m.options
+		if e = m.initializeNativeCLIBetas(); e != nil {
+			return fail(e)
+		}
 		if e = m.newNativeMCP(); e != nil {
 			return fail(e)
 		}
@@ -704,7 +782,7 @@ func NewMainPrint(o MainPrintOptions) (*MainPrint, error) {
 	if n.NativeProcess && registryType == "" {
 		registryType = "external"
 	}
-	registryOptions := sdkhost.PrintRegistryOptions{Interactive: o.Interactive, CWD: n.CWD, Home: n.Home, Stat: n.stat, ReadDir: n.readDir, Environment: func(k string) string { return n.Environment[k] }, EntryPoint: "sdk-cli", UserType: registryType}
+	registryOptions := sdkhost.PrintRegistryOptions{DisableSlashCommands: o.Arguments.DisableSlashCommands, Interactive: o.Interactive, CWD: n.CWD, Home: n.Home, Stat: n.stat, ReadDir: n.readDir, Environment: func(k string) string { return n.Environment[k] }, EntryPoint: "sdk-cli", UserType: registryType}
 	if m.nativeSettings != nil {
 		m.skillCommands, e = m.nativeSettings.SkillCommands(NativeSkillOptions{AdditionalDirectories: append([]string{}, m.nativePermissionInitial.InstructionDirectories...)})
 		if e != nil {
@@ -742,6 +820,9 @@ func NewMainPrint(o MainPrintOptions) (*MainPrint, error) {
 	var promptResolver func(context.Context, []protocol.JSONObject, string) ([]json.RawMessage, error)
 	m.userContext = uc
 	m.memoryPaths = memoryPaths
+	if e = m.prepareNativeAutoDream(); e != nil {
+		return fail(e)
+	}
 	if n.NativeProcess {
 		m.prompt, e = m.nativeSystemPrompt(uc, memoryPaths)
 		if e != nil {
@@ -761,7 +842,11 @@ func NewMainPrint(o MainPrintOptions) (*MainPrint, error) {
 		if e != nil {
 			return resumestate.Stat{}, e
 		}
-		return resumestate.Stat{Size: i.Size(), Modified: float64(i.ModTime().UnixMilli())}, nil
+		birth := float64(0)
+		if n.NativeProcess {
+			birth = nativeResumeBirthMillis(p, i)
+		}
+		return resumestate.Stat{Size: i.Size(), Modified: nativeResumeDateMillis(i.ModTime()), Birth: birth}, nil
 	}, Now: func() int64 { return n.Now().UnixMilli() }, UUID: uuidMain, OnDiagnostic: func(sessionresume.Diagnostic) {}, OnError: resumeOnError, OnPhase: func(string) {}, PolicyPaths: []string{filepath.Join(n.ManagedRoot, "managed-settings.json")}, SettingsState: m.settingState}, WriterOptions: sessioncontroller.WriterOptions{SessionPersistenceDisabled: o.Arguments.SessionPersistenceDisabled, ConfigDir: config, CWD: n.CWD, SessionID: sid, Version: o.Version, Environment: n.Environment, SettingsState: m.settingState, Files: mainTranscriptFiles{n: n, committed: o.OnCanonicalTranscriptMutation}, OnError: onError, Schedule: sessioncontroller.RealSchedule, Now: n.Now}, Factory: m.factory, UUID: uuidMain, Now: n.Now, OnPhase: func(string) {}, ReplayUserMessages: o.Arguments.Replay, BaseToolsCLI: o.Arguments.Tools, CustomSystemPrompt: quoteMain(o.Arguments.SystemPrompt)})
 	if e != nil {
 		return fail(e)
@@ -863,6 +948,9 @@ func (m *MainPrint) initializeOnOwner(scope *cooperative.Scope) error {
 	if e != nil {
 		return e
 	}
+	if e = m.bindNativeRemotePersistence(scope); e != nil {
+		return e
+	}
 	if e = m.initializeNativeFileHistory(scope); e != nil {
 		return e
 	}
@@ -883,9 +971,10 @@ func (m *MainPrint) initializeOnOwner(scope *cooperative.Scope) error {
 	if e != nil {
 		return e
 	}
+	m.nativeFileCache = cache
 	write, e := builtinwrite.New(builtinwrite.Options{ReportEvent: m.nativeFileReporter(), FileHistoryTrack: m.nativeTrackFileHistory, FileSkills: fileSkills, Owner: m.Owner, NativeBinding: binding, Cache: cache, Home: n.Home, CWD: n.CWD, PID: o.PID, NowMillis: n.NowMillis, Environment: func(k string) string { return n.Environment[k] }, PermissionContext: func(s *cooperative.Scope) (protocol.JSONObject, error) {
 		return m.nativeToolPermissionContext(s)
-	}, PermissionRoots: map[string]string{"userSettings": n.Home, "projectSettings": n.CWD, "localSettings": n.CWD, "policySettings": n.ManagedRoot}, Host: builtinwrite.Host{Platform: o.Platform}, HostState: func(s *cooperative.Scope) (builtinwrite.Host, error) {
+	}, PermissionRoots: m.nativeFilePermissionRoots(), Host: builtinwrite.Host{Platform: o.Platform}, HostState: func(s *cooperative.Scope) (builtinwrite.Host, error) {
 		if !n.NativeProcess || !m.hook.HasNativeCommandBindings(m.Owner) {
 			if e := m.hook.EmptyEvent("PreToolUse", m.Controller.SessionID()); e != nil {
 				return builtinwrite.Host{}, e
@@ -894,13 +983,17 @@ func (m *MainPrint) initializeOnOwner(scope *cooperative.Scope) error {
 		if !n.ExternalAbsent && !n.NativeProcess {
 			return builtinwrite.Host{}, mainCap("native tool dependency snapshot")
 		}
-		return builtinwrite.Host{Platform: o.Platform, NonInteractive: true, ConditionalSkillsPresent: m.skillCommands != nil && m.skillCommands.HasConditional(), AnalyticsEnabled: !nativeAnalyticsDisabled(n.Environment)}, nil
+		return builtinwrite.Host{Platform: o.Platform, NonInteractive: !o.Interactive, ConditionalSkillsPresent: m.skillCommands != nil && m.skillCommands.HasConditional(), AnalyticsEnabled: !nativeAnalyticsDisabled(n.Environment)}, nil
 	}, Files: mainWriteFiles{mainSettingsFiles{n: n}}})
 	if e != nil {
 		return e
 	}
 	var tools *builtintools.Service
 	if n.NativeProcess {
+		shells, shellError := m.nativeShellResolverOnOwner(scope)
+		if shellError != nil {
+			return shellError
+		}
 		m.nativeImageHTTP, e = cooperative.NewNativeImageHTTP(scope, m.Owner)
 		if e != nil {
 			return e
@@ -923,7 +1016,7 @@ func (m *MainPrint) initializeOnOwner(scope *cooperative.Scope) error {
 		if e != nil {
 			return e
 		}
-		toolOptions := builtintools.Options{ReportEvent: m.nativeFileReporter(), Images: m.nativeImageBindings(), BashCwd: m.nativeBashCwdBindings(), BashSandbox: m.nativeSandboxBindings(), ProcessEnvironment: m.nativeProcessEnvironment, SessionEnvironmentCapture: m.nativeSessionEnvironmentCapture, SessionEnvironmentScript: m.nativeSessionEnvironmentScript, HookPathSafety: m.nativeHookPathSafetyContext, HookInternalEditable: m.nativeHookInternalEditable, InternalReadable: m.nativeInternalReadable, HookPermissionRoot: m.nativeHookPermissionRoot, TeamMessage: m.nativeTeamMessageBindings(), FileHistoryTrack: m.nativeTrackFileHistory, ToolResultsDirectory: m.Controller.ToolResultsDirectoryOnOwner, ForegroundShellProgress: o.ForegroundShellProgress, Workflow: m.nativeWorkflowBindings(), SessionCollaboration: m.nativeSessionCollaborationBindings(), ToolSearch: m.nativeToolSearchBindings(), Worktree: worktreeBindings, BackgroundTasks: m.nativeBackgroundBindings(), MCPResources: m.nativeMCPResources(), Skill: m.nativeSkillBindings(), FileSkills: fileSkills, WebSearch: webSearch, WebFetch: webFetch, PlanMode: m.nativePlanModeBindings(), Random: nativeMathRandom, TaskStore: m.taskStore, TaskListID: m.Controller.TaskListIDOnOwner, ExpandTaskView: m.Controller.ExpandTaskViewOnOwner, TaskHookWithContext: m.nativeTaskHookWithContext, GetTodos: m.Controller.GetTodosOnOwner, SetTodos: m.Controller.SetTodosOnOwner, NonInteractive: !o.Interactive, RunAgent: m.runAgent, RunBackgroundAgent: m.runBackgroundAgent, ResumeAgent: m.resumeNativeAgentForTool, SendMessageEnabled: m.nativeSendMessageEnabled, AgentDefinitions: func(scope *cooperative.Scope) ([]agentcatalog.Definition, error) {
+		toolOptions := builtintools.Options{CountTokensOnOwner: m.nativeReadTokenCount, ShellHints: m.nativeShellHintsBindings(), Shells: shells, ReportEvent: m.nativeFileReporter(), Images: m.nativeImageBindings(), BashCwd: m.nativeBashCwdBindings(), BashSandbox: m.nativeSandboxBindings(), ProcessEnvironment: m.nativeProcessEnvironment, SessionEnvironmentCapture: m.nativeSessionEnvironmentCapture, SessionEnvironmentScript: m.nativeSessionEnvironmentScript, HookPathSafety: m.nativeHookPathSafetyContext, HookInternalEditable: m.nativeHookInternalEditable, InternalReadable: m.nativeInternalReadable, HookPermissionRoot: m.nativeHookPermissionRoot, TeamMessage: m.nativeTeamMessageBindings(), FileHistoryTrack: m.nativeTrackFileHistory, ToolResultsDirectory: m.Controller.ToolResultsDirectoryOnOwner, ForegroundShellProgress: o.ForegroundShellProgress, Workflow: m.nativeWorkflowBindings(), SessionCollaboration: m.nativeSessionCollaborationBindings(), ToolSearch: m.nativeToolSearchBindings(), Worktree: worktreeBindings, BackgroundTasks: m.nativeBackgroundBindings(), MCPResources: m.nativeMCPResources(), Skill: m.nativeSkillBindings(), FileSkills: fileSkills, WebSearch: webSearch, WebFetch: webFetch, PlanMode: m.nativePlanModeBindings(), Random: nativeMathRandom, TaskStore: m.taskStore, TaskListID: m.Controller.TaskListIDOnOwner, ExpandTaskView: m.Controller.ExpandTaskViewOnOwner, TaskHookWithContext: m.nativeTaskHookWithContext, GetTodos: m.Controller.GetTodosOnOwner, SetTodos: m.Controller.SetTodosOnOwner, NonInteractive: !o.Interactive, RunAgent: m.runAgent, RunBackgroundAgent: m.runBackgroundAgent, ResumeAgent: m.resumeNativeAgentForTool, SendMessageEnabled: m.nativeSendMessageEnabled, AgentDefinitions: func(scope *cooperative.Scope) ([]agentcatalog.Definition, error) {
 			if m.agents == nil {
 				return nil, mainCap("actual configured agent producer")
 			}
@@ -940,7 +1033,7 @@ func (m *MainPrint) initializeOnOwner(scope *cooperative.Scope) error {
 			return registered, err
 		}, Owner: m.Owner, NativeBinding: binding, Cache: cache, Write: write, Home: n.Home, CWD: n.CWD, Platform: o.Platform, NowMillis: n.NowMillis, Environment: n.Environment, PermissionContext: func(s *cooperative.Scope) (protocol.JSONObject, error) {
 			return m.nativeToolPermissionContext(s)
-		}, PermissionRoots: map[string]string{"userSettings": n.Home, "projectSettings": n.CWD, "localSettings": n.CWD, "policySettings": n.ManagedRoot}}
+		}, PermissionRoots: m.nativeFilePermissionRoots()}
 		if d := o.DetachedAgent; d != nil && d.sourceMCP != nil {
 			toolOptions, e = d.sourceMCP.workflowChildOptions(scope, m, toolOptions)
 			if e != nil {
@@ -988,7 +1081,7 @@ func (m *MainPrint) initializeOnOwner(scope *cooperative.Scope) error {
 				return err
 			}
 			if err = accounting.InstallNativeScopedCalculator(scope, func(current *cooperative.Scope, model string, environment map[string]string) (*modelaccounting.Calculator, error) {
-				return modelaccounting.NewNativeCalculator(model, modelaccounting.NativeCalculatorOptions{Environment: environment, Settings: m.Startup.GetInitialSettings, Global: m.Global.Get, SDKBetas: []string{}, ModelSelector: func(options modelselection.Options) (*modelselection.Selector, error) {
+				return modelaccounting.NewNativeCalculator(model, modelaccounting.NativeCalculatorOptions{Environment: environment, Settings: m.Startup.GetInitialSettings, Global: m.Global.Get, SDKBetas: m.nativeSDKBetas, ModelSelector: func(options modelselection.Options) (*modelselection.Selector, error) {
 					return m.nativeModelSelection(context.Background(), current, options)
 				}})
 			}); err != nil {
@@ -1056,13 +1149,37 @@ func (m *MainPrint) initializeOnOwner(scope *cooperative.Scope) error {
 		m.options.ResolvePermission = m.nativeSDKPermissionResolver
 		o.ResolvePermission = m.options.ResolvePermission
 	}
-	m.Host, e = sdkhost.NewOwnedPrint(scope, sdkhost.Options{NativeValidationAuth: m.nativeModelValidationClaudeAuth, NativeFastMode: m.nativeFastModeBinding, NativePermissionHookRetention: m.nativePermissionHookRetention(), NativeSDKGetSettings: m.nativeSDKGetSettings, NativeSDKMCPControl: m.nativeSDKMCPControl, NativeSDKMCPStatus: m.nativeSDKMCPStatus, NativeSDKMCP: m.sdkMCPState, NativeSDKPrepareTurn: m.prepareNativeSDKMCPTurn, NativeSDKMCPMessage: m.deliverNativeSDKMCPMessage, NativeSDKInitializeOptions: m.nativeSDKInitializeOptions, NativeSDKInferenceControl: m.nativeSDKInferenceControl, NativeSDKHookInitialize: m.nativeSDKInitializeMetadata, NativeSDKHookError: m.nativeSDKHookError, NativeVertex: m.nativeVertexBinding, NativeBedrock: m.nativeBedrockBinding, NativeAuthHelper: m.nativeAuthHelperBinding, NativeClaudeAuth: nativeClaudeAuth, NativeAPIKeySource: m.nativeAPIKeySource, NativeParentSettings: m.nativeParentSettingsProvider(), SendAgentMessage: m.sendAgentMessageOnOwner, StopTask: stopTask, Trace: m.options.Trace, AgentContext: o.AgentContext, OnQueryYield: o.OnQueryYield, Print: &sdkhost.PrintOptions{NativeMainAgentSettings: m.nativeMainAgentSettingsBound, NativeTypedModelSettings: m.nativeModelCommandSettingsBound, PermissionPromptToolName: o.Arguments.PermissionPromptToolName, NativeInteractive: o.Interactive, NativeInputMedia: m.nativeInputMedia, NativeGoalCommand: m.nativeGoalCommand, NativeLocalCommand: m.nativeLocalCommand, NativeContextUsage: m.nativeContextUsage, NativeSystemContext: m.nativeSystemContext, OnLocalInputMessages: o.OnLocalInputMessages, AppendSystemPrompt: o.Arguments.AppendSystemPrompt, TeamWorker: teamWorkerBinding, NativeTeamExecution: teamExecution, NativeTeammateExit: teammateExit, NativeTeammateStop: m.nativeTeammateStopBinding(), NativeLeaderInbox: m.nativeLeaderInboxOnOwner, FileHistory: m.fileHistory, AgentIteratorReady: m.nativeAgentIteratorReady(), AgentRestartPrompt: m.nativeAgentRestartPrompt(), ToolSearch: m.toolSearch, PersistPermission: func(scope *cooperative.Scope, update protocol.JSONObject) error {
+	m.Host, e = sdkhost.NewOwnedPrint(scope, m.nativeHarnessPolicyHostOptions(sdkhost.Options{SDKBetas: m.nativeSDKBetas, NativeValidationAuth: m.nativeModelValidationClaudeAuth, NativeFastMode: m.nativeFastModeBinding, NativePermissionHookRetention: m.nativePermissionHookRetention(), NativeSDKGetSettings: m.nativeSDKGetSettings, NativeSDKMCPControl: m.nativeSDKMCPControl, NativeSDKMCPStatus: m.nativeSDKMCPStatus, NativeSDKMCP: m.sdkMCPState, NativeSDKPrepareTurn: m.prepareNativeSDKMCPTurn, NativeSDKMCPMessage: m.deliverNativeSDKMCPMessage, NativeSDKInitializeOptions: m.nativeSDKInitializeOptions, NativeSDKInferenceControl: m.nativeSDKInferenceControl, NativeSDKHookInitialize: m.nativeSDKInitializeMetadata, NativeSDKHookError: m.nativeSDKHookError, NativeVertex: m.nativeVertexBinding, NativeBedrock: m.nativeBedrockBinding, NativeAuthHelper: m.nativeAuthHelperBinding, NativeClaudeAuth: nativeClaudeAuth, NativeAPIKeySource: m.nativeAPIKeySource, NativeParentSettings: m.nativeParentSettingsProvider(), SendAgentMessage: m.sendAgentMessageOnOwner, StopTask: stopTask, Trace: m.options.Trace, AgentContext: o.AgentContext, OnQueryYield: o.OnQueryYield, Print: &sdkhost.PrintOptions{NativeToolResult: m.nativeToolResult, NativeAutoDream: m.nativeAutoDream, CloseNativeAutoDream: m.closeNativeAutoDream, NativeThinkingSummaryBeta: m.nativeThinkingSummaryBeta, NativeSpinnerVerb: m.nativeSpinnerVerb, ToolAllowedNow: m.nativeAgentToolFilter(), NativeMainAgentSettings: m.nativeMainAgentSettingsBound, NativeTypedModelSettings: m.nativeModelCommandSettingsBound, PermissionPromptToolName: o.Arguments.PermissionPromptToolName, NativeInteractive: o.Interactive, NativeInputMedia: m.nativeInputMedia, NativeGoalCommand: m.nativeGoalCommand, NativeLocalCommand: m.nativeLocalCommand, NativeContextUsage: m.nativeContextUsage, NativeSystemContext: m.nativeSystemContext, OnLocalInputMessages: o.OnLocalInputMessages, AppendSystemPrompt: o.Arguments.AppendSystemPrompt, TeamWorker: teamWorkerBinding, NativeTeamExecution: teamExecution, NativeTeammateExit: teammateExit, NativeTeammateStop: m.nativeTeammateStopBinding(), NativeLeaderInbox: m.nativeLeaderInboxOnOwner, FileHistory: m.fileHistory, AgentIteratorReady: m.nativeAgentIteratorReady(), AgentRestartPrompt: m.nativeAgentRestartPrompt(), ToolSearch: m.toolSearch, PersistPermission: func(scope *cooperative.Scope, update protocol.JSONObject) error {
 		return m.persistNativePermission(scope, binding, update)
-	}, StartSandboxNetworkPermission: m.options.StartSandboxNetworkPermission, PlanProjection: m.nativePlanProjection, PlanAttachments: m.nativeAttachments, NativeCloudSettings: m.nativeCloudSettingsBindings, ContextAttachments: m.nativeContextAttachments, InputAttachments: inputAttachments, OnlyToolNames: o.OnlyToolNames, NativeSynthetic: m.nativeSynthetic, NativeJSONSchema: m.nativeJSONSchema, NativeMCP: m.mcpTools, SkillInvocation: skillInvocation, ProcessSkillPrompt: processSkillPrompt, ResolveRuntimeModel: runtimeModel, AgentID: o.AgentID, QuerySource: o.QuerySource, Thinking: o.Arguments.Thinking, EffortValue: initialEffort, EffortValueOverridesEnv: o.Arguments.EffortLevel != "" || o.AgentEffortOverridesEnv, Tools: tools, NativeProcess: n.NativeProcess, ResolvePermission: m.nativeAgentPermissionResolver(o.ResolvePermission), Permissions: sdkpermissions.Input{NativeStartup: m.nativePermissionStartup, AdditionalDirectories: o.Arguments.AdditionalDirectories, Profile: sdkpermissions.PublicPrintProfile, NativeProcess: n.NativeProcess, PermissionRules: permissionRules, Platform: o.Platform, Model: o.Arguments.Model, NonInteractive: true, BaseToolsCLI: o.Arguments.Tools, Allowed: o.Arguments.AllowedTools, Mode: mode, AllowBypass: mode == "bypassPermissions" || o.Arguments.AllowDangerouslySkipPermissions}, MaxTurns: o.Arguments.MaxTurns, Write: write, Hooks: m.hook, Registry: m.Registry, ProcessStartMillis: m.processStartMillis}, Diagnostics: m.diagnostics, Activity: m.Activity, RunState: &sdkhost.RunStateOptions{DrainSDK: m.nativeDrainSessionEvents, Registry: m.Cleanup, Worker: m.Worker, GetTasks: m.nativeBackgroundSnapshot, IsShuttingDown: func() bool { return m.shuttingDown }}, Controller: m.Controller, Owner: m.Owner, Factory: m.factory, UUID: uuidMain, Now: n.Now, NowMillis: n.NowMillis, Global: m.Global, Startup: m.Startup, Settings: m.settings, SettingsState: m.settingState, Environment: m.environment, Model: o.Arguments.Model, Version: o.Version, CWD: n.CWD, OriginalEnv: n.Environment, Runtime: provider.SourceRuntime{Platform: o.Platform, Arch: "arm64", Version: "v24.3.0"}, TLSState: m.tls, NativeOpenAI: m.nativeOpenAIConfig, NativeGrok: m.nativeGrokConfig, OnPhase: func(string) {}, Output: sdkhost.Output{Enqueue: m.enqueue}})
+	}, StartSandboxNetworkPermission: m.options.StartSandboxNetworkPermission, CompactCleanup: m.nativeCompactCleanup, CompactExcludedFiles: m.nativeCompactExcludedFiles, CompactAttachments: m.nativeCompactAttachments, PlanProjection: m.nativePlanProjection, PlanAttachments: m.nativeAttachments, NativeCloudSettings: m.nativeCloudSettingsBindings, ContextAttachments: m.nativeContextAttachments, InputAttachments: inputAttachments, OnlyToolNames: o.OnlyToolNames, NativeSynthetic: m.nativeSynthetic, NativeJSONSchema: m.nativeJSONSchema, NativeMCP: m.mcpTools, SkillInvocation: skillInvocation, ProcessSkillPrompt: processSkillPrompt, ResolveRuntimeModel: runtimeModel, AgentID: o.AgentID, QuerySource: o.QuerySource, Thinking: o.Arguments.Thinking, EffortValue: initialEffort, EffortValueOverridesEnv: o.Arguments.EffortLevel != "" || o.AgentEffortOverridesEnv, Tools: tools, NativeProcess: n.NativeProcess, ResolvePermission: m.nativeAgentPermissionResolver(o.ResolvePermission), Permissions: sdkpermissions.Input{NativeStartup: m.nativePermissionStartup, AdditionalDirectories: o.Arguments.AdditionalDirectories, Profile: sdkpermissions.PublicPrintProfile, NativeProcess: n.NativeProcess, PermissionRules: permissionRules, Platform: o.Platform, Model: o.Arguments.Model, NonInteractive: true, BaseToolsCLI: o.Arguments.Tools, Allowed: o.Arguments.AllowedTools, Disallowed: o.Arguments.DisallowedTools, Mode: mode, AllowBypass: mode == "bypassPermissions" || o.Arguments.AllowDangerouslySkipPermissions}, MaxTurns: o.Arguments.MaxTurns, Write: write, Hooks: m.hook, Registry: m.Registry, ProcessStartMillis: m.processStartMillis}, Diagnostics: m.diagnostics, Activity: m.Activity, RunState: &sdkhost.RunStateOptions{DrainSDK: m.nativeDrainSessionEvents, Registry: m.Cleanup, Worker: m.Worker, GetTasks: m.nativeBackgroundSnapshot, IsShuttingDown: func() bool { return m.shuttingDown }}, Controller: m.Controller, Owner: m.Owner, Factory: m.factory, UUID: uuidMain, Now: n.Now, NowMillis: n.NowMillis, Global: m.Global, Startup: m.Startup, Settings: m.settings, SettingsState: m.settingState, Environment: m.environment, Model: o.Arguments.Model, Version: o.Version, CWD: n.CWD, OriginalEnv: n.Environment, Runtime: provider.SourceRuntime{Platform: o.Platform, Arch: "arm64", Version: "v24.3.0"}, TLSState: m.tls, NativeOpenAI: m.nativeOpenAIConfig, NativeGrok: m.nativeGrokConfig, OnPhase: func(string) {}, Output: sdkhost.Output{Enqueue: m.enqueue}}))
 	if e != nil {
 		return fmt.Errorf("public print SDK host construct: %w", e)
 	}
+	if n.NativeProcess && !m.agentChild && m.teamWorker == nil {
+		if e = m.verifyNativeAutoGateOnOwner(scope); e != nil {
+			return e
+		}
+		if o.Interactive {
+			current, err := m.Host.NativePermissionContext(scope)
+			if err != nil {
+				return err
+			}
+			opted, err := m.Controller.NativeAutoModeOptIn(scope)
+			if err != nil {
+				return err
+			}
+			if current.String("mode") == "auto" && !opted {
+				m.nativeAutoConsent = &NativeAutoConsent{ID: uuidMain(), Previous: "default", Startup: true}
+			}
+		}
+	}
+	if e = m.bindNativePermissionModeObserver(scope); e != nil {
+		return e
+	}
 	if e = m.bindNativeSDKChildCallbacks(scope); e != nil {
+		return e
+	}
+	if e = m.seedNativeCLITitle(scope); e != nil {
 		return e
 	}
 	if m.agentChild {
@@ -1071,16 +1188,39 @@ func (m *MainPrint) initializeOnOwner(scope *cooperative.Scope) error {
 		}
 	} else if e = m.startNativeEnvironmentWatcher(scope); e != nil {
 		return e
+	} else if e = m.runNativeCLISetup(scope); e != nil {
+		return e
+	} else if o.Arguments.InitOnly {
+		f, e := m.Controller.BeginActivateFreshOwned(scope, sessioncontroller.FreshPrintProfile)
+		if e != nil {
+			return e
+		}
+		if _, e = f.Await(scope); e != nil {
+			return e
+		}
+	} else if o.Arguments.Continue {
+		if e = m.activateNativeContinue(scope); e != nil {
+			return e
+		}
 	} else if o.PublicPrintLoadErrors && (o.Arguments.Resume != "" || o.Arguments.ResumeWithoutValue) {
+		if e = m.hydrateNativeRemoteSession(scope); e != nil {
+			return e
+		}
 		if e = m.activatePublicPrintResume(scope); e != nil {
 			return e
 		}
 	} else if o.Arguments.Resume != "" {
+		if e = m.hydrateNativeRemoteSession(scope); e != nil {
+			return e
+		}
 		resume := resumestate.Input{Source: quoteMain(o.Arguments.Resume)}
+		if m.nativeResumeIsURL {
+			resume.Source = quoteMain(m.nativeResumeParsedSID)
+		}
 		if strings.HasSuffix(strings.ToLower(o.Arguments.Resume), ".jsonl") {
 			resume.JSONLPath = o.Arguments.Resume
 		}
-		f, e := m.Controller.BeginActivate(scope, sessioncontroller.Activation{Resume: resume, ForkSession: o.Arguments.ForkSession, ResumeAt: o.Arguments.ResumeAt})
+		f, e := m.Controller.BeginActivate(scope, sessioncontroller.Activation{Resume: resume, ForkSession: o.Arguments.ForkSession, ResumeAt: o.Arguments.ResumeAt, RemoteEmptyStartup: m.nativeResumeIsURL})
 		if e != nil {
 			return e
 		}
@@ -1095,6 +1235,9 @@ func (m *MainPrint) initializeOnOwner(scope *cooperative.Scope) error {
 		if _, e = f.Await(scope); e != nil {
 			return e
 		}
+	}
+	if e = m.restoreNativeFileCache(scope); e != nil {
+		return e
 	}
 	if e = m.restoreNativeMainThreadAgent(scope); e != nil {
 		return e
@@ -1129,6 +1272,9 @@ func (m *MainPrint) initializeOnOwner(scope *cooperative.Scope) error {
 	if e = m.startNativeSettingsWatcher(scope); e != nil {
 		return e
 	}
+	if e := m.startNativeIDEIntegration(scope); e != nil {
+		return e
+	}
 	return m.startNativeSkillWatcher()
 }
 
@@ -1144,6 +1290,9 @@ func (m *MainPrint) RunTurn(ctx context.Context, input protocol.JSONObject) erro
 		return cooperative.ErrClosed
 	}
 	return m.Owner.Run(context.Background(), func(scope *cooperative.Scope) (err error) {
+		if m.nativeAutoConsent != nil {
+			return mainCap("Auto mode consent is pending")
+		}
 		if err = m.markNativePaneActive(scope); err != nil {
 			return err
 		}
@@ -1169,7 +1318,16 @@ func (m *MainPrint) ShutdownSession(ctx context.Context) error {
 }
 
 func (m *MainPrint) ShutdownSessionWithReason(ctx context.Context, reason string) error {
+	if m.closed {
+		return nil
+	}
+	m.nativePDFLife.close()
+	m.nativeReadCountLife.close()
+	m.BeginNativeRemoteRuntimeClose()
 	if m.Host != nil {
+		if e := m.Host.CloseAutoDream(ctx); e != nil {
+			return e
+		}
 		if e := m.Host.CloseSideQuestions(ctx); e != nil {
 			return e
 		}
@@ -1179,6 +1337,7 @@ func (m *MainPrint) ShutdownSessionWithReason(ctx context.Context, reason string
 	}
 	m.settingsWatcher.Close()
 	m.skillWatcher.close()
+	m.ideIntegration.stop()
 	if m.environmentWatcher != nil {
 		m.environmentWatcher.Close()
 	}
@@ -1227,6 +1386,16 @@ func (m *MainPrint) ShutdownSessionWithReason(ctx context.Context, reason string
 }
 
 func (m *MainPrint) Run(ctx context.Context) (int, error) {
+	ctx, cancel := context.WithCancelCause(ctx)
+	defer cancel(nil)
+	m.nativeIngressLife.bindRun(cancel)
+	defer m.nativeIngressLife.bindRun(nil)
+	if m.options.Arguments.SDKURL != "" {
+		if err := m.prepareNativeRemoteIO(ctx, cancel); err != nil {
+			return 1, err
+		}
+		defer m.remoteIO.Close()
+	}
 	go m.drain()
 	o := m.options
 	e := m.Owner.Run(ctx, func(scope *cooperative.Scope) error {
@@ -1295,6 +1464,11 @@ func (m *MainPrint) Run(ctx context.Context) (int, error) {
 		if e != nil {
 			return e
 		}
+		if m.remoteIO != nil {
+			if e = structured.BindRemoteIO(scope, m.remoteIO); e != nil {
+				return e
+			}
+		}
 		initial, e := m.hook.TakeInitialUserMessage(scope)
 		if e != nil {
 			return e
@@ -1361,6 +1535,12 @@ func (m *MainPrint) Run(ctx context.Context) (int, error) {
 	}
 	m.watch.Join()
 	m.Close()
+	if failure := m.nativeIngressLife.err(); failure != nil {
+		return 1, failure
+	}
+	if e != nil && m.remoteIO != nil && remoteio.PermanentClose(m.remoteIO.CloseCode()) {
+		return 0, nil
+	}
 	if e != nil {
 		return 1, e
 	}
@@ -1370,6 +1550,9 @@ func (m *MainPrint) Run(ctx context.Context) (int, error) {
 	return m.Host.ExitCode(), nil
 }
 func (m *MainPrint) Close() {
+	m.nativePDFLife.close()
+	m.nativeReadCountLife.close()
+	m.BeginNativeRemoteRuntimeClose()
 	m.closeNativeModelFastStatus()
 	if m.closed {
 		return
@@ -1390,6 +1573,7 @@ func (m *MainPrint) Close() {
 	m.closeNativeFileAnalytics()
 	m.closeNativeErrorLog()
 	m.skillWatcher.close()
+	m.ideIntegration.stop()
 	if m.environmentWatcher != nil {
 		m.environmentWatcher.Close()
 	}
@@ -1417,6 +1601,9 @@ func (m *MainPrint) Close() {
 		_ = m.Global.Close()
 	}
 	m.Owner.Close()
+	if m.nativeIngress != nil {
+		m.nativeIngress.Close()
+	}
 	m.closed = true
 }
 

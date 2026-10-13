@@ -3,6 +3,7 @@ package provider
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -84,6 +85,9 @@ func (client *Anthropic) openPreparedResponse(ctx context.Context, prepared *Mes
 		request.Header.Set("authorization", strings.Trim("Bearer "+client.config.AuthToken, " \t\r\n"))
 	}
 	for name, values := range client.config.DefaultHeaders {
+		if _, err := headerName(name); err != nil {
+			return nil, nil, err
+		}
 		request.Header.Del(name)
 		for _, value := range values {
 			request.Header.Add(name, value)
@@ -98,13 +102,16 @@ func (client *Anthropic) openPreparedResponse(ctx context.Context, prepared *Mes
 		}
 	}
 	for name, values := range prepared.Headers {
+		if _, err := headerName(name); err != nil {
+			return nil, nil, err
+		}
 		request.Header.Del(name)
 		for _, value := range values {
 			request.Header.Add(name, value)
 		}
 	}
 	if client.config.Bedrock == nil && client.config.Vertex == nil && request.Header.Get("x-api-key") == "" && request.Header.Get("authorization") == "" && !authOmitted {
-		return nil, nil, errors.New(`Could not resolve authentication method. Expected either apiKey or authToken to be set. Or for one of the "X-Api-Key" or "Authorization" headers to be explicitly omitted`)
+		return nil, nil, errors.New(`Could not resolve authentication method. Expected one of apiKey, authToken, credentials, config, or profile to be set. Or for one of the "X-Api-Key" or "Authorization" headers to be explicitly omitted`)
 	}
 	if err := ctx.Err(); err != nil {
 		if !sdkCallerAbort && errors.Is(err, context.DeadlineExceeded) {
@@ -237,7 +244,7 @@ func (client *Anthropic) openPreparedResponse(ctx context.Context, prepared *Mes
 		if errors.As(err, &timeout) && timeout.Timeout() {
 			return nil, nil, errors.New("Request timed out.")
 		}
-		return nil, nil, &SDKStreamError{Kind: "request_connection", Class: "APIConnectionError", Name: "Error", Message: "Connection error.", MessageJSON: []byte(`"Connection error."`), Cause: err}
+		return nil, nil, &SDKStreamError{Kind: "request_connection", Class: "APIConnectionError", Name: "Error", Message: "Connection error.", MessageJSON: []byte(`"Connection error."`), Type: json.RawMessage(`null`), Cause: err}
 	}
 	fetchSucceeded = true
 	observeResponse(response)

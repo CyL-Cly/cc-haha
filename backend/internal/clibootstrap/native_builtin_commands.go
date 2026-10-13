@@ -3,6 +3,7 @@ package clibootstrap
 import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/skillcommands"
+	"github.com/NanmiCoder/cc-haha/backend/internal/windowshell"
 )
 
 func (m *MainPrint) nativeBuiltinPromptCommands() ([]skillcommands.Definition, error) {
@@ -30,12 +31,19 @@ func (m *MainPrint) nativeBuiltinPromptCommands() ([]skillcommands.Definition, e
 		if !invocation.NativeScope.BelongsTo(m.Owner) {
 			return "", cooperative.ErrRestricted
 		}
-		// Original getShellToolAvailability always enables Bash on macOS/Linux,
-		// including when a persisted PowerShell preference is present.
-		if m.options.Platform == "windows" {
-			return "", mainCap("security review Windows Git Bash/PowerShell availability")
+		availability, err := m.nativeShellAvailability(invocation.NativeScope)
+		if err != nil {
+			return "", err
 		}
-		return "bash", nil
+		settings, err := m.Startup.GetInitialSettings()
+		if err != nil {
+			return "", err
+		}
+		preference := ""
+		if settings != nil {
+			preference = settings.String("defaultShell")
+		}
+		return windowshell.DefaultShell(preference, availability), nil
 	})
 	if err != nil {
 		return nil, err

@@ -12,9 +12,11 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 	"unicode/utf16"
 	"unicode/utf8"
 
@@ -357,6 +359,36 @@ func (s *Server) sessionTraceHTTP(w http.ResponseWriter, r *http.Request, parts 
 		_, e = io.Copy(w, file)
 		return e
 	}
+	if sub == "near" {
+		if len(parts) != 5 {
+			return notFound("Trace route not found")
+		}
+		from, e := parseTraceNearTime(r.URL.Query().Get("from"), "from")
+		if e != nil {
+			return e
+		}
+		to, e := parseTraceNearTime(r.URL.Query().Get("to"), "to")
+		if e != nil {
+			return e
+		}
+		if to.Before(from) {
+			return badRequest("to must not be earlier than from")
+		}
+		if to.Sub(from) > time.Hour {
+			return badRequest("The trace lookup window is at most one hour")
+		}
+		near, e := service.Near(r.Context(), id, from, to)
+		if e != nil {
+			return e
+		}
+		calls := traceObjects(near.Get("calls"))
+		for i := range calls {
+			calls[i] = tracecapture.TrimCallPreviews(calls[i], tracecapture.ListPreviewChars)
+		}
+		near.Set("calls", traceRaw(calls))
+		writeJSON(w, 200, near)
+		return nil
+	}
 	if sub == "calls" {
 		callID := ""
 		if len(parts) > 5 {
@@ -365,7 +397,11 @@ func (s *Server) sessionTraceHTTP(w http.ResponseWriter, r *http.Request, parts 
 		if trimJS(callID) == "" {
 			return badRequest("callId is required")
 		}
-		call, e := service.Call(r.Context(), id, callID, "")
+		at, e := parseTraceLocator(r.URL.Query().Get("at"))
+		if e != nil {
+			return e
+		}
+		call, e := service.CallAt(r.Context(), id, callID, at)
 		if e != nil {
 			return e
 		}
@@ -478,4 +514,38 @@ func (s *Server) traceMessagesSignature(ctx context.Context, id string) (*string
 	}
 	result := hex.EncodeToString(hash.Sum(nil))
 	return &result, nil
+}
+
+var traceNearTimePattern = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,9})?)?(?:Z|[+-]\d{2}:\d{2})$`)
+
+func parseTraceNearTime(v, name string) (time.Time, error) {
+	if !traceNearTimePattern.MatchString(v) {
+		return time.Time{}, badRequest(name + " must be an ISO timestamp")
+	}
+	if len(v) >= 17 && (v[16] == 'Z' || v[16] == '+' || v[16] == '-') {
+		v = v[:16] + ":00" + v[16:]
+	}
+	at, e := time.Parse(time.RFC3339Nano, v)
+	if e != nil {
+		return time.Time{}, badRequest(name + " must be an ISO timestamp")
+	}
+	return at.UTC().Truncate(time.Millisecond), nil
+}
+
+var traceLocatorPattern = regexp.MustCompile(`^\d{1,15}-\d{1,15}$`)
+
+func parseTraceLocator(v string) (*[2]int64, error) {
+	if v == "" {
+		return nil, nil
+	}
+	if !traceLocatorPattern.MatchString(v) {
+		return nil, badRequest("Invalid trace call locator")
+	}
+	parts := strings.Split(v, "-")
+	a, ea := strconv.ParseInt(parts[0], 10, 64)
+	b, eb := strconv.ParseInt(parts[1], 10, 64)
+	if ea != nil || eb != nil || b <= a {
+		return nil, badRequest("Invalid trace call locator")
+	}
+	return &[2]int64{a, b}, nil
 }

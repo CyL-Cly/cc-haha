@@ -37,6 +37,16 @@ func BindNativeClaudeHost(ctx context.Context, input *Input, deps Dependencies) 
 	if deps.NativeClaudeError != nil {
 		return deps.NativeClaudeError
 	}
+	if deps.NativeThinkingSummaryBeta != nil {
+		if input == nil || input.Context.Host.Profile != requestcontext.NativeDirectRelayProfile || !deps.StreamScope.BelongsTo(deps.StreamOwner) {
+			return cooperative.ErrRestricted
+		}
+		value, err := deps.NativeThinkingSummaryBeta(deps.StreamScope, input.Context.Options.Model)
+		if err != nil {
+			return err
+		}
+		input.Context.Host.NativeThinkingSummaryBeta = value
+	}
 	if deps.NativeClaudeAuth == nil {
 		return nil
 	}

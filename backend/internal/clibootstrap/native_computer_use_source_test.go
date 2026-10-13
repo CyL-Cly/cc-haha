@@ -13,6 +13,11 @@ import (
 )
 
 func TestActualSourceBundledComputerUseDeclarationPromptAndSkillGate(t *testing.T) {
+	for _, platform := range []string{"darwin", "win32"} {
+		t.Run(platform, func(t *testing.T) { testSourceBundledComputerUseDeclarationPromptAndSkillGate(t, platform) })
+	}
+}
+func testSourceBundledComputerUseDeclarationPromptAndSkillGate(t *testing.T, platform string) {
 	bun := os.Getenv("CC_HAHA_PINNED_BUN")
 	if bun == "" {
 		t.Skip("pinned actual Source Bun required")
@@ -26,14 +31,14 @@ func TestActualSourceBundledComputerUseDeclarationPromptAndSkillGate(t *testing.
 	for i, raw := range configs {
 		inputs = append(inputs, map[string]string{"raw": raw, "flag": envs[i]})
 	}
-	script := `import * as fs from 'node:fs';import {join} from 'node:path';globalThis.MACRO={VERSION:'fixture',BUILD_TIME:'',PACKAGE_URL:'',README_URL:'',ISSUES_URL:''};const root=Bun.argv[2];const input=await Bun.stdin.json();const bundled=await import(root+'/src/skills/bundledSkills.ts');const cu=await import(root+'/src/skills/bundled/computerUse.ts');const gate=await import(root+'/src/utils/computerUse/skillGate.ts');cu.registerComputerUseSkill();const skill=bundled.getBundledSkills().find(s=>s.name==='computer-use');const {getPromptForCommand,isEnabled,...metadata}=skill;const enabled=[];for(const c of input.configs){delete process.env.CLAUDE_COMPUTER_USE_ENABLED;if(c.flag)process.env.CLAUDE_COMPUTER_USE_ENABLED=c.flag;fs.mkdirSync(join(process.env.CLAUDE_CONFIG_DIR,'cc-haha'),{recursive:true});fs.writeFileSync(join(process.env.CLAUDE_CONFIG_DIR,'cc-haha','computer-use-config.json'),c.raw);gate.invalidateComputerUseSkillGate();enabled.push(Boolean(isEnabled()))};const prompts=[];for(const args of input.args)prompts.push((await getPromptForCommand(args,{}))[0].text);console.log(JSON.stringify({metadata,prompts,enabled}))`
+	script := `import * as fs from 'node:fs';import {join} from 'node:path';globalThis.MACRO={VERSION:'fixture',BUILD_TIME:'',PACKAGE_URL:'',README_URL:'',ISSUES_URL:''};const root=Bun.argv[2];const input=await Bun.stdin.json();Object.defineProperty(process,'platform',{value:input.platform});const bundled=await import(root+'/src/skills/bundledSkills.ts');const cu=await import(root+'/src/skills/bundled/computerUse.ts');const gate=await import(root+'/src/utils/computerUse/skillGate.ts');cu.registerComputerUseSkill();const skill=bundled.getBundledSkills().find(s=>s.name==='computer-use');const {getPromptForCommand,isEnabled,...metadata}=skill;const enabled=[];for(const c of input.configs){delete process.env.CLAUDE_COMPUTER_USE_ENABLED;if(c.flag)process.env.CLAUDE_COMPUTER_USE_ENABLED=c.flag;fs.mkdirSync(join(process.env.CLAUDE_CONFIG_DIR,'cc-haha'),{recursive:true});fs.writeFileSync(join(process.env.CLAUDE_CONFIG_DIR,'cc-haha','computer-use-config.json'),c.raw);gate.invalidateComputerUseSkillGate();enabled.push(Boolean(isEnabled()))};const prompts=[];for(const args of input.args)prompts.push((await getPromptForCommand(args,{}))[0].text);console.log(JSON.stringify({metadata,prompts,enabled}))`
 	root, _ := filepath.Abs("../../..")
 	file := filepath.Join(f.home, "source.ts")
 	_ = os.WriteFile(file, []byte(script), 0600)
 	command := exec.Command(bun, file, root)
 	command.Dir = f.home
 	command.Env = []string{"HOME=" + f.home, "USERPROFILE=" + f.home, "CLAUDE_CONFIG_DIR=" + f.config, "TMPDIR=" + f.n.Temp, "NODE_ENV=test", "USER_TYPE=external", "DISABLE_TELEMETRY=1", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1", "PATH=" + os.Getenv("PATH")}
-	encoded, _ := json.Marshal(map[string]any{"configs": inputs, "args": args})
+	encoded, _ := json.Marshal(map[string]any{"configs": inputs, "args": args, "platform": platform})
 	command.Stdin = strings.NewReader(string(encoded))
 	output, e := command.CombinedOutput()
 	if e != nil {
@@ -43,7 +48,11 @@ func TestActualSourceBundledComputerUseDeclarationPromptAndSkillGate(t *testing.
 	if e := json.Unmarshal(output, &expected); e != nil {
 		t.Fatalf("Source=%s %v", output, e)
 	}
-	m := &MainPrint{options: MainPrintOptions{Native: f.n, Platform: "darwin"}}
+	goPlatform := platform
+	if platform == "win32" {
+		goPlatform = "windows"
+	}
+	m := &MainPrint{options: MainPrintOptions{Native: f.n, Platform: goPlatform}}
 	f.write(t, m.computerUseConfigPath(), configs[0])
 	definition, enabled, e := m.nativeComputerUseSkill()
 	if e != nil || !enabled {

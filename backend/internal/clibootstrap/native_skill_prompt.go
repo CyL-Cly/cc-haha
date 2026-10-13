@@ -19,6 +19,9 @@ func (m *MainPrint) nativeProcessSkillPrompt(ctx context.Context, scope *coopera
 	if e != nil {
 		return nil, e
 	}
+	if m.options.Arguments.DisableSlashCommands {
+		return m.nativeDisabledSlashInput(scope, name, args, uuid)
+	}
 	for _, command := range commands {
 		if command.Definition == nil {
 			continue

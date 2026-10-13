@@ -106,6 +106,8 @@ func (session *Session) prompt(definition Definition, host Host) (json.RawMessag
 		return quote(text), err
 	case "Bash":
 		return quote(bashPromptForEnvironment(host.BashEnvironment)), nil
+	case "PowerShell":
+		return quote(powerShellPromptForEnvironment(host.BashEnvironment, host.PowerShellEdition)), nil
 	case "Read":
 		text, err := session.readPrompt(host)
 		return quote(text), err

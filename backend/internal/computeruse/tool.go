@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"math"
 	"strings"
 	"sync"
@@ -11,10 +12,52 @@ import (
 )
 
 type ToolContent struct {
-	Type     string `json:"type"`
-	Text     string `json:"text,omitempty"`
-	Data     string `json:"data,omitempty"`
-	MimeType string `json:"mimeType,omitempty"`
+	Type      string `json:"type"`
+	Text      string `json:"text,omitempty"`
+	Data      string `json:"data,omitempty"`
+	MimeType  string `json:"mimeType,omitempty"`
+	textUnits []uint16
+}
+
+func (c ToolContent) MarshalJSON() ([]byte, error) {
+	type plain ToolContent
+	if c.textUnits == nil {
+		return json.Marshal(plain(c))
+	}
+	raw, err := json.Marshal(plain(c))
+	if err != nil {
+		return nil, err
+	}
+	var value protocol.JSONObject
+	if err = value.UnmarshalJSON(raw); err != nil {
+		return nil, err
+	}
+	value.Set("text", protocol.QuoteJavaScriptUTF16(c.textUnits))
+	return value.MarshalJSON()
+}
+func (c *ToolContent) UnmarshalJSON(raw []byte) error {
+	type plain ToolContent
+	var value plain
+	if err := json.Unmarshal(raw, &value); err != nil {
+		return err
+	}
+	*c = ToolContent(value)
+	if c.Type != "text" {
+		return nil
+	}
+	var object protocol.JSONObject
+	if err := object.UnmarshalJSON(raw); err != nil {
+		return err
+	}
+	if object.Get("text") == nil {
+		return nil
+	}
+	units, err := protocol.DecodeJavaScriptJSONString(object.Get("text"))
+	if err != nil {
+		return err
+	}
+	c.textUnits = append([]uint16{}, units...)
+	return nil
 }
 
 // Extra fields preserve the Source binder's host-to-language-worker metadata.
@@ -118,13 +161,20 @@ func cancelledResult(text string) NativeToolResult {
 	return result
 }
 func (tools *NativeTools) configuration(ctx context.Context) (object, bool) {
-	config, err := tools.options.Service.Config(ctx)
+	return tools.options.Service.toolConfiguration(ctx)
+}
+func (service *Service) toolConfiguration(ctx context.Context) (object, bool) {
+	config, err := service.Config(ctx)
 	if err != nil {
 		return nil, false
 	}
 	enabled, _ := boolean(config["enabled"])
-	flag := strings.ToLower(trim(tools.options.Service.options.Environment["CLAUDE_COMPUTER_USE_ENABLED"]))
+	flag := strings.ToLower(trim(service.options.Environment["CLAUDE_COMPUTER_USE_ENABLED"]))
 	return config, enabled && flag != "0" && flag != "false" && flag != "no" && flag != "off"
+}
+func (service *Service) Disabled(ctx context.Context) bool {
+	_, enabled := service.toolConfiguration(ctx)
+	return !enabled
 }
 func (tools *NativeTools) Disabled(ctx context.Context) bool {
 	_, enabled := tools.configuration(ctx)
@@ -425,6 +475,9 @@ func (tools *NativeTools) EndTurn(ctx context.Context) error {
 			return ctx.Err()
 		}
 	}
+	return tools.endTurnUnqueued(ctx)
+}
+func (tools *NativeTools) endTurnUnqueued(ctx context.Context) error {
 	nativeErr := tools.options.Service.EndTurn(ctx, tools.sessionID())
 	if !tools.lockHeld {
 		return nativeErr

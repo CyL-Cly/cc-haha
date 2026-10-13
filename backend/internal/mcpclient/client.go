@@ -62,6 +62,8 @@ func Connect(ctx context.Context, config Config, options Options) (*Client, erro
 		t = &sdkControlTransport{bindings: o.SDK}
 	case "http":
 		t = newHTTPTransport(config, o, false)
+	case "ws", "ws-ide":
+		t = newWebSocketTransport(config, o)
 	case "sse", "sse-ide":
 		t = newHTTPTransport(config, o, true)
 	default:

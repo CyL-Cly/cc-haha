@@ -17,13 +17,14 @@ func TestActualHeadlessLeaderPartitionFormattingAndShutdownStrictSchema(t *testi
 		t.Skip("actual Source Bun required")
 	}
 	rows := [][]protocol.JSONObject{{}, {inboxObject([]byte(`{"from":"worker","text":"actual result","color":"blue","summary":"not included"}`))}, {inboxObject([]byte(`{"from":"worker","text":"{\"type\":\"permission_request\",\"extra\":1}"}`)), inboxObject([]byte(`{"from":"other","text":"{\"type\":\"sandbox_permission_request\"}"}`)), inboxObject([]byte(`{"from":"peer","text":"{\"type\":\"idle_notification\"}"}`))}, {inboxObject([]byte(`{"from":"quoted\"<","text":"\ud800😀","color":"green\"","summary":"summary omitted"}`)), inboxObject([]byte(`{"from":12,"text":null,"color":false}`)), inboxObject([]byte(`{"text":"[\"permission_request\"]"}`))}}
-	approvals := []string{`{"type":"shutdown_approved","requestId":"r","from":"worker","timestamp":"","paneId":"p","backendType":"in-process"}`, `{"type":"shutdown_approved","requestId":"r","from":"worker","timestamp":"t"}`, `{"type":"shutdown_approved","requestId":"","from":"worker","timestamp":"t"}`, `{"type":"shutdown_approved","requestId":"r","from":"","timestamp":"t"}`, `{"type":"shutdown_approved","requestId":"r","from":"worker","timestamp":null}`, `{"type":"shutdown_approved","requestId":"r","from":"worker","timestamp":"t","paneId":null}`, `{"type":"shutdown_approved","requestId":"r","from":"worker","timestamp":"t","backendType":"other"}`, `{"type":"shutdown_approved","requestId":"r","from":"worker","timestamp":"t","extra":true}`, `[]`, `null`, `not json`}
+	approvals := []string{`{"type":"shutdown_approved","requestId":"r","from":"worker","timestamp":"","paneId":"p","backendType":"in-process"}`, `{"type":"shutdown_approved","requestId":"r","from":"worker","timestamp":"t"}`, `{"type":"shutdown_approved","requestId":"","from":"worker","timestamp":"t"}`, `{"type":"shutdown_approved","requestId":"r","from":"","timestamp":"t"}`, `{"type":"shutdown_approved","requestId":"r","from":"worker","timestamp":null}`, `{"type":"shutdown_approved","requestId":"r","from":"worker","timestamp":"t","paneId":null}`, `{"type":"shutdown_approved","requestId":"r","from":"worker","timestamp":"t","backendType":"other"}`, `{"type":"shutdown_approved","requestId":"r","from":"worker","timestamp":"t","extra":true}`, `[]`, `null`, `not json`, `{"type":"shutdown_approved","requestId":"r","from":"worker","timestamp":"t","paneId":"","backendType":"process"}`}
 	actual := []protocol.JSONObject{}
 	for _, messages := range rows {
 		part := PartitionLeadMailboxMessages(messages)
 		text, err := FormatHeadlessTeammateMessages(part.Remaining)
 		if err != nil {
-			t.Fatal(err)
+			actual = append(actual, protocol.NewJSONObject(protocol.JSONField{Name: "partition", Value: rawJSON(part)}, protocol.JSONField{Name: "formatError", Value: rawJSON(true)}))
+			continue
 		}
 		actual = append(actual, protocol.NewJSONObject(protocol.JSONField{Name: "partition", Value: rawJSON(part)}, protocol.JSONField{Name: "formatted", Value: text}))
 	}

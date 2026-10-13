@@ -1,0 +1,1016 @@
+{
+  "pixels": [
+    {
+      "name": "screenshot",
+      "description": "Take a screenshot of the primary display. On this platform, screenshots are NOT filtered — all open windows are visible. The returned image is what subsequent click coordinates are relative to.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "save_to_disk": {
+            "type": "boolean",
+            "description": "Save the image to disk so it can be attached to a message for the user. Returns the saved path in the tool result. Only set this when you intend to share the image — screenshots you're just looking at don't need saving."
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "zoom",
+      "description": "Take a higher-resolution screenshot of a specific region of the last full-screen screenshot. Use this liberally to inspect small text, button labels, or fine UI details that are hard to read in the downsampled full-screen image. IMPORTANT: Coordinates in subsequent click calls always refer to the full-screen screenshot, never the zoomed image. This tool is read-only for inspecting detail.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "region": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 4,
+            "maxItems": 4,
+            "description": "(x0, y0, x1, y1): Rectangle to zoom into, in the coordinate space of the most recent full-screen screenshot. x0,y0 = top-left, x1,y1 = bottom-right."
+          },
+          "save_to_disk": {
+            "type": "boolean",
+            "description": "Save the image to disk so it can be attached to a message for the user. Returns the saved path in the tool result. Only set this when you intend to share the image."
+          }
+        },
+        "required": [
+          "region"
+        ]
+      }
+    },
+    {
+      "name": "left_click",
+      "description": "Left-click at the given coordinates. The target is resolved at call time and remains subject to product safety restrictions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "(x, y): Horizontal pixel position read directly from the most recent screenshot image, measured from the left edge. The server handles all scaling."
+          },
+          "text": {
+            "type": "string",
+            "description": "Modifier keys to hold during the click (e.g. \"shift\", \"ctrl+shift\"). Supports the same syntax as the key tool."
+          }
+        },
+        "required": [
+          "coordinate"
+        ]
+      }
+    },
+    {
+      "name": "double_click",
+      "description": "Double-click at the given coordinates. Selects a word in most text editors. The target is resolved at call time and remains subject to product safety restrictions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "(x, y): Horizontal pixel position read directly from the most recent screenshot image, measured from the left edge. The server handles all scaling."
+          },
+          "text": {
+            "type": "string",
+            "description": "Modifier keys to hold during the click (e.g. \"shift\", \"ctrl+shift\"). Supports the same syntax as the key tool."
+          }
+        },
+        "required": [
+          "coordinate"
+        ]
+      }
+    },
+    {
+      "name": "triple_click",
+      "description": "Triple-click at the given coordinates. Selects a line in most text editors. The target is resolved at call time and remains subject to product safety restrictions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "(x, y): Horizontal pixel position read directly from the most recent screenshot image, measured from the left edge. The server handles all scaling."
+          },
+          "text": {
+            "type": "string",
+            "description": "Modifier keys to hold during the click (e.g. \"shift\", \"ctrl+shift\"). Supports the same syntax as the key tool."
+          }
+        },
+        "required": [
+          "coordinate"
+        ]
+      }
+    },
+    {
+      "name": "right_click",
+      "description": "Right-click at the given coordinates. Opens a context menu in most applications. The target is resolved at call time and remains subject to product safety restrictions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "(x, y): Horizontal pixel position read directly from the most recent screenshot image, measured from the left edge. The server handles all scaling."
+          },
+          "text": {
+            "type": "string",
+            "description": "Modifier keys to hold during the click (e.g. \"shift\", \"ctrl+shift\"). Supports the same syntax as the key tool."
+          }
+        },
+        "required": [
+          "coordinate"
+        ]
+      }
+    },
+    {
+      "name": "middle_click",
+      "description": "Middle-click (scroll-wheel click) at the given coordinates. The target is resolved at call time and remains subject to product safety restrictions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "(x, y): Horizontal pixel position read directly from the most recent screenshot image, measured from the left edge. The server handles all scaling."
+          },
+          "text": {
+            "type": "string",
+            "description": "Modifier keys to hold during the click (e.g. \"shift\", \"ctrl+shift\"). Supports the same syntax as the key tool."
+          }
+        },
+        "required": [
+          "coordinate"
+        ]
+      }
+    },
+    {
+      "name": "type",
+      "description": "Type text into whatever currently has keyboard focus. The target is resolved at call time and remains subject to product safety restrictions. Newlines are supported. For keyboard shortcuts use `key` instead.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Text to type."
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    },
+    {
+      "name": "key",
+      "description": "Press a key or key combination (e.g. \"return\", \"escape\", \"cmd+a\", \"ctrl+shift+tab\"). The target is resolved at call time and remains subject to product safety restrictions. System-level combos (quit app, switch app, lock screen) require the `systemKeyCombos` grant — without it they return an error. All other combos work.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Modifiers joined with \"+\", e.g. \"cmd+shift+a\"."
+          },
+          "repeat": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Number of times to repeat the key press. Default is 1."
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    },
+    {
+      "name": "scroll",
+      "description": "Scroll at the given coordinates. The target is resolved at call time and remains subject to product safety restrictions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "(x, y): Horizontal pixel position read directly from the most recent screenshot image, measured from the left edge. The server handles all scaling."
+          },
+          "scroll_direction": {
+            "type": "string",
+            "enum": [
+              "up",
+              "down",
+              "left",
+              "right"
+            ],
+            "description": "Direction to scroll."
+          },
+          "scroll_amount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Number of scroll ticks."
+          }
+        },
+        "required": [
+          "coordinate",
+          "scroll_direction",
+          "scroll_amount"
+        ]
+      }
+    },
+    {
+      "name": "left_click_drag",
+      "description": "Press, move to target, and release. The target is resolved at call time and remains subject to product safety restrictions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "(x, y) end point: Horizontal pixel position read directly from the most recent screenshot image, measured from the left edge. The server handles all scaling."
+          },
+          "start_coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "(x, y) start point. If omitted, drags from the current cursor position. Horizontal pixel position read directly from the most recent screenshot image, measured from the left edge. The server handles all scaling."
+          }
+        },
+        "required": [
+          "coordinate"
+        ]
+      }
+    },
+    {
+      "name": "mouse_move",
+      "description": "Move the mouse cursor without clicking. Useful for triggering hover states. The target is resolved at call time and remains subject to product safety restrictions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "(x, y): Horizontal pixel position read directly from the most recent screenshot image, measured from the left edge. The server handles all scaling."
+          }
+        },
+        "required": [
+          "coordinate"
+        ]
+      }
+    },
+    {
+      "name": "open_application",
+      "description": "Bring an installed application to the front, launching it if necessary. The application is resolved against the installed-app inventory before launch.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "app": {
+            "type": "string",
+            "description": "Display name (e.g. \"Slack\") or bundle identifier (e.g. \"com.tinyspeck.slackmacgap\")."
+          }
+        },
+        "required": [
+          "app"
+        ]
+      }
+    },
+    {
+      "name": "switch_display",
+      "description": "Switch which monitor subsequent screenshots capture. Use this when the application you need is on a different monitor than the one shown. The screenshot tool tells you which monitor it captured and lists other attached monitors by name — pass one of those names here. After switching, call screenshot to see the new monitor. Pass \"auto\" to return to automatic monitor selection.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "display": {
+            "type": "string",
+            "description": "Monitor name from the screenshot note (e.g. \"Built-in Retina Display\", \"LG UltraFine\"), or \"auto\" to re-enable automatic selection."
+          }
+        },
+        "required": [
+          "display"
+        ]
+      }
+    },
+    {
+      "name": "read_clipboard",
+      "description": "Read the current clipboard contents as text. Requires the `clipboardRead` grant.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "write_clipboard",
+      "description": "Write text to the clipboard. Requires the `clipboardWrite` grant.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    },
+    {
+      "name": "wait",
+      "description": "Wait for a specified duration.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "duration": {
+            "type": "number",
+            "description": "Duration in seconds (0–100)."
+          }
+        },
+        "required": [
+          "duration"
+        ]
+      }
+    },
+    {
+      "name": "cursor_position",
+      "description": "Get the current mouse cursor position. Returns image-pixel coordinates relative to the most recent screenshot, or logical points if no screenshot has been taken.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "hold_key",
+      "description": "Press and hold a key or key combination for the specified duration, then release. The target is resolved at call time and remains subject to product safety restrictions. System-level combos require the `systemKeyCombos` grant.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Key or chord to hold, e.g. \"space\", \"shift+down\"."
+          },
+          "duration": {
+            "type": "number",
+            "description": "Duration in seconds (0–100)."
+          }
+        },
+        "required": [
+          "text",
+          "duration"
+        ]
+      }
+    },
+    {
+      "name": "left_mouse_down",
+      "description": "Press the left mouse button at the current cursor position and leave it held. The target is resolved at call time and remains subject to product safety restrictions. Use mouse_move first to position the cursor. Call left_mouse_up to release. Errors if the button is already held.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "left_mouse_up",
+      "description": "Release the left mouse button at the current cursor position. The target is resolved at call time and remains subject to product safety restrictions. Pairs with left_mouse_down. Safe to call even if the button is not currently held.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "computer_batch",
+      "description": "Execute a sequence of actions in ONE tool call. Each individual tool call requires a model→API round trip (seconds); batching a predictable sequence eliminates all but one. Use this whenever you can predict the outcome of several actions ahead — e.g. click a field, type into it, press Return. Actions execute sequentially and stop on the first error. The target is resolved at call time and remains subject to product safety restrictions. The frontmost check runs before EACH action inside the batch — if an action opens a non-allowed app, the next action's gate fires and the batch stops there. Mid-batch screenshot actions are allowed for inspection but coordinates in subsequent clicks always refer to the PRE-BATCH full-screen screenshot.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "actions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "properties": {
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "key",
+                    "type",
+                    "mouse_move",
+                    "left_click",
+                    "left_click_drag",
+                    "right_click",
+                    "middle_click",
+                    "double_click",
+                    "triple_click",
+                    "scroll",
+                    "hold_key",
+                    "screenshot",
+                    "cursor_position",
+                    "left_mouse_down",
+                    "left_mouse_up",
+                    "wait"
+                  ],
+                  "description": "The action to perform."
+                },
+                "coordinate": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "description": "(x, y) for click/mouse_move/scroll/left_click_drag end point."
+                },
+                "start_coordinate": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "description": "(x, y) drag start — left_click_drag only. Omit to drag from current cursor."
+                },
+                "text": {
+                  "type": "string",
+                  "description": "For type: the text. For key/hold_key: the chord string. For click/scroll: modifier keys to hold."
+                },
+                "scroll_direction": {
+                  "type": "string",
+                  "enum": [
+                    "up",
+                    "down",
+                    "left",
+                    "right"
+                  ]
+                },
+                "scroll_amount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "duration": {
+                  "type": "number",
+                  "description": "Seconds (0–100). For hold_key/wait."
+                },
+                "repeat": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100,
+                  "description": "For key: repeat count."
+                }
+              },
+              "required": [
+                "action"
+              ]
+            },
+            "description": "List of actions. Example: [{\"action\":\"left_click\",\"coordinate\":[100,200]},{\"action\":\"type\",\"text\":\"hello\"},{\"action\":\"key\",\"text\":\"Return\"}]"
+          }
+        },
+        "required": [
+          "actions"
+        ]
+      }
+    }
+  ],
+  "normalized_0_100": [
+    {
+      "name": "screenshot",
+      "description": "Take a screenshot of the primary display. On this platform, screenshots are NOT filtered — all open windows are visible. The returned image is what subsequent click coordinates are relative to.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "save_to_disk": {
+            "type": "boolean",
+            "description": "Save the image to disk so it can be attached to a message for the user. Returns the saved path in the tool result. Only set this when you intend to share the image — screenshots you're just looking at don't need saving."
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "zoom",
+      "description": "Take a higher-resolution screenshot of a specific region of the last full-screen screenshot. Use this liberally to inspect small text, button labels, or fine UI details that are hard to read in the downsampled full-screen image. IMPORTANT: Coordinates in subsequent click calls always refer to the full-screen screenshot, never the zoomed image. This tool is read-only for inspecting detail.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "region": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 4,
+            "maxItems": 4,
+            "description": "(x0, y0, x1, y1): Rectangle to zoom into, in the coordinate space of the most recent full-screen screenshot. x0,y0 = top-left, x1,y1 = bottom-right."
+          },
+          "save_to_disk": {
+            "type": "boolean",
+            "description": "Save the image to disk so it can be attached to a message for the user. Returns the saved path in the tool result. Only set this when you intend to share the image."
+          }
+        },
+        "required": [
+          "region"
+        ]
+      }
+    },
+    {
+      "name": "left_click",
+      "description": "Left-click at the given coordinates. The target is resolved at call time and remains subject to product safety restrictions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "(x, y): Horizontal position as a percentage of screen width, 0.0–100.0 (0 = left edge, 100 = right edge)."
+          },
+          "text": {
+            "type": "string",
+            "description": "Modifier keys to hold during the click (e.g. \"shift\", \"ctrl+shift\"). Supports the same syntax as the key tool."
+          }
+        },
+        "required": [
+          "coordinate"
+        ]
+      }
+    },
+    {
+      "name": "double_click",
+      "description": "Double-click at the given coordinates. Selects a word in most text editors. The target is resolved at call time and remains subject to product safety restrictions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "(x, y): Horizontal position as a percentage of screen width, 0.0–100.0 (0 = left edge, 100 = right edge)."
+          },
+          "text": {
+            "type": "string",
+            "description": "Modifier keys to hold during the click (e.g. \"shift\", \"ctrl+shift\"). Supports the same syntax as the key tool."
+          }
+        },
+        "required": [
+          "coordinate"
+        ]
+      }
+    },
+    {
+      "name": "triple_click",
+      "description": "Triple-click at the given coordinates. Selects a line in most text editors. The target is resolved at call time and remains subject to product safety restrictions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "(x, y): Horizontal position as a percentage of screen width, 0.0–100.0 (0 = left edge, 100 = right edge)."
+          },
+          "text": {
+            "type": "string",
+            "description": "Modifier keys to hold during the click (e.g. \"shift\", \"ctrl+shift\"). Supports the same syntax as the key tool."
+          }
+        },
+        "required": [
+          "coordinate"
+        ]
+      }
+    },
+    {
+      "name": "right_click",
+      "description": "Right-click at the given coordinates. Opens a context menu in most applications. The target is resolved at call time and remains subject to product safety restrictions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "(x, y): Horizontal position as a percentage of screen width, 0.0–100.0 (0 = left edge, 100 = right edge)."
+          },
+          "text": {
+            "type": "string",
+            "description": "Modifier keys to hold during the click (e.g. \"shift\", \"ctrl+shift\"). Supports the same syntax as the key tool."
+          }
+        },
+        "required": [
+          "coordinate"
+        ]
+      }
+    },
+    {
+      "name": "middle_click",
+      "description": "Middle-click (scroll-wheel click) at the given coordinates. The target is resolved at call time and remains subject to product safety restrictions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "(x, y): Horizontal position as a percentage of screen width, 0.0–100.0 (0 = left edge, 100 = right edge)."
+          },
+          "text": {
+            "type": "string",
+            "description": "Modifier keys to hold during the click (e.g. \"shift\", \"ctrl+shift\"). Supports the same syntax as the key tool."
+          }
+        },
+        "required": [
+          "coordinate"
+        ]
+      }
+    },
+    {
+      "name": "type",
+      "description": "Type text into whatever currently has keyboard focus. The target is resolved at call time and remains subject to product safety restrictions. Newlines are supported. For keyboard shortcuts use `key` instead.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Text to type."
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    },
+    {
+      "name": "key",
+      "description": "Press a key or key combination (e.g. \"return\", \"escape\", \"cmd+a\", \"ctrl+shift+tab\"). The target is resolved at call time and remains subject to product safety restrictions. System-level combos (quit app, switch app, lock screen) require the `systemKeyCombos` grant — without it they return an error. All other combos work.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Modifiers joined with \"+\", e.g. \"cmd+shift+a\"."
+          },
+          "repeat": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Number of times to repeat the key press. Default is 1."
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    },
+    {
+      "name": "scroll",
+      "description": "Scroll at the given coordinates. The target is resolved at call time and remains subject to product safety restrictions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "(x, y): Horizontal position as a percentage of screen width, 0.0–100.0 (0 = left edge, 100 = right edge)."
+          },
+          "scroll_direction": {
+            "type": "string",
+            "enum": [
+              "up",
+              "down",
+              "left",
+              "right"
+            ],
+            "description": "Direction to scroll."
+          },
+          "scroll_amount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Number of scroll ticks."
+          }
+        },
+        "required": [
+          "coordinate",
+          "scroll_direction",
+          "scroll_amount"
+        ]
+      }
+    },
+    {
+      "name": "left_click_drag",
+      "description": "Press, move to target, and release. The target is resolved at call time and remains subject to product safety restrictions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "(x, y) end point: Horizontal position as a percentage of screen width, 0.0–100.0 (0 = left edge, 100 = right edge)."
+          },
+          "start_coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "(x, y) start point. If omitted, drags from the current cursor position. Horizontal position as a percentage of screen width, 0.0–100.0 (0 = left edge, 100 = right edge)."
+          }
+        },
+        "required": [
+          "coordinate"
+        ]
+      }
+    },
+    {
+      "name": "mouse_move",
+      "description": "Move the mouse cursor without clicking. Useful for triggering hover states. The target is resolved at call time and remains subject to product safety restrictions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "coordinate": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "(x, y): Horizontal position as a percentage of screen width, 0.0–100.0 (0 = left edge, 100 = right edge)."
+          }
+        },
+        "required": [
+          "coordinate"
+        ]
+      }
+    },
+    {
+      "name": "open_application",
+      "description": "Bring an installed application to the front, launching it if necessary. The application is resolved against the installed-app inventory before launch.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "app": {
+            "type": "string",
+            "description": "Display name (e.g. \"Slack\") or bundle identifier (e.g. \"com.tinyspeck.slackmacgap\")."
+          }
+        },
+        "required": [
+          "app"
+        ]
+      }
+    },
+    {
+      "name": "switch_display",
+      "description": "Switch which monitor subsequent screenshots capture. Use this when the application you need is on a different monitor than the one shown. The screenshot tool tells you which monitor it captured and lists other attached monitors by name — pass one of those names here. After switching, call screenshot to see the new monitor. Pass \"auto\" to return to automatic monitor selection.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "display": {
+            "type": "string",
+            "description": "Monitor name from the screenshot note (e.g. \"Built-in Retina Display\", \"LG UltraFine\"), or \"auto\" to re-enable automatic selection."
+          }
+        },
+        "required": [
+          "display"
+        ]
+      }
+    },
+    {
+      "name": "read_clipboard",
+      "description": "Read the current clipboard contents as text. Requires the `clipboardRead` grant.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "write_clipboard",
+      "description": "Write text to the clipboard. Requires the `clipboardWrite` grant.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    },
+    {
+      "name": "wait",
+      "description": "Wait for a specified duration.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "duration": {
+            "type": "number",
+            "description": "Duration in seconds (0–100)."
+          }
+        },
+        "required": [
+          "duration"
+        ]
+      }
+    },
+    {
+      "name": "cursor_position",
+      "description": "Get the current mouse cursor position. Returns image-pixel coordinates relative to the most recent screenshot, or logical points if no screenshot has been taken.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "hold_key",
+      "description": "Press and hold a key or key combination for the specified duration, then release. The target is resolved at call time and remains subject to product safety restrictions. System-level combos require the `systemKeyCombos` grant.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Key or chord to hold, e.g. \"space\", \"shift+down\"."
+          },
+          "duration": {
+            "type": "number",
+            "description": "Duration in seconds (0–100)."
+          }
+        },
+        "required": [
+          "text",
+          "duration"
+        ]
+      }
+    },
+    {
+      "name": "left_mouse_down",
+      "description": "Press the left mouse button at the current cursor position and leave it held. The target is resolved at call time and remains subject to product safety restrictions. Use mouse_move first to position the cursor. Call left_mouse_up to release. Errors if the button is already held.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "left_mouse_up",
+      "description": "Release the left mouse button at the current cursor position. The target is resolved at call time and remains subject to product safety restrictions. Pairs with left_mouse_down. Safe to call even if the button is not currently held.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "computer_batch",
+      "description": "Execute a sequence of actions in ONE tool call. Each individual tool call requires a model→API round trip (seconds); batching a predictable sequence eliminates all but one. Use this whenever you can predict the outcome of several actions ahead — e.g. click a field, type into it, press Return. Actions execute sequentially and stop on the first error. The target is resolved at call time and remains subject to product safety restrictions. The frontmost check runs before EACH action inside the batch — if an action opens a non-allowed app, the next action's gate fires and the batch stops there. Mid-batch screenshot actions are allowed for inspection but coordinates in subsequent clicks always refer to the PRE-BATCH full-screen screenshot.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "actions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "properties": {
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "key",
+                    "type",
+                    "mouse_move",
+                    "left_click",
+                    "left_click_drag",
+                    "right_click",
+                    "middle_click",
+                    "double_click",
+                    "triple_click",
+                    "scroll",
+                    "hold_key",
+                    "screenshot",
+                    "cursor_position",
+                    "left_mouse_down",
+                    "left_mouse_up",
+                    "wait"
+                  ],
+                  "description": "The action to perform."
+                },
+                "coordinate": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "description": "(x, y) for click/mouse_move/scroll/left_click_drag end point."
+                },
+                "start_coordinate": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "description": "(x, y) drag start — left_click_drag only. Omit to drag from current cursor."
+                },
+                "text": {
+                  "type": "string",
+                  "description": "For type: the text. For key/hold_key: the chord string. For click/scroll: modifier keys to hold."
+                },
+                "scroll_direction": {
+                  "type": "string",
+                  "enum": [
+                    "up",
+                    "down",
+                    "left",
+                    "right"
+                  ]
+                },
+                "scroll_amount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "duration": {
+                  "type": "number",
+                  "description": "Seconds (0–100). For hold_key/wait."
+                },
+                "repeat": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100,
+                  "description": "For key: repeat count."
+                }
+              },
+              "required": [
+                "action"
+              ]
+            },
+            "description": "List of actions. Example: [{\"action\":\"left_click\",\"coordinate\":[100,200]},{\"action\":\"type\",\"text\":\"hello\"},{\"action\":\"key\",\"text\":\"Return\"}]"
+          }
+        },
+        "required": [
+          "actions"
+        ]
+      }
+    }
+  ]
+}

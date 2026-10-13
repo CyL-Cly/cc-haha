@@ -16,9 +16,6 @@ func (s *State) ApplyNativeSettingsChange(scope *cooperative.Scope, settings *pr
 	if s.nativeStartup.options.Environment("USER_TYPE") == "ant" && s.nativeStartup.options.Environment("CLAUDE_CODE_ENTRYPOINT") != "local-agent" {
 		return cap("settings-change ant overly broad Bash rule preparation")
 	}
-	if s.context.String("mode") == "auto" {
-		return cap("settings-change active auto classifier rule reconciliation")
-	}
 
 	disable := false
 	if s.nativeStartup.options.Policy == nil {

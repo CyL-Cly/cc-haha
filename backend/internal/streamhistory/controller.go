@@ -38,19 +38,21 @@ var ErrClosed = errors.New("stream history controller has finished")
 // Controller and its live envelopes have one owning goroutine, like the Source
 // generator. Callers must serialize Feed, Finish and observation/persistence.
 type Controller struct {
-	options                      Options
-	factory                      *messages.Factory
-	start                        *protocol.JSONObject
-	startUsage                   *Usage
-	usage                        *Usage
-	blocks                       map[int]*Block
-	completed                    map[int]bool
-	toolIDs                      map[string]bool
-	created                      []*Envelope
-	pending                      []*Envelope
-	crossed, messageStop, closed bool
-	stopReason                   json.RawMessage
-	handled                      map[string]bool
+	options                                                                  Options
+	factory                                                                  *messages.Factory
+	start                                                                    *protocol.JSONObject
+	startUsage                                                               *Usage
+	usage                                                                    *Usage
+	blocks                                                                   map[int]*Block
+	completed                                                                map[int]bool
+	toolIDs                                                                  map[string]bool
+	created                                                                  []*Envelope
+	pending                                                                  []*Envelope
+	crossed, committed, serverToolStarted, messageStop, stopTerminal, closed bool
+	eventCount                                                               int
+	lastEvent                                                                string
+	stopReason                                                               json.RawMessage
+	handled                                                                  map[string]bool
 }
 
 func New(options Options) (*Controller, error) {
@@ -108,6 +110,7 @@ func (controller *Controller) drain(withoutTools bool, emit Emit) error {
 		if withoutTools && envelope.Content[0].Object.String("type") == "tool_use" {
 			continue
 		}
+		controller.committed = true
 		if err := emit(Update{Envelope: envelope}); err != nil {
 			if !isYieldThrow(err) {
 				controller.closed = true
@@ -144,6 +147,8 @@ func (controller *Controller) Feed(raw json.RawMessage, timing Timing, emit Emit
 	if err := json.Unmarshal(raw, &part); err != nil || !part.IsObject() {
 		return ErrUnsupported
 	}
+	controller.eventCount++
+	controller.lastEvent = part.String("type")
 	switch part.String("type") {
 	case "message_start":
 		message := object(part.Get("message"))
@@ -162,6 +167,7 @@ func (controller *Controller) Feed(raw json.RawMessage, timing Timing, emit Emit
 		}
 		controller.usage = usage
 	case "content_block_start":
+		controller.stopTerminal = false
 		index, err := indexOf(part)
 		if err != nil {
 			return err
@@ -169,6 +175,9 @@ func (controller *Controller) Feed(raw json.RawMessage, timing Timing, emit Emit
 		block := object(part.Get("content_block"))
 		if !block.IsObject() {
 			return ErrUnsupported
+		}
+		if block.String("type") == "server_tool_use" {
+			controller.serverToolStarted = true
 		}
 		switch block.String("type") {
 		case "text":
@@ -181,6 +190,7 @@ func (controller *Controller) Feed(raw json.RawMessage, timing Timing, emit Emit
 		}
 		controller.blocks[index] = &Block{Object: block}
 	case "content_block_delta":
+		controller.stopTerminal = false
 		index, err := indexOf(part)
 		if err != nil {
 			return err
@@ -237,6 +247,7 @@ func (controller *Controller) Feed(raw json.RawMessage, timing Timing, emit Emit
 			}
 		}
 	case "content_block_stop":
+		controller.stopTerminal = false
 		index, err := indexOf(part)
 		if err != nil {
 			return err
@@ -285,6 +296,7 @@ func (controller *Controller) Feed(raw json.RawMessage, timing Timing, emit Emit
 		newReason := hasReason && !controller.handled[canonical(reason)]
 		if hasReason {
 			controller.stopReason = reason
+			controller.stopTerminal = true
 			controller.handled[canonical(reason)] = true
 		}
 		if len(controller.created) > 0 {
@@ -379,6 +391,10 @@ func (controller *Controller) synthetic(text, code string, apiError bool) *Envel
 	if apiError {
 		options["apiError"] = literal(code)
 	}
+	return controller.syntheticOptions(options)
+}
+
+func (controller *Controller) syntheticOptions(options storage.Object) *Envelope {
 	value := controller.factory.CreateAssistantAPIError(options)
 	api, _, _ := storage.NormalizeObject(value["message"])
 	message := jsonObject()
@@ -441,25 +457,23 @@ func (controller *Controller) Finish(cause error, emit Emit) error {
 	}
 	defer func() { controller.closed = true }()
 	if cause == nil {
-		controller.preservePartialText()
-	}
-	if cause == nil && !controller.isLimit() {
-		if controller.start == nil || len(controller.created) == 0 && (nullish(controller.stopReason) || canonical(controller.stopReason) == `"tool_use"`) {
-			cause = sourceError("Stream ended without receiving any events")
-		} else {
-			incomplete := !controller.messageStop || nullish(controller.stopReason)
-			for index := range controller.blocks {
-				if !controller.completed[index] {
-					incomplete = true
-				}
-			}
-			if incomplete {
-				cause = sourceError("Provider stream ended before completing the response")
-			}
+		if early := controller.EndOfStream(0); early != nil {
+			cause = early
 		}
 	}
 	if cause == nil {
 		return controller.drain(false, emit)
+	}
+	var early *StreamEndedEarlyError
+	if errors.As(cause, &early) {
+		if err := controller.drain(true, emit); err != nil {
+			return err
+		}
+		diagnostic, err := early.DiagnosticJSON()
+		if err != nil {
+			return err
+		}
+		return emit(Update{Envelope: controller.syntheticOptions(storage.Object{"content": literal("API Error: " + early.Format()), "error": literal("unknown"), "errorDetails": literal(string(diagnostic)), "businessErrorCode": literal("upstream_stream_interrupted")})})
 	}
 	var source *sourceFailure
 	if !errors.As(cause, &source) {

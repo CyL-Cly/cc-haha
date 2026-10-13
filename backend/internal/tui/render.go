@@ -52,8 +52,17 @@ func wrap(text string, width int) []string {
 
 func (s *State) transcriptLines() []string {
 	var lines []string
-	for _, entry := range s.Entries {
+	lastThinking := -1
+	for index, entry := range s.Entries {
+		if entry.Kind == "thinking" && !entry.Redacted {
+			lastThinking = index
+		}
+	}
+	for index, entry := range s.Entries {
 		if entry.TranscriptOnly && !s.Transcript {
+			continue
+		}
+		if s.Transcript && entry.Kind == "thinking" && !entry.Redacted && index != lastThinking {
 			continue
 		}
 		var label string
@@ -62,6 +71,10 @@ func (s *State) transcriptLines() []string {
 		case "user":
 			label = "You: "
 		case "thinking":
+			if entry.Redacted {
+				lines = append(lines, wrap("✻ Thinking…", s.Width)...)
+				continue
+			}
 			label = "Thinking: "
 		case "tool":
 			label = "✓ " + entry.ToolName + ": "
@@ -162,12 +175,24 @@ func (s *State) View(title string, fullscreen bool) tea.View {
 	}
 	footer := []string{}
 	var cursor *tea.Cursor
-	if s.WorktreeExit != nil {
+	if s.Doctor != nil {
+		footer = s.Doctor.lines(s.Width, s.Height)
+	} else if s.DreamDialog != nil {
+		footer = s.dreamLines()
+	} else if s.MessageSelector != nil {
+		footer = s.MessageSelector.lines(s.Width)
+	} else if s.WorktreeExit != nil {
 		footer = s.WorktreeExit.lines(s.Width)
 	} else if s.ThinkingPicker != nil {
 		footer = s.ThinkingPicker.lines(s.Width)
 	} else if s.ModelPicker != nil {
 		footer = s.ModelPicker.lines(s.Width)
+	} else if s.IDEPicker != nil {
+		footer = s.IDEPicker.lines(s.Width)
+	} else if s.ideOnboardingVisible() {
+		footer = s.IDEOnboarding.lines(s.Width)
+	} else if s.pluginHintVisible() {
+		footer = s.PluginHint.lines(s.Width)
 	} else if s.Transcript {
 		footer = wrap("Transcript · Esc to return", s.Width)
 	} else if len(s.Permissions) > 0 {
@@ -193,9 +218,27 @@ func (s *State) View(title string, fullscreen bool) tea.View {
 					if i == s.PermissionSelected {
 						prefix = "> "
 					}
-					footer = append(footer, wrap(prefix+choice.Label, s.Width)...)
+					label := prefix + choice.Label
+					if choice.Editable {
+						label += ": "
+						value := s.permissionChoiceValue(permission, i)
+						if i == s.PermissionSelected {
+							position := len(value)
+							if editor := s.permissionEditor; editor != nil && editor.id == permission.ID && editor.index == i {
+								position = editor.editor.Cursor()
+							}
+							before := wrap(label+value[:position], s.Width)
+							cursor = tea.NewCursor(min(uniseg.StringWidth(before[len(before)-1]), s.Width-1), len(footer)+len(before)-1)
+						}
+						label += value
+					}
+					footer = append(footer, wrap(label, s.Width)...)
 				}
-				footer = append(footer, wrap("↑/↓: choose · Enter: confirm · Esc: deny", s.Width)...)
+				if s.permissionEditableSelected() {
+					footer = append(footer, wrap("Type: edit rule · ↑/↓: choose · Enter: confirm · Esc: deny", s.Width)...)
+				} else {
+					footer = append(footer, wrap("↑/↓: choose · Enter: confirm · Esc: deny", s.Width)...)
+				}
 			}
 		}
 	} else {
@@ -218,7 +261,7 @@ func (s *State) View(title string, fullscreen bool) tea.View {
 		footer = append(footer, wrap(s.Notification, s.Width)...)
 	}
 	if s.PermissionMode != "" && s.PermissionMode != "default" {
-		label := map[string]string{"acceptEdits": "accept edits on", "plan": "plan mode on", "bypassPermissions": "bypass permissions on"}[s.PermissionMode]
+		label := map[string]string{"acceptEdits": "accept edits on", "plan": "plan mode on", "bypassPermissions": "bypass permissions on", "auto": "auto mode on"}[s.PermissionMode]
 		if label != "" {
 			if shortcut := s.modeCycleShortcut(); shortcut != "" {
 				label += " · " + shortcut + " to cycle"
@@ -230,6 +273,9 @@ func (s *State) View(title string, fullscreen bool) tea.View {
 		footer = append(footer, wrap(s.Status, s.Width)...)
 	}
 	footer = append(footer, s.teammateTreeLines()...)
+	if s.DreamDialog == nil {
+		footer = append(footer, s.dreamFooterLines()...)
+	}
 	footer = append(footer, s.teammateInboxLines()...)
 	if len(s.Queue) > 0 {
 		footer = append(footer, wrap(fmt.Sprintf("%d queued", len(s.Queue)), s.Width)...)

@@ -162,7 +162,7 @@ func (s *Server) sideChatsHTTP(w http.ResponseWriter, r *http.Request, parent st
 	metadata, _ := json.Marshal(meta)
 	now := time.Now().UTC().Format("2006-01-02T15:04:05.000Z")
 	root := info.WorkDir
-	entry := &sideChat{id: id, parentID: parent, launch: SideChatLaunch{CLISessionID: cliID, ResumePath: info.Path, ResumeAt: boundary, Boundary: sideChatBoundary}, info: sessionInfo{ID: id, Title: "Side chat", CreatedAt: now, ModifiedAt: now, ProjectPath: info.ProjectPath, ProjectRoot: &root, WorkDir: info.WorkDir, WorkDirExists: true, WorkspaceState: "available", PermissionMode: info.PermissionMode, RuntimeProviderID: append(json.RawMessage(nil), info.RuntimeProviderID...), RuntimeModelID: info.RuntimeModelID, EffortLevel: info.EffortLevel, Metadata: metadata, memory: true, ephemeral: true}}
+	entry := &sideChat{id: id, parentID: parent, launch: SideChatLaunch{CLISessionID: cliID, ResumePath: info.Path, ResumeAt: boundary, Boundary: sideChatBoundary}, info: sessionInfo{ID: id, Title: "Side chat", CreatedAt: now, ModifiedAt: now, ProjectPath: info.ProjectPath, ProjectRoot: &root, WorkDir: info.WorkDir, WorkDirExists: true, WorkspaceState: "available", PermissionMode: info.PermissionMode, RuntimeProviderID: append(json.RawMessage(nil), info.RuntimeProviderID...), RuntimeModelID: info.RuntimeModelID, EffortLevel: info.EffortLevel, OpenAIFastMode: info.OpenAIFastMode, Metadata: metadata, memory: true, ephemeral: true}}
 	s.mu.Lock()
 	existing := s.sideChats[id]
 	if existing == nil {
@@ -253,7 +253,7 @@ func (s *Server) selectUnopenedSideChatRuntime(id string, runtime *runtimeSessio
 	if e := values.UnmarshalJSON(data); e != nil {
 		return true, e
 	}
-	next, e := providerconfig.NormalizeRuntimeSelection(runtime.ctx, providerconfig.Options{Store: s.options.Store, ConfigDir: s.options.ConfigDir, Managed: s.options.Managed, Settings: s.options.Settings}, values)
+	next, e := providerconfig.NormalizeRuntimeSelection(runtime.ctx, providerconfig.Options{Store: s.options.Store, ConfigDir: s.options.ConfigDir, Managed: s.options.Managed, Settings: s.options.Settings, OpenAIModelCatalog: s.options.OpenAIModelCatalog, GrokModelCatalog: s.options.GrokModelCatalog}, values)
 	if e != nil {
 		var api *settings.APIError
 		if errors.As(e, &api) && api.Code == "RUNTIME_CONFIG_INVALID" {
@@ -267,6 +267,8 @@ func (s *Server) selectUnopenedSideChatRuntime(id string, runtime *runtimeSessio
 	if next.EffortLevel != "" {
 		metadata["effortLevel"] = next.EffortLevel
 	}
+	fast := next.ProviderID != nil && *next.ProviderID == "openai-official" && next.OpenAIFastMode != nil && *next.OpenAIFastMode
+	metadata["openAIFastMode"] = fast
 	data, e = json.Marshal(metadata)
 	if e != nil {
 		return true, e
@@ -280,6 +282,9 @@ func (s *Server) selectUnopenedSideChatRuntime(id string, runtime *runtimeSessio
 	frame := map[string]any{"type": "runtime_config_applied", "providerId": next.ProviderID, "modelId": next.ModelID}
 	if next.EffortLevel != "" {
 		frame["effortLevel"] = next.EffortLevel
+	}
+	if next.ProviderID != nil && *next.ProviderID == "openai-official" {
+		frame["openAIFastMode"] = fast
 	}
 	if next.RequestedConfig != nil {
 		frame["requestedConfig"] = next.RequestedConfig

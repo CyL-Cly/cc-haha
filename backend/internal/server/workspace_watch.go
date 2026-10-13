@@ -85,6 +85,36 @@ func (server *Server) workspaceWatchHTTP(writer http.ResponseWriter, request *ht
 		close(done)
 		server.mu.Unlock()
 	}()
+	states := map[string]*workspaceWatchState{}
+	scans := map[string]*workspaceWatchScan{}
+	defer func() {
+		for _, scan := range scans {
+			scan.close()
+		}
+	}()
+	validate := func(target workspaceWatchTarget) error {
+		resolved, e := server.resolveWorkspacePath(info, target.relative)
+		if e != nil {
+			return e
+		}
+		if resolved.canonical != target.absolute {
+			return fmt.Errorf("Watch directory changed its canonical path: %s", target.relative)
+		}
+		return ctx.Err()
+	}
+	for _, target := range targets {
+		if e := validate(target); e != nil {
+			return e
+		}
+		state, e := readWorkspaceWatchState(ctx, target.absolute)
+		if e != nil {
+			return e
+		}
+		if e = validate(target); e != nil {
+			return e
+		}
+		states[target.absolute] = state
+	}
 	// Attach native OS watchers only after every path has passed validation.
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -129,9 +159,6 @@ func (server *Server) workspaceWatchHTTP(writer http.ResponseWriter, request *ht
 		}
 		return controller.Flush() == nil
 	}
-	if !send(map[string]string{"type": "ready"}) {
-		return nil
-	}
 	heartbeat := time.NewTicker(15 * time.Second)
 	defer heartbeat.Stop()
 	var timer *time.Timer
@@ -143,6 +170,59 @@ func (server *Server) workspaceWatchHTTP(writer http.ResponseWriter, request *ht
 	}()
 	paths, directories := []string{}, []string{}
 	seenPaths, seenDirectories := map[string]bool{}, map[string]bool{}
+	notify := func(target workspaceWatchTarget, names []string) {
+		if !seenDirectories[target.relative] {
+			directories = append(directories, target.relative)
+			seenDirectories[target.relative] = true
+		}
+		for _, name := range names {
+			path := normalizeWorkspacePath(filepath.Join(target.relative, name))
+			if !seenPaths[path] {
+				paths = append(paths, path)
+				seenPaths[path] = true
+			}
+		}
+		if due == nil {
+			timer = time.NewTimer(60 * time.Millisecond)
+			due = timer.C
+		}
+	}
+	// The registration gap can lose native events. Reconcile against the
+	// baseline before Ready so a client cannot mistake the gap for a clean tree.
+	for _, target := range targets {
+		if e := validate(target); e != nil {
+			return e
+		}
+		scan := &workspaceWatchScan{path: target.absolute}
+		scans[target.absolute] = scan
+		next, e := scan.readChunk(ctx)
+		if e != nil {
+			return e
+		}
+		if e = validate(target); e != nil {
+			return e
+		}
+		if next == nil {
+			continue
+		}
+		delete(scans, target.absolute)
+		before := states[target.absolute]
+		names := changedWorkspaceWatchEntries(before, next)
+		identityChanged := !sameWorkspaceWatchIdentity(before.identity, next.identity)
+		if identityChanged && target.relative != "" {
+			names = append(names, "")
+		}
+		if len(names) > 0 || identityChanged || before.fingerprint != next.fingerprint {
+			notify(target, names)
+		}
+		states[target.absolute] = next
+	}
+	if !send(map[string]string{"type": "ready"}) {
+		return nil
+	}
+	reconciliation := time.NewTicker(250 * time.Millisecond)
+	defer reconciliation.Stop()
+	cursor := 0
 	for {
 		select {
 		case <-ctx.Done():
@@ -150,6 +230,49 @@ func (server *Server) workspaceWatchHTTP(writer http.ResponseWriter, request *ht
 		case <-heartbeat.C:
 			if !send(map[string]string{"type": "heartbeat"}) {
 				return nil
+			}
+		case <-reconciliation.C:
+			for i := 0; i < min(len(targets), 4); i++ {
+				target := targets[cursor]
+				cursor = (cursor + 1) % len(targets)
+				if e := validate(target); e != nil {
+					send(map[string]string{"type": "error", "message": e.Error()})
+					return nil
+				}
+				scan := scans[target.absolute]
+				if scan == nil {
+					scan = &workspaceWatchScan{path: target.absolute}
+					scans[target.absolute] = scan
+				}
+				next, e := scan.readChunk(ctx)
+				if e == nil {
+					e = validate(target)
+				}
+				if e != nil {
+					send(map[string]string{"type": "error", "message": e.Error()})
+					return nil
+				}
+				if next == nil {
+					continue
+				}
+				delete(scans, target.absolute)
+				before := states[target.absolute]
+				names := changedWorkspaceWatchEntries(before, next)
+				identityChanged := !sameWorkspaceWatchIdentity(before.identity, next.identity)
+				if identityChanged && target.relative != "" {
+					names = append(names, "")
+				}
+				if len(names) > 0 || identityChanged || before.fingerprint != next.fingerprint {
+					notify(target, names)
+				}
+				if identityChanged && next.identity != nil {
+					_ = watcher.Remove(target.absolute)
+					if e := watcher.Add(target.absolute); e != nil {
+						send(map[string]string{"type": "error", "message": e.Error()})
+						return nil
+					}
+				}
+				states[target.absolute] = next
 			}
 		case failure, ok := <-watcher.Errors:
 			if !ok {

@@ -94,7 +94,16 @@ func (m *MainPrint) sendNativeStructuredTeamMessage(ctx context.Context, scope *
 			return written{}, mainCap("ordinary process teammate actual graceful shutdown lifecycle")
 		}
 		if err = mailbox.Write(out.Recipient, actor.TeamName, out.Envelope); err != nil {
-			return written{}, err
+			result := out.Output.Clone()
+			result.Set("success", rawMain(false))
+			text := fmt.Sprintf("Failed to write to %s's inbox — nothing was sent. Try again.", out.Recipient)
+			if message.String("type") == "shutdown_response" && string(message.Get("approve")) == "true" {
+				text = fmt.Sprintf("Failed to write the shutdown approval to team-lead's inbox — nothing was sent and %s is still running. Try again.", actor.AgentName)
+			} else if message.String("type") == "shutdown_request" {
+				text = fmt.Sprintf("Failed to write the shutdown request to %s's inbox — nothing was sent. Try again.", out.Recipient)
+			}
+			result.Set("message", quoteMain(text))
+			return written{result: queryloop.ToolCallResult{Data: rawMain(result)}, shutdown: false}, nil
 		}
 		return written{queryloop.ToolCallResult{Data: rawMain(out.Output)}, out.AbortSelf || out.GracefulExit}, nil
 	})

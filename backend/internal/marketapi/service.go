@@ -324,10 +324,14 @@ func encodeCursor(m map[string]string) any {
 
 type ListParams struct {
 	Q, Source, Security, Installed, Cursor string
+	Scope, Category                        string
 	Limit                                  int
 }
 
 func (s *Service) List(ctx context.Context, p ListParams) (object, error) {
+	if p.Scope != "market" {
+		return s.listCatalog(ctx, p)
+	}
 	s.listMu.Lock()
 	defer s.listMu.Unlock()
 	type outcome struct {
@@ -437,10 +441,14 @@ func (s *Service) List(ctx context.Context, p ListParams) (object, error) {
 		}
 		items = append(items, item)
 	}
-	return object{"items": items, "nextCursor": encodeCursor(next), "sources": status}, nil
+	for i, item := range items {
+		items[i] = s.markCurated(item, "", false)
+	}
+	return object{"scope": "market", "items": items, "nextCursor": encodeCursor(next), "sources": status}, nil
 }
-func (s *Service) Detail(ctx context.Context, source, slug string) (object, object, error) {
-	key := "detail:" + source + ":" + slug
+func (s *Service) Detail(ctx context.Context, source, slug string, owner ...string) (object, object, error) {
+	ctx, suffix := ownerContext(ctx, source, slug, owner)
+	key := "detail:" + source + ":" + slug + suffix
 	status := object{"status": "ok", "fetchedAt": s.o.Now().UnixMilli(), "fromCache": true}
 	var d object
 	if v, _, ok := s.cached(key, false); ok {
@@ -460,7 +468,7 @@ func (s *Service) Detail(ctx context.Context, source, slug string) (object, obje
 			status["fromCache"] = false
 		}
 	}
-	copy := s.annotate(d)
+	copy := s.annotate(s.markCurated(d, strings.TrimPrefix(suffix, "@"), true))
 	files, _ := d["files"].([]object)
 	owned := make([]object, len(files))
 	for i, f := range files {
@@ -469,8 +477,9 @@ func (s *Service) Detail(ctx context.Context, source, slug string) (object, obje
 	copy["files"] = owned
 	return fileLimits(copy), status, nil
 }
-func (s *Service) File(ctx context.Context, source, slug, path string) (object, error) {
-	key := "file:" + source + ":" + slug + ":" + path
+func (s *Service) File(ctx context.Context, source, slug, path string, owner ...string) (object, error) {
+	ctx, suffix := ownerContext(ctx, source, slug, owner)
+	key := "file:" + source + ":" + slug + suffix + ":" + path
 	if v, _, ok := s.cached(key, false); ok {
 		return v.(object), nil
 	}

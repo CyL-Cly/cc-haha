@@ -17,7 +17,9 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/builtinwrite"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/ownerasync"
+	"github.com/NanmiCoder/cc-haha/backend/internal/pdfread"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/toolschema"
 	"github.com/NanmiCoder/cc-haha/backend/internal/websearch"
 )
 
@@ -88,6 +90,13 @@ func fileTooLarge(n int64) error {
 // Read validation follows Source's string-only checks. Filesystem access is
 // deferred until the actual permission decision has been resolved.
 func (s *Service) validateRead(in protocol.JSONObject, scope *cooperative.Scope, p string) error {
+	ext := strings.ToLower(filepath.Ext(p))
+	if ext == ".pdf" && in.Get("pages") != nil {
+		if err := pdfread.ValidatePages(in.String("pages")); err != nil {
+			return err
+		}
+	}
+
 	c, e := s.options.PermissionContext(scope)
 	if e != nil {
 		return e
@@ -99,7 +108,9 @@ func (s *Service) validateRead(in protocol.JSONObject, scope *cooperative.Scope,
 	if denied {
 		return fmt.Errorf("File is in a directory that is denied by your permission settings.")
 	}
-	ext := strings.ToLower(filepath.Ext(p))
+	if s.options.Platform == "windows" && (strings.HasPrefix(p, `\\`) || strings.HasPrefix(p, "//")) {
+		return nil
+	}
 	switch ext {
 	case ".bmp", ".ico", ".tiff", ".tif":
 		return fmt.Errorf("This tool cannot read binary files. The file appears to be a binary %s file. Please use appropriate tools for binary file analysis.", ext)
@@ -144,7 +155,7 @@ func (s *Service) startRead(ctx context.Context, in protocol.JSONObject, scope *
 	if s.options.FileSkills == nil || skillSimple(s.options.Environment["CLAUDE_CODE_SIMPLE"]) {
 		return s.startReadBody(ctx, in, scope, true)
 	}
-	path, e := s.path(in, "file_path")
+	path, e := s.readPath(in)
 	if e != nil {
 		return nil, e
 	}
@@ -154,7 +165,7 @@ func (s *Service) startRead(ctx context.Context, in protocol.JSONObject, scope *
 	}
 	offset, limit := number(in, "offset", 1), number(in, "limit", 0)
 	hasLimit := in.Get("limit") != nil
-	dedup := exists && !old.PartialView && old.Offset != nil && int(*old.Offset) == offset && ((old.Limit == nil && !hasLimit) || old.Limit != nil && hasLimit && int(*old.Limit) == limit)
+	dedup := strings.ToLower(filepath.Ext(path)) != ".pdf" && exists && !old.PartialView && old.Offset != nil && int(*old.Offset) == offset && ((old.Limit == nil && !hasLimit) || old.Limit != nil && hasLimit && int(*old.Limit) == limit)
 	output, e := ownerasync.NewOwnerFuture[json.RawMessage](s.options.Owner)
 	if e != nil {
 		return nil, e
@@ -205,7 +216,11 @@ func (s *Service) startRead(ctx context.Context, in protocol.JSONObject, scope *
 }
 
 func (s *Service) startReadBody(ctx context.Context, in protocol.JSONObject, scope *cooperative.Scope, checkDedup bool) (*ownerasync.OwnerFuture[json.RawMessage], error) {
-	p, e := s.path(in, "file_path")
+	return s.startReadBodyWithLimit(ctx, in, scope, checkDedup, 0)
+}
+
+func (s *Service) startReadBodyWithLimit(ctx context.Context, in protocol.JSONObject, scope *cooperative.Scope, checkDedup bool, maxTokensOverride int) (*ownerasync.OwnerFuture[json.RawMessage], error) {
+	p, e := s.readPath(in)
 	if e != nil {
 		return nil, e
 	}
@@ -238,7 +253,36 @@ func (s *Service) startReadBody(ctx context.Context, in protocol.JSONObject, sco
 			return result, nil
 		})
 	case ".pdf":
-		return nil, capability("Read image/PDF processing " + ext)
+		if s.options.Images == nil || s.options.Images.ReadPDF == nil {
+			return nil, capability("Read PDF native owner producer")
+		}
+		var pages *string
+		if in.Get("pages") != nil {
+			value := in.String("pages")
+			pages = &value
+		}
+		future, err := s.options.Images.ReadPDF(ctx, scope, p, pages)
+		if err != nil {
+			return nil, err
+		}
+		return transform(s, scope, future, func(next *cooperative.Scope, result json.RawMessage) (json.RawMessage, error) {
+			if s.options.ReportEvent != nil {
+				var value protocol.JSONObject
+				if err := json.Unmarshal(result, &value); err != nil {
+					return nil, err
+				}
+				file, _ := value.Object("file")
+				text := file.String("base64")
+				if pages != nil && *pages != "" {
+					text = "PDF pages " + *pages
+				}
+				content := utf16.Encode([]rune(text))
+				if err := s.options.ReportEvent(next, analytics.FileOperationEvent(analytics.FileOperation{Operation: "read", Tool: "FileReadTool", Path: utf16.Encode([]rune(p)), Content: &content})); err != nil {
+					return nil, err
+				}
+			}
+			return result, nil
+		})
 	}
 	offset := number(in, "offset", 1)
 	limit := number(in, "limit", 0)
@@ -256,6 +300,9 @@ func (s *Service) startReadBody(ctx context.Context, in protocol.JSONObject, sco
 	if n, e := strconv.Atoi(s.options.Environment["CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS"]); e == nil && n > 0 {
 		maxTokens = n
 	}
+	if maxTokensOverride > 0 {
+		maxTokens = maxTokensOverride
+	}
 	divisor := 4.0
 	if ext == ".json" || ext == ".jsonl" || ext == ".jsonc" {
 		divisor = 2
@@ -269,22 +316,6 @@ func (s *Service) startReadBody(ctx context.Context, in protocol.JSONObject, sco
 		data, e := readRange(ctx, p, start, limit, hasLimit)
 		if e != nil {
 			return readCompletion{}, e
-		}
-		estimate := int(math.Floor(float64(len(utf16.Encode([]rune(data.Content))))/divisor + 0.5))
-		if estimate > maxTokens/4 {
-			if s.options.CountTokens == nil {
-				return readCompletion{}, capability("large Read actual token-count API")
-			}
-			count, e := s.options.CountTokens(ctx, data.Content)
-			if e != nil {
-				return readCompletion{}, e
-			}
-			if count != nil {
-				estimate = *count
-			}
-			if estimate > maxTokens {
-				return readCompletion{}, fmt.Errorf("File content (%d tokens) exceeds maximum allowed tokens (%d). Please use offset and limit parameters to read specific portions of the file, or use the GrepTool to search for specific content.", estimate, maxTokens)
-			}
 		}
 		return readCompletion{text: data}, nil
 	})
@@ -301,6 +332,9 @@ func (s *Service) startReadBody(ctx context.Context, in protocol.JSONObject, sco
 			return object(field("type", "file_unchanged"), protocol.JSONField{Name: "file", Value: object(protocol.JSONField{Name: "filePath", Value: in.Get("file_path")})}), nil
 		}
 		data := completion.text
+		if err := s.validateReadTokens(ctx, callback, data.Content, divisor, float64(maxTokens)); err != nil {
+			return nil, err
+		}
 		o := float64(offset)
 		var l *float64
 		if hasLimit {
@@ -381,6 +415,27 @@ func MapResult(name string, data, id json.RawMessage) (protocol.JSONObject, erro
 		if result.String("type") == "notebook" {
 			return mapNotebookRead(f, id)
 		}
+		if result.String("type") == "pdf" || result.String("type") == "parts" {
+			path, err := protocol.JavaScriptStringJSON(f.Get("filePath"))
+			if err != nil {
+				return protocol.JSONObject{}, err
+			}
+			label := "PDF file read: "
+			if result.String("type") == "parts" {
+				count, err := protocol.JavaScriptStringJSON(f.Get("count"))
+				if err != nil {
+					return protocol.JSONObject{}, err
+				}
+				var text string
+				_ = json.Unmarshal(count, &text)
+				label = "PDF pages extracted: " + text + " page(s) from "
+			}
+			var text string
+			_ = json.Unmarshal(path, &text)
+			size := math.NaN()
+			_ = json.Unmarshal(f.Get("originalSize"), &size)
+			return textResult(id, label+text+" ("+toolschema.FormatFileSize(size)+")"), nil
+		}
 		content := f.String("content")
 		start := number(f, "startLine", 1)
 		if content == "" {
@@ -417,6 +472,11 @@ func MapResult(name string, data, id json.RawMessage) (protocol.JSONObject, erro
 	case "Grep":
 		return mapGrep(result, id), nil
 	case "Bash":
+		if boolean(result, "isImage", false) {
+			if image, parsed := shellImageResult(result, id); parsed {
+				return image, nil
+			}
+		}
 		stdout := trimBashOutput(result.String("stdout"))
 		var persistedPreview json.RawMessage
 		if path := result.String("persistedOutputPath"); path != "" {

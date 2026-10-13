@@ -43,7 +43,7 @@ const {handleStopHooks}=await import('../../../../src/query/stopHooks')
 const rows=[]
 for(const row of input.rows){
  current=row
- const app:any={toolPermissionContext:{mode:'default'},sessionHooks:new Map(),mcp:{clients:[]}}
+ const app:any={toolPermissionContext:{mode:'default'},sessionHooks:new Map(),mcp:{clients:[]},tasks:row.teamWork?{worker:{type:'in_process_teammate',status:'running',isIdle:false}}:{},...(row.teamWork?{teamContext:{teamName:'goal-source-team',leadAgentId:'team-lead@goal-source-team',isLeader:true,teammates:{}}}:{})}
  const context:any={options:{tools:[]},getAppState:()=>app,setAppState:(updater:any)=>Object.assign(app,updater(app)),setResponseLength:()=>{},abortController:new AbortController()}
  const generator=handleStopHooks([],[],[],{}, {},context,'sdk')
  const messages=[];let result:any

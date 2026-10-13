@@ -65,6 +65,7 @@ type Host struct {
 	FGTSEnabled              bool
 	DisableExperimentalBetas bool
 	BashEnvironment          map[string]string
+	PowerShellEdition        string
 	AgentDefinitions         []AgentPromptDefinition
 	QuestionPreviewFormat    string
 	PlanInterviewPhase       bool

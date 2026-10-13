@@ -274,24 +274,6 @@ func (s *Service) startNotebookRead(ctx context.Context, in protocol.JSONObject,
 		if len(cells) > 256*1024 {
 			return notebookReadCompletion{}, fmt.Errorf("Notebook content (%s) exceeds maximum allowed size (256KB). Use Bash with jq to read specific portions:\n  cat \"%s\" | jq '.cells[:20]' # First 20 cells\n  cat \"%s\" | jq '.cells[100:120]' # Cells 100-120\n  cat \"%s\" | jq '.cells | length' # Count total cells\n  cat \"%s\" | jq '.cells[] | select(.cell_type==\"code\") | .source' # All code sources", formatSize(int64(len(cells))), in.String("file_path"), in.String("file_path"), in.String("file_path"), in.String("file_path"))
 		}
-		u := utf16.Encode([]rune(string(cells)))
-		estimate := int(math.Floor(float64(len(u))/4 + 0.5))
-		maxTokens := notebookIntEnvironment(s.options.Environment["CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS"], 25000, 0)
-		if estimate > maxTokens/4 {
-			if s.options.CountTokens == nil {
-				return notebookReadCompletion{}, capability("large Read actual token-count API")
-			}
-			count, err := s.options.CountTokens(ctx, string(cells))
-			if err != nil {
-				return notebookReadCompletion{}, err
-			}
-			if count != nil {
-				estimate = *count
-			}
-			if estimate > maxTokens {
-				return notebookReadCompletion{}, fmt.Errorf("File content (%d tokens) exceeds maximum allowed tokens (%d). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.", estimate, maxTokens)
-			}
-		}
 		stamp, err := mtime(p)
 		return notebookReadCompletion{cells: cells, timestamp: stamp}, err
 	})
@@ -306,6 +288,10 @@ func (s *Service) startNotebookRead(ctx context.Context, in protocol.JSONObject,
 				}
 			}
 			return object(field("type", "file_unchanged"), protocol.JSONField{Name: "file", Value: object(protocol.JSONField{Name: "filePath", Value: in.Get("file_path")})}), nil
+		}
+		maxTokens := notebookIntEnvironment(s.options.Environment["CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS"], 25000, 0)
+		if err := s.validateReadTokens(ctx, next, string(data.cells), 4, float64(maxTokens)); err != nil {
+			return nil, err
 		}
 		o := float64(offset)
 		var l *float64

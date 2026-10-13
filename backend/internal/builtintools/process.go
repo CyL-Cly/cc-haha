@@ -46,7 +46,7 @@ func (s *Service) process(ctx context.Context, name string, args []string, cwd s
 func (s *Service) processOutput(ctx context.Context, name string, args []string, cwd string, timeout time.Duration, merged bool) (processResult, error) {
 	return s.processOutputEnvironment(ctx, name, args, cwd, timeout, merged, s.options.Environment)
 }
-func (s *Service) processOutputEnvironment(ctx context.Context, name string, args []string, cwd string, timeout time.Duration, merged bool, environment map[string]string) (processResult, error) {
+func (s *Service) processOutputEnvironment(ctx context.Context, name string, args []string, cwd string, timeout time.Duration, merged bool, environment map[string]string, shellGuard ...bool) (processResult, error) {
 	p, e := executableInEnvironment(name, environment)
 	if e != nil {
 		return processResult{}, e
@@ -70,7 +70,11 @@ func (s *Service) processOutputEnvironment(ctx context.Context, name string, arg
 	if merged {
 		cmd.Stderr = cmd.Stdout
 	}
-	configureProcess(cmd)
+	if len(shellGuard) > 0 && shellGuard[0] {
+		configureShellProcess(cmd)
+	} else {
+		configureProcess(cmd)
+	}
 	e = cmd.Run()
 	result := processResult{Out: string(protocol.DecodeJavaScriptUTF8(out.Bytes())), Err: string(protocol.DecodeJavaScriptUTF8(errOut.Bytes())), Interrupted: timed.Err() != nil}
 	if e != nil {
@@ -90,7 +94,7 @@ func (s *Service) bash(ctx context.Context, in protocol.JSONObject, scope *coope
 			return s.startBackgroundBash(scope, in, nil)
 		}
 	}
-	sandbox, e := s.selectBashSandbox(scope, in)
+	sandbox, e := s.shellSandbox(scope, in)
 	if e != nil {
 		return nil, e
 	}
@@ -102,11 +106,11 @@ func (s *Service) bash(ctx context.Context, in protocol.JSONObject, scope *coope
 	if e != nil {
 		return nil, e
 	}
-	shell := environment["SHELL"]
-	if shell == "" {
-		shell = "/bin/bash"
+	shell, e := s.shellExecutable(scope, environment)
+	if e != nil {
+		return nil, e
 	}
-	timeout := nativeBashTimeout(in, environment)
+	timeout := s.shellTimeout(in, environment)
 	execution, e := s.prepareBashExecution(ctx, scope, command, "")
 	if e != nil {
 		return nil, e
@@ -118,7 +122,7 @@ func (s *Service) bash(ctx context.Context, in protocol.JSONObject, scope *coope
 		if err != nil {
 			return processResult{}, err
 		}
-		result, err := s.processOutputEnvironment(ctx, shell, []string{"-l", "-c", command}, execution.OriginalCwd, nativeBashTimerDuration(timeout), true, environment)
+		result, err := s.processOutputEnvironment(ctx, shell, s.shellArgs(command), execution.OriginalCwd, nativeBashTimerDuration(timeout), true, environment, true)
 		result.NewCwd = execution.finish()
 		return result, err
 	})
@@ -132,17 +136,24 @@ func (s *Service) bash(ctx context.Context, in protocol.JSONObject, scope *coope
 	if e = s.consumeBashCwd(scope, execution, data.NewCwd, false); e != nil {
 		return nil, e
 	}
-	failed, e := bashResultIsError(s.options.Platform, command, data.Code)
+	failed, e := s.shellResultIsError(command, data.Code)
 	if e != nil {
 		return nil, e
+	}
+	if s.isPowerShell() || !(failed && ctx.Err() == nil) {
+		if e = s.stripProcessHints(scope, &data, command); e != nil {
+			return nil, e
+		}
 	}
 	// A user cancellation is returned as an interrupted result. Timeouts are
 	// failures, as in the original abortController reason comparison.
 	if failed && ctx.Err() == nil {
+		if s.isPowerShell() {
+			return nil, &toolerrors.ShellError{Stdout: data.Out, Stderr: data.Err, Code: data.Code, Interrupted: data.Interrupted}
+		}
 		return nil, &toolerrors.ShellError{Stderr: data.Out, Code: data.Code, Interrupted: data.Interrupted}
 	}
-	stdout := strings.TrimRightFunc(data.Out, bashSpace) + "\n"
-	return object(field("stdout", stdout), field("stderr", data.Err), field("interrupted", data.Interrupted), field("isImage", false), field("noOutputExpected", nativeBashSilent(command, s.options.Platform))), nil
+	return raw(s.shellCompletedData(command, data)), nil
 }
 
 func bashSpace(r rune) bool {

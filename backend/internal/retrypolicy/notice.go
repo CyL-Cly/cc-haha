@@ -55,6 +55,13 @@ func serializedSDKError(failure error) (json.RawMessage, error) {
 			requestID = quote(*sdk.RequestID)
 		}
 		fields.Set("requestID", requestID)
+		if sdk.Type != nil {
+			workspaceID := json.RawMessage(`null`)
+			if sdk.WorkspaceID != nil {
+				workspaceID = quote(*sdk.WorkspaceID)
+			}
+			fields.Set("workspaceID", workspaceID)
+		}
 	}
 	if len(sdk.Payload) > 0 {
 		payload, err := protocol.ParseAndStringifyJavaScriptJSON(sdk.Payload)
@@ -62,6 +69,13 @@ func serializedSDKError(failure error) (json.RawMessage, error) {
 			return nil, missingAttempt("validated SDK payload")
 		}
 		fields.Set("error", payload)
+	}
+	if sdk.Type != nil {
+		kind, err := protocol.ParseAndStringifyJavaScriptJSON(sdk.Type)
+		if err != nil {
+			return nil, missingAttempt("validated SDK error type")
+		}
+		fields.Set("type", kind)
 	}
 	if !nilFailure(sdk.Cause) {
 		cause, err := serializedSDKError(sdk.Cause)

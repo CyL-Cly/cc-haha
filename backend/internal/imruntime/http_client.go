@@ -36,6 +36,9 @@ func NewHTTPClient(config Config, client *http.Client) *HTTPClient {
 	return &HTTPClient{config, client, base}
 }
 func (c *HTTPClient) Request(ctx context.Context, method, path string, body json.RawMessage) (protocol.JSONObject, int, error) {
+	return c.request(ctx, method, path, body, true)
+}
+func (c *HTTPClient) request(ctx context.Context, method, path string, body json.RawMessage, parseSuccess bool) (protocol.JSONObject, int, error) {
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 	request, err := http.NewRequestWithContext(ctx, method, c.BaseURL+path, bytes.NewReader(body))
@@ -54,16 +57,39 @@ func (c *HTTPClient) Request(ctx context.Context, method, path string, body json
 		return protocol.JSONObject{}, 0, err
 	}
 	defer response.Body.Close()
+	if !parseSuccess && response.StatusCode >= 200 && response.StatusCode < 300 {
+		return protocol.NewJSONObject(), response.StatusCode, nil
+	}
 	raw, err := io.ReadAll(response.Body)
 	if err != nil {
+		if response.StatusCode < 200 || response.StatusCode >= 300 {
+			return httpStatusFallback(response), response.StatusCode, nil
+		}
 		return protocol.JSONObject{}, response.StatusCode, err
+	}
+	if (response.StatusCode < 200 || response.StatusCode >= 300) && strings.TrimSpace(string(raw)) == "null" {
+		return protocol.JSONObject{}, response.StatusCode, fmt.Errorf("null is not an object (evaluating 'err.message')")
 	}
 	var data protocol.JSONObject
 	if err = data.UnmarshalJSON(protocol.DecodeJavaScriptUTF8(raw)); err != nil {
+		if response.StatusCode < 200 || response.StatusCode >= 300 {
+			if json.Valid(protocol.DecodeJavaScriptUTF8(raw)) {
+				return protocol.NewJSONObject(), response.StatusCode, nil
+			}
+			return httpStatusFallback(response), response.StatusCode, nil
+		}
 		return data, response.StatusCode, err
 	}
 	return data, response.StatusCode, nil
 }
+func httpStatusFallback(response *http.Response) protocol.JSONObject {
+	statusText := http.StatusText(response.StatusCode)
+	if _, text, found := strings.Cut(response.Status, " "); found {
+		statusText = text
+	}
+	return protocol.NewJSONObject(protocol.JSONField{Name: "message", Value: raw(statusText)})
+}
+
 func (c *HTTPClient) AllowedPath(path string) string {
 	resolved := existingDir(path, c.Config.Home)
 	if resolved == "" {
@@ -86,7 +112,7 @@ func (c *HTTPClient) CreateSession(ctx context.Context, work string) (string, er
 		return "", err
 	}
 	if status < 200 || status >= 300 {
-		return "", fmt.Errorf("Failed to create session: %s", data.String("message"))
+		return "", fmt.Errorf("Failed to create session: %s", httpErrorMessage(data))
 	}
 	return data.String("sessionId"), nil
 }
@@ -99,7 +125,7 @@ func (c *HTTPClient) SessionExists(ctx context.Context, id string) (bool, error)
 		return false, err
 	}
 	if status < 200 || status >= 300 {
-		return false, fmt.Errorf("Failed to check session: %s", data.String("message"))
+		return false, fmt.Errorf("Failed to check session: %s", httpErrorMessage(data))
 	}
 	return data.String("permissionMode") != "bypassPermissions" && c.AllowedPath(data.String("workDir")) != "", nil
 }

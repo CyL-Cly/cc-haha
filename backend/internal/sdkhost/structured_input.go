@@ -7,6 +7,7 @@ import (
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/remoteio"
 )
 
 // PlainStructuredInput ports StructuredIO.read's actual initial split,
@@ -15,27 +16,30 @@ import (
 // remain explicit capabilities. Original bytes are parsed here, not supplied as
 // a pre-resolved Source message or an expected phase schedule.
 type PlainStructuredInput struct {
-	allowSideQuestion   bool
-	allowSDKInitialize  bool
-	allowSDKMCP         bool
-	allowSDKMCPControl  bool
-	allowSDKGetSettings bool
-	allowSDKMCPStatus   bool
-	allowSDKInference   bool
-	sandboxResponse     func(*cooperative.Scope, protocol.JSONObject) (bool, error)
-	sandboxClose        func(*cooperative.Scope) error
-	sandboxReplay       bool
-	owner               *cooperative.Owner
-	raw                 *OwnerIterator[string]
-	read                *OwnerIterator[protocol.JSONObject]
-	content             string
-	diagnostics         *diagnostics.Process
-	allowStopTask       bool
-	allowAgentMessage   bool
-	allowSessionInbox   bool
-	allowSessionUsage   bool
-	allowContextUsage   bool
-	prepended           []string
+	remote                 *remoteio.Service
+	environmentUpdate      func(*cooperative.Scope, protocol.JSONObject) error
+	allowSideQuestion      bool
+	allowSDKInitialize     bool
+	allowSDKMCP            bool
+	allowSDKMCPControl     bool
+	allowSDKGetSettings    bool
+	allowSDKMCPStatus      bool
+	allowSDKInference      bool
+	allowSDKPermissionMode bool
+	sandboxResponse        func(*cooperative.Scope, protocol.JSONObject) (bool, error)
+	sandboxClose           func(*cooperative.Scope) error
+	sandboxReplay          bool
+	owner                  *cooperative.Owner
+	raw                    *OwnerIterator[string]
+	read                   *OwnerIterator[protocol.JSONObject]
+	content                string
+	diagnostics            *diagnostics.Process
+	allowStopTask          bool
+	allowAgentMessage      bool
+	allowSessionInbox      bool
+	allowSessionUsage      bool
+	allowContextUsage      bool
+	prepended              []string
 }
 
 type parsedLine struct {
@@ -189,6 +193,7 @@ func (input *PlainStructuredInput) processLine(scope *cooperative.Scope, line st
 	}
 	switch message.String("type") {
 	case "control_response":
+		input.completeRemoteResponseLifecycle(message)
 		if input.sandboxResponse == nil {
 			return nil, cap("StructuredIO message branch " + message.String("type"))
 		}
@@ -202,11 +207,20 @@ func (input *PlainStructuredInput) processLine(scope *cooperative.Scope, line st
 		_ = future.Resolve(scope, parsedLine{message: message, present: input.sandboxReplay && object(message.Get("response")).String("subtype") != "error"})
 	case "control_request":
 		subtype := object(message.Get("request")).String("subtype")
-		if !(input.allowSideQuestion && (subtype == "side_question" || subtype == "cancel_side_question") || input.allowSDKInitialize && subtype == "initialize" || input.allowSDKMCP && subtype == "mcp_message" || input.allowSDKMCPControl && (subtype == "mcp_set_servers" || subtype == "mcp_reconnect" || subtype == "mcp_toggle") || input.allowSDKGetSettings && subtype == "get_settings" || input.allowSDKMCPStatus && subtype == "mcp_status" || input.allowSDKInference && (subtype == "set_model" || subtype == "set_max_thinking_tokens") || input.allowContextUsage && subtype == "get_context_usage" || input.allowSessionUsage && subtype == "get_session_usage" || input.allowStopTask && subtype == "stop_task" || input.allowAgentMessage && subtype == "send_agent_message" || input.allowSessionInbox && (subtype == "enqueue_session_message" || subtype == "interrupt" || subtype == "end_session")) {
+		if !(input.allowSideQuestion && (subtype == "side_question" || subtype == "cancel_side_question") || input.allowSDKInitialize && subtype == "initialize" || input.allowSDKMCP && subtype == "mcp_message" || input.allowSDKMCPControl && (subtype == "mcp_set_servers" || subtype == "mcp_reconnect" || subtype == "mcp_toggle") || input.allowSDKGetSettings && subtype == "get_settings" || input.allowSDKMCPStatus && subtype == "mcp_status" || input.allowSDKInference && (subtype == "set_model" || subtype == "set_max_thinking_tokens") || input.allowSDKPermissionMode && subtype == "set_permission_mode" || input.allowContextUsage && subtype == "get_context_usage" || input.allowSessionUsage && subtype == "get_session_usage" || input.allowStopTask && subtype == "stop_task" || input.allowAgentMessage && subtype == "send_agent_message" || input.allowSessionInbox && (subtype == "enqueue_session_message" || subtype == "interrupt" || subtype == "end_session")) {
 			return nil, cap("StructuredIO message branch " + message.String("type"))
 		}
 		_ = future.Resolve(scope, parsedLine{message: message, present: true})
 	case "keep_alive":
+		_ = future.Resolve(scope, parsedLine{})
+	case "update_environment_variables":
+		if input.environmentUpdate == nil {
+			return nil, cap("StructuredIO environment update consumer")
+		}
+		variables := object(message.Get("variables"))
+		if err := input.environmentUpdate(scope, variables); err != nil {
+			return nil, err
+		}
 		_ = future.Resolve(scope, parsedLine{})
 	case "user":
 		if object(message.Get("message")).String("role") != "user" {
@@ -228,6 +242,9 @@ func (input *PlainStructuredInput) InternalEventsPending(scope *cooperative.Scop
 	if err := scope.RegisterPromiseReaction(func(*cooperative.Owner) error { return nil }); err != nil {
 		return 0, err
 	}
+	if input.remote != nil {
+		return input.remote.InternalEventsPending(), nil
+	}
 	return 0, nil
 }
 
@@ -236,6 +253,9 @@ func (input *PlainStructuredInput) InternalEventsPending(scope *cooperative.Scop
 func (input *PlainStructuredInput) FlushInternalEvents(scope *cooperative.Scope) (*OwnerFuture[struct{}], error) {
 	if input == nil || !scope.BelongsTo(input.owner) {
 		return nil, cooperative.ErrRestricted
+	}
+	if input.remote != nil {
+		return input.flushRemoteInternalEvents(scope)
 	}
 	future, err := NewOwnerFuture[struct{}](input.owner)
 	if err != nil {

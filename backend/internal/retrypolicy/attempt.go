@@ -142,9 +142,13 @@ type RetryNotice struct {
 
 type AttemptDependencies[C any] struct {
 	GetClient func(context.Context) (C, error)
-	Now       func() time.Time
-	UUID      func() string
-	Random    func() float64
+	// ConsumeAttempt runs before client/auth rebuilding or fast-mode effects.
+	// A shared request budget belongs to every withRetry invocation, including
+	// failed client construction and the separate nonstream fallback.
+	ConsumeAttempt func() error
+	Now            func() time.Time
+	UUID           func() string
+	Random         func() float64
 	// Yield must wait until the consumer advances, as an async-generator yield
 	// does. No sleep or next attempt occurs before this call returns.
 	Yield                  func(RetryNotice) error
@@ -360,6 +364,14 @@ func RunAttempts[C any, T any](ctx context.Context, options AttemptOptions, host
 	for attempt := 1.0; attempt <= maximum+1; attempt++ {
 		if ctx.Err() != nil {
 			return zero, userAbort()
+		}
+		if deps.ConsumeAttempt != nil {
+			if exhausted := deps.ConsumeAttempt(); exhausted != nil {
+				if last != nil {
+					return zero, cannot(last)
+				}
+				return zero, cannot(exhausted)
+			}
 		}
 		wasFast := fastEnabled && retry.FastMode != nil && *retry.FastMode
 		if wasFast {

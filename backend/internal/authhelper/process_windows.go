@@ -4,10 +4,10 @@ package authhelper
 
 import (
 	"context"
-	"errors"
+	"github.com/NanmiCoder/cc-haha/backend/internal/windowshell"
 	"os/exec"
 )
 
-func shellCommand(context.Context, string) (*exec.Cmd, error) {
-	return nil, errors.New("apiKeyHelper capability is not migrated: Windows execa shell semantics")
+func shellCommand(ctx context.Context, command string, options ProcessOptions) (*exec.Cmd, error) {
+	return windowshell.NewWindowsShellCommand(ctx, command, options.Environment), nil
 }

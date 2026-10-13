@@ -8,6 +8,7 @@ import (
 type sideQuestionContinuation struct {
 	executing           atomic.Bool
 	authority           *NativeSideQuestionModels
+	dreamAuthority      *NativeAutoDreamModels
 	permissionAuthority *NativePermissionRequestHooks
 	owner               *Owner
 	resume              chan struct{}

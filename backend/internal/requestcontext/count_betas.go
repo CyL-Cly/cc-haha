@@ -48,6 +48,9 @@ func DirectCountingBetas(model string, env map[string]string, settings protocol.
 		betas = append(betas, "context-1m-2025-08-07")
 	}
 	isp, overridden := nativeCapability(Context{Options: Options{Model: model}, Host: Host{Env: env}}, "interleaved_thinking")
+	if trusted {
+		overridden = false
+	}
 	if !overridden {
 		isp = trusted && !strings.Contains(canonical, "claude-3-")
 	}

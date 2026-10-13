@@ -26,3 +26,19 @@ func (s *Service) MapTerminalBashResult(scope *cooperative.Scope, data, id json.
 	}
 	return s.mapBashResult(data, id)
 }
+
+func (s *Service) CallTerminalPowerShell(ctx context.Context, scope *cooperative.Scope, command string, progress func(json.RawMessage, protocol.JSONObject) error) (json.RawMessage, error) {
+	if err := s.check(scope); err != nil {
+		return nil, err
+	}
+	input := protocol.NewJSONObject(field("command", command), field("dangerouslyDisableSandbox", true))
+	result, err := s.callPowerShell(ctx, input, queryloop.JSONToolCallContext{Opaque: &builtinwrite.CallContext{Scope: scope}, OnProgress: progress})
+	return result.Data, err
+}
+
+func (s *Service) MapTerminalPowerShellResult(scope *cooperative.Scope, data, id json.RawMessage) (protocol.JSONObject, error) {
+	if err := s.check(scope); err != nil {
+		return protocol.JSONObject{}, err
+	}
+	return s.mapPowerShellResult(data, id)
+}

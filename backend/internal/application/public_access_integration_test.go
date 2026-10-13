@@ -162,8 +162,10 @@ func TestActualPublicPairingUsesSameDesktopHarnessAndWritesCanonicalArtifact(t *
 			t.Fatal(text)
 		case "message_complete":
 			completed = true
+			requestDesktopSessionSync(t, ws)
 		case "session_state":
-			if completed && frame.String("turnState") == "idle" {
+			if completed {
+				assertDesktopIdleSnapshot(t, frame)
 				idle = true
 			}
 		}
