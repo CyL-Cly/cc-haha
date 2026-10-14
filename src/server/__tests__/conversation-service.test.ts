@@ -192,12 +192,14 @@ describe('ConversationService', () => {
     sent: string[],
     networkDerivedFirstTokenTimeout = true,
     networkDerivedStreamMaxDuration = true,
+    networkDerivedToolInputDuration = true,
   ) {
     const session = {
       outputCallbacks: [],
       networkRoutingFingerprint: '',
       networkDerivedFirstTokenTimeout,
       networkDerivedStreamMaxDuration,
+      networkDerivedToolInputDuration,
       sdkSocket: {
         send(line: string) {
           sent.push(line)
@@ -265,9 +267,11 @@ describe('ConversationService', () => {
       // 240s apart keeps it alive forever. The overall-duration cap is NOT reset
       // by chunks and is what actually frees that case (#766).
       expect(env.CLAUDE_STREAM_MAX_DURATION_MS).toBe('1800000')
-      // Tool JSON gets a shorter inactivity budget. Progress resets it, while
-      // the overall response cap still bounds a stream that trickles forever.
-      expect(env.CLAUDE_STREAM_TOOL_INPUT_MAX_DURATION_MS).toBe('120000')
+      // Tool JSON has its own inactivity budget. Progress resets it, while the
+      // overall response cap still bounds a stream that trickles forever. It
+      // follows the request timeout (default 30 min), not a fixed 120s: a long
+      // file `content` string is silent until it is complete (#1536).
+      expect(env.CLAUDE_STREAM_TOOL_INPUT_MAX_DURATION_MS).toBe('1800000')
       // Non-streaming fallback stays off — its retry loop also hangs the UI (#766).
       expect(env.CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK).toBe('1')
     } finally {
@@ -576,9 +580,29 @@ describe('ConversationService', () => {
       expect(env.API_TIMEOUT_MS).toBe(String(timeoutMs))
       expect(env.CLAUDE_STREAM_FIRST_TOKEN_TIMEOUT_MS).toBe(String(timeoutMs))
       expect(env.CLAUDE_STREAM_MAX_DURATION_MS).toBe(String(timeoutMs))
+      // A silent tool-argument gap is legitimate generation time too (#1536).
+      expect(env.CLAUDE_STREAM_TOOL_INPUT_MAX_DURATION_MS).toBe(String(timeoutMs))
     } finally {
       if (prev === undefined) delete process.env.CLAUDE_STREAM_MAX_DURATION_MS
       else process.env.CLAUDE_STREAM_MAX_DURATION_MS = prev
+    }
+  })
+
+  test('buildChildEnv keeps the 120s tool-input floor for a short request timeout and lets caller env override (#1536)', async () => {
+    const prev = process.env.CLAUDE_STREAM_TOOL_INPUT_MAX_DURATION_MS
+    delete process.env.CLAUDE_STREAM_TOOL_INPUT_MAX_DURATION_MS
+    await fs.writeFile(
+      path.join(tmpDir, 'settings.json'),
+      JSON.stringify({ network: { aiRequestTimeoutMs: 30_000 } }),
+      'utf-8',
+    )
+    try {
+      const service = new ConversationService() as any
+      const env = (await service.buildChildEnv('/tmp')) as Record<string, string>
+      expect(env.CLAUDE_STREAM_TOOL_INPUT_MAX_DURATION_MS).toBe('120000')
+    } finally {
+      if (prev === undefined) delete process.env.CLAUDE_STREAM_TOOL_INPUT_MAX_DURATION_MS
+      else process.env.CLAUDE_STREAM_TOOL_INPUT_MAX_DURATION_MS = prev
     }
   })
 
@@ -977,6 +1001,7 @@ describe('ConversationService', () => {
     expect(update.variables.API_TIMEOUT_MS).toBe(String(timeoutMs))
     expect(update.variables.CLAUDE_STREAM_FIRST_TOKEN_TIMEOUT_MS).toBe(String(timeoutMs))
     expect(update.variables.CLAUDE_STREAM_MAX_DURATION_MS).toBe(String(timeoutMs))
+    expect(update.variables.CLAUDE_STREAM_TOOL_INPUT_MAX_DURATION_MS).toBe(String(timeoutMs))
     expect(JSON.parse(sent[1]!).type).toBe('user')
   })
 

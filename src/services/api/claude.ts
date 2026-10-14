@@ -2234,7 +2234,13 @@ async function* queryModel(
       }
       // Snapshot the active budget so a fire reports the value it was armed
       // with, even if the phase (first-token → idle) flips between arm and fire.
-      const idleMs = currentStreamIdleTimeoutMs;
+      // While a tool_use input is open, the upstream emits its JSON one complete
+      // key/value at a time and only pings in between (the SDK drops pings), so
+      // a long `content` value is legitimately silent. The tool-input guard owns
+      // that gap; the idle budget must not cut it shorter (#1536).
+      const idleMs = toolInputDurationGuard.hasActiveInput()
+        ? Math.max(currentStreamIdleTimeoutMs, STREAM_TOOL_INPUT_MAX_DURATION_MS)
+        : currentStreamIdleTimeoutMs;
       const warningMs = idleMs / 2;
       streamIdleWarningTimer = setTimeout(
         (warnMs) => {
@@ -2413,6 +2419,7 @@ async function* queryModel(
                   input: "",
                 };
                 toolInputDurationGuard.start(part.index);
+                resetStreamIdleTimer();
                 break;
               case "server_tool_use":
                 contentBlocks[part.index] = {
@@ -2591,6 +2598,7 @@ async function* queryModel(
             stopReasonIsTerminal = false;
             completedBlockIndexes.add(part.index);
             toolInputDurationGuard.stop(part.index);
+            resetStreamIdleTimer();
             const contentBlock = contentBlocks[part.index];
             if (!contentBlock) {
               logEvent("tengu_streaming_error", {

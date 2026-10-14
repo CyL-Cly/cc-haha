@@ -67,6 +67,7 @@ import {
   buildNetworkEnvironment,
   loadNetworkSettings,
   resolveStreamMaxDurationMs,
+  resolveStreamToolInputDurationMs,
   SYSTEM_PROXY_URL_ENV,
   type NetworkSettings,
 } from './networkSettings.js'
@@ -286,6 +287,7 @@ type SessionProcess = {
   networkRoutingFingerprint: string
   networkDerivedFirstTokenTimeout: boolean
   networkDerivedStreamMaxDuration: boolean
+  networkDerivedToolInputDuration: boolean
   sdkToken: string
   sdkSocket: { send(data: string): void } | null
   sdkAttached: Promise<void>
@@ -751,6 +753,7 @@ export class ConversationService {
     const networkRuntimeMetadata = {
       firstTokenTimeoutDerived: false,
       streamMaxDurationDerived: false,
+      toolInputDurationDerived: false,
     }
     const providerCapture: { fingerprint?: string } = {}
     const childEnv = await this.buildChildEnv(
@@ -841,6 +844,7 @@ export class ConversationService {
       networkRoutingFingerprint: networkRoutingFingerprint(networkSettings, childEnv),
       networkDerivedFirstTokenTimeout: networkRuntimeMetadata.firstTokenTimeoutDerived,
       networkDerivedStreamMaxDuration: networkRuntimeMetadata.streamMaxDurationDerived,
+      networkDerivedToolInputDuration: networkRuntimeMetadata.toolInputDurationDerived,
       sdkToken: this.getSdkTokenFromUrl(sdkUrl),
       sdkSocket: null,
       seenSdkMessageUuids: new Set<string>(),
@@ -1065,6 +1069,12 @@ export class ConversationService {
     if (session.networkDerivedStreamMaxDuration) {
       variables.CLAUDE_STREAM_MAX_DURATION_MS = String(
         resolveStreamMaxDurationMs(networkEnv.API_TIMEOUT_MS),
+      )
+    }
+
+    if (session.networkDerivedToolInputDuration) {
+      variables.CLAUDE_STREAM_TOOL_INPUT_MAX_DURATION_MS = String(
+        resolveStreamToolInputDurationMs(networkEnv.API_TIMEOUT_MS),
       )
     }
 
@@ -2096,6 +2106,7 @@ export class ConversationService {
     networkRuntimeMetadata?: {
       firstTokenTimeoutDerived: boolean
       streamMaxDurationDerived: boolean
+      toolInputDurationDerived: boolean
     },
     providerCapture?: { fingerprint?: string },
   ): Promise<Record<string, string>> {
@@ -2148,6 +2159,8 @@ export class ConversationService {
         !cleanEnv.CLAUDE_STREAM_FIRST_TOKEN_TIMEOUT_MS
       networkRuntimeMetadata.streamMaxDurationDerived =
         !cleanEnv.CLAUDE_STREAM_MAX_DURATION_MS
+      networkRuntimeMetadata.toolInputDurationDerived =
+        !cleanEnv.CLAUDE_STREAM_TOOL_INPUT_MAX_DURATION_MS
     }
     delete cleanEnv.CC_HAHA_SESSION_COLLABORATION_TOKEN
     delete cleanEnv.CC_HAHA_SESSION_ID
@@ -2248,9 +2261,13 @@ export class ConversationService {
         cleanEnv.CLAUDE_STREAM_MAX_DURATION_MS || String(streamMaxDurationMs),
       // Abort a local tool call when its JSON arguments stop making progress.
       // Healthy input_json_delta events reset this budget; the independent full
-      // response cap above still bounds a stream that trickles forever.
+      // response cap above still bounds a stream that trickles forever. The
+      // upstream emits tool JSON one complete key/value at a time, so writing a
+      // long `content` string is silent until that value is finished: the
+      // budget follows the user's "请求超时" instead of a fixed 120s (#1536).
       CLAUDE_STREAM_TOOL_INPUT_MAX_DURATION_MS:
-        cleanEnv.CLAUDE_STREAM_TOOL_INPUT_MAX_DURATION_MS || '120000',
+        cleanEnv.CLAUDE_STREAM_TOOL_INPUT_MAX_DURATION_MS ||
+        String(resolveStreamToolInputDurationMs(networkEnv.API_TIMEOUT_MS)),
       // Time-to-first-token budget: how long to wait for the FIRST streamed
       // chunk after response headers arrive. The idle timer above is the wrong
       // knob for slow prefill — it kills healthy local/3P models that take
