@@ -46,6 +46,7 @@ import { MODEL_REASONING_EFFORTS } from '../../../../src/shared/modelReasoning'
 import { AUTO_QUESTION_TIMEOUT_OPTIONS } from '../../../../src/shared/autoQuestionSettings'
 import { ChatAppearanceSettings } from './ChatAppearanceSettings'
 import { DataMigrationSettings } from './DataMigrationSettings'
+import { TabBehaviorSettings } from './TabBehaviorSettings'
 
 /**
  * The General settings panel — the largest of the seven, and the one most often
@@ -956,6 +957,9 @@ export function GeneralSettings() {
       <ChatAppearanceSettings />
 
       {uiZoomSection}
+
+      {/* The phone and tablet shells have no tab strip to manage. */}
+      {!isTouchH5Document() && <TabBehaviorSettings />}
 
       {/* Everything a new session starts from, in one card. */}
       <SettingsSection title={t('h5Settings.agentPreferences')}>
