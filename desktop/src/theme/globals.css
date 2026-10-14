@@ -2148,6 +2148,23 @@ body.sidebar-resizing * {
 .markdown-prose.chat-reading-markdown :is(h2, h3):not(:first-child) {
   margin-top: 22px;
 }
+/* An ordered list's number hangs outside the item, in the list's own padding.
+   Prose's fixed 20px holds "1." in a proportional face but not in a monospace
+   one, where "1. " is three full cells and "10. " four — the number then
+   overshoots the reply column, and in wide / full width the column reaches the
+   scroll area's padding edge, so the digit is clipped. Size the gutter in `ch`
+   (the width of "0" in the chosen face): marker = digits + "." + space, each at
+   most one cell. Lists of 10+ / 100+ items grow it a cell at a time. */
+.markdown-prose.chat-reading-markdown ol {
+  padding-inline-start: max(1.25rem, 3ch);
+}
+.markdown-prose.chat-reading-markdown ol:has(> li:nth-child(10)) {
+  padding-inline-start: max(1.25rem, 4ch);
+}
+.markdown-prose.chat-reading-markdown ol:has(> li:nth-child(100)) {
+  padding-inline-start: max(1.25rem, 5ch);
+}
+
 .markdown-prose.chat-reading-markdown code {
   font-family: var(--font-mono);
   font-size: var(--code-viewer-font-size);
