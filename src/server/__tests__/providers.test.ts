@@ -11,6 +11,7 @@ import { readActiveProviderManagedEnv } from '../services/providerRuntimeEnv.js'
 import { handleProvidersApi } from '../api/providers.js'
 import { handleProxyRequest } from '../proxy/handler.js'
 import { resetOpenAIChatImageSupportForTests } from '../proxy/openaiChatImageSupport.js'
+import { resetOpenAIChatReasoningFieldSupportForTests } from '../proxy/openaiChatReasoningFieldSupport.js'
 import { diagnosticsService } from '../services/diagnosticsService.js'
 import {
   clearTraceCaptureStateForTests,
@@ -35,6 +36,7 @@ async function setup() {
   process.env.HOME = tmpDir
   clearTraceCaptureStateForTests()
   resetOpenAIChatImageSupportForTests()
+  resetOpenAIChatReasoningFieldSupportForTests()
 }
 
 async function teardown() {
@@ -2522,6 +2524,157 @@ describe('ProviderService', () => {
       } finally {
         globalThis.fetch = originalFetch
       }
+    })
+
+    describe('reasoning fields the upstream refuses', () => {
+      const thinkingRefusal = {
+        error: {
+          param: 'thinking',
+          type: 'invalid_request_error',
+          message: 'Upstream request failed: [unsupported_parameter] Unrecognized request argument supplied: thinking.',
+        },
+      }
+      const effortRefusal = {
+        error: {
+          param: 'reasoning_effort',
+          type: 'invalid_request_error',
+          message: 'Upstream request failed: [unsupported_parameter] Unrecognized request argument supplied: reasoning_effort.',
+        },
+      }
+      const completion = (model: unknown) => Response.json({
+        id: 'chatcmpl-reasoning',
+        object: 'chat.completion',
+        created: 0,
+        model,
+        choices: [{ index: 0, message: { role: 'assistant', content: 'hi' }, finish_reason: 'stop' }],
+        usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2 },
+      })
+
+      async function setupOpenCodeGo(model: string, sibling: string) {
+        const svc = new ProviderService()
+        const provider = await svc.addProvider(sampleInput({
+          apiFormat: 'openai_chat',
+          baseUrl: 'https://opencode.ai/zen/go/v1',
+          models: { main: model, haiku: sibling, sonnet: model, opus: model },
+        }))
+        await svc.activateProvider(provider.id)
+        // What Claude Code sends with thinking on: a budget plus an effort level.
+        return (requestModel: string) => {
+          const req = new Request('http://localhost:3456/proxy/v1/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model: requestModel,
+              max_tokens: 32000,
+              thinking: { type: 'enabled', budget_tokens: 31999 },
+              output_config: { effort: 'medium' },
+              messages: [{ role: 'user', content: 'hello' }],
+            }),
+          })
+          return handleProxyRequest(req, new URL(req.url))
+        }
+      }
+
+      test('retries without the thinking toggle for a model that rejects it, then stays that way for that model', async () => {
+        const originalFetch = globalThis.fetch
+        const calls: Array<Record<string, unknown>> = []
+        globalThis.fetch = mock(async (_url: string | URL | Request, init?: RequestInit) => {
+          const body = JSON.parse(String(init?.body)) as Record<string, unknown>
+          calls.push(body)
+          if (body.model === 'cat-jam-free' && body.thinking !== undefined) {
+            return Response.json(thinkingRefusal, { status: 400 })
+          }
+          return completion(body.model)
+        }) as typeof fetch
+
+        try {
+          const send = await setupOpenCodeGo('cat-jam-free', 'deepseek-flash')
+
+          const first = await send('cat-jam-free')
+          expect(first.status).toBe(200)
+          expect(await first.json()).toMatchObject({ content: [{ type: 'text', text: 'hi' }] })
+          expect(calls).toHaveLength(2)
+          expect(calls[0]!.thinking).toEqual({ type: 'enabled' })
+          expect(calls[1]!.thinking).toBeUndefined()
+          // Only the refused field is dropped; the effort the user chose survives.
+          expect(calls[1]!.reasoning_effort).toBe('medium')
+
+          await diagnosticsService.drainForMigration()
+          const [learned] = (await diagnosticsService.readRecentEvents(20))
+            .filter(event => event.type === 'openai_chat_reasoning_field_disabled')
+          expect(learned).toMatchObject({ severity: 'info', details: { model: 'cat-jam-free', field: 'thinking', httpStatus: 400 } })
+          expect(JSON.stringify(learned)).not.toContain('sk-test-key-123')
+
+          // Remembered: the next turn skips the failing attempt.
+          expect((await send('cat-jam-free')).status).toBe(200)
+          expect(calls).toHaveLength(3)
+          expect(calls[2]!.thinking).toBeUndefined()
+
+          // The limit belongs to that model; DeepSeek on the same gateway keeps the toggle.
+          expect((await send('deepseek-flash')).status).toBe(200)
+          expect(calls).toHaveLength(4)
+          expect(calls[3]!.model).toBe('deepseek-flash')
+          expect(calls[3]!.thinking).toEqual({ type: 'enabled' })
+        } finally {
+          globalThis.fetch = originalFetch
+        }
+      })
+
+      test('drops each refused field in turn until the request is accepted', async () => {
+        const originalFetch = globalThis.fetch
+        const calls: Array<Record<string, unknown>> = []
+        globalThis.fetch = mock(async (_url: string | URL | Request, init?: RequestInit) => {
+          const body = JSON.parse(String(init?.body)) as Record<string, unknown>
+          calls.push(body)
+          if (body.thinking !== undefined) return Response.json(thinkingRefusal, { status: 400 })
+          if (body.reasoning_effort !== undefined) return Response.json(effortRefusal, { status: 400 })
+          return completion(body.model)
+        }) as typeof fetch
+
+        try {
+          const send = await setupOpenCodeGo('cat-jam-free', 'deepseek-flash')
+
+          expect((await send('cat-jam-free')).status).toBe(200)
+          expect(calls).toHaveLength(3)
+          expect(calls[2]!.thinking).toBeUndefined()
+          expect(calls[2]!.reasoning_effort).toBeUndefined()
+
+          expect((await send('cat-jam-free')).status).toBe(200)
+          expect(calls).toHaveLength(4)
+          expect(calls[3]!.thinking).toBeUndefined()
+          expect(calls[3]!.reasoning_effort).toBeUndefined()
+        } finally {
+          globalThis.fetch = originalFetch
+        }
+      })
+
+      test('surfaces the error when the resend without the field fails too, and does not remember the field', async () => {
+        const originalFetch = globalThis.fetch
+        const calls: Array<Record<string, unknown>> = []
+        globalThis.fetch = mock(async (_url: string | URL | Request, init?: RequestInit) => {
+          calls.push(JSON.parse(String(init?.body)) as Record<string, unknown>)
+          return Response.json({
+            error: { param: 'thinking', type: 'invalid_request_error', message: 'thinking budget_tokens must be smaller than max_tokens' },
+          }, { status: 400 })
+        }) as typeof fetch
+
+        try {
+          const send = await setupOpenCodeGo('cat-jam-free', 'deepseek-flash')
+
+          const first = await send('cat-jam-free')
+          expect(first.status).toBe(400)
+          expect(JSON.stringify(await first.json())).toContain('budget_tokens must be smaller')
+          expect(calls).toHaveLength(2)
+          expect(calls[1]!.thinking).toBeUndefined()
+
+          // Nothing was learned from a resend that also failed.
+          await send('cat-jam-free')
+          expect(calls).toHaveLength(4)
+          expect(calls[2]!.thinking).toEqual({ type: 'enabled' })
+        } finally {
+          globalThis.fetch = originalFetch
+        }
+      })
     })
 
     test.each([
