@@ -756,6 +756,136 @@ test('bounds a tool input that keeps progressing but never completes', async () 
   expect(error).toBe('server_error')
 }, 10_000)
 
+// The upstream emits tool JSON one complete key/value at a time and only pings
+// while a long value (a file `content`) is being generated. The SDK drops pings,
+// so the client sees a silent gap either inside the tool input or after it.
+function silentGapToolResponse(
+  gap: 'inside_tool_input' | 'after_tool_input',
+  gapMs: number,
+) {
+  return (model: string): Response => {
+    const encoder = new TextEncoder()
+    const toolEvents = (partialJson: string) => sseEvent('content_block_delta', {
+      type: 'content_block_delta',
+      index: 0,
+      delta: { type: 'input_json_delta', partial_json: partialJson },
+    })
+    const start = [
+      sseEvent('message_start', {
+        type: 'message_start',
+        message: {
+          id: 'msg_silent_tool_value',
+          type: 'message',
+          role: 'assistant',
+          model,
+          content: [],
+          stop_reason: null,
+          stop_sequence: null,
+          usage: { input_tokens: 1, output_tokens: 0 },
+        },
+      }),
+      sseEvent('content_block_start', {
+        type: 'content_block_start',
+        index: 0,
+        content_block: {
+          type: 'tool_use',
+          id: 'tool_silent_value',
+          name: 'Bash',
+          input: {},
+        },
+      }),
+      toolEvents('{"command":'),
+    ]
+    const closeTool = [
+      toolEvents('"echo OK"}'),
+      sseEvent('content_block_stop', { type: 'content_block_stop', index: 0 }),
+    ]
+    const finish = [
+      sseEvent('message_delta', {
+        type: 'message_delta',
+        delta: { stop_reason: 'tool_use', stop_sequence: null },
+        usage: { output_tokens: 5 },
+      }),
+      sseEvent('message_stop', { type: 'message_stop' }),
+    ]
+    const beforeGap = gap === 'inside_tool_input' ? start : [...start, ...closeTool]
+    const afterGap = gap === 'inside_tool_input' ? [...closeTool, ...finish] : finish
+    let timer: ReturnType<typeof setInterval> | undefined
+    return new Response(new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(beforeGap.join('')))
+        const startedAt = Date.now()
+        timer = setInterval(() => {
+          try {
+            if (Date.now() - startedAt >= gapMs) {
+              clearInterval(timer)
+              controller.enqueue(encoder.encode(afterGap.join('')))
+              controller.close()
+              return
+            }
+            controller.enqueue(encoder.encode(sseEvent('ping', { type: 'ping' })))
+          } catch {
+            // The watchdog cancels the response body.
+            clearInterval(timer)
+          }
+        }, 40)
+      },
+      cancel() {
+        if (timer) clearInterval(timer)
+      },
+    }), {
+      headers: { 'content-type': 'text/event-stream' },
+    })
+  }
+}
+
+// Desktop ratio: idle (240s) is shorter than the tool-input budget, which
+// follows the request timeout. The silent gap falls between the two.
+const SILENT_GAP_ENV = {
+  CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK: '1',
+  CLAUDE_ENABLE_STREAM_WATCHDOG: '1',
+  CLAUDE_STREAM_IDLE_TIMEOUT_MS: '300',
+  CLAUDE_STREAM_MAX_DURATION_MS: '10000',
+  CLAUDE_STREAM_TOOL_INPUT_MAX_DURATION_MS: '3000',
+}
+const SILENT_GAP_MS = 600
+
+test('lets a silent tool input value outlive the idle budget within its own budget (#1536)', async () => {
+  const { content, error, requests } = await captureQueryRequest({
+    model: 'deepseek-v4-flash',
+    configureCapabilityOverrides: false,
+    responseFactory: silentGapToolResponse('inside_tool_input', SILENT_GAP_MS),
+    env: SILENT_GAP_ENV,
+  })
+
+  expect(requests).toHaveLength(1)
+  expect(content).toEqual([
+    expect.objectContaining({
+      type: 'tool_use',
+      name: 'Bash',
+      input: { command: 'echo OK' },
+    }),
+  ])
+  expect(error).toBeUndefined()
+}, 10_000)
+
+test('restores the idle budget once the tool input is complete (#1536)', async () => {
+  const { content, error } = await captureQueryRequest({
+    model: 'deepseek-v4-flash',
+    configureCapabilityOverrides: false,
+    responseFactory: silentGapToolResponse('after_tool_input', SILENT_GAP_MS),
+    env: SILENT_GAP_ENV,
+  })
+
+  expect(content).toEqual([
+    expect.objectContaining({
+      type: 'text',
+      text: expect.stringContaining('Provider stream stalled'),
+    }),
+  ])
+  expect(error).toBe('server_error')
+}, 10_000)
+
 function clearCapabilityCache() {
   ;(get3PModelCapabilityOverride as typeof get3PModelCapabilityOverride & {
     cache?: { clear?: () => void }
