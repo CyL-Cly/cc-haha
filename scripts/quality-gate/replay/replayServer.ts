@@ -10,8 +10,8 @@
  * changes that do not change that structure only show up as drift.
  */
 
-import { isStrictQueue, queueKey, sha, systemText, type Cassette, type Interaction } from './cassette'
-import { expandEvents, learnVolatileValues, normalizedFingerprint, expandJson, expandString, normalizeJson, normalizeString, unexpandedPlaceholders, type PlaceholderTable } from './normalize'
+import { isStrictQueue, queueKey, systemText, type Cassette, type Interaction } from './cassette'
+import { expandEvents, learnVolatileValues, normalizedFingerprint, expandJson, expandString, normalizeString, unexpandedPlaceholders, type PlaceholderTable } from './normalize'
 import { responseToolNames, serializeSseEvent, type ApiFormat, type RequestFingerprint } from './wire'
 
 export type ReplayMismatch = {
@@ -174,10 +174,9 @@ export function startReplayServer(options: { format: ApiFormat; maxEventDelayMs?
           return errorResponse(format, `replay_mismatch at recorded request ${next.seq}: ${problem}`)
         }
         lastToolUseIds.set(queue, next.toolUseIds)
-        // The system prompt is not compared: it carries the OS, shell, and date, so
-        // it differs between the recording machine and every CI runner.
-        const toolsSha = sha(normalizeJson(body.tools ?? null, table))
-        if (next.request.toolsSha !== toolsSha) report.drift.push(`request ${next.seq}: tool schemas changed since recording`)
+        // Neither the system prompt nor the tool schemas are compared: both carry
+        // the OS, shell, and date, so they differ between the recording machine
+        // and every CI runner. The tool list and token budget do not.
         if (next.request.maxTokens !== actual.maxTokens) report.drift.push(`request ${next.seq}: max_tokens ${actual.maxTokens} != recorded ${next.request.maxTokens}`)
         if (JSON.stringify(next.request.toolNames) !== JSON.stringify(actual.toolNames)) report.drift.push(`request ${next.seq}: tool list changed since recording`)
       }

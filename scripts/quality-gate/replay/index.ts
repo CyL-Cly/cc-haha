@@ -64,7 +64,22 @@ async function main() {
   if (failed.length > 0) process.exitCode = 1
 }
 
+/**
+ * The verdict is final once main() settles. If something the run started still
+ * keeps the process alive (it once held a CI job until its timeout), name it in
+ * the log and exit with the verdict instead of hanging. The timer is unref'd,
+ * so a clean run exits on its own without waiting for it.
+ */
+function exitIfStillRunning(afterMs: number) {
+  setTimeout(() => {
+    const listing = Bun.spawnSync(['ps', '-eo', 'pid,ppid,pgid,etime,args'], { stdout: 'pipe', stderr: 'ignore' }).stdout.toString()
+    const lingering = listing.split('\n').filter((line) => /\bbun\b|claude-haha|inventory-mcp/.test(line))
+    console.warn(`[agent-replay] still running ${afterMs / 1000}s after finishing (pid ${process.pid}); exiting with the verdict. Processes:\n${lingering.join('\n')}`)
+    process.exit(process.exitCode ?? 0)
+  }, afterMs).unref()
+}
+
 main().catch((error) => {
   console.error(error instanceof Error ? error.stack ?? error.message : error)
   process.exitCode = 1
-})
+}).finally(() => exitIfStillRunning(15_000))
