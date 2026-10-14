@@ -60,6 +60,8 @@ async function startHarness(memberNames: string[], options: {
   tasks?: Array<{ id: string; subject: string; ownerId: string; dependencies: string[] }>
   /** Members expected to get their instructions at launch (default: all). */
   instructedAtLaunch?: string[]
+  /** Hold the initial member reply while an independently delayed lead speaks. */
+  initialMemberReply?: Promise<void>
 } = {}) {
   const { conversationService: service } = await import('./conversationService.js')
   const { ProviderService } = await import('./providerService.js')
@@ -80,7 +82,9 @@ async function startHarness(memberNames: string[], options: {
       leadRequests.push({ prompt: JSON.stringify(body.prompt ?? '') })
       return new Response('fixture result')
     }
+    const initialMemberRequest = !requests.some(item => item.agent === body.agent)
     requests.push({ agent: body.agent, resumed: body.resumed ?? null, prompt: JSON.stringify(body.prompt ?? '') })
+    if (initialMemberRequest) await options.initialMemberReply
     await held
     return new Response(replies.shift() ?? 'fixture result')
   } })
@@ -121,6 +125,9 @@ async function startHarness(memberNames: string[], options: {
   await waitFor(() => instructed.every(name => requests.some(request => request.prompt.includes(`Work as ${name}`))), 'initial member turns')
   return {
     service, teamName, parentId, planId, memberIds, requests, leadRequests, replies, waitFor,
+    memberRequests(name: string) {
+      return requests.filter(request => request.agent === name)
+    },
     /** Keeps model replies (and so member turns) pending until released. */
     holdReplies() {
       let release!: () => void
@@ -525,8 +532,20 @@ test('a team whose owner was lost is rehydrated dormant and its members restart 
 }, 30_000)
 
 test('after a server restart the next lead start re-owns the team and restores its roster', async () => {
-  const h = await startHarness(['reader'])
+  let releaseInitialMember!: () => void
+  const initialMemberReply = new Promise<void>(resolve => { releaseInitialMember = resolve })
+  const h = await startHarness(['reader'], { initialMemberReply })
   try {
+    // Keep the member's initial result pending until the delayed launch notice
+    // has reached the lead's model; its request must not count as a member turn.
+    await h.waitFor(() => h.leadRequests.length > 0, 'delayed lead model request')
+    expect(h.memberRequests('reader')).toHaveLength(1)
+    releaseInitialMember()
+    // Resume requires an existing transcript. A request reaching the provider
+    // does not mean the fixture has written its result or finished the turn.
+    await h.waitFor(async () => (await h.leadNotifications()).some(item =>
+      item.from === 'reader' && item.type === 'idle_notification' && item.idleReason !== 'failed',
+    ), 'initial reader turn to finish')
     const runtime = await import('./teamPlanRuntime.js')
     const { ProviderService } = await import('./providerService.js')
     await h.service.stopSessionAndWait(h.memberIds.reader!)
@@ -538,11 +557,14 @@ test('after a server restart the next lead start re-owns the team and restores i
     await h.waitFor(() => runtime.isTeamPlanRuntimeActive(h.planId), 're-owned team', 20_000)
     await h.waitFor(() => control.mock.calls.some(([sessionId, request]) => sessionId === h.parentId && (request as { subtype?: string }).subtype === 'team_runtime_snapshot'), 'restored roster')
     control.mockRestore()
-    const before = h.requests.length
+    const before = h.memberRequests('reader').length
     await messageMember(h, 'reader', 'team-lead', 'Pick up where you left off')
-    await h.waitFor(() => h.requests.length > before, 'member restarted after server restart')
-    expect(h.requests.at(-1)?.resumed).toBe(h.memberIds.reader)
+    const restartedTurn = () => h.memberRequests('reader').slice(before)
+      .find(request => request.prompt.includes('Pick up where you left off'))
+    await h.waitFor(() => restartedTurn() !== undefined, 'reader restarted after server restart')
+    expect(restartedTurn()?.resumed).toBe(h.memberIds.reader)
   } finally {
+    releaseInitialMember()
     await h.cleanup()
   }
 }, 30_000)
