@@ -7,7 +7,6 @@ import { z } from 'zod'
 import { createSandboxedTestEnvironment } from '../../scripts/pr/test-environment.js'
 import type { Tool, ToolUseContext } from '../Tool.js'
 import type { QueryParams } from '../query.js'
-import type { AutoCompactTrackingState } from '../services/compact/autoCompact.js'
 
 let query: typeof import('../query.js')['query']
 let getDefaultAppState: typeof import('../state/AppStateStore.js')['getDefaultAppState']
