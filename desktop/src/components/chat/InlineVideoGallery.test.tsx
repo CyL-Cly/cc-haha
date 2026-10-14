@@ -7,7 +7,8 @@ vi.mock('../../lib/desktopRuntime', () => ({
   getServerBaseUrl: () => 'http://127.0.0.1:4321',
 }))
 
-const openPreviewLink = vi.hoisted(() => vi.fn())
+// The router reports whether it could place the link; a card the router places opens.
+const openPreviewLink = vi.hoisted(() => vi.fn(() => true))
 vi.mock('../../lib/openPreviewLink', () => ({ openPreviewLink }))
 vi.mock('../../i18n', () => ({ useTranslation: () => (key: string) => key }))
 

@@ -279,11 +279,12 @@ describe('Business Flow: Agent Management', () => {
       systemPrompt: 'You are a security expert. Focus on OWASP top 10.',
       color: 'red',
     })
-    expect(status).toBe(201)
+    // Asserting on the pair prints the server's error body when creation fails.
+    expect({ status, data }).toMatchObject({ status: 201 })
   })
 
   it('should create a second agent', async () => {
-    const { status } = await api('POST', '/api/agents', {
+    const { status, data } = await api('POST', '/api/agents', {
       scope: 'user',
       name: 'test-writer',
       description: 'Writes unit tests',
@@ -291,7 +292,7 @@ describe('Business Flow: Agent Management', () => {
       tools: ['Read', 'Write', 'Bash'],
       systemPrompt: 'Write focused unit tests for the requested behavior.',
     })
-    expect(status).toBe(201)
+    expect({ status, data }).toMatchObject({ status: 201 })
   })
 
   it('should list both created agents through the shared loader', async () => {

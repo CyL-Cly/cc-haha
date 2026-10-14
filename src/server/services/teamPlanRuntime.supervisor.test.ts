@@ -13,6 +13,9 @@ beforeEach(async () => {
   process.env.HOME = home
   process.env.CLAUDE_CONFIG_DIR = home
   process.env.CC_HAHA_DISABLE_TERMINAL_SHELL_ENV = '1'
+  // The lead fixture's own model call lands mid-test, as it does on a loaded CI
+  // runner. Assertions about members must not depend on when the lead speaks.
+  process.env.FIXTURE_LEAD_MODEL_DELAY_MS = '300'
   process.env.CLAUDE_CLI_PATH = join(import.meta.dir, '__fixtures__', 'team-worker-cli.ts')
   resetTerminalShellEnvironmentCacheForTests()
 })
@@ -63,12 +66,21 @@ async function startHarness(memberNames: string[], options: {
   const { launchTeamPlanRuntime } = await import('./teamPlanRuntime.js')
   const { writeTeamFileAsync, getTeamDir } = await import('../../utils/swarm/teamHelpers.js')
   const { beginTaskListLifecycle, withTaskListLifecycleLock, getCanonicalTeamTaskListId } = await import('../../utils/tasks.js')
-  const requests: Array<{ resumed: string | null; prompt: string }> = []
+  // Only members' model calls are recorded and answered from `replies`. The lead
+  // fixture calls the same upstream (launch tells it the team is running) at a
+  // time of its own choosing; counted together, its late request became the
+  // "last" request or took a reply scripted for a member.
+  const requests: Array<{ agent: string; resumed: string | null; prompt: string }> = []
+  const leadRequests: Array<{ prompt: string }> = []
   const replies: string[] = []
   let held: Promise<void> | undefined
   const upstream = Bun.serve({ hostname: '127.0.0.1', port: 0, async fetch(request) {
-    const body = await request.json() as { resumed?: string | null; prompt?: unknown }
-    requests.push({ resumed: body.resumed ?? null, prompt: JSON.stringify(body.prompt ?? '') })
+    const body = await request.json() as { agent?: string | null; resumed?: string | null; prompt?: unknown }
+    if (!body.agent || !memberNames.includes(body.agent)) {
+      leadRequests.push({ prompt: JSON.stringify(body.prompt ?? '') })
+      return new Response('fixture result')
+    }
+    requests.push({ agent: body.agent, resumed: body.resumed ?? null, prompt: JSON.stringify(body.prompt ?? '') })
     await held
     return new Response(replies.shift() ?? 'fixture result')
   } })
@@ -108,7 +120,7 @@ async function startHarness(memberNames: string[], options: {
   const instructed = options.instructedAtLaunch ?? memberNames
   await waitFor(() => instructed.every(name => requests.some(request => request.prompt.includes(`Work as ${name}`))), 'initial member turns')
   return {
-    service, teamName, parentId, planId, memberIds, requests, replies, waitFor,
+    service, teamName, parentId, planId, memberIds, requests, leadRequests, replies, waitFor,
     /** Keeps model replies (and so member turns) pending until released. */
     holdReplies() {
       let release!: () => void
@@ -794,8 +806,8 @@ test('the release-review plan that started its second layer first now runs layer
     // before completing it: the inventory goes to the three analysts.
     expect(briefs('recon')[0]!.prompt).toContain(`\\"handOffTo\\":[\\"perf-analyst\\",\\"sec-analyst\\",\\"ux-analyst\\"]`)
     expect(briefs('recon')[0]!.prompt).toContain('first SendMessage its result to each member listed there, then mark it completed')
-    await h.waitFor(() => h.requests.some(request => request.prompt.includes(`Approved team ${h.teamName} is running`)), 'launch notice to the lead')
-    expect(h.requests.find(request => request.prompt.includes(`Approved team ${h.teamName} is running`))!.prompt)
+    await h.waitFor(() => h.leadRequests.some(request => request.prompt.includes(`Approved team ${h.teamName} is running`)), 'launch notice to the lead')
+    expect(h.leadRequests.find(request => request.prompt.includes(`Approved team ${h.teamName} is running`))!.prompt)
       .toContain('Every task of perf-analyst, sec-analyst, ux-analyst, verifier waits on other tasks')
 
     await complete('Inventory')
