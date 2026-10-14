@@ -146,6 +146,30 @@ export function getContextWindowForModel(
   return MODEL_CONTEXT_WINDOW_DEFAULT
 }
 
+/**
+ * Whether getContextWindowForModel resolves this model from a real source
+ * (explicit configuration, built-in table, OpenAI catalog, capability cache)
+ * rather than the generic 200K default. Callers use it to avoid replacing a
+ * known window with a guess from some other provider's configuration.
+ */
+export function hasKnownContextWindow(model: string): boolean {
+  if (
+    getConfiguredModelContextWindow(model) !== undefined ||
+    has1mContext(model) ||
+    getBuiltInModelContextWindow(model) !== undefined ||
+    getOpenAICodexContextWindowForModel(model)
+  ) {
+    return true
+  }
+  try {
+    const cap = getModelCapability(model)
+    return !!cap?.max_input_tokens && cap.max_input_tokens >= 100_000
+  } catch {
+    // Config not readable yet: the capability cache cannot vouch for the model.
+    return false
+  }
+}
+
 export function getSonnet1mExpTreatmentEnabled(model: string): boolean {
   if (is1mContextDisabled()) {
     return false
