@@ -10,12 +10,7 @@ afterEach(() => {
 })
 
 function git(cwd: string, ...args: string[]) {
-  const result = Bun.spawnSync(['git', ...args], {
-    cwd,
-    stdout: 'pipe',
-    stderr: 'pipe',
-    env: { ...process.env, GIT_AUTHOR_NAME: 't', GIT_AUTHOR_EMAIL: 't@example.com', GIT_COMMITTER_NAME: 't', GIT_COMMITTER_EMAIL: 't@example.com' },
-  })
+  const result = Bun.spawnSync(['git', ...args], { cwd, stdout: 'pipe', stderr: 'pipe' })
   if (result.exitCode !== 0) throw new Error(result.stderr.toString())
   return result.stdout.toString().trim()
 }
@@ -29,10 +24,14 @@ function fixtureRepo() {
   writeFileSync(join(dir, 'desktop/package.json'), '{\n  "name": "d",\n  "version": "1.2.3"\n}\n')
   writeFileSync(join(dir, 'release-notes/v1.2.4.md'), 'notes\n')
   git(dir, 'init', '-q', '-b', 'main')
+  // The release script commits and tags in this repo itself; a CI runner has
+  // no global git identity, so the fixture carries its own.
+  git(dir, 'config', 'user.name', 'Release Test')
+  git(dir, 'config', 'user.email', 'release-test@example.com')
   git(dir, 'config', 'commit.gpgsign', 'false')
   git(dir, 'config', 'tag.gpgsign', 'false')
   git(dir, 'add', '.')
-  git(dir, '-c', 'user.name=t', '-c', 'user.email=t@example.com', 'commit', '-qm', 'base')
+  git(dir, 'commit', '-qm', 'base')
   return dir
 }
 
