@@ -106,6 +106,40 @@ afterEach(() => {
 })
 
 describe('AssistantMessage file references', () => {
+  it.each([
+    ['[open](/work/My%20Notes.md)', '/work/My Notes.md'],
+    ['[open](/work/literal%2520name.md)', '/work/literal%20name.md'],
+    ['输出目录：`/other/QA%20root`\n[open](My%20Notes.md)', '/other/QA%20root/My Notes.md'],
+  ])('opens the reconciled card and prose at the same parsed file for %s', async (content, path) => {
+    // The server confirms only the actual disk path, so an encoded URI cannot
+    // accidentally get a card just because a permissive mock says it exists.
+    statWorkspaceFiles.mockImplementation(async (_sessionId: string, paths: string[]) => ({
+      files: paths.map((candidate) => ({
+        path: candidate, state: candidate === path ? 'file' : 'missing', mtimeMs: Date.now(),
+      })),
+    }))
+    const view = render(<AssistantMessage
+      sessionId="s1" content={content} turnChangedFiles={[]} turnOutputEvidence={shellTurn}
+    />)
+    fireEvent.click(await screen.findByRole('button', { name: 'assistantOutputs.openAria' }))
+    await waitFor(() => expect(openPreviewFn).toHaveBeenCalledWith('s1', path, {}))
+    openPreviewFn.mockClear()
+    fireEvent.click(screen.getByRole('link', { name: 'open' }))
+    await waitFor(() => expect(openPreviewFn).toHaveBeenCalledWith('s1', path, {}))
+    view.unmount()
+    resetWorkspaceFileStatsForTests()
+    resetDiskListingCacheForTests()
+    openPreviewFn.mockClear()
+
+    // The exact changed-file match must keep the card when no unseen writes
+    // can explain an unmatched output.
+    render(<AssistantMessage
+      sessionId="s1" content={content} turnChangedFiles={[path]} turnOutputEvidence={{ unlistedWrites: false }}
+    />)
+    fireEvent.click(await screen.findByRole('button', { name: 'assistantOutputs.openAria' }))
+    await waitFor(() => expect(openPreviewFn).toHaveBeenCalledWith('s1', path, {}))
+  })
+
   // Native QA: the renderer had decoded the Markdown destination into data-file-path,
   // then the click router decoded that filesystem path a second time.
   it.each([
