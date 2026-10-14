@@ -123,6 +123,9 @@ describe('MarkdownRenderer file references', () => {
     ['file:///tmp/cc-haha-qa-checklist-v0.6.6.html', '/tmp/cc-haha-qa-checklist-v0.6.6.html'],
     ['file:///tmp/%E6%B8%85%E5%8D%95.html', '/tmp/清单.html'],
     ['/tmp/app.ts:42', '/tmp/app.ts:42'],
+    // #1556: CommonMark's two spellings of a space reach the opener as the file on disk.
+    ['docs/My%20Notes.md', 'docs/My Notes.md'],
+    ['<D:/cchaha/cchaha d/记忆.md>', 'D:/cchaha/cchaha d/记忆.md'],
   ])('preserves explicit local Markdown destination %s through sanitization', (href, expected) => {
     const onLinkClick = vi.fn().mockReturnValue(true)
     const container = renderMarkdown(`[打开文件](${href})`, { onLinkClick })
