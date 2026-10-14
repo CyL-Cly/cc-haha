@@ -8385,6 +8385,34 @@ describe('MessageList nested tool calls', () => {
     expect(screen.getByText(raw)).toBeTruthy()
   })
 
+  it('explains why auto-compact stopped instead of showing the English CLI text (#1544)', () => {
+    useSettingsStore.setState({ locale: 'zh' })
+    const raw =
+      'Auto-compact is thrashing: the context refilled to the limit within 3 turns of the previous compaction, 3 times in a row.'
+    useChatStore.setState({
+      sessions: {
+        [ACTIVE_TAB]: makeSessionState({
+          messages: [
+            {
+              id: 'error-1',
+              type: 'error',
+              code: 'unknown',
+              businessErrorCode: 'autocompact_thrashing',
+              message: raw,
+              timestamp: 1,
+            },
+          ],
+        }),
+      },
+    })
+
+    render(<MessageList />)
+
+    expect(screen.getByText(/自动压缩已停止/)).toBeTruthy()
+    expect(screen.getByText(/精简 CLAUDE.md/)).toBeTruthy()
+    expect(screen.queryByText(raw)).toBeNull()
+  })
+
   it.each([
     ['en', /too large for your provider or relay/, /removed automatically/],
     ['zh', /服务商或中转站允许的大小/, /自动移除/],

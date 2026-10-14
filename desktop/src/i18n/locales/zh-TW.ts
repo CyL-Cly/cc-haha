@@ -3741,6 +3741,7 @@ export const zh: Record<TranslationKey, string> = {
   'businessError.image_unsupported': '當前模型不支援圖片。請繼續使用文字，或切換到支援視覺的模型後重新傳送圖片。',
   'businessError.request_too_large': '這次請求超出了服務商或中轉站允許的大小。下一則訊息會自動移除較早的圖片和文件；如果仍然失敗，請壓縮會話或新開會話。',
   'businessError.prompt_too_long': '當前上下文超出了模型限制。請先壓縮會話，或減少上下文後重試。',
+  'businessError.autocompact_thrashing': '自動壓縮已停止：連續 3 次壓縮後上下文仍大部分被佔用，不到 3 輪又滿了。固定上下文（工具、MCP 服務、技能、CLAUDE.md）對目前上下文視窗來說過大。請關閉不用的 MCP 服務或技能、精簡 CLAUDE.md、改用上下文視窗更大的模型，或開新對話。',
   'businessError.auto_mode_unavailable': '當前套餐不支援自動模式。',
   'businessError.upstream_stream_interrupted': '上游模型服務商在回覆完成前中斷了連線，自動重試後仍未成功。這通常是服務商或網路線路逾時、不穩定造成的，不是上下文超限。可以傳送「繼續」讓模型接著做，或稍後重試、更換服務商。',
 

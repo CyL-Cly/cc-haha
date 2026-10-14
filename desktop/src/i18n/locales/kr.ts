@@ -3744,6 +3744,7 @@ export const kr: Record<TranslationKey, string> = {
   'businessError.image_unsupported': '이 모델은 이미지를 지원하지 않습니다. 텍스트로 계속하거나, 비전 지원 모델로 전환하여 이미지를 다시 보내세요.',
   'businessError.request_too_large': '요청이 공급자 또는 중계 서버가 허용하는 크기를 초과했습니다. 다음 메시지에서 이전 이미지와 문서가 자동으로 제거됩니다. 그래도 실패하면 대화를 압축하거나 새 세션을 시작하세요.',
   'businessError.prompt_too_long': '프롬프트가 선택한 모델에 비해 너무 깁니다. 대화를 압축하거나 컨텍스트를 줄여 다시 시도하세요.',
+  'businessError.autocompact_thrashing': '자동 압축을 중단했습니다: 3번 연속으로 압축 후에도 컨텍스트 대부분이 사용 중이었고 3턴 안에 다시 가득 찼습니다. 고정 컨텍스트(도구, MCP 서버, 스킬, CLAUDE.md)가 현재 컨텍스트 창에 비해 너무 큽니다. 사용하지 않는 MCP 서버나 스킬을 끄거나, CLAUDE.md를 줄이거나, 컨텍스트 창이 더 큰 모델로 바꾸거나, 새 대화를 시작하세요.',
   'businessError.auto_mode_unavailable': '자동 모드는 현재 요금제에서 사용할 수 없습니다.',
   'businessError.upstream_stream_interrupted': '상위 모델 제공업체가 응답이 끝나기 전에 연결을 끊었고, 자동 재시도로도 복구되지 않았습니다. 대개 제공업체나 네트워크 경로의 시간 초과 또는 불안정 때문이며, 컨텍스트 한도 오류가 아닙니다. "계속"을 보내 이어서 진행하게 하거나, 잠시 후 다시 시도하거나 제공업체를 바꿔 보세요.',
 
