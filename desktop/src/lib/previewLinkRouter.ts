@@ -1,5 +1,5 @@
 import { isLoopbackHostname } from './desktopRuntime'
-import { parseFilePathRef } from './filePathBoundary'
+import { parseFileHref } from './filePathBoundary'
 import { isWorkspacePreviewableFile } from './fileCapabilities'
 
 export type PreviewLinkKind =
@@ -28,28 +28,43 @@ function extOf(p: string): string {
   return g ? g.toLowerCase() : ''
 }
 
-function classifyFileRef(raw: string): PreviewLinkClass {
+/**
+ * A link destination is URL-encoded: `[笔记](docs/My%20Notes.md)` is how
+ * CommonMark spells a space, and the file on disk is `My Notes.md` (#1556).
+ * Malformed escapes (`100%.md`) can only be the name as written.
+ */
+function decodeHrefPath(path: string): string {
+  if (!path.includes('%')) return path
+  try {
+    return decodeURIComponent(path)
+  } catch {
+    return path
+  }
+}
+
+function classifyFileRef(raw: string, options: { decoded?: boolean } = {}): PreviewLinkClass {
   // The extension gate lives in filePathBoundary so that whatever the prose
   // renders as a link is guaranteed to have a route here. Before #1146 this
   // module kept its own shorter list, which is why `.yml` and `.ps1` links
   // resolved to `ignored` and clicking them did nothing at all.
-  const ref = parseFilePathRef(raw)
+  const ref = parseFileHref(raw)
   if (!ref) return { kind: 'ignored' }
+  const path = options.decoded ? ref.path : decodeHrefPath(ref.path)
 
   const position = {
     ...(ref.line ? { line: ref.line } : {}),
     ...(ref.column ? { column: ref.column } : {}),
   }
-  const ext = extOf(ref.path)
+  const ext = extOf(path)
 
   // HTML renders, so it belongs in a browser surface. Everything else opens in
   // the workspace code view — the only surface that can scroll to a line, which
   // is the whole point of the `file_path:line_number` reference format.
-  if (ext === 'html' || ext === 'htm') return { kind: 'browser-file', path: ref.path, ...position }
+  if (ext === 'html' || ext === 'htm') return { kind: 'browser-file', path, ...position }
 
-  return isWorkspacePreviewableFile(ref.path)
-    ? { kind: 'file-preview', path: ref.path, ...position }
-    : { kind: 'system-file', path: ref.path, ...position }
+  return isWorkspacePreviewableFile(path)
+    ? { kind: 'file-preview', path, ...position }
+    : { kind: 'system-file', path, ...position }
 }
 
 export function classifyPreviewLink(href: string): PreviewLinkClass {
@@ -69,7 +84,7 @@ export function classifyPreviewLink(href: string): PreviewLinkClass {
         : { kind: 'remote', url: u.toString() }
     }
     if (u.protocol === 'file:') {
-      return classifyFileRef(decodeURIComponent(u.pathname))
+      return classifyFileRef(decodeURIComponent(u.pathname), { decoded: true })
     }
     return { kind: 'ignored' }
   } catch {

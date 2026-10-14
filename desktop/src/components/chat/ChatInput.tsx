@@ -46,6 +46,7 @@ import { MobileApprovalDock } from './MobileApprovalDock'
 import { useCapabilityMenu } from './useCapabilityMenu'
 import { AgentTeamChip } from './AgentTeamChip'
 import { ComputerUseEnableDialog } from '@/components/computer-use/ComputerUseEnableDialog'
+import { AgentTeamsCostDialog } from '@/components/agentTeams/AgentTeamsCostDialog'
 import { withAgentTeamRequest } from '@/lib/agentTeamRequest'
 import { recordRecentSkills } from '@/lib/recentSkills'
 import { composerReferencesApi, mentionProviderId } from '@/api/composerReferences'
@@ -1718,6 +1719,7 @@ export function ChatInput({ variant = 'default', compact = false, sessionId, vis
                       />
                     )}
                     <ComputerUseEnableDialog {...capabilityMenu.computerUseConsent} />
+                    <AgentTeamsCostDialog allowDismiss {...capabilityMenu.agentTeamsNotice} />
                   </div>
 
                   {capabilityMenu.agentTeamArmed && !isMemberSession ? (

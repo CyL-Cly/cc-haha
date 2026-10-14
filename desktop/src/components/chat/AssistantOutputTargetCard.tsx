@@ -11,6 +11,7 @@ import { FileTypeIcon } from '@/components/ui/FileTypeIcon'
 import { describeFileType, type OpenWithItem } from '../../lib/openWithItems'
 import { buildOpenWithMenuItemsForHref } from '../../lib/openWithMenuItems'
 import { openPreviewLink } from '../../lib/openPreviewLink'
+import { reportOpenFailure } from '../../lib/systemFileOpen'
 
 type Props = {
   target: AssistantOutputTarget
@@ -38,7 +39,9 @@ export function AssistantOutputTargetCard({ target, sessionId, workDir }: Props)
 
   const handleOpen = useCallback((event: ReactMouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
-    openPreviewLink(target.href, sessionId)
+    // A card is only shown for something it can open; one the router cannot
+    // place must say so rather than leave the click looking dead (#1556).
+    if (!openPreviewLink(target.href, sessionId)) reportOpenFailure(target.href)
   }, [sessionId, target.href])
 
   const handleOpenWith = useCallback((event: ReactMouseEvent<HTMLButtonElement>) => {

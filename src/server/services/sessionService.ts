@@ -28,6 +28,7 @@ import {
   MODEL_CONTEXT_WINDOW_DEFAULT,
   getContextWindowForModel,
   getModelMaxOutputTokens,
+  hasKnownContextWindow,
   is1mContextDisabled,
 } from '../../utils/context.js'
 import {
@@ -3014,12 +3015,21 @@ export class SessionService {
   ): Promise<number | undefined> {
     const launchInfo = launchInfoOverride ?? await this.getSessionLaunchInfo(sessionId).catch(() => null)
     const providerIds: string[] = []
-    const allowSavedProviderInference = launchInfo?.runtimeProviderId === undefined
+    const recordedProviderId = launchInfo?.runtimeProviderId
+    let activeProviderId: string | null | undefined
 
-    if (typeof launchInfo?.runtimeProviderId === 'string') {
-      providerIds.push(launchInfo.runtimeProviderId)
-    } else if (launchInfo?.runtimeProviderId !== null) {
-      const { activeId } = await this.providerService.listProviders().catch(() => ({ activeId: null }))
+    const getActiveProviderId = async (): Promise<string | null> => {
+      if (activeProviderId === undefined) {
+        const { activeId } = await this.providerService.listProviders().catch(() => ({ activeId: null }))
+        activeProviderId = activeId
+      }
+      return activeProviderId
+    }
+
+    if (typeof recordedProviderId === 'string') {
+      providerIds.push(recordedProviderId)
+    } else if (recordedProviderId !== null) {
+      const activeId = await getActiveProviderId()
       if (activeId) providerIds.push(activeId)
     }
 
@@ -3038,6 +3048,13 @@ export class SessionService {
 
     for (const providerId of providerIds) {
       const env = await this.providerService.getProviderRuntimeEnv(providerId).catch(() => null)
+      if (!env && providerId === recordedProviderId) {
+        // The provider this session recorded no longer exists (deleted or
+        // re-created under a new id). A resumed session is relaunched with the
+        // default provider in that case, so resolve the window the same way.
+        const activeId = await getActiveProviderId()
+        if (activeId && !providerIds.includes(activeId)) providerIds.push(activeId)
+      }
       const rawContextWindows = env?.[MODEL_CONTEXT_WINDOWS_ENV_KEY] ?? null
       // Step 1: Try matching the transcript model name directly (current behavior)
       const contextWindow = getModelContextWindowFromEnvValue(
@@ -3091,7 +3108,17 @@ export class SessionService {
       }
     }
 
-    if (allowSavedProviderInference) {
+    // A session without recorded provider metadata always infers from saved
+    // providers. When a provider was recorded but could not tell us the window
+    // (Claude Official, a stale id, or a provider that never configured this
+    // model), a unique saved-provider match still beats the 200K default — but
+    // only for models whose window is not already known (built-in table,
+    // OpenAI catalog, ...), so an official session is never overridden by a
+    // proxy provider's configuration.
+    if (
+      recordedProviderId === undefined ||
+      !hasKnownContextWindow(model)
+    ) {
       return this.getUniqueSavedProviderContextWindow(model)
     }
 

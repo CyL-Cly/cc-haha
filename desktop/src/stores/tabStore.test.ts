@@ -43,7 +43,7 @@ describe('tabStore', () => {
   })
 
   beforeEach(() => {
-    useTabStore.setState({ tabs: [], activeTabId: null })
+    useTabStore.setState({ tabs: [], activeTabId: null, closedSessionTabs: [] })
     useSessionStore.setState({ ...initialSessionState, sessions: [], historicalSessionIds: new Set() })
     localStorage.clear()
     useSessionRuntimeStore.setState({ selections: {} })
@@ -67,6 +67,58 @@ describe('tabStore', () => {
     await restore
     expect(useSessionRuntimeStore.getState().selections[summary.id]).toEqual(next)
     expect(useTabStore.getState().activeTabId).toBe(summary.id)
+  })
+
+  it('starts with no tabs when restoring on launch is turned off, and keeps the saved tabs for later', async () => {
+    const summary = historicalSummary('session-left-open')
+    const saved = JSON.stringify({ openTabs: [{ sessionId: summary.id, title: summary.title, type: 'session' }], activeTabId: summary.id })
+    localStorage.setItem('cc-haha-open-tabs', saved)
+    localStorage.setItem('cc-haha-tab-behavior', JSON.stringify({ version: 1, sessionTabLimit: null, restoreOnLaunch: false }))
+    vi.mocked(sessionsApi.list).mockResolvedValue({ sessions: [summary], total: 1 } as never)
+
+    await useTabStore.getState().restoreTabs()
+
+    expect(useTabStore.getState().tabs).toEqual([])
+    expect(useTabStore.getState().activeTabId).toBeNull()
+    expect(sessionsApi.list).not.toHaveBeenCalled()
+    expect(localStorage.getItem('cc-haha-open-tabs')).toBe(saved)
+
+    // Turning it back on brings those tabs back on the next launch.
+    localStorage.setItem('cc-haha-tab-behavior', JSON.stringify({ version: 1, sessionTabLimit: null, restoreOnLaunch: true }))
+    await useTabStore.getState().restoreTabs()
+    expect(useTabStore.getState().tabs.map((tab) => tab.sessionId)).toEqual([summary.id])
+  })
+
+  it('remembers closed chat tabs, newest last, without duplicates or page tabs', () => {
+    useTabStore.getState().openTab('session-a', 'A')
+    useTabStore.getState().openTab('session-b', 'B')
+    useTabStore.getState().openTab(SETTINGS_TAB_ID, 'Settings', 'settings')
+    const terminalId = useTabStore.getState().openTerminalTab('/tmp')
+
+    useTabStore.getState().closeTab('session-a')
+    useTabStore.getState().closeTab(SETTINGS_TAB_ID)
+    useTabStore.getState().closeTab(terminalId)
+    useTabStore.getState().closeTab('session-b')
+    useTabStore.getState().openTab('session-a', 'A')
+    useTabStore.getState().closeTab('session-a')
+
+    expect(useTabStore.getState().closedSessionTabs).toEqual([
+      { sessionId: 'session-b', title: 'B' },
+      { sessionId: 'session-a', title: 'A' },
+    ])
+    expect(useTabStore.getState().takeClosedSessionTab()).toEqual({ sessionId: 'session-a', title: 'A' })
+    expect(useTabStore.getState().closedSessionTabs).toEqual([{ sessionId: 'session-b', title: 'B' }])
+  })
+
+  it('keeps only the ten most recently closed chat tabs', () => {
+    for (let index = 0; index < 12; index++) {
+      useTabStore.getState().openTab(`session-${index}`, `S${index}`)
+      useTabStore.getState().closeTab(`session-${index}`)
+    }
+    const closed = useTabStore.getState().closedSessionTabs.map((tab) => tab.sessionId)
+    expect(closed).toHaveLength(10)
+    expect(closed[0]).toBe('session-2')
+    expect(closed[9]).toBe('session-11')
   })
 
   it('refreshes an existing tab title when opening the same session again', () => {

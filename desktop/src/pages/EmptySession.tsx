@@ -83,6 +83,7 @@ import { MobileComposerSheet, type MobileComposerSetting } from '@/components/ch
 import { useCapabilityMenu } from '@/components/chat/useCapabilityMenu'
 import { AgentTeamChip } from '@/components/chat/AgentTeamChip'
 import { ComputerUseEnableDialog } from '@/components/computer-use/ComputerUseEnableDialog'
+import { AgentTeamsCostDialog } from '@/components/agentTeams/AgentTeamsCostDialog'
 import { withAgentTeamRequest } from '@/lib/agentTeamRequest'
 import { recordRecentSkills } from '@/lib/recentSkills'
 import type { AttachmentRef } from '../types/chat'
@@ -1038,6 +1039,7 @@ export function EmptySession({ initialWorkDir = '' }: EmptySessionProps = {}) {
                       />
                     )}
                     <ComputerUseEnableDialog {...capabilityMenu.computerUseConsent} />
+                    <AgentTeamsCostDialog allowDismiss {...capabilityMenu.agentTeamsNotice} />
                   </div>
 
                   {capabilityMenu.agentTeamArmed ? (

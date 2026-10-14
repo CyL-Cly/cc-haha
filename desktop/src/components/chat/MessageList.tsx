@@ -13,7 +13,7 @@ import { SETTINGS_TAB_ID, useTabStore } from '../../stores/tabStore'
 import { teamTaskWindowsForSnapshot, useTeamStore } from '../../stores/teamStore'
 import { useUIStore } from '../../stores/uiStore'
 import { useChatAppearanceStore } from '../../stores/chatAppearanceStore'
-import { useTranslation } from '../../i18n'
+import { t as translateNow, useTranslation } from '../../i18n'
 import type { TranslationKey } from '../../i18n/locales/en'
 import { UserMessage } from './UserMessage'
 import { AssistantMessage } from './AssistantMessage'
@@ -834,7 +834,7 @@ function teamNameFromCreate(toolCall: ToolCall, result: ToolResult | undefined):
   for (const value of [nestedStringField(result?.content, 'team_name'), input?.team_name]) {
     if (typeof value === 'string' && value.trim()) return value.trim()
   }
-  return 'Agent Teams'
+  return translateNow('agentTeams.name')
 }
 
 function isExplicitTeamAgent(
