@@ -512,8 +512,18 @@ test('replacing the lead process keeps members working and restores the roster o
 }, 30_000)
 
 test('a team whose owner was lost is rehydrated dormant and its members restart on demand', async () => {
-  const h = await startHarness(['reader'])
+  let releaseInitialMember!: () => void
+  const initialMemberReply = new Promise<void>(resolve => { releaseInitialMember = resolve })
+  const h = await startHarness(['reader'], { initialMemberReply })
   try {
+    await h.waitFor(() => h.leadRequests.length > 0, 'delayed lead model request')
+    expect(h.memberRequests('reader')).toHaveLength(1)
+    releaseInitialMember()
+    // The fixture persists its reply before sending the result that produces
+    // this notice. A provider request alone does not guarantee a resume file.
+    await h.waitFor(async () => (await h.leadNotifications()).some(item =>
+      item.from === 'reader' && item.type === 'idle_notification' && item.idleReason !== 'failed',
+    ), 'initial reader transcript to be written before losing its owner')
     const runtime = await import('./teamPlanRuntime.js')
     // Simulate a server restart: the processes and the in-memory owner are gone.
     await h.service.stopSessionAndWait(h.memberIds.reader!)
@@ -522,11 +532,14 @@ test('a team whose owner was lost is rehydrated dormant and its members restart 
     expect(await runtime.rehydrateTeamPlanRuntimesForSession(h.parentId)).toBe(true)
     expect(runtime.isTeamPlanRuntimeActive(h.planId)).toBe(true)
     await h.waitFor(async () => (await h.teamMember('reader'))?.terminated === true, 'dormant member state')
-    const before = h.requests.length
+    const before = h.memberRequests('reader').length
     await messageMember(h, 'reader', 'team-lead', 'Resume after restart')
-    await h.waitFor(() => h.requests.length > before, 'restarted member turn')
-    expect(h.requests.at(-1)?.resumed).toBe(h.memberIds.reader)
+    const restartedTurn = () => h.memberRequests('reader').slice(before)
+      .find(request => request.prompt.includes('Resume after restart'))
+    await h.waitFor(() => restartedTurn() !== undefined, 'reader restarted after losing its owner')
+    expect(restartedTurn()?.resumed).toBe(h.memberIds.reader)
   } finally {
+    releaseInitialMember()
     await h.cleanup()
   }
 }, 30_000)
