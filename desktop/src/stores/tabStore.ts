@@ -4,6 +4,7 @@ import { ApiError } from '../api/client'
 import { dropSession as dropVirtualHeightSession } from '../components/chat/virtualHeightCache'
 import { destroyTerminalRuntime } from '../lib/terminalRuntime'
 import { useSessionRuntimeStore } from './sessionRuntimeStore'
+import { t } from '../i18n'
 import { teamMemberSessionId } from '../types/team'
 import type { SessionListItem } from '../types/session'
 
@@ -230,7 +231,7 @@ export const useTabStore = create<TabStore>((set, get) => ({
     get().closeTab(tabId)
   },
 
-  openTeamWorkbenchTab: (leadSessionId, title = 'Agent Teams') => {
+  openTeamWorkbenchTab: (leadSessionId, title = t('agentTeams.name')) => {
     const tabId = `${TEAM_TAB_PREFIX}${leadSessionId}`
     const { tabs } = get()
     const tab: Tab = {
