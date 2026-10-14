@@ -59,7 +59,7 @@ type SessionStore = {
   loadMoreProjectSessions: (projectRoot: string) => Promise<void>
   releaseProjectHistory: (projectRoot: string) => void
   hydrateHistoricalSessions: (sessions: SessionListItem[], runtimeSelections?: Record<string, RuntimeSelection>) => SessionListItem[]
-  openHistoricalSession: (session: SessionListItem) => void
+  openHistoricalSession: (session: SessionListItem, runtimeSelections?: Record<string, RuntimeSelection>) => void
   createSession: (workDir?: string, options?: CreateSessionOptions) => Promise<string>
   branchSession: (
     sourceSessionId: string,
@@ -300,8 +300,8 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     return selected
   },
 
-  openHistoricalSession: (session) => {
-    const [selected] = get().hydrateHistoricalSessions([session])
+  openHistoricalSession: (session, runtimeSelections) => {
+    const [selected] = get().hydrateHistoricalSessions([session], runtimeSelections)
     if (!selected) return
     set({ activeSessionId: selected.id })
     useTabStore.getState().openTab(selected.id, selected.title)

@@ -101,6 +101,15 @@ afterEach(() => {
 })
 
 describe('AssistantOutputTargetCard', () => {
+  it.each(['%20', '%25', '%23', '%2F'])(
+    'opens a written file with a literal %s in its filename', async (percent) => {
+      const path = `docs/literal${percent}name.md`
+      render(<AssistantOutputTargetCard target={{ ...markdownTarget, href: path, normalizedPath: path, source: 'changed-file' }} sessionId="s1" />)
+      fireEvent.click(screen.getByLabelText('assistantOutputs.open'))
+      await waitFor(() => expect(openPreviewFn).toHaveBeenCalledWith('s1', path, {}))
+    },
+  )
+
   it('renders a markdown target title + Markdown badge', () => {
     render(<AssistantOutputTargetCard target={markdownTarget} sessionId="s1" />)
     expect(screen.getByText('readme.md')).toBeInTheDocument()

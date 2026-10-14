@@ -13,6 +13,7 @@ import { UserMessageEditor } from './UserMessageEditor'
 import { useMessageActionMenu } from './useMessageActionMenu'
 import type { UserMessageEditDraft } from './userMessageEdit'
 import { MarkdownRenderer } from '../markdown/MarkdownRenderer'
+import type { PreviewLinkTarget } from '@/lib/previewLinkRouter'
 
 /**
  * Edit-and-resend for one prompt. The draft lives with the caller, not in this
@@ -87,7 +88,7 @@ export const UserMessage = memo(function UserMessage({
   const segments = useMemo(() => splitTextByUrls(content), [content])
 
   const handleLinkClick = useCallback(
-    (href: string, event: ReactMouseEvent<HTMLElement>): boolean => {
+    (href: PreviewLinkTarget, event: ReactMouseEvent<HTMLElement>): boolean => {
       if (!sessionId) return false
       const handled = openPreviewLink(href, sessionId)
       if (handled) event.preventDefault()

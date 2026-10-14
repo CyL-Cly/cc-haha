@@ -2062,25 +2062,39 @@ async function buildTurnCheckpointStateFromContext(
     frozen,
   )
 
-  // Completion can safely capture some paths and refuse others. Compare every
-  // expected path, rather than treating one successful copy as a complete turn.
+  // Snapshots accumulate paths from earlier turns. With intact, fully attributed
+  // mutation evidence, use the same turn scope as the file list: an expired
+  // backup for an unrelated carried path must not hide this turn's recorded
+  // diffs. Pending mutations remain in scope; unknown writes and snapshot-only
+  // evidence still require every recorded path. Restore validation separately
+  // checks the original, unscoped before map.
+  const attributedPathIdentities = transcriptEvidenceComplete &&
+    transcriptEvidence.confirmedChanges.length > 0 &&
+    transcriptEvidence.unverifiedChangeSources.length === 0
+    ? new Set([...transcriptEvidence.confirmedChanges, ...transcriptEvidence.uncertainChanges].map(change => change.identityPath))
+    : null
   // Only an explicit recorded diff for the same path can cover a missing pair.
   const transcriptDiffPaths = new Set(transcriptEvidence.confirmedChanges.filter(change => change.diff).map(change => change.identityPath))
   const beforeMapMalformed = frozen && targetSnapshot !== null && hasMalformedFileHistoryBefore(targetSnapshot)
-  const unavailablePaths = frozen && targetSnapshot
+  const recordedUnavailablePaths = frozen && targetSnapshot
     ? [...new Set([...Object.keys(targetSnapshot.trackedFileBackups), ...Object.keys(targetSnapshot.completedFileBackups ?? {})])].filter(trackingPath => {
       const identityPath = toFileIdentityPath(expandTrackingPath(checkpointBaseDir, trackingPath), true)
       return !snapshotPreview?.coveredPathIdentities.has(identityPath) && !transcriptDiffPaths.has(identityPath)
-    }).map(trackingPath => toCheckpointResponsePath(trackingPath, checkpointBaseDir))
+    })
     : []
+  const unavailablePaths = recordedUnavailablePaths.filter(trackingPath =>
+    !attributedPathIdentities || attributedPathIdentities.has(toFileIdentityPath(expandTrackingPath(checkpointBaseDir, trackingPath), true))
+  ).map(trackingPath => toCheckpointResponsePath(trackingPath, checkpointBaseDir))
   const boundaryUnavailable = beforeMapMalformed || unavailablePaths.length > 0
   const missingEvidence = [...unavailablePaths, ...(beforeMapMalformed ? ['invalid before-file map'] : [])]
+  const restoreBoundaryUnavailable = beforeMapMalformed || recordedUnavailablePaths.length > 0
+  const restoreMissingEvidence = [...recordedUnavailablePaths.map(trackingPath => toCheckpointResponsePath(trackingPath, checkpointBaseDir)), ...(beforeMapMalformed ? ['invalid before-file map'] : [])]
   return buildTurnPreview(
     target,
     boundaryUnavailable ? { ...preview, available: false, reason: `Recorded file history is incomplete for: ${missingEvidence.join(', ')}` } : preview,
     checkpointBaseDir,
-    boundaryUnavailable ? false : restoreAvailable,
-    boundaryUnavailable ? normalizeUnverifiedChangeSources([...unverifiedChangeSources, ...missingEvidence.map(filePath => `file-history:${filePath}`)]) : unverifiedChangeSources,
+    restoreBoundaryUnavailable ? false : restoreAvailable,
+    restoreBoundaryUnavailable ? normalizeUnverifiedChangeSources([...unverifiedChangeSources, ...restoreMissingEvidence.map(filePath => `file-history:${filePath}`)]) : unverifiedChangeSources,
   )
 }
 

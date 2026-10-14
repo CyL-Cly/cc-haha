@@ -32,6 +32,31 @@ describe('classifyPreviewLink for a document the workspace can draw', () => {
 })
 
 describe('classifyPreviewLink', () => {
+  it.each(['%20', '%25', '%23', '%2F'])(
+    'keeps a parsed %s filename literal while decoding an href once', (percent) => {
+      const path = `docs/literal${percent}name.md`
+      const expected = { kind: 'file-preview', path, line: 7, column: 3 }
+      expect(classifyPreviewLink({ path, line: 7, column: 3 })).toEqual(expected)
+      expect(classifyPreviewLink(`${path.replace('%', '%25')}:7:3`)).toEqual(expected)
+    },
+  )
+
+  it('keeps encoded filename hashes separate from file URL line suffixes', () => {
+    expect(classifyPreviewLink('file:///work/name%23hash.md#L9')).toEqual({
+      kind: 'file-preview', path: '/work/name#hash.md', line: 9,
+    })
+    expect(classifyPreviewLink('file:///C:/QA/literal%2520name.md:7:3')).toEqual({
+      kind: 'file-preview', path: 'C:/QA/literal%20name.md', line: 7, column: 3,
+    })
+    expect(classifyPreviewLink('file:///work/readme.md#section')).toEqual({
+      kind: 'file-preview', path: '/work/readme.md',
+    })
+  })
+
+  it('ignores unsafe URL schemes even when a data attribute presents one as a path', () => {
+    expect(classifyPreviewLink({ path: 'javascript:unsafe.md' }).kind).toBe('ignored')
+  })
+
   it('classifies loopback urls as browser-localhost', () => {
     expect(classifyPreviewLink('http://localhost:5173/').kind).toBe('browser-localhost')
     expect(classifyPreviewLink('http://127.0.0.1:8080/x').kind).toBe('browser-localhost')

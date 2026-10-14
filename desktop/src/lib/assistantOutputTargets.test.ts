@@ -4,6 +4,16 @@ import { extractAssistantOutputTargets } from './assistantOutputTargets'
 const workDir = '/Users/nanmi/project/demo'
 
 describe('extractAssistantOutputTargets', () => {
+  it('normalizes authored hrefs once and keeps bare filesystem percent names literal', () => {
+    const targets = extractAssistantOutputTargets(
+      '[literal](docs/literal%2520name.md) [space](docs/My%20Notes.md) `docs/bare%20name.md`',
+      { workDir },
+    )
+    expect(targets.map((target) => target.normalizedPath)).toEqual([
+      'docs/literal%20name.md', 'docs/My Notes.md', 'docs/bare%20name.md',
+    ])
+  })
+
   it('extracts markdown links for workspace html, markdown, and images', () => {
     const content = [
       '已完成：',

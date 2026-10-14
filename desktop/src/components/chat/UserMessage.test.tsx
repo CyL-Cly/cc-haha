@@ -30,6 +30,12 @@ function bubbleOf(container: HTMLElement): HTMLElement {
 }
 
 describe('UserMessage', () => {
+  it('keeps a teammate Markdown file reference parsed through the click callback', () => {
+    render(<UserMessage sessionId="s1" content="[open](docs/literal%2520name.md:7)" teammateFrom="reviewer" />)
+    fireEvent.click(screen.getByRole('link', { name: 'open' }))
+    expect(openPreviewLink).toHaveBeenCalledWith({ path: 'docs/literal%20name.md', line: 7 }, 's1')
+  })
+
   afterEach(() => {
     useSettingsStore.setState({ locale: 'en' })
     openPreviewLink.mockClear().mockReturnValue(true)

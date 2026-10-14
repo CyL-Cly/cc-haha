@@ -7,7 +7,6 @@ import { useSessionRuntimeStore } from './sessionRuntimeStore'
 import { t } from '../i18n'
 import { teamMemberSessionId } from '../types/team'
 import { readTabBehavior } from '../lib/tabBehavior'
-import type { SessionListItem } from '../types/session'
 
 const TAB_STORAGE_KEY = 'cc-haha-open-tabs'
 const MAX_CLOSED_SESSION_TABS = 10
@@ -489,7 +488,6 @@ export const useTabStore = create<TabStore>((set, get) => ({
       const { sessions } = await sessionsApi.list({ limit: 200 })
       if (!restoreStillCurrent()) return
       const sessionsById = new Map(sessions.map((session) => [session.id, session]))
-      const historicalSessions: SessionListItem[] = []
       const missingIds = new Set<string>()
       // The recent page cannot prove an old saved tab was deleted. Resolve
       // only missing saved ids, sequentially so large tab sets stay bounded.
@@ -500,7 +498,6 @@ export const useTabStore = create<TabStore>((set, get) => ({
           const session = await sessionsApi.getSummary(sessionId)
           if (!restoreStillCurrent()) return
           sessionsById.set(sessionId, session)
-          historicalSessions.push(session)
         } catch (error) {
           if (!restoreStillCurrent()) return
           if (error instanceof ApiError && error.status === 404) {
@@ -518,10 +515,19 @@ export const useTabStore = create<TabStore>((set, get) => ({
       if (!restoreStillCurrent()) return
       const recentSessions = reconcileSessionSnapshots(sessions, useSessionStore.getState().sessions)
       for (const session of recentSessions) sessionsById.set(session.id, session)
-      if (historicalSessions.length > 0) {
-        const hydrated = useSessionStore.getState().hydrateHistoricalSessions(historicalSessions, runtimeSelections)
-        for (const session of hydrated) sessionsById.set(session.id, session)
-      }
+      const restoredSessionIds = new Set(data.openTabs.flatMap((tab) => {
+        const id = getPersistedSessionId(tab)
+        return id ? [id] : []
+      }))
+      // A saved tab can be in this recent page but outside the sidebar's six
+      // rows. Every restored chat needs metadata before activation and must
+      // retain it across sidebar refreshes; unrelated recent rows stay bounded.
+      const restoredSessions = [...restoredSessionIds].flatMap((id) => {
+        const session = sessionsById.get(id)
+        return session ? [session] : []
+      })
+      const hydrated = useSessionStore.getState().hydrateHistoricalSessions(restoredSessions, runtimeSelections)
+      for (const session of hydrated) sessionsById.set(session.id, session)
       useSessionRuntimeStore.getState().syncFromSessions(recentSessions, runtimeSelections)
 
       const validTabs: Tab[] = data.openTabs

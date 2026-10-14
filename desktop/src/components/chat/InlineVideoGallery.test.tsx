@@ -95,15 +95,16 @@ describe('InlineVideoGallery', () => {
     expect(videoSrcs(container)).toEqual(['http://127.0.0.1:4321/local-file/outside/render.mp4'])
   })
 
-  it.each(['outputs/render.mp4', '/outside/render.mp4'])('keeps a failed preview available as an actionable file card (%s)', (path) => {
+  it.each(['outputs/render.mp4', '/outside/render.mp4', 'outputs/literal%20render.mp4'])(
+    'keeps a failed preview available as an actionable file card (%s)', (path) => {
     const { container } = render(
       <InlineVideoGallery text={`Saved to ${path}`} sessionId="s1" workDir="/w" />,
     )
     fireEvent.error(container.querySelector('video')!)
     expect(container.querySelector('video')).toBeNull()
-    expect(screen.getByText('render.mp4')).toBeVisible()
+    expect(screen.getByText(path.split('/').pop()!)).toBeVisible()
     fireEvent.click(screen.getByRole('button', { name: 'assistantOutputs.openAria' }))
-    expect(openPreviewLink).toHaveBeenCalledWith(path, 's1')
+    expect(openPreviewLink).toHaveBeenCalledWith({ path }, 's1')
     expect(screen.getByRole('button', { name: 'openWith.title' })).toBeVisible()
   })
 

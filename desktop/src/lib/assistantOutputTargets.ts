@@ -8,6 +8,7 @@ import {
   splitTextByFilePaths,
 } from './filePathBoundary'
 import { isGeneratedArtifactFile, isOutputResourceFile, isShellProducedDeliverable } from './fileCapabilities'
+import { classifyPreviewLink } from './previewLinkRouter'
 
 export type AssistantOutputTargetKind =
   | 'local-html'
@@ -166,7 +167,11 @@ export function extractAssistantOutputTargets(
     const authoredTitle = match.title
     const href = resolveAssistantFileHref(match.href, content)
     const localhostTarget = toLocalhostTarget(href)
-    const fileTarget = toWorkspaceFileTarget(href, workDir)
+    const parsedHref = classifyPreviewLink(match.href)
+    const filePath = parsedHref.path && !match.href.startsWith('file://')
+      ? resolveAssistantFileHref({ path: parsedHref.path }, content).path
+      : href
+    const fileTarget = toWorkspaceFileTarget(filePath, workDir)
 
     if (isInCodeBlock(match.start, codeBlocks)) {
       continue

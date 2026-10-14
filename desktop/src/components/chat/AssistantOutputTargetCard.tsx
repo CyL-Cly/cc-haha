@@ -12,6 +12,7 @@ import { describeFileType, type OpenWithItem } from '../../lib/openWithItems'
 import { buildOpenWithMenuItemsForHref } from '../../lib/openWithMenuItems'
 import { openPreviewLink } from '../../lib/openPreviewLink'
 import { reportOpenFailure } from '../../lib/systemFileOpen'
+import type { PreviewLinkTarget } from '@/lib/previewLinkRouter'
 
 type Props = {
   target: AssistantOutputTarget
@@ -24,6 +25,10 @@ export function AssistantOutputTargetCard({ target, sessionId, workDir }: Props)
   const [openWith, setOpenWith] = useState<{ items: OpenWithItem[]; anchor: DOMRect; triggerEl: HTMLElement } | null>(null)
 
   const isLocalhost = target.kind === 'localhost-url'
+  // normalizedPath is a disk path, even when the authored href was encoded.
+  const linkTarget: PreviewLinkTarget = isLocalhost
+    ? target.href
+    : { path: target.normalizedPath ?? target.href }
   const typeInfo = describeFileType(target.normalizedPath ?? target.href)
   const badge = isLocalhost
     ? t('assistantOutputs.kind.localhost')
@@ -41,8 +46,8 @@ export function AssistantOutputTargetCard({ target, sessionId, workDir }: Props)
     event.stopPropagation()
     // A card is only shown for something it can open; one the router cannot
     // place must say so rather than leave the click looking dead (#1556).
-    if (!openPreviewLink(target.href, sessionId)) reportOpenFailure(target.href)
-  }, [sessionId, target.href])
+    if (!openPreviewLink(linkTarget, sessionId)) reportOpenFailure(target.href)
+  }, [sessionId, linkTarget, target.href])
 
   const handleOpenWith = useCallback((event: ReactMouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
@@ -56,7 +61,7 @@ export function AssistantOutputTargetCard({ target, sessionId, workDir }: Props)
     const triggerEl = event.currentTarget
     const rect = triggerEl.getBoundingClientRect()
     void (async () => {
-      const items = await buildOpenWithMenuItemsForHref(target.href, {
+      const items = await buildOpenWithMenuItemsForHref(linkTarget, {
         sessionId,
         workDir,
         t: (k, v) => t(k as TranslationKey, v),
@@ -64,7 +69,7 @@ export function AssistantOutputTargetCard({ target, sessionId, workDir }: Props)
       if (items.length === 0) return
       setOpenWith({ items, anchor: rect, triggerEl })
     })()
-  }, [openWith, sessionId, t, target.href, workDir])
+  }, [openWith, sessionId, t, linkTarget, workDir])
 
   return (
     <section className="flex items-stretch overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-container-lowest)]">

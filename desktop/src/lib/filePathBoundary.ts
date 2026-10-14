@@ -111,7 +111,7 @@ const LINKABLE_DOTFILES: ReadonlySet<string> = new Set([
  * way, and in *prose* a CJK filename is far rarer than CJK sitting flush
  * against an ASCII path. Whole-string references use FULLREF_SEGMENT instead.
  */
-const SEGMENT_CHARS = String.raw`\w.\-@+`
+const SEGMENT_CHARS = String.raw`\w.\-@+%`
 const SEGMENT = `[${SEGMENT_CHARS}]+`
 /** A path cannot begin mid-token: `ftp://x.com/a/b.ts` must not yield `x.com/a/b.ts`. */
 const CONTINUES_PATH_RE = new RegExp(`[${SEGMENT_CHARS}/\\\\:]`)
@@ -126,7 +126,7 @@ const PREFIX = String.raw`(?:~${SEPARATOR}|\.{1,2}${SEPARATOR}|${SEPARATOR}|[A-Z
  * `文档/说明.md` are real files a turn really writes, and rejecting them made
  * their output cards and "Open with" menus silently dead.
  */
-const FULLREF_SEGMENT = String.raw`[\p{L}\p{N}_.\-@+]+`
+const FULLREF_SEGMENT = String.raw`[\p{L}\p{N}_.\-@+%]+`
 
 /**
  * `path:42`, `path:42:8`, `path#L42`, `path#L42-L60`, `path:L42`.
@@ -355,7 +355,7 @@ export function splitTextByFilePaths(text: string): FilePathSegment[] {
 
 const UNICODE_LETTER_RE = /[^\x00-\x7F]/
 const IS_UNICODE_WORD_RE = /[\p{L}\p{N}]/u
-const TOKEN_CHAR_RE = /[\p{L}\p{N}_.\-@+/\\~]/u
+const TOKEN_CHAR_RE = /[\p{L}\p{N}_.\-@+%/\\~]/u
 
 /**
  * The ASCII scan stops at the first CJK letter, so a match flush against one is
