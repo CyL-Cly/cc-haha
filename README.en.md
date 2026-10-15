@@ -19,8 +19,6 @@
 
 </div>
 
-> **Licensing**: Current terms are the [cc-haha Community Source License 1.0](LICENSE). Personal and internal business use are allowed; competing commercial offerings require separate written permission; redistributions require visible source attribution. Existing MIT grants and third-party licenses remain valid. See the [licensing guide](LICENSING.md). This is source-available, not an OSI-approved open-source license.
-
 cc-haha is a **desktop Claude Code workspace** for macOS, Windows, and Linux: multi-session workspaces, global search, branch / Worktree launch, diff review, built-in browser preview, GUI permission approval, any model — Claude, ChatGPT, Grok, presets, or local endpoints — image generation, visual MCP & SubAgent managers, an Agent Teams workbench, dynamic Workflow orchestration, model trace, Computer Use, skill marketplace, colour themes, desktop pets, H5 remote access, IM integration, and scheduled tasks, all in one app. **On macOS, Computer Use can operate other apps without taking over your physical mouse or keyboard.**
 
 <p align="center"><b>Platinum Sponsor · Modelflare</b></p>
@@ -216,3 +214,9 @@ If this project helps you, please support it with a ⭐ Star so more people can 
 <a href="https://www.repostars.dev/?repos=NanmiCoder%2Fcc-haha&theme=ocean">
   <img alt="Star History Chart" src="https://www.repostars.dev/api/embed?repo=NanmiCoder%2Fcc-haha&theme=ocean" />
 </a>
+
+---
+
+## License
+
+Current terms are the [cc-haha Community Source License 1.0](LICENSE). Personal and internal business use are allowed; competing commercial offerings require separate written permission; redistributions require visible source attribution. Existing MIT grants and third-party licenses remain valid. See the [licensing guide](LICENSING.md). This is source-available, not an OSI-approved open-source license.

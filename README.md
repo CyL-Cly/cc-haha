@@ -19,8 +19,6 @@
 
 </div>
 
-> **许可说明**：当前采用 [cc-haha Community Source License 1.0](LICENSE)。允许个人及企业内部正常使用；竞争性商业产品或服务须另行取得书面授权；二次分发须显著保留来源署名。历史 MIT 授权与第三方许可继续有效。详见[许可说明](LICENSING.md)。当前许可属于源码可用许可，不是 OSI 认可的开源许可证。
-
 cc-haha 是一个**桌面端 Claude Code 工作台**：多会话与全局搜索、分支 / Worktree 启动、Diff 审阅、内置浏览器预览、图形化权限审批、模型自选（Claude / ChatGPT / Grok / 预设 / 本地端点）、图片生成、MCP 与 SubAgent 可视化管理、Agent Teams 协作工作台、动态 Workflow 编排、模型请求追踪、Computer Use、技能市场、多主题、桌面宠物、H5 远程访问、IM 接入和定时任务，集中在一个 macOS / Windows / Linux APP 里。**在 macOS 上，Computer Use 能操作其他应用，同时不占用你的真实鼠标和键盘。**
 
 <p align="center"><b>白金赞助商 · Modelflare</b></p>
@@ -216,3 +214,9 @@ cp .env.example .env
 <a href="https://www.repostars.dev/?repos=NanmiCoder%2Fcc-haha&theme=ocean">
   <img alt="Star History Chart" src="https://www.repostars.dev/api/embed?repo=NanmiCoder%2Fcc-haha&theme=ocean" />
 </a>
+
+---
+
+## 许可说明
+
+当前采用 [cc-haha Community Source License 1.0](LICENSE)。允许个人及企业内部正常使用；竞争性商业产品或服务须另行取得书面授权；二次分发须显著保留来源署名。历史 MIT 授权与第三方许可继续有效。详见[许可说明](LICENSING.md)。当前许可属于源码可用许可，不是 OSI 认可的开源许可证。
