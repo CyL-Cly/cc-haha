@@ -375,7 +375,7 @@ describe('Business Flow: Models & Effort', () => {
 
   it('should return available fallback models', async () => {
     const { data } = await api('GET', '/api/models')
-    expect(data.models.length).toBe(8)
+    expect(data.models.length).toBe(9)
     const names = data.models.map((m: any) => m.name)
     expect(names).toContain('Fable 5.1')
     expect(names).toContain('Fable 5')
@@ -384,6 +384,7 @@ describe('Business Flow: Models & Effort', () => {
     expect(names).toContain('Opus 4.8')
     expect(names).toContain('Sonnet 5.5')
     expect(names).toContain('Sonnet 5')
+    expect(names).toContain('Haiku 5.5')
     expect(names).toContain('Haiku 4.5')
   })
 

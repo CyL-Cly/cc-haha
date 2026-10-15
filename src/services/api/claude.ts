@@ -195,6 +195,7 @@ import { endQueryProfile, queryCheckpoint } from "src/utils/queryProfiler.js";
 import {
   modelSupportsAdaptiveThinking,
   modelUsesBoundThinking,
+  modelRejectsManualThinking,
   modelRequiresThinking,
   modelSupportsThinking,
   resolveModelThinkingEnabled,
@@ -1741,8 +1742,11 @@ async function* queryModel(
       retryContext?.maxTokensOverride ||
       options.maxOutputTokensOverride ||
       getMaxOutputTokensForModel(options.model)
+    // CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING only selects a manual budget, so it
+    // cannot apply to models that reject budget_tokens.
     const usesAdaptiveThinking =
       (modelRequiresThinking(options.model) ||
+        modelRejectsManualThinking(options.model) ||
         !isEnvTruthy(process.env.CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING)) &&
       modelSupportsAdaptiveThinking(options.model)
     // Manual thinking needs at least 1024 tokens and room for the answer.
@@ -1778,11 +1782,12 @@ async function* queryModel(
     // The installed SDK's effort type predates xhigh, which configureEffortParams supports.
     const configuredEffort = outputConfig.effort as string | null | undefined
 
-    // Opus 5 rejects disabled thinking above high effort. Preserve the user's
-    // explicit thinking choice and use the highest compatible effort instead.
+    // Opus 5 and Haiku 5.5 reject disabled thinking above high effort. Preserve
+    // the user's explicit thinking choice and use the highest compatible effort.
+    const modelId = options.model.toLowerCase()
     if (
       sendsExplicitDisabledThinking &&
-      options.model.toLowerCase().includes('claude-opus-5') &&
+      (modelId.includes('claude-opus-5') || modelId.includes('claude-haiku-5-5')) &&
       (configuredEffort === 'xhigh' || configuredEffort === 'max')
     ) {
       outputConfig.effort = 'high'

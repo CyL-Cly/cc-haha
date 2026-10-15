@@ -951,6 +951,21 @@ for (const effortValue of ['low', 'high', 'xhigh', 'max'] as const) {
   }, 10_000)
 }
 
+for (const effortValue of ['medium', 'high', 'xhigh', 'max'] as const) {
+  test(`Haiku 5.5 caps ${effortValue} effort when thinking is disabled`, async () => {
+    const { requests } = await captureQueryRequest({
+      model: 'claude-haiku-5-5',
+      capabilities: 'thinking,effort,adaptive_thinking,xhigh_effort,max_effort',
+      effortValue,
+    })
+    expect(requests).toHaveLength(1)
+    expect(requests[0]?.thinking).toEqual({ type: 'disabled' })
+    expect(requests[0]?.output_config).toEqual({
+      effort: effortValue === 'xhigh' || effortValue === 'max' ? 'high' : effortValue,
+    })
+  }, 10_000)
+}
+
 test('Opus 5 preserves max effort with adaptive thinking enabled', async () => {
   const { requests } = await captureQueryRequest({
     model: 'claude-opus-5',
@@ -1011,6 +1026,100 @@ for (const disableAdaptive of [false, true]) {
     expect(requests[0]?.thinking).toEqual({ type: 'adaptive' })
     expect(requests[0]?.max_tokens).toBe(128_000)
     expect(requests[0]?.output_config).toEqual({ effort: 'medium' })
+  }, 10_000)
+}
+
+test('Opus 5.5 keeps adaptive thinking on a provider when optional adaptive thinking is disabled', async () => {
+  // Generic provider capabilities omit required_thinking; a user-level
+  // CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING must not turn that into budget thinking.
+  const provider = {
+    id: 'provider-modelflare',
+    presetId: 'custom',
+    name: 'Modelflare',
+    apiKey: 'loopback-test-key',
+    authStrategy: 'auth_token',
+    baseUrl: 'https://provider.example.invalid',
+    apiFormat: 'anthropic',
+    runtimeKind: 'anthropic_compatible',
+    models: {
+      main: 'claude-opus-5-5[1m]',
+      haiku: 'claude-haiku-5-5[1m]',
+      sonnet: 'claude-sonnet-5-5[1m]',
+      opus: 'claude-opus-5-5[1m]',
+    },
+  } satisfies SavedProvider
+
+  const { content, requests } = await captureQueryRequest({
+    model: 'claude-opus-5-5[1m]',
+    provider,
+    configureCapabilityOverrides: false,
+    thinkingBudget: 2048,
+    env: { CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING: '1' },
+    responseFactory: (model, body) => {
+      if ((body.thinking as { type?: unknown } | undefined)?.type !== 'adaptive') {
+        return Response.json({
+          type: 'error',
+          error: {
+            type: 'invalid_request_error',
+            message: 'claude-opus-5-5 requires adaptive thinking; omit thinking or use thinking.type=adaptive and output_config.effort',
+          },
+        }, { status: 400 })
+      }
+      return new Response(successfulResponse(model), {
+        headers: { 'content-type': 'text/event-stream' },
+      })
+    },
+  })
+
+  expect(content).toEqual([{ type: 'text', text: 'OK' }])
+  expect(requests).toHaveLength(1)
+  expect(requests[0]?.thinking).toEqual({ type: 'adaptive' })
+}, 10_000)
+
+// Optional adaptive opt-out on a provider-managed environment. Claude models the
+// API rejects budget_tokens for keep adaptive; every other model keeps the
+// requested manual budget exactly as before.
+const MANUAL_BUDGET = { type: 'enabled', budget_tokens: 2048 }
+for (const [model, expectedThinking] of [
+  ['claude-opus-5-5', { type: 'adaptive' }],
+  ['claude-sonnet-5-5', { type: 'adaptive' }],
+  ['claude-haiku-5-5', { type: 'adaptive' }],
+  ['claude-fable-5-1', { type: 'adaptive' }],
+  ['claude-opus-5', { type: 'adaptive' }],
+  ['claude-sonnet-5', { type: 'adaptive' }],
+  ['claude-opus-4-8', { type: 'adaptive' }],
+  ['claude-opus-4-7', { type: 'adaptive' }],
+  ['claude-opus-4-6', MANUAL_BUDGET],
+  ['claude-sonnet-4-6', MANUAL_BUDGET],
+  ['deepseek-v4-pro', MANUAL_BUDGET],
+  ['minimax-m3', MANUAL_BUDGET],
+  ['glm-5.3', MANUAL_BUDGET],
+  ['kimi-k3', MANUAL_BUDGET],
+  ['doubao-seed-2-0-pro', MANUAL_BUDGET],
+  ['hunyuan-t1-latest', MANUAL_BUDGET],
+] as const) {
+  test(`${model} thinking with optional adaptive disabled on a provider`, async () => {
+    const provider = {
+      id: 'provider-anthropic-compatible',
+      presetId: 'custom',
+      name: 'Anthropic compatible',
+      apiKey: 'loopback-test-key',
+      authStrategy: 'auth_token',
+      baseUrl: 'https://provider.example.invalid',
+      apiFormat: 'anthropic',
+      runtimeKind: 'anthropic_compatible',
+      models: { main: model, haiku: model, sonnet: model, opus: model },
+    } satisfies SavedProvider
+
+    const { requests } = await captureQueryRequest({
+      model,
+      provider,
+      configureCapabilityOverrides: false,
+      thinkingBudget: 2048,
+      env: { CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING: '1' },
+    })
+    expect(requests).toHaveLength(1)
+    expect(requests[0]?.thinking).toMatchObject(expectedThinking)
   }, 10_000)
 }
 

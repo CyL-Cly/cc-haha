@@ -1037,6 +1037,14 @@ describe('Models API', () => {
         supportedReasoningEfforts: ['low', 'medium', 'high', 'xhigh', 'max'],
       },
       {
+        id: 'claude-haiku-5-5',
+        name: 'Haiku 5.5',
+        description: 'Fastest for high-volume, latency-sensitive tasks',
+        context: '1m',
+        defaultReasoningEffort: 'medium',
+        supportedReasoningEfforts: ['low', 'medium', 'high', 'xhigh', 'max'],
+      },
+      {
         id: 'claude-haiku-4-5',
         name: 'Haiku 4.5',
         description: 'Fastest with near-frontier intelligence',
@@ -1281,6 +1289,7 @@ describe('Models API', () => {
       'claude-opus-4-8',
       'claude-sonnet-5-5',
       'claude-sonnet-5',
+      'claude-haiku-5-5',
       'claude-haiku-4-5',
     ])
   })

@@ -58,6 +58,7 @@ export function modelSupports1M(model: string): boolean {
   return (
     canonical.includes('claude-fable-5') ||
     canonical.includes('claude-sonnet-5') ||
+    canonical.includes('claude-haiku-5') ||
     canonical.includes('claude-opus-5') ||
     canonical.includes('claude-opus-4-8') ||
     canonical.includes('claude-opus-4-7') ||
@@ -302,7 +303,8 @@ export function getModelMaxOutputTokens(model: string): {
     m.includes('opus-4-8') ||
     m.includes('opus-4-7') ||
     m.includes('opus-4-6') ||
-    m.includes('sonnet-5')
+    m.includes('sonnet-5') ||
+    m.includes('haiku-5')
   ) {
     defaultTokens = 64_000
     upperLimit = 128_000
