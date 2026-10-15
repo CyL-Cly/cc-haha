@@ -195,6 +195,9 @@ describe('active sponsor providers', () => {
     expect(sponsor.nextElementSibling).toBe(dialog.getByRole('button', { name: 'Atlas Cloud' }))
     expect(within(sponsor).getByText('New')).toBeInTheDocument()
     expect(within(sponsor).getByLabelText('Sponsor')).toBeInTheDocument()
+    expect(sponsor.querySelector('img')?.getAttribute('src')).toContain('modelflare-logo')
+    expect(dialog.getByRole('button', { name: 'AruHub' }).querySelector('img')?.getAttribute('src')).toContain('aruhub-logo')
+    expect(dialog.getByRole('button', { name: 'Atlas Cloud' }).querySelector('img')).toBeNull()
     expect(dialog.queryByRole('button', { name: 'ApiSmart' })).not.toBeInTheDocument()
 
     fireEvent.click(sponsor)
