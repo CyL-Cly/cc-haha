@@ -8,17 +8,23 @@
 
 | 场景 | 当前许可的处理 |
 | --- | --- |
-| 个人使用、学习、研究、修改 | 允许 |
-| 公司员工或承包商在公司内部使用，包括写业务代码、接单开发、内部部署 | 允许，不因工作有收入而收费 |
-| 用 cc-haha 完成并交付自己的代码、文档、设计等工作成果 | 允许；输入和输出不会仅因使用工具而被本许可要求公开，直接复制的软件代码仍受原许可约束 |
-| 不构成竞争性商业提供的商业集成或再分发 | 允许，须履行来源署名、许可保留和修改说明要求 |
-| 免费发布非商业社区 fork 或修改版 | 允许，须履行来源署名、许可保留和修改说明要求 |
-| 换皮售卖、收费分发，或把项目及其实质性部分做成竞争性商业产品 | 需事先取得书面商业授权 |
-| 面向第三方提供竞争性的付费托管、SaaS 或远程访问服务 | 需事先取得书面商业授权 |
-| 表面免费，但通过广告、佣金或捆绑收费产品变现的竞争性产品 | 同样需事先取得书面商业授权 |
+| 个人非商业使用、学习、研究、修改 | 允许 |
+| 企业内部自用：内部部署、内部工具、仅供自身内部需要的修改 | 允许；不包括下列需要授权的商业盈利活动 |
+| 员工因正常内部工作领取工资 | 不会仅因此被认定为需要授权的商业盈利活动 |
+| 免费发布非商业社区 fork、修改版或提供非商业远程访问 | 允许，须履行来源署名、许可保留和修改说明要求 |
+| 使用 cc-haha 接单、承接付费委托、开发或交付收费的代码、文档、设计等成果 | 需事先取得书面商业授权，即使交付物不包含 cc-haha 源码 |
+| 使用 cc-haha 开发用于对外商业销售或许可的软件或其他成果 | 需事先取得书面商业授权 |
+| 对 cc-haha 或其衍生版本进行收费定制、二次开发、集成、部署或维护 | 需事先取得书面商业授权 |
+| 换皮售卖、收费分发、商业集成或商业再分发 cc-haha 或其衍生版本 | 需事先取得书面商业授权，不以是否构成竞争产品为条件 |
+| 面向第三方提供付费托管、SaaS、托管服务或远程访问 | 需事先取得书面商业授权 |
+| 表面免费，但通过广告、佣金或捆绑收费产品、服务变现 | 同样需事先取得书面商业授权 |
 
-本许可限制的是竞争性商业提供，不是全面禁止商业场景使用。
-仅为非商业社区项目维护提供自愿捐赠、且不换取付费访问、功能或服务，本身不视为竞争性商业提供。
+**企业内部自用可用；接单、对外商业盈利、收费修改和二次开发须事先取得书面商业授权。**
+内部部署、员工操作、公开源码或保留署名，均不能豁免上述需要授权的活动。
+限制不以是否与 cc-haha 竞争为条件，不保留“非竞争性商业集成或再分发”的免费例外。
+输入、输出的所有权不会仅因使用工具转移给本项目，但使用工具生成商业交付物仍须遵守上述用途限制；
+直接复制的软件代码还受其适用许可约束。私人修改及独立代码不因此被要求公开。
+仅为非商业社区项目维护提供自愿捐赠、且不换取付费访问、功能或服务，本身不视为需要授权的商业盈利活动。
 商业授权联系：**relakkes@gmail.com**。第三方权利人拥有的部分可能还需另行取得其授权。
 
 ## 二次分发必须显著标明来源
@@ -64,13 +70,25 @@ Copyright (c) 2026 cc-haha
 
 ## English summary
 
-The governing terms are in [LICENSE](LICENSE). Personal, educational, research,
-and internal business use are allowed, including paid client work and creating
-proprietary software. Commercially providing a competing product or service
-based on the covered Software requires a separate written commercial license.
-Commercial redistribution that is not a competing offering is also allowed.
-Free noncommercial community forks and remote access are allowed with the required notices, visible
-source attribution, and identification of material modifications.
+The governing terms are in [LICENSE](LICENSE). Noncommercial personal,
+educational, and research use, and an organization's own internal operations,
+internal tools, and internal-only modifications are allowed. Ordinary employee
+salary for otherwise permitted internal work is not by itself prohibited.
+
+Separate prior written commercial permission is required for paid client work,
+commissioned development, creating software or other deliverables for commercial
+sale or licensing, paid customization or secondary development, commercial
+integration or redistribution, and paid hosting, SaaS, or managed access.
+These restrictions also cover monetization through advertising, commissions,
+or paid bundles, whether or not the offering competes with cc-haha. They apply
+to paid client work even when the delivered output contains no cc-haha code.
+Internal deployment, employee access, attribution, or public source code does
+not exempt a restricted activity. Output ownership is not transferred, but
+using the Software to create commercial deliverables is still restricted.
+
+Free noncommercial community forks, redistribution, and remote access are allowed
+with the required notices, visible source attribution, and identification of
+material modifications.
 
 Redistributions must carry the license and applicable notices. Source attribution
 belongs near the beginning of the main README, in an accessible About or legal

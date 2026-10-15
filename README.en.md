@@ -219,4 +219,4 @@ If this project helps you, please support it with a ⭐ Star so more people can 
 
 ## License
 
-Current terms are the [cc-haha Community Source License 1.0](LICENSE). Personal and internal business use are allowed; competing commercial offerings require separate written permission; redistributions require visible source attribution. Existing MIT grants and third-party licenses remain valid. See the [licensing guide](LICENSING.md). This is source-available, not an OSI-approved open-source license.
+Current terms are the [cc-haha Community Source License 1.0](LICENSE). Noncommercial personal use and internal business operations are allowed; paid client work, commercial deliverables, paid customization or secondary development, commercial distribution, and paid services require prior written commercial permission; redistributions require visible source attribution. Existing MIT grants and third-party licenses remain valid. See the [licensing guide](LICENSING.md). This is source-available, not an OSI-approved open-source license.

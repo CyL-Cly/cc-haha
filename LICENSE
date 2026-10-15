@@ -28,46 +28,64 @@ rights to later additions available only under this license.
 
 2. Permitted use
 
-Subject to the conditions below, the Licensor grants you a worldwide,
-non-exclusive, royalty-free copyright license to use, reproduce, study, and
-modify the Software for personal use, education, research, and internal
-business use, and to distribute the Software and modifications, subject to
-sections 3 and 4. Commercial redistribution that is not a Competitive Offering
-is permitted subject to those conditions.
+Subject to sections 3 and 4, the Licensor grants you a worldwide,
+non-exclusive, royalty-free copyright license to use, reproduce, study,
+and modify the Software for noncommercial personal use, education,
+research, and the limited internal business use described below. You may
+redistribute the Software and modifications, or provide remote access to
+them, only for noncommercial purposes and subject to section 4.
 
-Internal business use includes employees and contractors operating the
-Software for the organization's own work, including developing proprietary
-software, doing paid client work, and operating internal deployments for
-that organization. Creating and delivering your own work using the Software
-is permitted; selling or providing the Software itself as a competing
-offering is governed by section 3. These terms do not claim ownership of,
-or require disclosure of, your inputs or generated outputs. Software code
-copied into an output remains subject to its applicable license.
+Internal business use means use within an organization solely for its own
+internal operations, including internal deployments, internal tools, and
+modifications kept for its own internal needs. It does not authorize paid
+client work, developing software or other deliverables for commercial sale
+or licensing, or any other activity reserved under section 3. An employee's
+ordinary salary for otherwise permitted internal work does not by itself
+make that work a prohibited commercial use. Internal deployment or access
+by an employee does not exempt an otherwise prohibited activity.
 
-3. Competitive commercial offerings require written permission
+These terms do not claim ownership of, or require disclosure of, your
+inputs or generated outputs. However, permission to use the Software to
+create outputs remains subject to section 3. Software code copied into an
+output also remains subject to its applicable license.
 
-Without a separate written commercial license from the applicable rights
-holders, you may not sell, license for a fee, rent, or otherwise commercially
-provide a Competitive Offering to third parties.
+3. Commercial monetization requires written permission
 
-A "Competitive Offering" is a commercially provided product or service that
-contains, is derived from, embeds, or hosts the Software or a substantial
-portion of it and offers its AI agent workspace, coding-agent management,
-agent orchestration, or Computer Use capabilities as a substitute for
-cc-haha or a substantial part of cc-haha. This includes paid desktop distributions, rebranded commercial
-forks, and hosted or managed access to those capabilities. It also includes
-an offering monetized indirectly through advertising, commissions, or a
-bundled paid product, even if access to the Software is described as free.
-Changing names, logos, interfaces, or implementation details does not by
-itself remove this restriction.
+Except for the limited internal business use expressly permitted in
+section 2, commercial monetization using the Software, its modifications,
+or a substantial portion of it requires a separate written commercial
+license from the applicable rights holders. Without that license, you
+may not:
 
-Ordinary internal use and selling your own work described in section 2 do
-not constitute a Competitive Offering. Free community forks and free
-redistribution that are not part of a Competitive Offering are permitted
-subject to section 4. Free, noncommercial provision of remote access to the
-Software is also permitted subject to section 4. Voluntary donations solely supporting a noncommercial
-community project's maintenance, without paid access, features, or services
-in return, do not by themselves make it a Competitive Offering.
+(a) Sell, license for a fee, rent, or otherwise commercially distribute
+the Software or a product that contains, embeds, or is derived from it.
+
+(b) Provide paid hosting, SaaS, managed services, or remote access to the
+Software or its capabilities to third parties.
+
+(c) Use the Software to perform paid client work or create software or
+other deliverables for commercial sale or licensing, including contracted
+development and commissioned work, whether or not the Software itself is
+included in the delivered work.
+
+(d) Carry out or supply paid customization, secondary development,
+integration, deployment, or maintenance of the Software for third parties,
+or commercially provide the resulting modifications or derivative works.
+
+(e) Monetize a product or service using the Software indirectly through
+advertising, commissions, or bundling with a paid product or service, even
+if access to the Software is described as free.
+
+These restrictions do not depend on whether the product or service competes
+with cc-haha. Keeping attribution, changing names, logos, interfaces, or
+implementation details, or making source code public does not remove them.
+A commercial license is required before carrying out a restricted activity.
+
+Free, noncommercial community forks, redistribution, and remote access
+remain permitted subject to section 4. Voluntary donations solely supporting
+a noncommercial community project's maintenance, without paid access,
+features, or services in return, do not by themselves make it a prohibited
+commercial use.
 
 4. Redistribution and visible attribution
 
