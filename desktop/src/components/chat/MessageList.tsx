@@ -4098,6 +4098,7 @@ export const MessageBlock = memo(function MessageBlock({
         >
           <UserMessage
             content={message.content}
+            modelContent={message.modelContent}
             attachments={message.attachments}
             sessionReferences={message.sessionReferences}
             collaboration={message.collaboration}

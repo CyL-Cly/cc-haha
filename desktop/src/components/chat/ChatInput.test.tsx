@@ -165,6 +165,7 @@ import { workflowsApi } from '../../api/workflows'
 import { computerUseApi } from '../../api/computerUse'
 import { browserHost } from '../../lib/desktopHost/browserHost'
 import { settingsApi } from '../../api/settings'
+import { useCapabilityCatalogStore } from '../../stores/capabilityCatalogStore'
 import {
   captureProjectDisplayNameHydrationRevision,
   hydrateProjectDisplayNames,
@@ -2160,6 +2161,8 @@ describe('ChatInput file mentions', () => {
     expect(mocks.wsSend).toHaveBeenCalledWith(sessionId, {
       type: 'user_message', content: 'Use the Skill tool with skill: "team:review" for this request.', attachments: [],
     })
+    // The sent bubble names the pill from what this composer listed.
+    expect(useCapabilityCatalogStore.getState().entries['skill:skill:team:review']).toEqual({ label: 'Review' })
   })
 
   it.each(['@', '/', '/empty', '+'] as const)('hides withdrawn bundled capabilities in %s while keeping personal skills and other plugins', async (entry) => {

@@ -31,6 +31,7 @@ import { ContextUsageIndicator } from '../components/chat/ContextUsageIndicator'
 import { ComposerReferenceMenu, type ComposerReferenceMenuHandle } from '@/components/chat/ComposerReferenceMenu'
 import { ComposerReferenceDetail } from '@/components/chat/ComposerReferenceDetail'
 import { composerReferencesApi, mentionProviderId } from '@/api/composerReferences'
+import { useCapabilityCatalogStore } from '@/stores/capabilityCatalogStore'
 import type { ComposerReferenceCandidate } from '@/types/composerReference'
 import { LocalSlashCommandPanel, type LocalSlashCommandName } from '../components/chat/LocalSlashCommandPanel'
 import {
@@ -203,6 +204,7 @@ export function EmptySession({ initialWorkDir = '' }: EmptySessionProps = {}) {
     let active = true
     setReferenceState({ context: referenceContext, items: [], loading: true, error: false })
     void composerReferencesApi.list(workDir || undefined, referenceProviderId).then(data => {
+      useCapabilityCatalogStore.getState().remember([...data.plugins, ...data.skills])
       if (active) setReferenceState({ context: referenceContext, items: [...data.plugins, ...data.skills], loading: false, error: false })
     }).catch(() => {
       if (active) setReferenceState({ context: referenceContext, items: [], loading: false, error: true })
