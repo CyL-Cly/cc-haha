@@ -22,8 +22,8 @@ code, dependencies, and contributions available under a separate license
 remain subject to that license, including their existing notices. See
 THIRD_PARTY_LICENSES.md and any file-level or directory-level license notices.
 This license does not cancel, narrow, or replace rights already granted under
-MIT or another license for previously distributed code. In particular,
-LICENSE-MIT-legacy records the historical MIT terms; it does not grant MIT
+MIT or another license for previously distributed code. Historical terms
+remain available in the corresponding Git history; they do not grant MIT
 rights to later additions available only under this license.
 
 2. Permitted use

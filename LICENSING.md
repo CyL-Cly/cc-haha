@@ -53,7 +53,7 @@ Copyright (c) 2026 cc-haha
    [`755a18edb7e7519a12f5c7ee4265c9eb4f2ed508`](https://github.com/NanmiCoder/cc-haha/commit/755a18edb7e7519a12f5c7ee4265c9eb4f2ed508)
    使用 MIT；后续若在迁移前有其他 MIT 提交，也以相应版本实际分发的许可为准。
 2. 旧版 MIT 授权继续有效；已经按 MIT 获得的代码不会因替换根目录 LICENSE 而失去原授权。
-   历史全文原样保存在 [LICENSE-MIT-legacy](LICENSE-MIT-legacy)，该文件不向后续新增代码授予 MIT 权利。
+   历史全文可在[旧提交的 LICENSE](https://github.com/NanmiCoder/cc-haha/blob/755a18edb7e7519a12f5c7ee4265c9eb4f2ed508/LICENSE) 中查看；当前仓库不再单独附带历史 MIT 文件，也不向后续新增代码授予 MIT 权利。
 3. 新许可只在相应权利人有权授权的范围内生效。第三方依赖、内嵌代码、单独授权的文件及既有 MIT 贡献，
    继续保留适用的许可与通知，参见 [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md) 及文件、目录中的声明。
 4. 本变更不能追溯要求旧版 MIT 使用者在 README 或界面新增署名，也不能阻止其按 MIT 对旧代码进行合规商用。
@@ -65,7 +65,7 @@ Copyright (c) 2026 cc-haha
 新增限制主要作用于未来由有权授权者按新许可发布、且没有其他独立授权的新增内容。
 
 本次迁移仅更新源码仓库的许可文本和说明，不发布新的安装包。
-后续分发适用新许可的安装包时，应随包携带 LICENSE、NOTICE、历史及第三方许可声明，
+后续分发适用新许可的安装包时，应随包携带 LICENSE、NOTICE 及适用的第三方或单独授权代码所需的许可声明，
 并核查上面的可见署名要求；既有发布包不会被本次源码变更自动更新。
 
 ## English summary
@@ -96,9 +96,10 @@ page for graphical applications, in binary product descriptions or accompanying
 documentation, and in normal help or license output for CLI-only distributions.
 Private changes and independently written code need not be published.
 
-Existing MIT grants remain valid. The historical MIT text is preserved in
-[LICENSE-MIT-legacy](LICENSE-MIT-legacy) and does not grant MIT rights to later
-additions. Third-party code and separately licensed contributions keep their own
+Existing MIT grants remain valid. Historical terms remain available in the
+[pre-transition LICENSE](https://github.com/NanmiCoder/cc-haha/blob/755a18edb7e7519a12f5c7ee4265c9eb4f2ed508/LICENSE).
+The current repository does not carry a separate historical MIT file or grant
+MIT rights to later additions. Third-party code and separately licensed contributions keep their own
 terms. This is a source-available license, not an OSI-approved open-source license.
 Future contributions must be accepted under clearly agreed terms; this change
 does not transfer contributors' copyright or blanket relicensing authority.
