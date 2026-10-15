@@ -132,14 +132,15 @@ describe('providerRuntimeEnv', () => {
       ANTHROPIC_BASE_URL: 'https://api.deepseek.com/anthropic',
       ANTHROPIC_API_KEY: 'deepseek-oauth-dummy-key',
       ANTHROPIC_MODEL: 'deepseek-v4-pro[1m]',
-      ANTHROPIC_DEFAULT_HAIKU_MODEL: 'deepseek-v4-flash',
+      // The account listing names V4.1 Flash `deepseek-flash`.
+      ANTHROPIC_DEFAULT_HAIKU_MODEL: 'deepseek-flash',
       DISABLE_AUTOUPDATER: '1',
     })
     expect(env.ANTHROPIC_AUTH_TOKEN).toBeUndefined()
     expect(env.CC_HAHA_GROK_OAUTH_PROVIDER).toBeUndefined()
     expect(env.GROK_OAUTH_FILE).toBeUndefined()
     expect(JSON.parse(env.CLAUDE_CODE_MODEL_CONTEXT_WINDOWS!)).toMatchObject({
-      'deepseek-v4-flash': 1000000,
+      'deepseek-flash': 1000000,
     })
     expect(activeProviderNeedsProxy(tmpDir)).toBe(false)
   })

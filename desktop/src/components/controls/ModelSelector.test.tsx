@@ -1426,7 +1426,7 @@ describe('ModelSelector', () => {
       expect(dropdown.textContent).not.toContain('deepseek-v4')
     })
 
-    it('lists the bundled DeepSeek models once signed in and selects one for the session', async () => {
+    it('lists the account models once signed in and selects one for the session', async () => {
       useSavedProviderActive()
       useHahaDeepSeekOAuthStore.setState({
         status: { loggedIn: true, name: 'Ada', contact: 'a***@example.com' },
@@ -1438,15 +1438,91 @@ describe('ModelSelector', () => {
 
       const dropdown = screen.getByTestId('model-selector-dropdown')
       expect(dropdown.textContent).toContain('DeepSeek Account')
-      expect(within(dropdown).getByRole('button', { name: /deepseek-v4-pro\[1m\]/ })).toBeInTheDocument()
+      // The account listing names V4.1 Flash `deepseek-flash`, not the
+      // API-key route's `deepseek-v4-flash`, and the `[1m]` alias row stands
+      // for the listed `deepseek-v4-pro` instead of repeating it.
+      expect(dropdown.textContent).not.toContain('deepseek-v4-flash')
+      expect(within(dropdown).getAllByRole('button', { name: /DeepSeek-V4-Pro/ })).toHaveLength(1)
       await act(async () => {
-        fireEvent.click(within(dropdown).getByRole('button', { name: /deepseek-v4-flash/ }))
+        fireEvent.click(within(dropdown).getByRole('button', { name: /DeepSeek-V4\.1-Flash/ }))
         await Promise.resolve()
       })
 
       expect(useSessionRuntimeStore.getState().selections['session-ds-in']).toMatchObject({
         providerId: 'deepseek-account',
-        modelId: 'deepseek-v4-flash',
+        modelId: 'deepseek-flash',
+      })
+    })
+
+    it('builds the account alias rows from the mapping saved in Settings', async () => {
+      useSavedProviderActive()
+      useProviderStore.setState({
+        deepSeekAccountModels: {
+          main: 'deepseek-flash',
+          haiku: 'deepseek-flash',
+          sonnet: 'deepseek-v4-pro',
+          opus: 'deepseek-v4-pro',
+        },
+      })
+      useHahaDeepSeekOAuthStore.setState({
+        status: { loggedIn: true, name: null, contact: null },
+        fetchStatus: async () => {},
+      })
+
+      render(<ModelSelector runtimeKey="session-ds-saved" />)
+      await clickByRole(/provider-main/i)
+
+      const dropdown = screen.getByTestId('model-selector-dropdown')
+      const flash = within(dropdown).getByRole('button', { name: /DeepSeek-V4\.1-Flash/ })
+      expect(flash.textContent).toContain('Main Model · Haiku Model')
+      const pro = within(dropdown).getByRole('button', { name: /DeepSeek-V4-Pro/ })
+      expect(pro.textContent).toContain('Sonnet Model · Opus Model')
+      // The default mapping's `[1m]` alias is not what the user saved.
+      expect(dropdown.textContent).not.toContain('deepseek-v4-pro[1m]')
+      await act(async () => {
+        fireEvent.click(pro)
+        await Promise.resolve()
+      })
+      expect(useSessionRuntimeStore.getState().selections['session-ds-saved']).toMatchObject({
+        providerId: 'deepseek-account',
+        modelId: 'deepseek-v4-pro',
+      })
+    })
+
+    it('offers the models of the live account listing while the account is the default provider', async () => {
+      useHahaOAuthStore.setState({ status: { loggedIn: false }, fetchStatus: async () => {} })
+      useHahaOpenAIOAuthStore.setState({ status: { loggedIn: false }, fetchStatus: async () => {} })
+      useHahaGrokOAuthStore.setState({ status: { loggedIn: false }, fetchStatus: async () => {} })
+      useHahaDeepSeekOAuthStore.setState({ status: { loggedIn: true, name: null, contact: null }, fetchStatus: async () => {} })
+      const listed = [
+        { id: 'deepseek-v4-pro[1m]', name: 'DeepSeek-V4-Pro', description: 'Main model', context: '1048576' },
+        { id: 'deepseek-flash', name: 'DeepSeek-V4.1-Flash', description: 'Haiku model', context: '1048576' },
+        { id: 'deepseek-v5-preview', name: 'DeepSeek-V5-Preview', description: '', context: '' },
+      ]
+      useSettingsStore.setState({
+        locale: 'en',
+        availableModels: listed,
+        currentModel: listed[0],
+        activeProviderName: 'DeepSeek Account',
+      })
+      useProviderStore.setState({
+        providers: [],
+        activeId: 'deepseek-account',
+        hasLoadedProviders: true,
+        isLoading: false,
+      })
+
+      render(<ModelSelector runtimeKey="session-ds-live" />)
+      await clickByRole(/DeepSeek-V4-Pro/i)
+
+      const dropdown = screen.getByTestId('model-selector-dropdown')
+      await act(async () => {
+        fireEvent.click(within(dropdown).getByRole('button', { name: /DeepSeek-V5-Preview/ }))
+        await Promise.resolve()
+      })
+      expect(useSessionRuntimeStore.getState().selections['session-ds-live']).toMatchObject({
+        providerId: 'deepseek-account',
+        modelId: 'deepseek-v5-preview',
       })
     })
 
@@ -1460,7 +1536,7 @@ describe('ModelSelector', () => {
 
       render(<ModelSelector runtimeKey="session-ds-restored" />)
 
-      expect(screen.getByRole('button', { name: /deepseek-v4-pro\[1m\], DeepSeek Account/ })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /DeepSeek-V4-Pro, DeepSeek Account/ })).toBeInTheDocument()
     })
 
     it('fetches the DeepSeek sign-in status when the selector opens', async () => {

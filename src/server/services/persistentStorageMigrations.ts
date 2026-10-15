@@ -5,14 +5,19 @@ import { randomBytes } from 'node:crypto'
 import { normalizeLegacyDeepSeekManagedEnv } from '../../utils/providerManagedEnvCompat.js'
 import { isOpenAIOfficialProviderId } from './openaiOfficialProvider.js'
 import { isGrokOfficialProviderId } from './grokOfficialProvider.js'
-import { isDeepSeekAccountProviderId } from './deepseekAccountProvider.js'
+import {
+  isDeepSeekAccountProviderId,
+  migrateLegacyDeepSeekAccountModels,
+} from './deepseekAccountProvider.js'
 import {
   BUILT_IN_PROVIDER_IDS,
+  DEEPSEEK_ACCOUNT_PROVIDER_ID,
+  PROVIDER_DEEPSEEK_ACCOUNT_MODEL_IDS_SCHEMA_VERSION,
   PROVIDER_IMAGE_PROTOCOL_SCHEMA_VERSION,
   PROVIDER_TOOL_SEARCH_OPT_IN_SCHEMA_VERSION,
 } from '../types/provider.js'
 
-export const CURRENT_PROVIDER_INDEX_SCHEMA_VERSION = PROVIDER_IMAGE_PROTOCOL_SCHEMA_VERSION
+export const CURRENT_PROVIDER_INDEX_SCHEMA_VERSION = PROVIDER_DEEPSEEK_ACCOUNT_MODEL_IDS_SCHEMA_VERSION
 
 type MigrationReport = {
   migratedEntries: string[]
@@ -68,13 +73,20 @@ function isSavedProvider(value: unknown): value is JsonObject {
   )
 }
 
-function normalizeOfficialProviderModels(value: unknown): JsonObject {
+function normalizeOfficialProviderModels(value: unknown, sourceSchemaVersion: number): JsonObject {
   if (!isRecord(value)) return {}
   const normalized: JsonObject = { ...value }
   for (const id of BUILT_IN_PROVIDER_IDS) {
     if (!isProviderModels(value[id])) {
       delete normalized[id]
     }
+  }
+  const deepSeekAccountModels = normalized[DEEPSEEK_ACCOUNT_PROVIDER_ID]
+  if (
+    sourceSchemaVersion < PROVIDER_DEEPSEEK_ACCOUNT_MODEL_IDS_SCHEMA_VERSION &&
+    isRecord(deepSeekAccountModels)
+  ) {
+    normalized[DEEPSEEK_ACCOUNT_PROVIDER_ID] = migrateLegacyDeepSeekAccountModels(deepSeekAccountModels)
   }
   return normalized
 }
@@ -228,7 +240,7 @@ function migrateProvidersIndex(value: unknown): JsonObject {
     activeId,
     providers,
     providerOrder: normalizeProviderOrder(rawProviderOrder, providers),
-    officialProviderModels: normalizeOfficialProviderModels(rawOfficialProviderModels),
+    officialProviderModels: normalizeOfficialProviderModels(rawOfficialProviderModels, sourceSchemaVersion),
   }
 }
 

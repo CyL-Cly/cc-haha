@@ -2,6 +2,7 @@
  * Models REST API
  *
  * GET  /api/models          — 获取可用模型列表
+ * GET  /api/models/catalog?provider=<id> — 内置 OAuth 供应商账号可选的模型目录
  * GET  /api/models/current  — 获取当前选中的模型
  * PUT  /api/models/current  — 切换模型
  * GET  /api/effort          — 获取 Effort 等级
@@ -36,7 +37,16 @@ import {
   isGrokOfficialProviderId,
 } from '../services/grokOfficialProvider.js'
 import { hahaGrokOAuthService } from '../services/hahaGrokOAuthService.js'
-import { isDeepSeekAccountProviderId } from '../services/deepseekAccountProvider.js'
+import {
+  DEEPSEEK_ACCOUNT_PROVIDER,
+  isDeepSeekAccountProviderId,
+  listDeepSeekAccountModels,
+} from '../services/deepseekAccountProvider.js'
+import type { DeepSeekAccountModel } from '../../services/deepseekAuth/modelCatalog.js'
+import {
+  CLAUDE_OFFICIAL_PROVIDER_ID,
+  isBuiltInProviderId,
+} from '../types/provider.js'
 import { resolveClaudeOfficialRuntimeModel } from '../services/claudeOfficialRuntime.js'
 import {
   getPresetDefaultEnv,
@@ -244,6 +254,25 @@ async function getGrokModelList(): Promise<ApiModelInfo[]> {
   }))
 }
 
+// Effort levels come from the same reasoning profile the CLI runs with, so
+// a catalog row offers exactly the levels a slot row for that model would.
+function buildDeepSeekAccountModelList(catalog: readonly DeepSeekAccountModel[]): ApiModelInfo[] {
+  const providerKind = getPresetReasoningProviderKind(DEEPSEEK_ACCOUNT_PROVIDER.presetId)
+  return catalog.map((model) => {
+    const reasoningProfile = resolveModelReasoningProfile(model.id, 'anthropic', undefined, providerKind)
+    return {
+      id: model.id,
+      name: model.name,
+      description: '',
+      context: model.contextWindow ? String(model.contextWindow) : '',
+      supportedReasoningEfforts: [...(reasoningProfile?.supportedReasoningEfforts ?? [])],
+      ...(reasoningProfile?.defaultReasoningEffort
+        ? { defaultReasoningEffort: reasoningProfile.defaultReasoningEffort }
+        : {}),
+    }
+  })
+}
+
 function getConfiguredAnthropicModels(settingsEnv: Record<string, unknown>): ApiModelInfo[] {
   const resolveModel = (key: string): string => {
     const runtimeValue = process.env[key]?.trim()
@@ -319,6 +348,10 @@ export async function handleModelsApi(
       case 'current':
         return await handleCurrentModel(req)
 
+      case 'catalog':
+        if (req.method !== 'GET') throw methodNotAllowed(req.method)
+        return await handleModelCatalog(url)
+
       default:
         throw ApiError.notFound(`Unknown models endpoint: ${sub}`)
     }
@@ -341,6 +374,45 @@ async function resolveActiveProvider(
     return providerService.getProvider(activeId)
   }
   return null
+}
+
+function baseModelId(id: string): string {
+  return id.trim().replace(/\[1m\]$/i, '')
+}
+
+/**
+ * The account's alias mapping, named the way the account names its models,
+ * followed by the account models no alias points at (`deepseek-v4-pro[1m]`
+ * and `deepseek-v4-pro` are one model).
+ */
+function withDeepSeekAccountCatalog(
+  mapped: ApiModelInfo[],
+  catalog: ApiModelInfo[],
+): ApiModelInfo[] {
+  const byBaseId = new Map(catalog.map((model) => [baseModelId(model.id), model]))
+  const models = mapped.map((model) => {
+    const listed = byBaseId.get(baseModelId(model.id))
+    return listed ? { ...model, name: listed.name, context: listed.context } : model
+  })
+  const mappedBaseIds = new Set(models.map((model) => baseModelId(model.id)))
+  for (const model of catalog) {
+    if (!mappedBaseIds.has(baseModelId(model.id))) models.push(model)
+  }
+  return models
+}
+
+async function buildActiveProviderModelList(provider: SavedProvider): Promise<ApiModelInfo[]> {
+  const mapped = buildProviderModelList(
+    provider.models,
+    provider.apiFormat,
+    getPresetDefaultEnv(provider.presetId),
+    getPresetReasoningProviderKind(provider.presetId),
+  )
+  if (!isDeepSeekAccountProviderId(provider.id)) return mapped
+  return withDeepSeekAccountCatalog(
+    mapped,
+    buildDeepSeekAccountModelList(await listDeepSeekAccountModels()),
+  )
 }
 
 // ─── Handlers ─────────────────────────────────────────────────────────────────
@@ -368,12 +440,7 @@ async function handleModelsList(): Promise<Response> {
 
   const activeProvider = await resolveActiveProvider(providers, activeId)
   if (activeProvider) {
-    const modelList = buildProviderModelList(
-      activeProvider.models,
-      activeProvider.apiFormat,
-      getPresetDefaultEnv(activeProvider.presetId),
-      getPresetReasoningProviderKind(activeProvider.presetId),
-    )
+    const modelList = await buildActiveProviderModelList(activeProvider)
     return Response.json({
       models: modelList,
       provider: { id: activeProvider.id, name: activeProvider.name },
@@ -383,6 +450,26 @@ async function handleModelsList(): Promise<Response> {
     return Response.json({ models: DEFAULT_MODELS, provider: null })
   }
   return Response.json({ models: await getStandaloneModelList(), provider: null })
+}
+
+// The models one built-in OAuth provider's account can use, whichever provider
+// is active: the settings card of an inactive provider must not list the
+// active provider's models.
+async function handleModelCatalog(url: URL): Promise<Response> {
+  const providerId = url.searchParams.get('provider')
+  if (!providerId || !isBuiltInProviderId(providerId)) {
+    throw ApiError.notFound(`Official provider not found: ${providerId ?? ''}`)
+  }
+  const models = isOpenAIOfficialProviderId(providerId)
+    ? await getOpenAIModelList()
+    : isGrokOfficialProviderId(providerId)
+      ? await getGrokModelList()
+      : isDeepSeekAccountProviderId(providerId)
+        ? buildDeepSeekAccountModelList(await listDeepSeekAccountModels({ forceRefresh: true }))
+        : providerId === CLAUDE_OFFICIAL_PROVIDER_ID
+          ? [...DEFAULT_MODELS]
+          : []
+  return Response.json({ models })
 }
 
 async function handleCurrentModel(req: Request): Promise<Response> {
@@ -446,12 +533,7 @@ async function handleCurrentModel(req: Request): Promise<Response> {
       : isGrokProviderActive
         ? await getGrokModelList()
         : activeProvider
-          ? buildProviderModelList(
-              activeProvider.models,
-              activeProvider.apiFormat,
-              getPresetDefaultEnv(activeProvider.presetId),
-              getPresetReasoningProviderKind(activeProvider.presetId),
-            )
+          ? await buildActiveProviderModelList(activeProvider)
           : claudeOfficialModel
             ? [...DEFAULT_MODELS]
             : await getStandaloneModelList()

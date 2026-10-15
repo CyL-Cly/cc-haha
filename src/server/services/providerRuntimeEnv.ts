@@ -31,6 +31,7 @@ import {
   DEEPSEEK_ACCOUNT_PROVIDER_ID,
   GROK_OFFICIAL_PROVIDER_ID,
   OPENAI_OFFICIAL_PROVIDER_ID,
+  PROVIDER_DEEPSEEK_ACCOUNT_MODEL_IDS_SCHEMA_VERSION,
   PROVIDER_TOOL_SEARCH_OPT_IN_SCHEMA_VERSION,
 } from '../types/provider.js'
 import {
@@ -54,6 +55,7 @@ import {
   DEEPSEEK_OAUTH_FILE_ENV_KEY,
   DEEPSEEK_OAUTH_PROVIDER_ENV_KEY,
   applyDeepSeekAccountRuntimeEnv,
+  migrateLegacyDeepSeekAccountModels,
   isDeepSeekAccountProviderId,
 } from './deepseekAccountProvider.js'
 
@@ -354,6 +356,15 @@ export function normalizeProvidersIndex(value: unknown): ProvidersIndex | null {
     } else {
       delete officialProviderModels[id]
     }
+  }
+  // Readers can see an index the startup migration has not rewritten yet.
+  const deepSeekAccountModels = officialProviderModels[DEEPSEEK_ACCOUNT_PROVIDER_ID]
+  if (
+    schemaVersion < PROVIDER_DEEPSEEK_ACCOUNT_MODEL_IDS_SCHEMA_VERSION &&
+    isProviderModels(deepSeekAccountModels)
+  ) {
+    officialProviderModels[DEEPSEEK_ACCOUNT_PROVIDER_ID] =
+      migrateLegacyDeepSeekAccountModels(deepSeekAccountModels)
   }
 
   return {

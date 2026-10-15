@@ -416,7 +416,8 @@ async function readBoundedText(response: Response): Promise<string> {
   return Buffer.concat(chunks).toString('utf8')
 }
 
-async function resolveProxyFetchOptions(
+/** Fetch options for the app's network proxy; `undefined` leaves the process default. */
+export async function resolveProxyFetchOptions(
   proxyUrl: string | null | undefined,
 ): Promise<RequestInit> {
   if (proxyUrl === undefined) return {}

@@ -942,7 +942,38 @@ describe('ProviderService', () => {
           runtimeKind: 'deepseek_oauth',
         })
         expect(provider.models.main).toBe('deepseek-v4-pro[1m]')
-        expect(provider.models.haiku).toBe('deepseek-v4-flash')
+        // The account listing names V4.1 Flash `deepseek-flash`; it does not
+        // list the API-key route's `deepseek-v4-flash`.
+        expect(provider.models.haiku).toBe('deepseek-flash')
+        expect(provider.modelContextWindows?.['deepseek-flash']).toBe(1_000_000)
+      })
+
+      test('a CLI reading an index the startup migration has not rewritten yet gets account model ids', async () => {
+        await fs.mkdir(path.join(tmpDir, 'cc-haha'), { recursive: true })
+        await fs.writeFile(
+          path.join(tmpDir, 'cc-haha', 'providers.json'),
+          JSON.stringify({
+            schemaVersion: 7,
+            activeId: 'deepseek-account',
+            providers: [],
+            officialProviderModels: {
+              'deepseek-account': {
+                main: 'deepseek-v4-pro[1m]',
+                haiku: 'deepseek-v4-flash',
+                sonnet: 'deepseek-v4-pro[1m]',
+                opus: 'deepseek-v4-pro[1m]',
+              },
+            },
+          }),
+          'utf-8',
+        )
+
+        const env = readActiveProviderManagedEnv(tmpDir)
+        expect(env?.ANTHROPIC_DEFAULT_HAIKU_MODEL).toBe('deepseek-flash')
+        expect(env?.ANTHROPIC_MODEL).toBe('deepseek-v4-pro[1m]')
+        expect(env?.ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES).toBe(
+          'thinking,effort,adaptive_thinking,xhigh_effort,max_effort',
+        )
       })
 
       test('activation writes account markers and never an API key or bearer token', async () => {
@@ -3609,6 +3640,28 @@ describe('Providers API', () => {
     expect(body.providers).toHaveLength(1)
     expect(body.providers[0].name).toBe('Test Provider')
     expect(body.providers[0].apiKey).toBe('sk-test-key-123')
+  })
+
+  test('GET /api/providers carries the DeepSeek account mapping the user saved', async () => {
+    const list = async () => {
+      const { req, url, segments } = makeRequest('GET', '/api/providers')
+      return (await (await handleProvidersApi(req, url, segments)).json()) as {
+        deepSeekAccountModels: Record<string, string>
+      }
+    }
+    expect((await list()).deepSeekAccountModels).toMatchObject({
+      main: 'deepseek-v4-pro[1m]',
+      haiku: 'deepseek-flash',
+    })
+
+    const saved = {
+      main: 'deepseek-flash',
+      haiku: 'deepseek-flash',
+      sonnet: 'deepseek-v4-pro',
+      opus: 'deepseek-v4-pro',
+    }
+    await new ProviderService().updateOfficialProviderModels('deepseek-account', saved)
+    expect((await list()).deepSeekAccountModels).toEqual(saved)
   })
 
   // ─── POST /api/providers ─────────────────────────────────────────────────

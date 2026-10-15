@@ -452,7 +452,7 @@ export class HahaDeepSeekOAuthService {
     return id
   }
 
-  private async getRequestOptions(): Promise<DeepSeekRequestOptions> {
+  async getRequestOptions(): Promise<DeepSeekRequestOptions> {
     const settings = await loadNetworkSettings()
     return { proxyUrl: getNetworkProxyUrl(settings) }
   }

@@ -16,6 +16,7 @@ const DIRECT_MODEL_CONTEXT_WINDOWS: Record<string, number> = {
   'deepseek-v4-pro': 1_000_000,
   'deepseek-ai/deepseek-v4-pro': 1_000_000,
   'deepseek-v4-flash': 1_000_000,
+  'deepseek-flash': 1_000_000,
   'deepseek-chat': 1_000_000,
   'deepseek-reasoner': 1_000_000,
   'k3': 262_144,

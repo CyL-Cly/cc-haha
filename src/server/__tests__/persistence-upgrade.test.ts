@@ -255,7 +255,88 @@ describe('persistent storage upgrade migrations', () => {
     // Falling back to null here silently switched the user to Claude Official
     // on the next start while the managed env still pointed at DeepSeek.
     expect(migrated.activeId).toBe('deepseek-account')
-    expect(migrated.officialProviderModels['deepseek-account']?.main).toBe('deepseek-v4-flash')
+    expect(migrated.officialProviderModels['deepseek-account']?.main).toBe('deepseek-flash')
+  })
+
+  test('points a saved DeepSeek Account mapping at the flash model the account lists', async () => {
+    const ccHahaDir = path.join(tempDir, 'cc-haha')
+    await fs.mkdir(ccHahaDir, { recursive: true })
+    const savedMapping = {
+      main: 'deepseek-v4-pro[1m]',
+      haiku: 'deepseek-v4-flash',
+      sonnet: ' deepseek-v4-flash ',
+      opus: 'deepseek-v4-pro[1m]',
+      futureSlot: 'keep-me',
+    }
+    await fs.writeFile(
+      path.join(ccHahaDir, 'providers.json'),
+      JSON.stringify({
+        schemaVersion: 7,
+        activeId: 'deepseek-account',
+        providers: [],
+        officialProviderModels: {
+          'deepseek-account': savedMapping,
+          // Only the account mapping moves to the account's listed flash model.
+          'openai-official': {
+            main: 'deepseek-v4-flash',
+            haiku: 'deepseek-v4-flash',
+            sonnet: 'deepseek-v4-flash',
+            opus: 'deepseek-v4-flash',
+          },
+        },
+      }, null, 2),
+      'utf-8',
+    )
+
+    const report = await ensurePersistentStorageUpgraded()
+
+    expect(report.failures).toEqual([])
+    expect(report.migratedEntries).toContain('cc-haha/providers.json')
+    const migrated = JSON.parse(
+      await fs.readFile(path.join(ccHahaDir, 'providers.json'), 'utf-8'),
+    ) as {
+      schemaVersion: number
+      officialProviderModels: Record<string, Record<string, string>>
+    }
+    expect(migrated.schemaVersion).toBe(CURRENT_PROVIDER_INDEX_SCHEMA_VERSION)
+    expect(migrated.officialProviderModels['deepseek-account']).toEqual({
+      main: 'deepseek-v4-pro[1m]',
+      haiku: 'deepseek-flash',
+      sonnet: 'deepseek-flash',
+      opus: 'deepseek-v4-pro[1m]',
+      futureSlot: 'keep-me',
+    })
+    expect(migrated.officialProviderModels['openai-official']?.haiku).toBe('deepseek-v4-flash')
+    const backups = (await fs.readdir(ccHahaDir)).filter((name) =>
+      name.startsWith('providers.json.bak-before-migration-'))
+    expect(backups).toHaveLength(1)
+    expect(JSON.parse(await fs.readFile(path.join(ccHahaDir, backups[0]!), 'utf-8'))
+      .officialProviderModels['deepseek-account']).toEqual(savedMapping)
+  })
+
+  test('leaves a DeepSeek Account mapping saved under the current schema as the user chose it', async () => {
+    const ccHahaDir = path.join(tempDir, 'cc-haha')
+    await fs.mkdir(ccHahaDir, { recursive: true })
+    const current = {
+      schemaVersion: CURRENT_PROVIDER_INDEX_SCHEMA_VERSION,
+      activeId: 'deepseek-account',
+      providers: [],
+      providerOrder: ['claude-official', 'openai-official', 'grok-official', 'deepseek-account'],
+      officialProviderModels: {
+        'deepseek-account': {
+          main: 'deepseek-v4-flash',
+          haiku: 'deepseek-v4-flash',
+          sonnet: 'deepseek-v4-flash',
+          opus: 'deepseek-v4-flash',
+        },
+      },
+    }
+    await fs.writeFile(path.join(ccHahaDir, 'providers.json'), JSON.stringify(current, null, 2), 'utf-8')
+
+    const report = await ensurePersistentStorageUpgraded()
+
+    expect(report.migratedEntries).not.toContain('cc-haha/providers.json')
+    expect(JSON.parse(await fs.readFile(path.join(ccHahaDir, 'providers.json'), 'utf-8'))).toEqual(current)
   })
 
   test('upgrades a version 2 provider fixture without inventing image credentials', async () => {

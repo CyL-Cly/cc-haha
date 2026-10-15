@@ -221,6 +221,20 @@ describe('providerStore runtime refresh', () => {
     expect(setSelectionMock).toHaveBeenCalledWith('restored', { providerId: provider.id, modelId: 'model-main[1m]' })
   })
 
+  it('keeps the saved DeepSeek account mapping from the providers list', async () => {
+    const saved = { main: 'deepseek-flash', haiku: 'deepseek-flash', sonnet: 'deepseek-v4-pro', opus: 'deepseek-v4-pro' }
+    providersApiMock.list.mockResolvedValue({ providers: [], activeId: null, deepSeekAccountModels: saved })
+    const { useProviderStore } = await import('./providerStore')
+
+    await useProviderStore.getState().fetchProviders()
+    expect(useProviderStore.getState().deepSeekAccountModels).toEqual(saved)
+
+    // An older server without the field leaves the known mapping in place.
+    providersApiMock.list.mockResolvedValue({ providers: [], activeId: null })
+    await useProviderStore.getState().fetchProviders()
+    expect(useProviderStore.getState().deepSeekAccountModels).toEqual(saved)
+  })
+
   it('restores the configured OpenAI model when activating built-in ChatGPT Official', async () => {
     providersApiMock.activate.mockResolvedValue({ ok: true })
     providersApiMock.list.mockResolvedValue({
