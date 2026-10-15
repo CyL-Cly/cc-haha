@@ -19,6 +19,7 @@ const GUARDED_FILES = [
   'utils/bash/ShellSnapshot.ts',
   'utils/ripgrep.ts',
   'utils/settings/mdm/rawRead.ts',
+  'utils/windowsPaths.ts',
 ]
 const SPAWN_CALL = /(?<!function )(?<![\w.])(?:Bun\.spawn|spawnSync|spawn|execFileSync|execFile|exec)\(/g
 
