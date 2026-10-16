@@ -3835,6 +3835,73 @@ describe('MessageList nested tool calls', () => {
     expect(document.activeElement).not.toBe(copyButton)
   })
 
+  it.each(['user', 'assistant'] as const)('discards a %s selection after non-pointer navigation to an identical message', async (role) => {
+    const destination = 'selection-destination'
+    const content = 'Shared transcript entry with identical message identity.'
+    const messages: UIMessage[] = [{ id: 'shared-message', type: role === 'user' ? 'user_text' : 'assistant_text', content, timestamp: 1 }]
+    useChatStore.setState({ sessions: {
+      [ACTIVE_TAB]: makeSessionState({ messages }),
+      [destination]: makeSessionState({ messages }),
+    } })
+    render(<MessageList />)
+    await selectMessageText(screen.getByText(content), 'Shared transcript entry')
+
+    // Notification/keyboard navigation has no outside pointerdown to dismiss
+    // the old toolbar. Reusing the message id and content used to retain it.
+    act(() => useTabStore.setState({ activeTabId: destination }))
+    const retainedAdd = screen.queryByRole('button', { name: 'Add to chat' })
+    if (retainedAdd) fireEvent.click(retainedAdd)
+    expect(useWorkspaceChatContextStore.getState().referencesBySession[destination] ?? []).toEqual([])
+    expect(retainedAdd).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Ask in side chat' })).toBeNull()
+
+    // A fresh selection in B is still usable and cannot alter A's draft.
+    await selectMessageText(screen.getByText(content), 'identical message identity')
+    fireEvent.click(screen.getByRole('button', { name: 'Add to chat' }))
+    expect(useWorkspaceChatContextStore.getState().referencesBySession[destination]).toMatchObject([
+      { quote: 'identical message identity', sourceRole: role, messageId: 'shared-message' },
+    ])
+    expect(useWorkspaceChatContextStore.getState().referencesBySession[ACTIVE_TAB] ?? []).toEqual([])
+  })
+
+  it('does not open a side chat from a selection retained across sessions', async () => {
+    const messages: UIMessage[] = [{ id: 'shared-message', type: 'assistant_text', content: 'Shared side chat selection.', timestamp: 1 }]
+    useChatStore.setState({ sessions: {
+      [ACTIVE_TAB]: makeSessionState({ messages }),
+      destination: makeSessionState({ messages }),
+    } })
+    render(<MessageList />)
+    await selectMessageText(screen.getByText('Shared side chat selection.'), 'side chat selection')
+    vi.mocked(openSideChat).mockClear()
+    act(() => useTabStore.setState({ activeTabId: 'destination' }))
+    const retainedAction = screen.queryByRole('button', { name: 'Ask in side chat' })
+    if (retainedAction) fireEvent.click(retainedAction)
+    expect(openSideChat).not.toHaveBeenCalled()
+    expect(retainedAction).toBeNull()
+  })
+
+  it.each([0, 1])('cancels queued selection updates when switching sessions after %i animation frames', async (frames) => {
+    const content = 'Shared pending selection.'
+    const messages: UIMessage[] = [{ id: 'shared-message', type: 'assistant_text', content, timestamp: 1 }]
+    useChatStore.setState({ sessions: {
+      [ACTIVE_TAB]: makeSessionState({ messages }),
+      destination: makeSessionState({ messages }),
+    } })
+    render(<MessageList />)
+    const element = screen.getByText(content)
+    prepareMessageTextSelection(element, 'pending selection')
+    const pointer = { button: 0, clientX: 180, clientY: 88, pointerId: 1, pointerType: 'mouse' }
+    fireSelectionPointerEvent(element, 'down', pointer)
+    fireSelectionPointerEvent(element, 'up', pointer)
+    if (frames) await waitForProgrammaticScrollReset()
+    act(() => useTabStore.setState({ activeTabId: 'destination' }))
+    fireEvent(document, new Event('selectionchange'))
+    await waitForSelectionMenuUpdate()
+    expect(screen.queryByRole('button', { name: 'Add to chat' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Ask in side chat' })).toBeNull()
+    expect(useWorkspaceChatContextStore.getState().referencesBySession).toEqual({})
+  })
+
   it('opens a side chat with a selected quote without adding it to the main composer', async () => {
     useChatStore.setState({ sessions: { [ACTIVE_TAB]: makeSessionState({ messages: [{
       id: 'assistant-side', type: 'assistant_text', content: 'Explain this isolated selection.', timestamp: 1,
