@@ -30,6 +30,7 @@ import {
   Wrench,
 } from 'lucide-react'
 import aruhubLogo from '../../../../docs/images/sponsors/aruhub-logo.png'
+import modelflareLogo from '../../../../docs/images/sponsors/modelflare-logo.png'
 import { useSettingsStore } from '../../stores/settingsStore'
 import { useProviderStore } from '../../stores/providerStore'
 import { useUIStore } from '../../stores/uiStore'
@@ -68,6 +69,11 @@ import { ApiError, getBaseUrl } from '../../api/client'
 import { getDesktopHost } from '../../lib/desktopHost'
 import { API_KEY_JSON_PLACEHOLDER, maskSettingsJsonSecrets, restoreSettingsJsonSecrets, stripProviderSettingsJsonEnv } from '../../lib/providerSettingsJson'
 import { cx } from '@/lib/cx'
+
+const SPONSOR_LOGOS: Record<string, string> = {
+  aruhub: aruhubLogo,
+  modelflare: modelflareLogo,
+}
 
 /** Section label inside the provider dialog — the same 13px label as a settings section. */
 const FORM_SECTION_LABEL = 'block text-[13px] font-semibold text-[var(--color-text-secondary)]'
@@ -1730,9 +1736,9 @@ function ProviderFormModal({ open, onClose, mode, provider, presets, browserMode
       selected={selectedPreset.id === preset.id}
       onClick={() => handlePresetChange(preset)}
     >
-      {preset.id === 'aruhub' && <img src={aruhubLogo} alt="" className="size-4 rounded-[var(--radius-sm)] object-contain" />}
+      {SPONSOR_LOGOS[preset.id] && <img src={SPONSOR_LOGOS[preset.id]} alt="" className="size-4 rounded-[var(--radius-sm)] object-contain" />}
       {presetLabel(preset)}
-      {(preset.id === 'aruhub' || preset.id === 'modelflare') && <Star size={12} className="fill-[var(--color-warning)] text-[var(--color-warning)]" aria-label={t('settings.providers.sponsor')} />}
+      {SPONSOR_LOGOS[preset.id] && <Star size={12} className="fill-[var(--color-warning)] text-[var(--color-warning)]" aria-label={t('settings.providers.sponsor')} />}
       {preset.isNew && (
         <Badge tone="warning" size="xs" className="absolute -right-1 -top-2">
           {t('settings.providers.new')}
