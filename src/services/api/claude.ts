@@ -294,6 +294,7 @@ import {
   getStreamRetryKind,
   is529Error,
   isRetryableStreamTransportError,
+  isStreamRequestRejection,
   RetriableStreamError,
   type RetryContext,
   withRetry,
@@ -3011,11 +3012,14 @@ async function* queryModel(
       // Keep displayable blocks, but discard uncommitted local tools. Partial
       // text from a clean EOF that cannot be re-streamed is also surfaced with
       // an error, rather than silently accepted or replaced by a second response.
+      // A request the upstream rejected inside the stream is surfaced as well:
+      // the non-streaming copy would get the same answer.
       if (
         retryKind === null &&
         (!canReplay ||
           streamEndedIncomplete ||
-          assistantCommitBuffer.hasCrossedSideEffectBoundary())
+          assistantCommitBuffer.hasCrossedSideEffectBoundary() ||
+          isStreamRequestRejection(streamingError))
       ) {
         for (const committedMessage of assistantCommitBuffer.flushWithoutToolUse()) {
           yield committedMessage;
