@@ -557,7 +557,8 @@ function SelectableChatMessage({
   const selectionUpdateAuthorizedRef = useRef(false)
   const selectionUpdateFrameRef = useRef<number | null>(null)
   const addReference = useWorkspaceChatContextStore((state) => state.addReference)
-  const [selectionMenu, setSelectionMenu] = useState<ChatSelectionState | null>(null)
+  const [selectionMenu, setSelectionMenu] = useState<(ChatSelectionState & { sessionId: string }) | null>(null)
+  const currentSelectionMenu = selectionMenu?.sessionId === sessionId ? selectionMenu : null
   const t = useTranslation()
   const sourceName = role === 'assistant'
     ? t('chat.assistantMessageReference')
@@ -571,13 +572,15 @@ function SelectableChatMessage({
     }
   }, [])
 
-  useEffect(() => {
+  // A transcript entry can have the same id and content in multiple sessions.
+  // Invalidate its gesture before another frame can commit into the new session.
+  useLayoutEffect(() => {
     cancelPendingSelectionMenuUpdate()
     setSelectionMenu(null)
     lastSelectionPointerRef.current = null
     selectionStartedInsideRef.current = false
     selectionUpdateAuthorizedRef.current = false
-  }, [cancelPendingSelectionMenuUpdate, content, messageId])
+  }, [cancelPendingSelectionMenuUpdate, content, messageId, sessionId])
 
   const dismissSelectionMenu = useCallback(() => {
     setSelectionMenu(null)
@@ -606,10 +609,11 @@ function SelectableChatMessage({
           clientX: (rootRect?.left ?? 0) + 24,
           clientY: (rootRect?.top ?? 0) + 24,
         }
-        setSelectionMenu(getChatSelectionFromContainer(root, fallbackPointer))
+        const selection = getChatSelectionFromContainer(root, fallbackPointer)
+        setSelectionMenu(selection && sessionId ? { ...selection, sessionId } : null)
       })
     })
-  }, [])
+  }, [sessionId])
 
   useEffect(() => {
     return () => {
@@ -675,34 +679,34 @@ function SelectableChatMessage({
   }, [cancelPendingSelectionMenuUpdate, queueSelectionMenuUpdate])
 
   useSelectionPopoverDismiss({
-    active: Boolean(selectionMenu),
+    active: Boolean(currentSelectionMenu),
     popoverRef: selectionMenuRef,
     onDismiss: dismissSelectionMenu,
   })
 
   const addCurrentSelectionToChat = useCallback(() => {
-    if (!sessionId || !selectionMenu) return
+    if (!sessionId || !currentSelectionMenu) return
     addReference(sessionId, {
       kind: 'chat-selection',
       path: `chat://${role}/${messageId}`,
       name: sourceName,
-      quote: selectionMenu.text,
+      quote: currentSelectionMenu.text,
       sourceRole: role,
       messageId,
     })
     setSelectionMenu(null)
     clearWindowSelection()
-  }, [addReference, messageId, role, selectionMenu, sessionId, sourceName])
+  }, [addReference, messageId, role, currentSelectionMenu, sessionId, sourceName])
 
   const askSelectionInSideChat = useCallback(() => {
-    if (!sessionId || !selectionMenu) return
+    if (!sessionId || !currentSelectionMenu) return
     void openSideChat(sessionId, { reference: {
       kind: 'chat-selection', path: `chat://${role}/${messageId}`,
-      name: sourceName, quote: selectionMenu.text, sourceRole: role, messageId,
+      name: sourceName, quote: currentSelectionMenu.text, sourceRole: role, messageId,
     } })
     setSelectionMenu(null)
     clearWindowSelection()
-  }, [messageId, role, selectionMenu, sessionId, sourceName])
+  }, [messageId, role, currentSelectionMenu, sessionId, sourceName])
 
   return (
     <div
@@ -713,7 +717,7 @@ function SelectableChatMessage({
       }}
     >
       {children}
-      <ChatSelectionMenu selection={selectionMenu} onAdd={addCurrentSelectionToChat} onSideChat={askSelectionInSideChat} popoverRef={selectionMenuRef} />
+      <ChatSelectionMenu selection={currentSelectionMenu} onAdd={addCurrentSelectionToChat} onSideChat={askSelectionInSideChat} popoverRef={selectionMenuRef} />
     </div>
   )
 }
