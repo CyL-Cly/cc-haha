@@ -2283,7 +2283,8 @@ describe('ChatInput file mentions', () => {
     render(<ChatInput compact />)
 
     fireEvent.click(screen.getByLabelText('Open composer tools'))
-    fireEvent.click(screen.getByRole('option', { name: 'More tools' }))
+    // Agents sit on the menu's first level; there is no More row to open first.
+    expect(screen.queryByRole('option', { name: 'More tools' })).not.toBeInTheDocument()
     fireEvent.click(await screen.findByRole('option', { name: /^Agents/ }))
     fireEvent.click(await screen.findByRole('option', { name: /debugger/ }))
 
