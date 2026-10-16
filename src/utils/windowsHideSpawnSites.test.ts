@@ -2,10 +2,11 @@ import { describe, expect, test } from 'bun:test'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-// The desktop sidecar and the CLI it launches both run without a console, so
-// every console-subsystem child they spawn must pass `windowsHide` or Windows
-// allocates a visible console window for it (#1489). GUI launches such as
-// Explorer are the opposite case and live elsewhere (see #983).
+// The desktop sidecar and the CLI it launches each own an invisible console that
+// their children inherit (desktop/scripts/assert-windows-console-subsystem.ts).
+// `windowsHide` keeps these console children windowless even if that chain is
+// lost again, as it was in v0.7.2 (#1489, #1583). GUI launches such as Explorer
+// are the opposite case and live elsewhere (see #983).
 const SRC_ROOT = join(import.meta.dir, '..')
 const GUARDED_FILES = [
   'server/api/computer-use.ts',
