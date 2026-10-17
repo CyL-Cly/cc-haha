@@ -235,7 +235,7 @@ function ChatSelectionMenu({
 }: {
   selection: ChatSelectionState | null
   onAdd: () => void
-  onSideChat: () => void
+  onSideChat?: () => void
   popoverRef: { current: HTMLDivElement | null }
 }) {
   const t = useTranslation()
@@ -246,7 +246,7 @@ function ChatSelectionMenu({
       className="fixed z-[var(--z-popover)] inline-flex max-w-[calc(100vw-24px)] items-center rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-container-lowest)] p-1 shadow-[var(--shadow-overlay)]"
       style={{ left: selection.x, top: selection.y }}>
       <Button variant="ghost" onClick={onAdd}>{t('chat.addSelectionToChat')}</Button>
-      <Button variant="ghost" onClick={onSideChat}>{t('chat.askSelectionInSideChat')}</Button>
+      {onSideChat && <Button variant="ghost" onClick={onSideChat}>{t('chat.askSelectionInSideChat')}</Button>}
     </div>, document.body,
   )
 }
@@ -549,6 +549,7 @@ function SelectableChatMessage({
   content: string
   children: ReactNode
 }) {
+  const isLean = useSessionStore(state => state.sessions.some(session => session.id === sessionId && session.agentProfile === 'lean'))
   const rootRef = useRef<HTMLDivElement>(null)
   const selectionMenuRef = useRef<HTMLDivElement>(null)
   const lastSelectionPointerRef = useRef<SelectionPointer | null>(null)
@@ -717,7 +718,7 @@ function SelectableChatMessage({
       }}
     >
       {children}
-      <ChatSelectionMenu selection={currentSelectionMenu} onAdd={addCurrentSelectionToChat} onSideChat={askSelectionInSideChat} popoverRef={selectionMenuRef} />
+      <ChatSelectionMenu selection={currentSelectionMenu} onAdd={addCurrentSelectionToChat} onSideChat={isLean ? undefined : askSelectionInSideChat} popoverRef={selectionMenuRef} />
     </div>
   )
 }
@@ -2499,7 +2500,8 @@ export function MessageList({
     Boolean(activeThinkingId) ||
     Boolean(sessionState?.activeToolUseId) ||
     Boolean(sessionState?.activeToolName)
-  const branchActionsDisabled = isDirectAgentSession || turnInProgress || hasRunningBackgroundTasks
+  const isLean = useSessionStore(state => state.sessions.some(session => session.id === resolvedSessionId && session.agentProfile === 'lean'))
+  const branchActionsDisabled = isLean || isDirectAgentSession || turnInProgress || hasRunningBackgroundTasks
   const hasCompactingDivider = messages.some((message) =>
     message.type === 'compact_summary' && message.phase === 'compacting')
 

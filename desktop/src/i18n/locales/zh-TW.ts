@@ -1,6 +1,25 @@
 import type { TranslationKey } from './en'
 
 export const zh: Record<TranslationKey, string> = {
+  "agentProfile.standardSummary": "使用完整工具集，可用範圍取決於已啟用的整合和權限。",
+  "agentProfile.leanSummary": "核心程式開發工具與主動選擇的技能，使用較短的系統提示詞。",
+  "agentProfile.availableLabel": "可以使用",
+  "agentProfile.available": "讀取、搜尋、編輯檔案和終端命令；主動選擇技能。",
+  "agentProfile.unavailableLabel": "暫不支援",
+  "agentProfile.unavailable": "瀏覽器、MCP、子 Agent 和計畫模式；技能不會補充缺少的工具。",
+  "agentProfile.draftHint": "傳送第一則訊息前可選擇；對話建立後如需切換，請新增聊天。",
+  "agentProfile.commandUnavailable": "精簡模式不支援此命令。如需使用，請新增標準模式聊天。",
+  "agentProfile.draftCommandUnavailable": "此命令在精簡模式下無法使用。請在輸入框切換為標準模式後重試。",
+  "agentProfile.label": "Agent 模式",
+  "agentProfile.standard": "標準",
+  "agentProfile.lean": "精簡 · 實驗性",
+  "agentProfile.description": "實驗模式：保留檔案、搜尋、編輯、終端和明確選擇的技能。不提供瀏覽器、MCP、子 Agent 或獨立計畫模式；技能不會解鎖缺少的工具。",
+  "agentProfile.info": "精簡模式說明",
+  "agentProfile.planUnavailable": "精簡模式不支援計畫模式，請先切換權限模式再傳送。",
+  "agentProfile.planReset": "精簡模式不支援計畫模式，已切換為詢問權限。",
+  "agentProfile.locked": "模式在建立對話後鎖定。如需切換，請建立新聊天。",
+
+
   "teamPlan.state.interrupted": "團隊已中斷 · 已開始的任務不會自動重跑",
   "teamPlan.savePreset": "請先儲存預設變更，核對解析後的模型再確認啟動。",
   "teamPlan.unspecified": "未提供",
@@ -604,6 +623,7 @@ export const zh: Record<TranslationKey, string> = {
 
   // ─── Sidebar ──────────────────────────────────────
   'sidebar.newSession': '新建會話',
+  'sidebar.draftResumed': '已返回尚未傳送的草稿，可在輸入框中變更專案。',
   'sidebar.scheduled': '定時任務',
   'sidebar.skills': '技能',
   'sidebar.terminal': '終端',
@@ -2458,6 +2478,12 @@ export const zh: Record<TranslationKey, string> = {
   'settings.general.defaultEditorAuto': '自動選擇',
   'settings.general.agentTeamsTitle': '智慧體團隊',
   'settings.general.agentTeamsDescription': '讓多個 Agent 分工協作，共同完成任務。',
+  'settings.general.leanModeOn': '已開啟 · 新聊天可選擇模式',
+  'settings.general.leanModeOff': '已關閉 · 新聊天使用標準模式',
+  'settings.general.leanModeSaving': '正在儲存…',
+  'settings.general.leanModeEnabled': '啟用精簡模式',
+  'settings.general.leanModeDescription': '開啟後可在新聊天中選擇標準或精簡模式。首次傳送後模式固定；關閉此開關不影響既有精簡對話。',
+  'settings.general.leanModeSaveFailed': '無法儲存，已保留原設定。請重新切換以重試。',
   'settings.general.agentTeamsEnabled': '啟用 智慧體團隊',
   'agentTeams.name': '智慧體團隊',
   'agentTeams.notice.title': '開啟智慧體團隊前請注意',

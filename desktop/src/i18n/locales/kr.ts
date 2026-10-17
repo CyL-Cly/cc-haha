@@ -1,6 +1,25 @@
 import type { TranslationKey } from './en'
 
 export const kr: Record<TranslationKey, string> = {
+  "agentProfile.standardSummary": "활성화된 연동과 권한에 따라 전체 도구를 사용합니다.",
+  "agentProfile.leanSummary": "핵심 코딩 도구와 직접 선택한 스킬, 더 짧은 시스템 프롬프트를 사용합니다.",
+  "agentProfile.availableLabel": "사용 가능",
+  "agentProfile.available": "파일 읽기·검색·편집, 터미널 명령, 직접 선택한 스킬.",
+  "agentProfile.unavailableLabel": "사용 불가",
+  "agentProfile.unavailable": "브라우저, MCP, 하위 에이전트, 계획 모드. 스킬로 누락된 도구를 추가할 수 없습니다.",
+  "agentProfile.draftHint": "첫 메시지 전 선택할 수 있습니다. 이후 변경하려면 새 채팅을 시작하세요.",
+  "agentProfile.commandUnavailable": "간소 모드에서는 이 명령을 사용할 수 없습니다. 표준 모드로 새 채팅을 시작하세요.",
+  "agentProfile.draftCommandUnavailable": "간소 모드에서는 이 명령을 사용할 수 없습니다. 이 초안을 표준 모드로 바꾼 후 다시 시도하세요.",
+  "agentProfile.label": "Agent 모드",
+  "agentProfile.standard": "표준",
+  "agentProfile.lean": "경량 · 실험적",
+  "agentProfile.description": "실험 모드: 파일, 검색, 편집, 셸 및 명시적으로 선택한 스킬을 지원합니다. 브라우저, MCP, 하위 에이전트 및 별도 계획 모드는 지원하지 않습니다. 스킬로 없는 도구를 활성화할 수 없습니다.",
+  "agentProfile.info": "간소화 모드 안내",
+  "agentProfile.planUnavailable": "간소화 모드에서는 계획 모드를 지원하지 않습니다. 전송 전에 권한 모드를 변경하세요.",
+  "agentProfile.planReset": "계획 모드를 지원하지 않아 권한 확인 모드로 변경했습니다.",
+  "agentProfile.locked": "대화 생성 후에는 모드가 고정됩니다. 변경하려면 새 채팅을 시작하세요.",
+
+
   "teamPlan.state.interrupted": "팀 중단됨 · 시작한 작업은 다시 실행되지 않습니다",
   "teamPlan.savePreset": "프리셋 변경을 먼저 저장하고 적용된 모델을 확인한 후 승인하세요。",
   "teamPlan.unspecified": "미제공",
@@ -606,6 +625,7 @@ export const kr: Record<TranslationKey, string> = {
 
   // ─── Sidebar ──────────────────────────────────────
   'sidebar.newSession': '새 세션',
+  'sidebar.draftResumed': '전송하지 않은 초안으로 돌아왔습니다. 입력창에서 프로젝트를 변경할 수 있습니다.',
   'sidebar.scheduled': '예약 작업',
   'sidebar.skills': '스킬',
   'sidebar.terminal': '터미널',
@@ -2461,6 +2481,12 @@ export const kr: Record<TranslationKey, string> = {
   'settings.general.defaultEditorAuto': '자동',
   'settings.general.agentTeamsTitle': '에이전트 팀',
   'settings.general.agentTeamsDescription': '여러 에이전트가 작업을 나누고 팀으로 협력할 수 있습니다.',
+  'settings.general.leanModeOn': '켜짐 · 새 채팅에서 모드 선택 가능',
+  'settings.general.leanModeOff': '꺼짐 · 새 채팅은 표준 모드 사용',
+  'settings.general.leanModeSaving': '저장 중…',
+  'settings.general.leanModeEnabled': '경량 모드 사용',
+  'settings.general.leanModeDescription': '새 채팅에서 표준 또는 경량 모드를 선택합니다. 첫 메시지 전송 후에는 모드가 고정됩니다. 꺼도 기존 경량 채팅은 변경되지 않습니다.',
+  'settings.general.leanModeSaveFailed': '저장하지 못했습니다. 이전 설정이 유지됩니다. 다시 전환하여 재시도하세요.',
   'settings.general.agentTeamsEnabled': '에이전트 팀 사용',
   'agentTeams.name': '에이전트 팀',
   'agentTeams.notice.title': '에이전트 팀을 켜기 전에',

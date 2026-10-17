@@ -1,6 +1,25 @@
 import type { TranslationKey } from './en'
 
 export const jp: Record<TranslationKey, string> = {
+  "agentProfile.standardSummary": "有効な連携と権限に応じて、すべてのツールを利用できます。",
+  "agentProfile.leanSummary": "基本的な開発ツールと明示的に選択したスキル、短いシステムプロンプト。",
+  "agentProfile.availableLabel": "利用可能",
+  "agentProfile.available": "ファイルの読み取り・検索・編集、ターミナル実行、明示的に選択したスキル。",
+  "agentProfile.unavailableLabel": "利用不可",
+  "agentProfile.unavailable": "ブラウザー、MCP、サブエージェント、計画モード。スキルも未対応ツールは追加できません。",
+  "agentProfile.draftHint": "最初の送信前に選択できます。作成後に変更するには新しいチャットを開始してください。",
+  "agentProfile.commandUnavailable": "このコマンドは軽量モードでは利用できません。標準モードで新しいチャットを開始してください。",
+  "agentProfile.draftCommandUnavailable": "このコマンドは軽量モードでは利用できません。この下書きを標準モードに切り替えて再試行してください。",
+  "agentProfile.label": "Agent モード",
+  "agentProfile.standard": "標準",
+  "agentProfile.lean": "軽量 · 実験的",
+  "agentProfile.description": "実験モード：ファイル操作、検索、編集、シェルと明示的に選択したスキルを利用できます。ブラウザー、MCP、サブエージェント、専用の計画モードは利用できません。スキルも未対応のツールは有効にできません。",
+  "agentProfile.info": "簡易モードについて",
+  "agentProfile.planUnavailable": "簡易モードでは計画モードを利用できません。送信前に権限モードを変更してください。",
+  "agentProfile.planReset": "計画モードは非対応のため、権限を確認するモードに変更しました。",
+  "agentProfile.locked": "会話作成後はモードを変更できません。変更するには新しいチャットを開始してください。",
+
+
   "teamPlan.state.interrupted": "チームが中断されました · 開始済みの作業は再実行されません",
   "teamPlan.savePreset": "プリセットの変更を保存し、解決されたモデルを確認してから承認してください。",
   "teamPlan.unspecified": "未指定",
@@ -604,6 +623,7 @@ export const jp: Record<TranslationKey, string> = {
 
   // ─── Sidebar ──────────────────────────────────────
   'sidebar.newSession': '新しいセッション',
+  'sidebar.draftResumed': '未送信の下書きに戻りました。入力欄でプロジェクトを変更できます。',
   'sidebar.scheduled': 'スケジュール',
   'sidebar.skills': 'スキル',
   'sidebar.terminal': 'ターミナル',
@@ -2459,6 +2479,12 @@ export const jp: Record<TranslationKey, string> = {
   'settings.general.defaultEditorAuto': '自動',
   'settings.general.agentTeamsTitle': 'エージェントチーム',
   'settings.general.agentTeamsDescription': '複数のエージェントがタスクを分担し、チームで協力できるようにします。',
+  'settings.general.leanModeOn': '有効 · 新しいチャットでモードを選択可能',
+  'settings.general.leanModeOff': '無効 · 新しいチャットは標準モード',
+  'settings.general.leanModeSaving': '保存中…',
+  'settings.general.leanModeEnabled': '軽量モードを有効にする',
+  'settings.general.leanModeDescription': '新しいチャットで標準・軽量モードを選べます。最初の送信後はモードが固定されます。無効にしても既存の軽量チャットは変わりません。',
+  'settings.general.leanModeSaveFailed': '保存できませんでした。以前の設定を保持しています。もう一度切り替えて再試行してください。',
   'settings.general.agentTeamsEnabled': 'エージェントチーム を有効にする',
   'agentTeams.name': 'エージェントチーム',
   'agentTeams.notice.title': 'エージェントチームを有効にする前に',

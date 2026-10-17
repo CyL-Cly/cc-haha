@@ -1,6 +1,24 @@
 import type { TranslationKey } from './en'
 
 export const zh: Record<TranslationKey, string> = {
+  "agentProfile.standardSummary": "使用完整工具集，可用范围取决于已启用的集成和权限。",
+  "agentProfile.leanSummary": "核心编码工具与主动选择的技能，使用更短的系统提示词。",
+  "agentProfile.availableLabel": "可以使用",
+  "agentProfile.available": "读取、搜索、编辑文件和终端命令；主动选择技能。",
+  "agentProfile.unavailableLabel": "暂不支持",
+  "agentProfile.unavailable": "浏览器、MCP、子 Agent 和计划模式；技能不会补充缺失工具。",
+  "agentProfile.draftHint": "发送第一条消息前可选择；会话创建后如需切换，请新建聊天。",
+  "agentProfile.commandUnavailable": "精简模式不支持此命令。如需使用，请新建标准模式聊天。",
+  "agentProfile.draftCommandUnavailable": "此命令在精简模式下不可用。请在输入框切换为标准模式后重试。",
+  "agentProfile.label": "Agent 模式",
+  "agentProfile.standard": "标准",
+  "agentProfile.lean": "精简 · 实验性",
+  "agentProfile.description": "实验模式：保留文件、搜索、编辑、终端和显式选择的技能。不提供浏览器、MCP、子 Agent 或独立计划模式；技能不会解锁缺失的工具。",
+  "agentProfile.info": "精简模式说明",
+  "agentProfile.planUnavailable": "精简模式不支持计划模式，请先切换权限模式再发送。",
+  "agentProfile.planReset": "精简模式不支持计划模式，已切换为询问权限。",
+  "agentProfile.locked": "模式在创建会话后锁定。如需切换，请新建聊天。",
+
   "teamPlan.state.interrupted": "团队已中断 · 已开始的任务不会自动重跑",
   "teamPlan.savePreset": "请先保存预设变更，核对解析后的模型再确认启动。",
   "teamPlan.unspecified": "未提供",
@@ -603,6 +621,7 @@ export const zh: Record<TranslationKey, string> = {
 
   // ─── Sidebar ──────────────────────────────────────
   'sidebar.newSession': '新建会话',
+  'sidebar.draftResumed': '已返回未发送的草稿，可在输入框中更改项目。',
   'sidebar.scheduled': '定时任务',
   'sidebar.skills': '技能',
   'sidebar.terminal': '终端',
@@ -2457,6 +2476,12 @@ export const zh: Record<TranslationKey, string> = {
   'settings.general.defaultEditorAuto': '自动选择',
   'settings.general.agentTeamsTitle': '智能体团队',
   'settings.general.agentTeamsDescription': '让多个 Agent 分工协作，共同完成任务。',
+  'settings.general.leanModeOn': '已开启 · 新聊天可选择模式',
+  'settings.general.leanModeOff': '已关闭 · 新聊天使用标准模式',
+  'settings.general.leanModeSaving': '正在保存…',
+  'settings.general.leanModeEnabled': '启用精简模式',
+  'settings.general.leanModeDescription': '开启后可在新聊天中选择标准或精简模式。首次发送后模式固定；关闭此开关不影响已有精简会话。',
+  'settings.general.leanModeSaveFailed': '未能保存，已保留原设置。请重新切换以重试。',
   'settings.general.agentTeamsEnabled': '启用 智能体团队',
   'agentTeams.name': '智能体团队',
   'agentTeams.notice.title': '开启智能体团队前请注意',
