@@ -46,7 +46,7 @@ describe('TokenStreamChart day detail', () => {
 
     fireEvent.mouseEnter(dayButton(OCT_16))
     expect(screen.getByTestId('stream-hover-chip')).toHaveTextContent('10/16 · 2M')
-    expect(screen.getByTestId('stream-hover-line')).toBeInTheDocument()
+    expect(screen.getByTestId('stream-hover-band')).toBeInTheDocument()
     expect(screen.queryByTestId('stream-day-card')).not.toBeInTheDocument()
 
     fireEvent.mouseLeave(dayButton(OCT_16).parentElement!)
@@ -68,7 +68,7 @@ describe('TokenStreamChart day detail', () => {
 
     fireEvent.mouseEnter(dayButton(OCT_15))
     expect(screen.queryByTestId('stream-hover-chip')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('stream-hover-line')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('stream-hover-band')).not.toBeInTheDocument()
   })
 
   it('pins a card for the clicked day and puts it away on a second click', () => {
@@ -144,7 +144,7 @@ describe('TokenStreamChart day detail', () => {
     expect(screen.queryByTestId('stream-day-card')).not.toBeInTheDocument()
     expect(day).toHaveFocus()
     expect(screen.queryByTestId('stream-hover-chip')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('stream-hover-line')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('stream-hover-band')).not.toBeInTheDocument()
 
     // The pointer arriving on a day afterwards still previews it.
     fireEvent.mouseEnter(dayButton(OCT_16))
@@ -161,15 +161,18 @@ describe('TokenStreamChart day detail', () => {
     expect(screen.getByTestId('stream-hover-chip')).toHaveTextContent('10/16 · 2M')
   })
 
-  it('fixes the pinned day with a line at its own position and fades the days around it', () => {
+  it('marks the pinned day with a dot on its column and fades the days around it', () => {
     renderChart()
     fireEvent.click(dayButton(OCT_14))
 
     const selection = screen.getByTestId('stream-selection')
-    // Five days across a 928-wide box: the second sits one slot (232) in.
-    expect(selection.querySelector('line')).toHaveAttribute('x1', '232')
-    expect(selection.querySelectorAll('rect')).toHaveLength(2)
-    expect(selection.querySelector('circle')).toBeInTheDocument()
+    // Five days across a 928-wide box: slots are 185.6 wide and the second runs 185.6 to 371.2.
+    const [before, after] = Array.from(selection.querySelectorAll('rect'))
+    expect(before).toHaveAttribute('width', '185.6')
+    expect(after).toHaveAttribute('x', '371.2')
+    expect(after).toHaveAttribute('width', String(928 - 371.2))
+    // The dot sits over the middle of that slot.
+    expect(selection.querySelector('circle')).toHaveAttribute('cx', String(1.5 * 185.6))
 
     fireEvent.click(dayButton(OCT_14))
     expect(screen.queryByTestId('stream-selection')).not.toBeInTheDocument()
@@ -179,10 +182,39 @@ describe('TokenStreamChart day detail', () => {
     renderChart()
     // The first day has the whole width to its right…
     fireEvent.click(dayButton(OCT_13))
-    expect(screen.getByTestId('stream-day-card')).toHaveStyle({ left: '14px', width: '296px' })
+    expect(screen.getByTestId('stream-day-card')).toHaveStyle({ left: `${0.1 * 928 + 14}px`, width: '296px' })
 
     // …and the last has none, so the card sits to its left.
     fireEvent.click(dayButton(OCT_17))
-    expect(screen.getByTestId('stream-day-card')).toHaveStyle({ left: `${928 - 14 - 296}px`, width: '296px' })
+    expect(screen.getByTestId('stream-day-card')).toHaveStyle({ left: `${0.9 * 928 - 14 - 296}px`, width: '296px' })
+  })
+
+  it('reads against round grid values from zero, labelled in the reader\'s units', () => {
+    renderChart()
+    // Peak is 4M, so the grid steps by 1M.
+    expect(screen.getAllByTestId('stream-grid-label').map((label) => label.textContent)).toEqual(['1M', '2M', '3M', '4M'])
+  })
+
+  it('lists the legend in color-slot order, not in order of use', () => {
+    const swapped: RankedModel[] = [
+      { ...models[0]!, series: 2 },
+      { ...models[1]!, series: 1 },
+    ]
+    render(<TokenStreamChart days={days} models={swapped} activity={activity} locale="en" />)
+    const legend = screen.getAllByRole('listitem').map((item) => item.textContent)
+    expect(legend).toEqual(['Beta', 'Alpha'])
+  })
+
+  it('gives the peak day\'s figure to the pointer chip while it is on that day, then takes it back', () => {
+    renderChart()
+    const peak = screen.getByTestId('stream-peak')
+    expect(peak).toHaveStyle({ opacity: '1' })
+
+    fireEvent.mouseEnter(dayButton(OCT_14))
+    expect(peak).toHaveStyle({ opacity: '0' })
+    expect(screen.getByTestId('stream-hover-chip')).toHaveTextContent('10/14 · 4M')
+
+    fireEvent.mouseEnter(dayButton(OCT_16))
+    expect(peak).toHaveStyle({ opacity: '1' })
   })
 })

@@ -254,6 +254,8 @@ describe('ActivitySettings', () => {
     expect(dayLabels).toHaveLength(90)
     expect(dayLabels[dayLabels.length - 1]).toBe('May 9, 2026 · 128k Tokens (128,000)')
     expect(screen.getByTestId('stream-peak')).toHaveTextContent('Peak 2.7M · 4/20')
+    // Columns stand on a zero baseline against round grid values: the peak is 2.67M, so 1M and 2M.
+    expect(screen.getAllByTestId('stream-grid-label').map((label) => label.textContent)).toEqual(['1M', '2M'])
     expect(screen.getByText('Sonnet', { selector: 'li span' })).toBeInTheDocument()
   })
 
