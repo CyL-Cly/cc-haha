@@ -20,9 +20,12 @@ type RuntimeTimer interface{ Stop() bool }
 const disconnectedWorkCeiling = 31 * time.Minute
 
 type disconnectTask struct {
-	data        protocol.JSONObject
-	agent       bool
-	finalStatus string
+	data           protocol.JSONObject
+	agent          bool
+	finalStatus    string
+	bookendPending bool
+	stopRequested  bool
+	unlisted       bool
 }
 type disconnectLifecycle struct {
 	generation, sequence                         uint64
@@ -156,8 +159,19 @@ func (d *disconnectLifecycle) observeSDK(m protocol.JSONObject) bool {
 	data.Set("task_id", rawDisconnect(id))
 	kind := data.String("task_type")
 	agent := old.agent || kind == "local_agent" || kind == "remote_agent"
-	d.tasks[id] = disconnectTask{data: data, agent: agent}
+	d.tasks[id] = disconnectTask{data: data, agent: agent, stopRequested: old.stopRequested}
 	return true
+}
+func (task disconnectTask) active() bool {
+	return task.finalStatus == "" || task.agent && task.bookendPending
+}
+func (d *disconnectLifecycle) hasActiveTasks() bool {
+	for _, task := range d.tasks {
+		if task.active() {
+			return true
+		}
+	}
+	return false
 }
 func (d *disconnectLifecycle) removeTask(id string) {
 	delete(d.tasks, id)
@@ -173,7 +187,12 @@ func (d *disconnectLifecycle) removeTask(id string) {
 func (s *Server) disconnectSnapshot(r *runtimeSession, frames []json.RawMessage) []json.RawMessage {
 	r.mu.Lock()
 	d := r.disconnectState()
-	ids := append([]string{}, d.taskOrder...)
+	ids := []string{}
+	for _, id := range d.taskOrder {
+		if !d.tasks[id].unlisted {
+			ids = append(ids, id)
+		}
+	}
 	r.mu.Unlock()
 	result := make([]json.RawMessage, len(frames))
 	for i, data := range frames {
@@ -202,16 +221,17 @@ func (d *disconnectLifecycle) decision(pending, snapshotActive, team bool, openi
 		return "idle"
 	}
 	activeUser := pending && !d.rootWaiting || d.rootActive
-	if len(d.tasks) > 0 && !activeUser && (!d.cliRunning || d.rootWaiting) && !team && len(d.computer) == 0 {
+	activeTasks := d.hasActiveTasks()
+	if activeTasks && !activeUser && (!d.cliRunning || d.rootWaiting) && !team && len(d.computer) == 0 {
 		onlyShell := true
 		for _, task := range d.tasks {
-			onlyShell = onlyShell && !task.agent
+			onlyShell = onlyShell && (!task.active() || !task.agent)
 		}
 		if onlyShell {
 			return "background"
 		}
 	}
-	busy := pending || snapshotActive || d.cliRunning || len(d.tasks) > 0 || team
+	busy := pending || snapshotActive || d.cliRunning || activeTasks || team
 	if busy {
 		return ""
 	}
@@ -229,8 +249,17 @@ func (s *Server) observeDisconnectSDK(id string, r *runtimeSession, generation u
 	}
 	r.mu.Lock()
 	d := r.disconnectState()
-	allowed := d.observeSDK(m)
+	stopped, tasks := claimRequestedTaskTerminal(d, m)
+	allowed := false
+	if !stopped {
+		allowed = d.observeSDK(m)
+	}
 	r.mu.Unlock()
+	if stopped {
+		s.persistDisconnectBookends(id, r, "", tasks)
+		s.armDisconnect(id)
+		return false
+	}
 	if allowed && m.String("type") == "system" && m.String("subtype") == "task_notification" {
 		s.persistDisconnectNotification(id, r, m)
 	}
@@ -348,6 +377,8 @@ func (s *Server) emitDisconnectGeneration(id string, r *runtimeSession, generati
 	r.mu.Lock()
 	d := r.disconnectState()
 	allowed := true
+	stopped := false
+	var tasks []disconnectTask
 	switch m.String("type") {
 	case "message_complete":
 		// Original result settles its registered foreground token before the
@@ -362,6 +393,11 @@ func (s *Server) emitDisconnectGeneration(id string, r *runtimeSession, generati
 		d.tool[m.String("requestId")] = true
 	case "computer_use_permission_request":
 		d.computer[m.String("requestId")] = true
+	case "background_task_stop_failed":
+		if task, exists := d.tasks[m.String("taskId")]; exists && task.finalStatus == "" {
+			task.stopRequested = false
+			d.tasks[m.String("taskId")] = task
+		}
 	case "permission_resolved":
 		delete(d.tool, m.String("requestId"))
 		delete(d.computer, m.String("requestId"))
@@ -369,12 +405,19 @@ func (s *Server) emitDisconnectGeneration(id string, r *runtimeSession, generati
 		if m.String("subtype") == "task_started" || m.String("subtype") == "task_progress" || m.String("subtype") == "task_notification" {
 			var task protocol.JSONObject
 			_ = task.UnmarshalJSON(m.Get("data"))
-			// SDK observation follows projection. Inspect the fence here but let
-			// the raw producer perform the single lifecycle transition.
-			allowed = !d.terminal[task.String("task_id")] && d.tasks[task.String("task_id")].finalStatus == ""
+			// A terminal producer can beat the control acknowledgement. Its
+			// actual stop intent must keep the strict durable bookend, rather
+			// than remove the task before a failed persistence can be retried.
+			stopped, tasks = claimRequestedTaskTerminal(d, task)
+			allowed = !stopped && !d.terminal[task.String("task_id")] && d.tasks[task.String("task_id")].finalStatus == ""
 		}
 	}
 	r.mu.Unlock()
+	if stopped {
+		s.persistDisconnectBookends(id, r, "", tasks)
+		s.armDisconnect(id)
+		return
+	}
 	if !allowed {
 		return
 	}
@@ -513,11 +556,19 @@ func (s *Server) appendDisconnectNotification(ctx context.Context, id string, n 
 
 func (s *Server) bookendDisconnectTasks(id string, r *runtimeSession, status string) {
 	r.mu.Lock()
-	d := r.disconnectState()
+	tasks := claimDisconnectBookends(r.disconnectState(), status, "")
+	r.mu.Unlock()
+	s.persistDisconnectBookends(id, r, status, tasks)
+}
+
+// Caller holds runtime.mu. Confirmed Stop/Close is the local-stop authority.
+// Agent persistence counts as activity only while this exact bookend is in
+// flight; retry timers and stopped shell persistence are not running tasks.
+func claimDisconnectBookends(d *disconnectLifecycle, status, onlyTask string) []disconnectTask {
 	tasks := make([]disconnectTask, 0, len(d.tasks))
 	for _, key := range d.taskOrder {
 		task, exists := d.tasks[key]
-		if !exists || d.terminal[key] || task.finalStatus == "" && status == "" {
+		if !exists || onlyTask != "" && key != onlyTask || d.terminal[key] || task.bookendPending || task.finalStatus == "" && status == "" {
 			continue
 		}
 		if task.finalStatus == "" {
@@ -529,11 +580,18 @@ func (s *Server) bookendDisconnectTasks(id string, r *runtimeSession, status str
 					task.finalStatus = "failed"
 				}
 			}
-			d.tasks[key] = task
 		}
+		task.bookendPending = true
+		d.tasks[key] = task
 		task.data = task.data.Clone()
 		tasks = append(tasks, task)
 	}
+	return tasks
+}
+
+func (s *Server) persistDisconnectBookends(id string, r *runtimeSession, status string, tasks []disconnectTask) {
+	r.mu.Lock()
+	d := r.disconnectState()
 	r.mu.Unlock()
 	failed := false
 	for _, task := range tasks {
@@ -564,6 +622,13 @@ func (s *Server) bookendDisconnectTasks(id string, r *runtimeSession, status str
 			}
 		}
 		if failure != nil {
+			r.mu.Lock()
+			if current, exists := d.tasks[m.String("task_id")]; exists && current.finalStatus == task.finalStatus {
+				current.bookendPending = false
+				current.stopRequested = false
+				d.tasks[m.String("task_id")] = current
+			}
+			r.mu.Unlock()
 			failed = true
 			s.emitTeamWorker(id, rawDisconnect(map[string]any{"type": "background_task_stop_failed", "taskId": m.String("task_id"), "message": "Background task ended, but its terminal state could not be saved"}))
 			continue
@@ -616,7 +681,7 @@ func (s *Server) retryDisconnectFinalization(id string, r *runtimeSession, statu
 	}
 	ready := make(chan struct{})
 	var stopCancellation func() bool
-	timer := time.AfterFunc(delay, func() {
+	timer := s.afterRuntimeTimer(delay, func() {
 		<-ready
 		defer stopCancellation()
 		defer release()

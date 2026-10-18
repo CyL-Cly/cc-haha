@@ -13,6 +13,7 @@ import (
 func (h *Host) requestDependencies(scope *cooperative.Scope) requestretry.Dependencies {
 	var bedrock *requestretry.NativeBedrock
 	var cloudError error
+	parentClient, parentClientError := h.options.Controller.NativeParentClientStateOnOwner(scope)
 	if h.options.NativeBedrock != nil {
 		bedrock, cloudError = h.options.NativeBedrock(scope)
 	}
@@ -23,6 +24,9 @@ func (h *Host) requestDependencies(scope *cooperative.Scope) requestretry.Depend
 		if err != nil {
 			cloudError = err
 		}
+	}
+	if parentClientError != nil {
+		cloudError = parentClientError
 	}
 	var codex *provider.OpenAICodexConfig
 	if h.options.NativeOpenAI != nil {
@@ -48,8 +52,8 @@ func (h *Host) requestDependencies(scope *cooperative.Scope) requestretry.Depend
 	if fast != nil {
 		proof, state, effect = fast.Proof, fast.State, fast.Effect
 	}
-	return requestretry.Dependencies{NativeThinkingSummaryBeta: h.nativeThinkingSummaryBetaCallback(), NativeFastModeProof: proof, NativeFastState: state, NativeFastEffect: effect, NativeFastError: fastError, NativeVertex: vertex, NativeBedrock: bedrock, NativeCloudError: cloudError, NativeAuthHelper: helper, NativeClaudeAuth: claude, NativeClaudeError: claudeError, NativeCodexOAuth: codex, NativeGrokOAuth: grok, PromptSnapshot: h.promptSnapshotObserver(scope), Trace: h.options.Trace, TraceEnvironment: h.options.OriginalEnv, StreamOwner: h.options.Owner, StreamScope: scope, UUID: h.options.UUID, Now: h.options.Now, Random: func() float64 { return 0 }, TLSState: h.options.TLSState, ObserveRequest: h.options.ObserveRequest,
-		NativeAccountUUID: h.nativeRequestAccountMetadata(scope), NativeRetryEnvironment: h.nativeRetryPolicyEnvironment(),
+	return requestretry.Dependencies{ObserveOpenFailure: h.options.ObserveModelFailure, NativeThinkingSummaryBeta: h.nativeThinkingSummaryBetaCallback(), NativeFastModeProof: proof, NativeFastState: state, NativeFastEffect: effect, NativeFastError: fastError, NativeVertex: vertex, NativeBedrock: bedrock, NativeCloudError: cloudError, NativeAuthHelper: helper, NativeClaudeAuth: claude, NativeClaudeError: claudeError, NativeCodexOAuth: codex, NativeGrokOAuth: grok, PromptSnapshot: h.promptSnapshotObserver(scope), Trace: h.options.Trace, TraceEnvironment: h.options.OriginalEnv, StreamOwner: h.options.Owner, StreamScope: scope, UUID: h.options.UUID, Now: h.options.Now, Random: func() float64 { return 0 }, TLSState: h.options.TLSState, ObserveRequest: h.options.ObserveRequest, ObserveFetch: h.options.ObserveFetch,
+		NativeAccountUUID: h.nativeRequestAccountMetadata(scope), NativeRetryEnvironment: h.nativeRetryPolicyEnvironment(), NativeParentClientState: parentClient,
 		Sleep: func(ctx context.Context, millis float64) error {
 			_, err := scope.AwaitBytes(cooperative.RetryTimer, func(wait context.Context) ([]byte, error) {
 				timer := time.NewTimer(time.Duration(millis * float64(time.Millisecond)))
@@ -65,7 +69,7 @@ func (h *Host) requestDependencies(scope *cooperative.Scope) requestretry.Depend
 			})
 			return err
 		},
-		NativeOpenIO: providernative.NewFactory(h.options.Owner, scope, nil),
+		NativeOpenIO: providernative.NewPooledFactory(h.options.Owner, scope, h.options.ObserveNativeFetch, h.options.NativeHTTPPool),
 		BodyIOAwait: func(kind provider.OwnerIOWait, work func(context.Context) ([]byte, error)) ([]byte, error) {
 			if kind != provider.OwnerBodyRead && kind != provider.OwnerErrorBody {
 				return nil, cooperative.ErrRestricted

@@ -23,6 +23,7 @@ type PrintRegistry struct {
 	prompts               []skillcommands.Definition
 	nativePrompts         bool
 	slashCommandsDisabled bool
+	remoteSafe            bool
 }
 
 // AgentGuideCommands carries the real prompt/local discriminant and Source
@@ -71,7 +72,16 @@ type PrintRegistryOptions struct {
 }
 
 func NewPrintRegistry(o PrintRegistryOptions) (*PrintRegistry, error) {
-	if o.CWD == "" || o.Home == "" || o.Stat == nil || o.ReadDir == nil || o.EntryPoint != "sdk-cli" || o.UserType != "external" {
+	return newPrintRegistry(o, false)
+}
+func NewNativeRemotePrintRegistry(o PrintRegistryOptions) (*PrintRegistry, error) {
+	if !o.Interactive || o.NativePrompts == nil || len(*o.NativePrompts) != 0 {
+		return nil, cap("native remote-safe registry producer")
+	}
+	return newPrintRegistry(o, true)
+}
+func newPrintRegistry(o PrintRegistryOptions, remote bool) (*PrintRegistry, error) {
+	if o.CWD == "" || o.Home == "" || o.Stat == nil || o.ReadDir == nil || o.EntryPoint != "sdk-cli" || o.UserType != "external" && !(remote && o.UserType == "ant") {
 		return nil, cap("normal registry native/profile binding")
 	}
 	c := PrintCatalog{Agents: []string{}, Commands: []protocolCommand{}, Skills: []string{}, Plugins: []json.RawMessage{}}
@@ -83,11 +93,14 @@ func NewPrintRegistry(o PrintRegistryOptions) (*PrintRegistry, error) {
 	}
 	// Shipped Source declarations are filtered at the initial main host boundary.
 	commands := filterEnabledPrintCommands(migratedPrintCommands(), o.Environment)
+	if remote {
+		commands = filterRemoteSafePrintCommands(commands)
+	}
 	if !o.Interactive {
 		commands = filterHeadlessCommands(commands)
 	}
 	c.Commands = projectSystemCommands(commands)
-	s := &PrintRegistry{catalog: c, commands: commands, environment: o.Environment, slashCommandsDisabled: o.DisableSlashCommands}
+	s := &PrintRegistry{catalog: c, commands: commands, environment: o.Environment, slashCommandsDisabled: o.DisableSlashCommands, remoteSafe: remote}
 	if o.NativePrompts != nil {
 		s.nativePrompts = true
 		s.ReplaceNativePrompts(*o.NativePrompts, o.Plugins, !o.Interactive)

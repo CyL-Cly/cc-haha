@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
+	"github.com/NanmiCoder/cc-haha/backend/internal/lspruntime"
 	"github.com/NanmiCoder/cc-haha/backend/internal/ownerasync"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/queryloop"
@@ -76,6 +77,7 @@ type Options struct {
 	Host              Host              // platform only; dependency state is obtained live below
 	HostState         func(*cooperative.Scope) (Host, error)
 	Files             Files
+	LSP               *lspruntime.Manager
 	FileSkills        func(context.Context, *cooperative.Scope, string) (*ownerasync.OwnerFuture[struct{}], error)
 }
 type Service struct {
@@ -92,6 +94,9 @@ func New(o Options) (*Service, error) {
 	}
 	if o.Host.Platform != "darwin" && o.Host.Platform != "linux" && o.Host.Platform != "windows" {
 		return nil, capability("native Windows path, permission and replacement semantics")
+	}
+	if o.LSP != nil && !o.LSP.Owns(o.Owner, o.NativeBinding) {
+		return nil, capability("shared native LSP owner and writer binding")
 	}
 	if o.Files == nil {
 		o.Files = OSFiles{}
@@ -171,7 +176,7 @@ func (s *Service) hostCheck(scope *cooperative.Scope) error {
 	if h.ConditionalSkillsPresent && s.options.FileSkills == nil {
 		return capability("conditional-skill matching and activation")
 	}
-	if h.LSPEnabled && !truth(s.options.Environment("CLAUDE_CODE_SIMPLE")) {
+	if h.LSPEnabled && s.options.LSP == nil && !truth(s.options.Environment("CLAUDE_CODE_SIMPLE")) {
 		return capability("LSP change/save notifications")
 	}
 	if h.VSCodeClientConnected && s.options.Environment("USER_TYPE") == "ant" {

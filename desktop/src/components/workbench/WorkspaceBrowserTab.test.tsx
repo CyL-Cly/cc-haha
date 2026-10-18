@@ -519,6 +519,109 @@ describe('native toolbar menu', () => {
     expect(screen.getByTestId('workspace-browser-find')).toBeInTheDocument()
   })
 
+  it('shows a capture rejection in menu chrome without failing or hiding the loaded page', async () => {
+    const tab = openBrowserTab()
+    const view = await renderReady(<WorkspaceBrowserTab sessionId={SESSION} tab={tab} active />)
+    const slot = document.querySelector(`[data-workspace-browser-slot="${tab.browserTabId}"]`)!
+    const webview = slot.querySelector('webview')!
+    const capture = deferredCreate()
+    host.capture.mockReturnValueOnce(capture.promise)
+    await openMenuItem('capture')
+    expect(host.capture).toHaveBeenCalledWith(tab.browserTabId, 'full')
+    host.setVisible.mockClear()
+
+    await act(async () => { capture.reject(new Error('Capture stopped because window geometry changed')) })
+    // The real parent reads the updated controller tab. Reflect that here so a
+    // stored loadError cannot be hidden behind stale literal component props.
+    view.rerender(<WorkspaceBrowserTab sessionId={SESSION} tab={currentTab(tab.id)} active />)
+    await flushGuests()
+
+    expect(currentTab(tab.id).loadError).toBeNull()
+    expect(screen.getByRole('alert')).toHaveTextContent('Capture stopped because window geometry changed')
+    expect(screen.queryByTestId('workspace-browser-error')).toBeNull()
+    expect(pageShown(tab)).toBe(true)
+    expect(document.querySelector(`[data-workspace-browser-slot="${tab.browserTabId}"]`)).toBe(slot)
+    expect(slot.querySelector('webview')).toBe(webview)
+    expect(slot).toHaveStyle({ visibility: 'visible' })
+    expect(host.setVisible).not.toHaveBeenCalledWith(tab.browserTabId, false)
+    expect(host.create).toHaveBeenCalledTimes(1)
+    expect(host.reload).not.toHaveBeenCalled()
+    expect(host.close).not.toHaveBeenCalled()
+    expect(screen.getByTestId('workspace-browser-menu-trigger')).toHaveAttribute('aria-expanded', 'false')
+    await openMenuItem('find')
+    expect(screen.queryByRole('alert')).toBeNull()
+    expect(screen.getByTestId('workspace-browser-find')).toBeInTheDocument()
+  })
+
+  it.each(['reactivate', 'replace', 'close', 'unmount'] as const)(
+    'ignores a late capture rejection after %s without changing the current owner', async (transition) => {
+      const tab = openBrowserTab()
+      const view = await renderReady(<WorkspaceBrowserTab sessionId={SESSION} tab={tab} active />)
+      const capture = deferredCreate()
+      host.capture.mockReturnValueOnce(capture.promise)
+      await openMenuItem('capture')
+      let current = tab
+      if (transition === 'reactivate') {
+        view.rerender(<WorkspaceBrowserTab sessionId={SESSION} tab={tab} active={false} />)
+        view.rerender(<WorkspaceBrowserTab sessionId={SESSION} tab={tab} active />)
+      }
+      if (transition === 'close') act(() => { useWorkspaceStore.getState().closeTab(SESSION, tab.id) })
+      if (transition === 'replace' || transition === 'close') {
+        current = openBrowserTab('https://replacement.test/')
+        view.rerender(<WorkspaceBrowserTab sessionId={SESSION} tab={current} active />)
+      }
+      if (transition === 'unmount') view.unmount()
+      await flushGuests()
+      host.setVisible.mockClear()
+      await act(async () => { capture.reject(new Error('Old capture rejected after owner changed')) })
+      await flushGuests()
+
+      if (transition === 'close') expect(useWorkspaceStore.getState().findBrowserTabOwner(tab.browserTabId)).toBeNull()
+      else expect(currentTab(tab.id).loadError).toBeNull()
+      if (transition === 'unmount') {
+        current = openBrowserTab('https://new-mount.test/')
+        await renderReady(<WorkspaceBrowserTab sessionId={SESSION} tab={current} active />)
+      } else {
+        view.rerender(<WorkspaceBrowserTab sessionId={SESSION} tab={currentTab(current.id)} active />)
+        await flushGuests()
+      }
+      expect(currentTab(current.id).loadError).toBeNull()
+      expect(screen.queryByRole('alert')).toBeNull()
+      expect(screen.queryByTestId('workspace-browser-error')).toBeNull()
+      expect(pageShown(current)).toBe(true)
+      expect(host.setVisible).not.toHaveBeenCalledWith(current.browserTabId, false)
+      expect(host.reload).not.toHaveBeenCalled()
+      expect(host.close).not.toHaveBeenCalled()
+      await openMenuItem('find')
+      expect(screen.getByTestId('workspace-browser-find')).toBeInTheDocument()
+    },
+  )
+
+  it('does not let a late capture rejection close the replacement owner native menu', async () => {
+    const first = openBrowserTab()
+    const view = await renderReady(<WorkspaceBrowserTab sessionId={SESSION} tab={first} active />)
+    const capture = deferredCreate()
+    host.capture.mockReturnValueOnce(capture.promise)
+    await openMenuItem('capture')
+    const second = openBrowserTab('https://second-owner.test/')
+    view.rerender(<WorkspaceBrowserTab sessionId={SESSION} tab={second} active />)
+    await flushGuests()
+    let select!: (action: WorkspaceBrowserMenuAction) => void
+    host.showMenu.mockReturnValueOnce(new Promise((resolve) => { select = resolve }))
+    fireEvent.click(screen.getByTestId('workspace-browser-menu-trigger'))
+    expect(screen.getByTestId('workspace-browser-menu-trigger')).toHaveAttribute('aria-expanded', 'true')
+
+    await act(async () => { capture.reject(new Error('Previous owner capture rejected')) })
+    expect(currentTab(first.id).loadError).toBeNull()
+    expect(currentTab(second.id).loadError).toBeNull()
+    expect(screen.queryByRole('alert')).toBeNull()
+    expect(screen.getByTestId('workspace-browser-menu-trigger')).toHaveAttribute('aria-expanded', 'true')
+    expect(pageShown(second)).toBe(true)
+    await act(async () => { select('find') })
+    expect(screen.getByTestId('workspace-browser-find')).toBeInTheDocument()
+    expect(screen.getByTestId('workspace-browser-menu-trigger')).toHaveAttribute('aria-expanded', 'false')
+  })
+
   it('targets PDF, capture, picker and external actions at the originating tab', async () => {
     const tab = openBrowserTab()
     await renderReady(<WorkspaceBrowserTab sessionId={SESSION} tab={tab} active />)

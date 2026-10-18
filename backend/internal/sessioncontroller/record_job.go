@@ -1,7 +1,6 @@
 package sessioncontroller
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -10,8 +9,11 @@ import (
 	"strings"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/bootstrapstate"
+	"github.com/NanmiCoder/cc-haha/backend/internal/commandnames"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/gitbranch"
+	"github.com/NanmiCoder/cc-haha/backend/internal/insights"
+	"github.com/NanmiCoder/cc-haha/backend/internal/ownerasync"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/sessionhistory"
 	"github.com/NanmiCoder/cc-haha/backend/internal/streamhistory"
@@ -25,6 +27,9 @@ type RecordBranchFuture interface {
 }
 
 type RecordOptions struct {
+	// Optional read-only observer of the actual prepare callsite. It receives
+	// only an immutable path; it supplies no Scope, readiness or prepared data.
+	ObservePrepare func(string)
 	// AllMessages is Source's full original session for incremental REPL-ID cleaning.
 	// Nil defaults to the recorded slice; an explicit empty slice stays empty.
 	AllMessages []LiveRecord
@@ -82,6 +87,8 @@ type recordContinuation struct {
 	branchError               error
 	stampSID                  string
 	slug                      json.RawMessage
+	insertBody, insertTrack   *ownerasync.OwnerFuture[struct{}]
+	insertReturn              *ownerasync.OwnerFuture[struct{}]
 }
 
 // exclusions is called only with Writer.mu held on the canonical owner. It is
@@ -156,6 +163,9 @@ func (pending *PendingWriter) BeginRecordLive(scope *cooperative.Scope, loader *
 		if pending.closing {
 			return ErrPendingClosed
 		}
+		if err := pending.writer.refreshNativeParentSessionOnOwner(scope); err != nil {
+			return err
+		}
 		future = &RecordFuture{future: newWriteFuture(), owner: pending.owner}
 		cleaned, err := cleanRecordForEnvironment(messages, options.AllMessages, pending.writer.options.Environment)
 		if err != nil {
@@ -177,6 +187,7 @@ func (pending *PendingWriter) BeginRecordLive(scope *cooperative.Scope, loader *
 			return err
 		}
 		job := &recordContinuation{pending: pending, loader: loader, options: options, future: future, cleaned: cleaned, sid: sid}
+		pending.observeWriter("record", cleaned, nil, nil)
 		if len(cleaned) == 0 {
 			job.finish(scope, nil)
 			return nil
@@ -192,8 +203,9 @@ func (pending *PendingWriter) BeginRecordLive(scope *cooperative.Scope, loader *
 	return future, err
 }
 
-// dispatchRecord has the same pure-I/O boundary as dispatch, but obtains the
-// completion Scope from the native Promise reaction. Never retain the ASK scope.
+// dispatchRecord separates real filesystem readiness from the original native
+// Promise reaction. A worker cannot inject I/O completion into a currently
+// draining Bun microtask chain. Never retain the ASK scope in either callback.
 func dispatchRecord[T any](pending *PendingWriter, failure *WriteFuture, work func() T, complete func(*cooperative.Scope, T)) error {
 	if _, err := pending.admitRecordWorker(true); err != nil {
 		return err
@@ -202,9 +214,17 @@ func dispatchRecord[T any](pending *PendingWriter, failure *WriteFuture, work fu
 		defer pending.workers.Done()
 		defer pending.runtimeNative.end()
 		result := work()
-		receipt, err := pending.owner.Microtask(cooperative.Flush, func(scope *cooperative.Scope) error { complete(scope, result); return nil })
+		var reaction transcriptNativeCompletion
+		receipt, err := pending.owner.SubmitIndependent(context.Background(), cooperative.Read, func(scope *cooperative.Scope) error {
+			var err error
+			reaction, err = completeTranscriptNativeOperation(scope, pending, transcriptNativeFSPStat, func(next *cooperative.Scope) { complete(next, result) })
+			return err
+		})
 		if err == nil {
 			err = receipt.Wait()
+		}
+		if err == nil {
+			err = reaction.Wait()
 		}
 		if err != nil {
 			failure.settle(err)
@@ -222,12 +242,24 @@ func (job *recordContinuation) wait(waiting *WriteFuture, complete func(*coopera
 	}, job.future.future.settle)
 }
 func (job *recordContinuation) finish(scope *cooperative.Scope, err error) {
-	if job.token != nil {
-		if completed := job.token.Complete(scope); completed != nil && err == nil {
-			err = completed
+	if job.insertBody != nil {
+		// insert's async body returns here. trackWrite's await/finally, the
+		// async insertMessageChain return adoption and recordTranscript's await
+		// remain distinct reactions on the same Owner.
+		var completeErr error
+		if err != nil {
+			completeErr = job.insertBody.Reject(scope, err)
+		} else {
+			completeErr = job.insertBody.Resolve(scope, struct{}{})
 		}
-		job.token = nil
+		if completeErr != nil {
+			job.future.future.settle(completeErr)
+		}
+		return
 	}
+	job.finishResult(scope, err)
+}
+func (job *recordContinuation) finishResult(scope *cooperative.Scope, err error) {
 	if err == nil {
 		result := job.prefix
 		writer := job.pending.writer
@@ -314,7 +346,7 @@ func (job *recordContinuation) discard(scope *cooperative.Scope) {
 				return
 			}
 			writer.discard(writer.queues[path])
-			writer.queues[path] = nil
+			writer.clearQueueLocked(path)
 			writer.pending = nil
 			writer.lastPrompt = nil
 		}
@@ -386,6 +418,7 @@ func (job *recordContinuation) selectNew(scope *cooperative.Scope) {
 		job.finish(scope, err)
 		return
 	}
+	job.pending.observeWriter("selection", job.cleaned, job.added, nil)
 	if len(job.added) == 0 {
 		job.finish(scope, nil)
 		return
@@ -395,6 +428,14 @@ func (job *recordContinuation) selectNew(scope *cooperative.Scope) {
 		job.finish(scope, err)
 		return
 	}
+	if err := job.beginInsertReturn(scope); err != nil {
+		job.future.future.settle(err)
+		return
+	}
+	// Source's async insertMessageChain returns trackWrite after invoking its
+	// body. A synchronous empty/rejected body has already registered its own
+	// finally reaction when that return-adoption job is admitted.
+	defer job.adoptInsertReturn(scope)
 	if len(job.inserting) == 0 {
 		job.finish(scope, nil)
 		return
@@ -424,6 +465,9 @@ func (job *recordContinuation) selectNew(scope *cooperative.Scope) {
 		return
 	}
 	if materialize {
+		if job.options.ObservePrepare != nil {
+			job.options.ObservePrepare(path)
+		}
 		prepare, e := job.pending.Prepare(scope, path)
 		if e != nil {
 			job.finish(scope, e)
@@ -451,7 +495,13 @@ func (job *recordContinuation) afterMaterialize(scope *cooperative.Scope) {
 }
 func (job *recordContinuation) appendBuffered(scope *cooperative.Scope) {
 	if len(job.buffered) == 0 {
-		job.prepareAgain(scope)
+		// materializeSessionFile's body has returned after metadata and the
+		// buffered loop. insertMessageChain awaits that async return before its
+		// second prepare call, even with an empty buffer. Preserve this original
+		// fulfilled reaction; it creates no native I/O, timer or fairness delay.
+		returned := newWriteFuture()
+		returned.settle(nil)
+		job.wait(returned, job.prepareAgain)
 		return
 	}
 	entry := job.buffered[0]
@@ -471,6 +521,9 @@ func (job *recordContinuation) prepareAgain(scope *cooperative.Scope) {
 	if !job.real || path == "" {
 		job.getBranch(scope)
 		return
+	}
+	if job.options.ObservePrepare != nil {
+		job.options.ObservePrepare(path)
 	}
 	prepare, err := job.pending.Prepare(scope, path)
 	if err != nil {
@@ -712,45 +765,40 @@ func (job *recordContinuation) appendNext(scope *cooperative.Scope) {
 	}
 	writer.mu.Lock()
 	filtered, err := writer.filterRecord(job.inserting, writer.currentSessionID())
+	promptUpdated := false
 	if err == nil && !writer.skipped() {
-		writer.updateRecordPrompt(filtered)
+		promptUpdated, err = writer.updateRecordPrompt(filtered)
 	}
 	writer.mu.Unlock()
+	if err == nil && promptUpdated {
+		job.pending.observeWriter("memo", job.cleaned, job.inserting, nil)
+	}
 	job.finish(scope, err)
 }
-func (writer *Writer) updateRecordPrompt(values []recordOriginal) {
-	for _, value := range values {
-		message := value.record
-		if message.String("type") != "user" || truthy(message.Get("isMeta")) || truthy(message.Get("isCompactSummary")) {
-			continue
-		}
-		content := object(message.Get("message")).Get("content")
-		var units []uint16
-		if data := bytes.TrimSpace(content); len(data) > 0 && data[0] == '"' {
-			units, _ = protocol.DecodeJavaScriptJSONString(content)
-		} else {
-			var blocks []protocol.JSONObject
-			_ = json.Unmarshal(content, &blocks)
-			for _, block := range blocks {
-				if block.String("type") == "text" && truthy(block.Get("text")) {
-					units, _ = protocol.DecodeJavaScriptJSONString(block.Get("text"))
-					break
-				}
-			}
-		}
-		if len(units) == 0 {
-			continue
-		}
-		for i, unit := range units {
-			if unit == '\n' {
-				units[i] = ' '
-			}
-		}
-		units = trimUnits(units)
-		if len(units) > 200 {
-			units = append(trimUnits(units[:200]), '…')
-		}
-		writer.lastPrompt = protocol.QuoteJavaScriptUTF16(units)
-		return
+func (writer *Writer) updateRecordPrompt(values []recordOriginal) (bool, error) {
+	// Source's sidechain insert never updates the main session's picker memo.
+	// Native children have a separate physical writer, not a separate picker.
+	if writer.options.AgentID != "" {
+		return false, nil
 	}
+	records := make([]protocol.JSONObject, len(values))
+	for i, value := range values {
+		records[i] = *value.record
+	}
+	var names map[string]bool
+	value, err := insights.FirstMeaningfulPrompt(records, func(name string) (bool, error) {
+		if names == nil {
+			var err error
+			names, err = commandnames.Set(writer.options.Environment)
+			if err != nil {
+				return false, err
+			}
+		}
+		return names[name], nil
+	})
+	if err == nil && value != nil {
+		writer.lastPrompt = value
+		return true, nil
+	}
+	return false, err
 }

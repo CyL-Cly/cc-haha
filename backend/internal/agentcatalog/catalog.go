@@ -34,6 +34,7 @@ type Definition struct {
 	// Listing, desktop editing, prompt descriptions and execution share it.
 	Fields       protocol.JSONObject
 	SystemPrompt string
+	promptJSON   json.RawMessage
 	PromptArity  int
 }
 type SourceGroup struct{ Label, Source string }

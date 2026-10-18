@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"github.com/NanmiCoder/cc-haha/backend/internal/tui"
+	"github.com/NanmiCoder/cc-haha/backend/testdata/gochildcoverage"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -28,7 +29,8 @@ func TestActualITermSetupTerminalChooseTmuxStartsGoPaneWorkerWritesAndCloseJoins
 	ctx, cancel := context.WithTimeout(context.Background(), 55*time.Second)
 	defer cancel()
 	binary := filepath.Join(t.TempDir(), "actual-team-cli")
-	build := exec.CommandContext(ctx, "go", "build", "-p=4", "-o", binary, "../../cmd/claude-haha")
+	build := exec.CommandContext(ctx, "go", "build", "-tags", "native_process_fixture", "-p=4", "-o", binary, "../../cmd/claude-haha")
+	capturePublicGoCoverage(t, build)
 	if out, err := build.CombinedOutput(); err != nil {
 		t.Fatal(err, string(out))
 	}
@@ -45,6 +47,13 @@ func TestActualITermSetupTerminalChooseTmuxStartsGoPaneWorkerWritesAndCloseJoins
 	target := ""
 	var parents, children atomic.Int32
 	provider := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodHead {
+			if r.Header.Get("Authorization") != "" || r.Header.Get("X-Api-Key") != "" || r.Header.Get("User-Agent") != "Bun/1.3.14" {
+				t.Error("private pane init HEAD lost Source transport headers", r.Header)
+			}
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
 		body, _ := io.ReadAll(r.Body)
 		if strings.Contains(string(body), "# Agent Teammate Communication") {
 			switch children.Add(1) {
@@ -70,6 +79,8 @@ func TestActualITermSetupTerminalChooseTmuxStartsGoPaneWorkerWritesAndCloseJoins
 	options.Arguments.Tools = []string{"TeamCreate,TeamDelete,Agent,Write,Read,SendMessage"}
 	options.Arguments.TeammateMode = "tmux"
 	for _, env := range []map[string]string{options.Environment, options.Native.Environment} {
+		env["CC_HAHA_NATIVE_FIXTURE_ROOT"] = filepath.Dir(options.Native.Home)
+		env["TMPDIR"] = filepath.Join(options.Native.Home, "tmp")
 		env["CC_HAHA_AGENT_TEAMS_ENABLED"] = "1"
 		env["CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS"] = "1"
 		env["TERM_PROGRAM"] = "iTerm.app"
@@ -77,6 +88,13 @@ func TestActualITermSetupTerminalChooseTmuxStartsGoPaneWorkerWritesAndCloseJoins
 		env["TMUX_TMPDIR"] = filepath.Join(private, "tmux")
 		env["CLAUDE_CODE_TEAMMATE_COMMAND"] = binary
 		delete(env, "TMUX")
+	}
+	if directory := gochildcoverage.IndirectEnvironment(t, binary); directory != "" {
+		options.Environment["GOCOVERDIR"] = directory
+		options.Native.Environment["GOCOVERDIR"] = directory
+	}
+	if err = os.MkdirAll(options.Environment["TMPDIR"], 0700); err != nil {
+		t.Fatal(err)
 	}
 	config := options.Environment["CLAUDE_CONFIG_DIR"]
 	_ = os.Mkdir(config, 0700)
@@ -139,6 +157,7 @@ func TestActualITermSetupTerminalChooseTmuxStartsGoPaneWorkerWritesAndCloseJoins
 	}
 	list := exec.Command(tmux, "-L", "claude-swarm-"+strconv.Itoa(os.Getpid()), "list-panes", "-a")
 	list.Env = []string{"PATH=" + filepath.Dir(tmux) + ":/usr/bin:/bin", "TMUX_TMPDIR=" + filepath.Join(private, "tmux")}
+	capturePublicGoCoverage(t, list)
 	if out, err := list.CombinedOutput(); err == nil && len(out) > 0 {
 		t.Fatal("setup pane survived parent close", string(out))
 	}

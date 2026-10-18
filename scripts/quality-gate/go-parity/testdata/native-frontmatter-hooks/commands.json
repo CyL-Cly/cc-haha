@@ -1,0 +1,12 @@
+{
+  "pre": "/bin/cat >> \"$HOOK_OUTPUT_DIR/inputs.jsonl\"; printf \"pre:%s\\n\" \"$CLAUDE_PLUGIN_ROOT\" >> \"$HOOK_OUTPUT_DIR/events\"",
+  "post": "/bin/cat >> \"$HOOK_OUTPUT_DIR/inputs.jsonl\"; test -f \"$HOOK_OUTPUT_DIR/artifact-1.txt\" || test -f \"$HOOK_OUTPUT_DIR/artifact-2.txt\" || exit 3; printf \"post\\n\" >> \"$HOOK_OUTPUT_DIR/events\"",
+  "stop": "/bin/cat >> \"$HOOK_OUTPUT_DIR/inputs.jsonl\"; printf \"stop\\n\" >> \"$HOOK_OUTPUT_DIR/events\"",
+  "deny": "/bin/cat >> \"$HOOK_OUTPUT_DIR/inputs.jsonl\"; printf \"deny\\n\" >> \"$HOOK_OUTPUT_DIR/events\"; printf '%s\\n' '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"HOOK_REJECTED\"}}'",
+  "flaky": "/bin/cat >> \"$HOOK_OUTPUT_DIR/inputs.jsonl\"; if test ! -f \"$HOOK_OUTPUT_DIR/attempted\"; then printf \"1\" > \"$HOOK_OUTPUT_DIR/attempted\"; printf \"once-failure\\n\" >> \"$HOOK_OUTPUT_DIR/events\"; exit 1; fi; printf \"once-success\\n\" >> \"$HOOK_OUTPUT_DIR/events\"",
+  "agent-pre": "/bin/cat >> \"$HOOK_OUTPUT_DIR/inputs.jsonl\"; printf \"agent-pre\\n\" >> \"$HOOK_OUTPUT_DIR/events\"",
+  "agent-post": "/bin/cat >> \"$HOOK_OUTPUT_DIR/inputs.jsonl\"; test -f \"$HOOK_OUTPUT_DIR/artifact-1.txt\" || test -f \"$HOOK_OUTPUT_DIR/artifact-2.txt\" || exit 3; printf \"agent-post\\n\" >> \"$HOOK_OUTPUT_DIR/events\"",
+  "agent-stop": "/bin/cat >> \"$HOOK_OUTPUT_DIR/inputs.jsonl\"; printf \"agent-stop\\n\" >> \"$HOOK_OUTPUT_DIR/events\"",
+  "held": "/bin/cat >> \"$HOOK_OUTPUT_DIR/inputs.jsonl\"; printf \"%s\\n\" \"$$\" > \"$HOOK_OUTPUT_DIR/held.pid\"; printf \"held\\n\" >> \"$HOOK_OUTPUT_DIR/events\"; printf \"HOOK_PHYSICAL_STARTED\\n\"; exec /bin/sleep 60",
+  "stop-failure": "/bin/cat >> \"$HOOK_OUTPUT_DIR/inputs.jsonl\"; printf \"stop-failure\\n\" >> \"$HOOK_OUTPUT_DIR/events\"; printf \"%s\\n\" \"${CLAUDE_PLUGIN_ROOT-<absent>}\" >> \"$HOOK_OUTPUT_DIR/outside-roots\""
+}

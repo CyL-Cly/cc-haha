@@ -26,6 +26,7 @@ func TestPublicSDKURLCLIRealPermissionBashAllTransportsAndProcessClose(t *testin
 	defer cancel()
 	binary := filepath.Join(root, "public-sdk-url-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if output, err := build.CombinedOutput(); err != nil {
 		t.Fatal(err, string(output))
 	}
@@ -37,7 +38,7 @@ func TestPublicSDKURLCLIRealPermissionBashAllTransportsAndProcessClose(t *testin
 			var calls, approvals atomic.Int32
 			var requestMu sync.Mutex
 			var lastModelRequest []byte
-			model := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			model := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 				body, _ := io.ReadAll(r.Body)
 				requestMu.Lock()
 				lastModelRequest = append([]byte(nil), body...)
@@ -242,6 +243,7 @@ func TestPublicSDKURLCLIRealPermissionBashAllTransportsAndProcessClose(t *testin
 			var stdout, stderr bytes.Buffer
 			process.Stdout = &stdout
 			process.Stderr = &stderr
+			capturePublicGoCoverage(t, process)
 			if err := process.Run(); err != nil {
 				t.Fatal("public SDK URL process", err, "stderr", stderr.String(), "stdout", stdout.String())
 			}

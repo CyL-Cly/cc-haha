@@ -19,6 +19,12 @@ func TestPublicCLIJSONAgentSpawnsRestrictedPhysicalReadChildThenColdResumes(t *t
 	var parents, children atomic.Int32
 	var path string
 	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		data, _ := io.ReadAll(r.Body)
 		request := obj(data)
 		if bytes.Contains(request.Get("system"), []byte("ACTUAL_CLI_CHILD_PRIVATE_PROMPT")) {

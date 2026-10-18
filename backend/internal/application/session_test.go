@@ -18,6 +18,7 @@ import (
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/clibootstrap"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/securestorage"
 	"github.com/NanmiCoder/cc-haha/backend/internal/tui"
 )
 
@@ -35,7 +36,38 @@ func nativeSessionOptions(t *testing.T, baseURL string) Options {
 	if err != nil {
 		t.Fatal(err)
 	}
-	return Options{Arguments: clibootstrap.PrintArguments{Model: "fixture-model", SystemPrompt: "Use the actual tools to execute the requested test.", SessionID: "fe210ac4-5364-4b5e-a0b8-e351b70e0a17", Tools: []string{"Read,Write,Edit,Bash,Glob,Grep"}, MaxTurns: 20, PermissionMode: "bypassPermissions", Sources: clibootstrap.DefaultState()}, Environment: env, Native: native, WorkDir: work, Version: "999.0.0-application-test", Platform: "darwin"}
+	// A private HOME does not isolate macOS Keychain. The shared fixture must
+	// substitute that OS primitive even when a later account/status consumer
+	// probes credentials while the ordinary model uses a loopback API key.
+	native.RunSecurity = func(context.Context, securestorage.Command) ([]byte, error) {
+		return nil, os.ErrNotExist
+	}
+	// The real CLI init also performs an unauthenticated HEAD. A private HOME
+	// cannot authorize a fixture with an absent base URL to contact the public
+	// API, so only the declared loopback transport may execute that primitive.
+	native.PreconnectHTTP = func(request *http.Request, actual *http.Client) (*http.Response, error) {
+		allowed := func(request *http.Request) bool {
+			return request != nil && request.Method == http.MethodHead && request.URL != nil && request.URL.Hostname() == "127.0.0.1" && request.URL.Port() != "" && request.URL.User == nil && (request.URL.Scheme == "http" || request.URL.Scheme == "https")
+		}
+		if actual == nil || !allowed(request) {
+			return nil, fmt.Errorf("isolated fixture preconnect requires exact loopback HEAD")
+		}
+		client := *actual
+		client.CheckRedirect = func(next *http.Request, previous []*http.Request) error {
+			if !allowed(next) {
+				return fmt.Errorf("isolated fixture preconnect redirect escapes loopback")
+			}
+			if actual.CheckRedirect != nil {
+				return actual.CheckRedirect(next, previous)
+			}
+			return nil
+		}
+		return client.Do(request)
+	}
+	// A real Source child observes the canonical process.cwd() directory.
+	// Persist fixtures in that same namespace instead of a /var alias which
+	// native startup correctly resolves to /private/var before resume.
+	return Options{Arguments: clibootstrap.PrintArguments{Model: "fixture-model", SystemPrompt: "Use the actual tools to execute the requested test.", SessionID: "fe210ac4-5364-4b5e-a0b8-e351b70e0a17", Tools: []string{"Read,Write,Edit,Bash,Glob,Grep"}, MaxTurns: 20, PermissionMode: "bypassPermissions", Sources: clibootstrap.DefaultState()}, Environment: env, Native: native, WorkDir: native.CWD, Version: "999.0.0-application-test", Platform: "darwin"}
 }
 
 func response(w http.ResponseWriter, id, tool string, input any, text string) {

@@ -440,6 +440,9 @@ func (server *Server) sessionsHTTP(writer http.ResponseWriter, request *http.Req
 		}
 	}
 	id := parts[2]
+	if id == "live-status" {
+		return server.liveSessionStatusHTTP(writer, request)
+	}
 	if len(parts) > 3 && parts[3] == "inspection" && request.Method != http.MethodGet {
 		return methodNotAllowed(request.Method)
 	}
@@ -497,6 +500,8 @@ func (server *Server) sessionsHTTP(writer http.ResponseWriter, request *http.Req
 			return server.sessionSlashCommandsHTTP(writer, request, info)
 		case "subagents":
 			return server.subagentsHTTP(writer, request, info, parts)
+		case "review":
+			return server.reviewHTTP(writer, request, info, parts)
 		case "workspace":
 			return server.workspaceHTTP(writer, request, info, parts)
 		case "turn-checkpoints":

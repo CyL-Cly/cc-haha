@@ -1,3 +1,5 @@
+import path from 'node:path'
+
 /**
  * Shared code-signing identity resolution for the macOS build.
  *
@@ -51,6 +53,7 @@ export const SIDECAR_SIGNING_IDENTIFIER = 'com.claude-code-haha.desktop.sidecar'
 export function resolveStableSigningIdentity(
   securityOutput: string,
   override?: string | null,
+  requireMatchingOverride = false,
 ): SigningIdentity | null {
   const rows: Array<{ hash: string; name: string }> = []
   for (const line of securityOutput.split('\n')) {
@@ -60,6 +63,11 @@ export function resolveStableSigningIdentity(
 
   const explicit = override?.trim()
   if (explicit) {
+    if (requireMatchingOverride) {
+      const matched = rows.find(row => row.name === explicit || row.hash === explicit.toUpperCase())
+      if (!matched) throw new Error('Signing identity is absent from the explicitly selected keychain')
+      return matched.name
+    }
     // `codesign --sign` accepts a SHA-1 fingerprint, but downstream timestamp
     // policy needs the certificate kind. Resolve a matching hash to its common
     // name so Developer ID sidecars cannot accidentally ship without a secure
@@ -82,25 +90,107 @@ export function resolveStableSigningIdentity(
   )
 }
 
-/**
- * Read the keychain and resolve the identity the whole build should use.
- * Returns null when no stable identity exists (the machine can still produce an
- * ad-hoc build; Computer Use just will not pass attestation on it).
- */
+/** Resolve an opt-in private keychain without touching filesystem or search lists. */
+function signingKeychain(env: NodeJS.ProcessEnv = process.env): string | undefined {
+  const keychain = env.CC_HAHA_SIGN_KEYCHAIN
+  if (!keychain) return undefined
+  if (!path.isAbsolute(keychain)) throw new Error('CC_HAHA_SIGN_KEYCHAIN must be an absolute path')
+  return keychain
+}
+
+/** Limit every signing operation to the caller's explicit private keychain. */
+export function codesignKeychainArguments(env: NodeJS.ProcessEnv = process.env): string[] {
+  const keychain = signingKeychain(env)
+  return keychain ? ['--keychain', keychain] : []
+}
+
+/** Default lookup retains its nullable result; an explicit keychain fails closed. */
 export async function detectStableSigningIdentity(): Promise<SigningIdentity | null> {
   if (process.platform !== 'darwin') return null
+  const keychain = signingKeychain()
   try {
     const proc = Bun.spawn(
-      ['security', 'find-identity', '-v', '-p', 'codesigning'],
+      ['security', 'find-identity', '-v', '-p', 'codesigning', ...(keychain ? [keychain] : [])],
       { stdout: 'pipe', stderr: 'ignore' },
     )
     const stdout = await new Response(proc.stdout).text()
-    await proc.exited
-    return resolveStableSigningIdentity(
-      stdout,
-      process.env.CC_HAHA_SIGN_IDENTITY,
-    )
-  } catch {
+    const exitCode = await proc.exited
+    if (keychain && exitCode !== 0) throw new Error('Explicit signing keychain identity query failed')
+    const identity = resolveStableSigningIdentity(stdout, process.env.CC_HAHA_SIGN_IDENTITY, !!keychain)
+    if (keychain && !identity) throw new Error('Explicit signing keychain has no supported signing identity')
+    return identity
+  } catch (error) {
+    if (keychain) throw error
     return null
   }
+}
+
+/**
+ * Sign a compiled sidecar with the build's stable identity and — critically —
+ * the FIXED identifier the helper's attestation policy expects.
+ *
+ * The identifier is the reason this is not just `codesign -s -`. Ad-hoc signing
+ * derives the identifier from the file name plus a content hash
+ * (`claude-sidecar-aarch64-apple-darwin-5555…`), which never matches
+ * `com.claude-code-haha.desktop.sidecar`. `ClientAttestation.swift` compares
+ * that identifier exactly, so a hash-suffixed one makes every Computer Use call
+ * fail closed with `unauthorized_client`.
+ *
+ * `--identifier` applies to ad-hoc signatures too, so the unsigned local build
+ * still gets the right identifier — it just cannot satisfy the team/leaf half of
+ * the policy, which is inherent to having no certificate.
+ *
+ * electron-builder must not overwrite this signature; `mac.signIgnore` in
+ * package.json excludes `claude-sidecar-…` for exactly that reason. That also
+ * means entitlements are OUR job here — electron-builder's `entitlementsInherit`
+ * never reaches a file it does not sign.
+ */
+export async function signMacBinary(outputPath: string, desktopRoot: string, options: { adHocOnly?: boolean } = {}) {
+  if (options.adHocOnly && (process.env.CC_HAHA_SIGN_IDENTITY || process.env.CC_HAHA_SIGN_KEYCHAIN)) {
+    throw new Error('Explicit ad-hoc signing cannot be combined with a signing identity or keychain override')
+  }
+  const identity = options.adHocOnly ? null : await detectStableSigningIdentity()
+  const keychainArgs = options.adHocOnly ? [] : codesignKeychainArguments()
+  const label = identity ?? 'ad-hoc'
+  console.log(
+    `[build-sidecars] signing ${outputPath} as ${SIDECAR_SIGNING_IDENTIFIER} (${label}) ...`,
+  )
+
+  const strip = Bun.spawn(['codesign', '--remove-signature', outputPath], {
+    stdout: 'inherit',
+    stderr: 'inherit',
+  })
+  await strip.exited
+
+  const args = [
+    'codesign',
+    '--sign',
+    identity ?? '-',
+    '--force',
+    '--identifier',
+    SIDECAR_SIGNING_IDENTIFIER,
+    codesignTimestampArgument(identity),
+    ...keychainArgs,
+  ]
+  if (identity) {
+    // Hardened runtime + inherited entitlements match what electron-builder
+    // would have applied, so skipping its signing pass changes nothing else
+    // about how the sidecar runs.
+    args.push(
+      '--options',
+      'runtime',
+      '--entitlements',
+      path.join(desktopRoot, 'build', 'entitlements.mac.inherit.plist'),
+    )
+  }
+  args.push(outputPath)
+
+  const sign = Bun.spawn(args, { stdout: 'inherit', stderr: 'inherit' })
+  const signExit = await sign.exited
+  if (signExit !== 0) {
+    throw new Error(
+      `[build-sidecars] codesign failed for ${outputPath} (exit ${signExit}, identity: ${label})`,
+    )
+  }
+  console.log(`[build-sidecars] signed ${outputPath} (${label})`)
 }

@@ -64,13 +64,55 @@ func TestActualDesktopSideChatSharesHarnessAtStableBoundaryWithoutDurableHistory
 	o := nativeSessionOptions(t, provider.URL)
 	o.Arguments.Tools = nil
 	outputPath = filepath.Join(o.WorkDir, "side-output.txt")
-	s, e := server.New(server.Options{HomeDir: o.Environment["HOME"], ConfigDir: o.Environment["CLAUDE_CONFIG_DIR"], WorkDir: o.WorkDir, Factory: DesktopFactory(o)})
+	committed := make(chan string, 128)
+	factory := DesktopFactory(o)
+	s, e := server.New(server.Options{HomeDir: o.Environment["HOME"], ConfigDir: o.Environment["CLAUDE_CONFIG_DIR"], WorkDir: o.WorkDir, Factory: func(ctx context.Context, options server.SessionOptions, emit server.Emit) (server.LiveSession, error) {
+		original := options.OnCanonicalTranscriptMutation
+		options.OnCanonicalTranscriptMutation = func(path string) error {
+			if original != nil {
+				if err := original(path); err != nil {
+					return err
+				}
+			}
+			select {
+			case committed <- path:
+			default:
+			}
+			return nil
+		}
+		return factory(ctx, options, emit)
+	}})
 	if e != nil {
 		t.Fatal(e)
 	}
 	defer s.Close(context.Background())
 	host := httptest.NewServer(s)
 	defer host.Close()
+	// As in the desktop fork regression, idle does not join Source's
+	// independent Record promise. Observe actual file-close commits before
+	// capturing history or comparing durable bytes, without forcing a flush.
+	readCommitted := func(id, marker string) (string, []byte) {
+		t.Helper()
+		deadline := time.NewTimer(15 * time.Second)
+		defer deadline.Stop()
+		for {
+			select {
+			case path := <-committed:
+				if filepath.Base(path) != id+".jsonl" {
+					continue
+				}
+				data, err := os.ReadFile(path)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if bytes.Contains(data, []byte(marker)) {
+					return path, data
+				}
+			case <-deadline.C:
+				t.Fatalf("canonical write did not publish %q", marker)
+			}
+		}
+	}
 	post := func(path string, body any, status int) json.RawMessage {
 		t.Helper()
 		res, e := host.Client().Post(host.URL+path, "application/json", bytes.NewReader(raw(body)))
@@ -125,25 +167,16 @@ func TestActualDesktopSideChatSharesHarnessAtStableBoundaryWithoutDurableHistory
 	parentWS := connect(parent)
 	defer parentWS.Close()
 	turn(parentWS, "Prepare reference context")
+	parentPath, _ := readCommitted(parent, initial)
 	cliID := "22222222-2222-4222-8222-222222222222"
 	side := obj(post("/api/sessions/"+parent+"/side-chats", map[string]any{"sideChatId": cliID}, 200)).String("sessionId")
 	if side != "side-"+cliID {
 		t.Fatal(side)
 	}
 	turn(parentWS, "Append parent later context")
-	var parentPath string
-	_ = filepath.WalkDir(filepath.Join(o.Environment["CLAUDE_CONFIG_DIR"], "projects"), func(path string, d os.DirEntry, e error) error {
-		if e == nil && !d.IsDir() && filepath.Base(path) == parent+".jsonl" {
-			parentPath = path
-		}
-		return e
-	})
-	if parentPath == "" {
-		t.Fatal("No canonical parent")
-	}
-	before, e := os.ReadFile(parentPath)
-	if e != nil {
-		t.Fatal(e)
+	laterPath, before := readCommitted(parent, later)
+	if laterPath != parentPath {
+		t.Fatal("parent canonical path changed between committed turns", parentPath, laterPath)
 	}
 	sideWS := connect(side)
 	defer sideWS.Close()

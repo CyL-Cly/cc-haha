@@ -26,7 +26,7 @@ func (s *Session) nativeQueryYield(scope *cooperative.Scope, yield *queryloop.Yi
 		if err := s.emitEvent(tui.Event{Kind: tui.TeammateInboxChanged, Result: raw(s.process.Controller.AppState().Inbox)}); err != nil {
 			return err
 		}
-		return s.emitEvent(tui.Event{Kind: tui.TeammateMessages, Result: payload.Get("messages")})
+		return s.emitEvent(tui.Event{Kind: tui.TeammateMessages, TeammateOrigin: tui.TeammateMessageAttachment, Result: payload.Get("messages")})
 	case "dynamic_skill":
 		var names []json.RawMessage
 		if err := json.Unmarshal(payload.Get("skillNames"), &names); err != nil {

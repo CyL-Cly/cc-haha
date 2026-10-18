@@ -347,7 +347,7 @@ func TestInaccessibleNestedCatalogDoesNotFallBackToAnotherSource(t *testing.T) {
 	}
 }
 
-func TestFullRefreshIsFreshAndWarmsOnlyTheCachedConsumer(t *testing.T) {
+func TestFullRefreshKeepsOriginalPromiseAndWarmsCachedConsumerUntilClear(t *testing.T) {
 	f := newCacheFixture(t)
 	f.catalog(t, []any{map[string]any{"name": "missing", "source": map[string]any{"source": "github", "repo": "owner/missing"}}, map[string]any{"name": "sample", "source": "./plugins/sample"}})
 	f.setting(t, `{"enabledPlugins":{"missing@mkt":true,"sample@mkt":true}}`)
@@ -372,7 +372,12 @@ func TestFullRefreshIsFreshAndWarmsOnlyTheCachedConsumer(t *testing.T) {
 		t.Fatalf("full result did not warm cache: calls=%d %v", count, err)
 	}
 	_, err = loader.LoadFull(context.Background())
+	if err != nil || count != 2 {
+		t.Fatalf("full promise was not memoized: calls=%d %v", count, err)
+	}
+	loader.Clear()
+	_, err = loader.LoadFull(context.Background())
 	if err != nil || count != 4 {
-		t.Fatalf("cached result satisfied refresh: calls=%d %v", count, err)
+		t.Fatalf("explicit clear retained an older full promise: calls=%d %v", count, err)
 	}
 }

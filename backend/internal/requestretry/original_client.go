@@ -16,6 +16,15 @@ import (
 // query stream and the separately sealed model-validation JSON consumer bind
 // their current producer scope and original auth inputs here.
 func originalClient(ctx context.Context, input Input, deps Dependencies, clientEnv map[string]string, request requestcontext.Context, getPrepared func() *provider.MessagesRequest) (*provider.Anthropic, error) {
+	// Source constructs defaultHeaders (including the live parent SID) before
+	// awaiting the credential stat. A 401 rebuild re-enters this same producer.
+	if deps.NativeParentClientState != nil {
+		id, failure := deps.NativeParentClientState.SessionID(deps.StreamScope)
+		if failure != nil {
+			return nil, failure
+		}
+		request.Host.SessionID = id
+	}
 	var nativeOwner *provider.OwnerNativeIO
 	if deps.NativeOpenIO != nil {
 		var failure error
@@ -32,6 +41,17 @@ func originalClient(ctx context.Context, input Input, deps Dependencies, clientE
 	}
 	if deps.OnKeyLookup != nil {
 		deps.OnKeyLookup()
+	}
+	if deps.NativeClaudeAuth.Owns(deps.StreamOwner, deps.StreamScope) {
+		if err := deps.NativeClaudeAuth.Check(ctx); err != nil {
+			return nil, err
+		}
+		subscriber, err := deps.NativeClaudeAuth.Subscriber(ctx)
+		if err != nil {
+			return nil, err
+		}
+		input.Context.Host.NativeClaudeSubscriber = subscriber
+		request.Host.NativeClaudeSubscriber = subscriber
 	}
 	grok, err := selectGrok(ctx, input)
 	if err != nil {
@@ -67,15 +87,17 @@ func originalClient(ctx context.Context, input Input, deps Dependencies, clientE
 	if deps.OnClient != nil {
 		deps.OnClient()
 	}
+	if nativeOwner != nil {
+		if failure := nativeOwner.CaptureNativeFetchOptions(); failure != nil {
+			return nil, failure
+		}
+	}
 	config := provider.ResolveDirectClientOptions(provider.DirectClientInput{Env: clientEnv, FallbackAPIKey: key, SessionID: request.Host.SessionID, Workload: request.Host.Workload, Runtime: input.Runtime, RequestID: deps.UUID}).StreamConfig()
 	if helperToken != nil && *helperToken != "" {
 		config.DefaultHeaders.Set("Authorization", "Bearer "+*helperToken)
 	}
 	if claudeToken != nil {
-		config.APIKey, config.APIKeySet = "", true
-		if request.Options.QuerySource == "model_validation" {
-			config.APIKeySet = false
-		}
+		config.APIKey, config.APIKeySet = "", false
 		config.AuthToken, config.AuthTokenSet = *claudeToken, true
 	}
 	config.OpenAICodex = codex
@@ -147,6 +169,7 @@ func originalClient(ctx context.Context, input Input, deps Dependencies, clientE
 		if err != nil {
 			return nil, err
 		}
+		exchange.NativeTLSOptions = certificates != nil
 		exchange.ResolveVerifiedTLS = func() (*tls.Config, error) {
 			return tlsconfig.VerifiedConfigFromCertificates(certificates)
 		}
@@ -165,6 +188,20 @@ func originalClient(ctx context.Context, input Input, deps Dependencies, clientE
 			config.TraceBegin = deps.Trace.BindProcess(binding, deps.TraceEnvironment)
 		} else {
 			config.TraceBegin = deps.Trace.Bind(binding)
+		}
+	}
+	if deps.ObserveFetch != nil {
+		beginCapture := config.TraceBegin
+		config.TraceBegin = func(input tracecapture.FetchInput) tracecapture.FetchCapture {
+			observed := input
+			observed.Headers = input.Headers.Clone()
+			observed.PlainBody = append([]byte(nil), input.PlainBody...)
+			observed.EncodingMetadata = input.EncodingMetadata.Clone()
+			deps.ObserveFetch(observed)
+			if beginCapture != nil {
+				return beginCapture(input)
+			}
+			return nil
 		}
 	}
 	config.OwnerNativeIO = nativeOwner

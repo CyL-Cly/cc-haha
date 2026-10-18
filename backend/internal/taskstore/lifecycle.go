@@ -13,7 +13,7 @@ import (
 )
 
 func (s *Service) lifecyclePath(list, suffix string) string {
-	return filepath.Join(s.options.ConfigDir, "tasks", ".lifecycle-locks", SanitizePathComponent(list)+suffix)
+	return filepath.Join(s.configDirectory(), "tasks", ".lifecycle-locks", SanitizePathComponent(list)+suffix)
 }
 func jsonNumber(value json.RawMessage) (float64, bool) {
 	if len(value) == 0 || value[0] == '"' || value[0] == 'n' {

@@ -92,7 +92,8 @@ func TestActualSourceMediaMetadataUploadTLSNoiseSignal(t *testing.T) {
 	var retryMode atomic.Int32
 	retryRequests := make(chan wab.Node, 16)
 	retryKey := base64.StdEncoding.EncodeToString(bytes.Repeat([]byte{19}, 32))
-	peer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handlers := newMediaFixtureHandlers()
+	peer := httptest.NewTLSServer(handlers.wrap(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
 			data, e := io.ReadAll(r.Body)
 			if e != nil {
@@ -191,8 +192,11 @@ func TestActualSourceMediaMetadataUploadTLSNoiseSignal(t *testing.T) {
 				wire.Send(wab.Node{Tag: "ack", Attrs: wab.Attrs{"id": node.Attrs["id"], "class": "message", "from": node.Attrs["to"], "t": time.Now().Unix()}})
 			}
 		}
-	}))
-	defer peer.Close()
+	})))
+	defer func() {
+		cancel()
+		<-handlers.close(peer)
+	}()
 	n, e := NewNodeWhatsAppClient(ctx, NodeWhatsAppOptions{AuthDir: dir, HTTPTransport: mediaTLSRoute{peer}, OnEvent: func(v any) {
 		if _, ok := v.(*events.Connected); ok {
 			connected <- struct{}{}

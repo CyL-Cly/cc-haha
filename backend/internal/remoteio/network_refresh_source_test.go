@@ -170,12 +170,25 @@ func TestActualSourceEnvironmentUpdateRefreshesProxyAndAuthOnWebSocketReconnect(
 				}
 				return &http.Client{Transport: transport}, nil
 			}
-			service, err := New(ctx, Options{URL: strings.Replace(peer.target.URL, "http", "ws", 1) + "/ws/network", Environment: env, WebSocketHTTP: factory, GlobalHTTP: factory})
+			connected := make(chan struct{}, 1)
+			service, err := New(ctx, Options{URL: strings.Replace(peer.target.URL, "http", "ws", 1) + "/ws/network", Environment: env, WebSocketHTTP: factory, GlobalHTTP: factory, OnConnect: func() {
+				select {
+				case connected <- struct{}{}:
+				default:
+				}
+			}})
 			if err != nil {
 				t.Fatal(err)
 			}
 			defer service.Close()
 			service.Start()
+			// The actual Source producer awaits its physical WebSocket connection
+			// before posting the first hybrid event. Keep that same ingress barrier.
+			select {
+			case <-connected:
+			case <-ctx.Done():
+				t.Fatal("initial WebSocket connection did not complete", ctx.Err())
+			}
 			if err = service.WriteMessage(object(raw(messages[0]))); err != nil {
 				t.Fatal(err)
 			}

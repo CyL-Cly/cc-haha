@@ -23,11 +23,11 @@ func (m *MainPrint) nativeSDKGetSettings(scope *cooperative.Scope) (protocol.JSO
 		return protocol.JSONObject{}, err
 	}
 	applied := protocol.NewJSONObject(protocol.JSONField{Name: "model", Value: quoteMain(model)}, protocol.JSONField{Name: "effort", Value: requestcontext.NativeSDKAppliedEffort(model, effort, environment)})
-	before, err := m.Startup.GetInitialSettings()
+	before, err := m.nativeSDKInitialSettings()
 	if err != nil {
 		return protocol.JSONObject{}, err
 	}
-	settings, err := m.Startup.GetSettingsWithSources()
+	settings, err := m.nativeSDKSettingsWithSources()
 	if err != nil {
 		return protocol.JSONObject{}, err
 	}

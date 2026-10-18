@@ -21,6 +21,7 @@ func TestPublicPluginMarketplaceWithSavedProviderPrivateProcesses(t *testing.T) 
 	defer cancel()
 	binary := filepath.Join(root, "public-go-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-mod=readonly", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if out, e := build.CombinedOutput(); e != nil {
 		t.Fatal("compiled public CLI", e, string(out))
 	}
@@ -44,6 +45,7 @@ func TestPublicPluginMarketplaceWithSavedProviderPrivateProcesses(t *testing.T) 
 		env := []string{"HOME=" + home, "USERPROFILE=" + home, "USER=owned", "CLAUDE_CONFIG_DIR=" + config, "TMPDIR=" + home, "CC_HAHA_NATIVE_FIXTURE_ROOT=" + root, "CC_HAHA_FIXTURE_TEMP_ROOT=" + root, "CC_HAHA_PLUGIN_CLI_FIXTURE=1", "PATH=/usr/bin:/bin:/opt/homebrew/bin", "BUN_OPTIONS=--no-env-file", "USER_TYPE=external", "NODE_ENV=production", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1", "DISABLE_TELEMETRY=1", "CLAUDE_CODE_LOCAL_SKIP_REMOTE_PREFETCH=1"}
 		git := exec.Command("/usr/bin/git", "init", "-q", home)
 		git.Env = env
+		capturePublicGoCoverage(t, git)
 		if out, e := git.CombinedOutput(); e != nil {
 			t.Fatal(e, string(out))
 		}
@@ -58,6 +60,7 @@ func TestPublicPluginMarketplaceWithSavedProviderPrivateProcesses(t *testing.T) 
 		child.Env = env
 		var out, diagnostic bytes.Buffer
 		child.Stdout, child.Stderr = &out, &diagnostic
+		capturePublicGoCoverage(t, child)
 		e := child.Run()
 		return out.String(), diagnostic.String(), e
 	}

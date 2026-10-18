@@ -4,82 +4,123 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"regexp"
 	"strings"
 	"sync"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 )
 
-var userVariable = regexp.MustCompile(`\$\{user_config\.([^}]+)\}`)
-var environmentVariable = regexp.MustCompile(`\$\{([^}]+)\}`)
-
-func (s *Service) Resolve(ctx context.Context, config, plugin protocol.JSONObject, userConfig *protocol.JSONObject, failures *[]protocol.JSONObject, pluginName, serverName string) (protocol.JSONObject, error) {
+// ResolveValue shares the original plugin-variable, saved user_config and
+// environment expansion order with LSP workspaceFolder and other scalar fields.
+func (s *Service) ResolveValue(ctx context.Context, value json.RawMessage, plugin protocol.JSONObject, userConfig *protocol.JSONObject, missingVariables ...*[]string) (json.RawMessage, error) {
 	missing := []string{}
-	resolve := func(value string) (string, error) {
-		if err := ctx.Err(); err != nil {
-			return "", err
+	result, err := s.resolvePluginValue(ctx, value, plugin, userConfig, &missing)
+	for _, target := range missingVariables {
+		if target != nil {
+			*target = append(*target, missing...)
 		}
-		normalize := func(path string) string {
-			if s.options.Platform == "windows" || s.options.Platform == "win32" {
-				return strings.ReplaceAll(path, `\`, "/")
+	}
+	return result, err
+}
+func (s *Service) resolvePluginValue(ctx context.Context, value json.RawMessage, plugin protocol.JSONObject, userConfig *protocol.JSONObject, missing *[]string) (json.RawMessage, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	normalize := func(value json.RawMessage) (json.RawMessage, error) {
+		units, err := protocol.DecodeJavaScriptJSONString(value)
+		if err != nil {
+			return nil, err
+		}
+		if s.options.Platform == "windows" || s.options.Platform == "win32" {
+			for i, unit := range units {
+				if unit == '\\' {
+					units[i] = '/'
+				}
 			}
-			return path
 		}
-		value = strings.ReplaceAll(value, "${CLAUDE_PLUGIN_ROOT}", normalize(plugin.String("path")))
-		if plugin.String("source") != "" && strings.Contains(value, "${CLAUDE_PLUGIN_DATA}") {
+		return protocol.QuoteJavaScriptUTF16(units), nil
+	}
+	value, err := protocol.ReplaceJavaScriptLiteralJSON(value, "${CLAUDE_PLUGIN_ROOT}", func() (json.RawMessage, error) { return normalize(plugin.Get("path")) })
+	if err != nil {
+		return nil, err
+	}
+	if plugin.String("source") != "" {
+		value, err = protocol.ReplaceJavaScriptLiteralJSON(value, "${CLAUDE_PLUGIN_DATA}", func() (json.RawMessage, error) {
 			path, err := s.DataDirectory(plugin.String("source"))
 			if err != nil {
-				return "", err
+				return nil, err
 			}
-			value = strings.ReplaceAll(value, "${CLAUDE_PLUGIN_DATA}", normalize(path))
-		}
-		var substitutionErr error
-		if userConfig != nil {
-			value = userVariable.ReplaceAllStringFunc(value, func(match string) string {
-				if substitutionErr != nil {
-					return match
-				}
-				key := userVariable.FindStringSubmatch(match)[1]
-				raw := userConfig.Get(key)
-				if raw == nil {
-					substitutionErr = fmt.Errorf("Missing required user configuration value: %s. This should have been validated before variable substitution.", key)
-					return match
-				}
-				text, err := protocol.ExactJavaScriptStringJSON(raw)
-				if err != nil {
-					substitutionErr = err
-					return match
-				}
-				return stringValue(text)
-			})
-			if substitutionErr != nil {
-				return "", substitutionErr
-			}
-		}
-		value = environmentVariable.ReplaceAllStringFunc(value, func(match string) string {
-			content := environmentVariable.FindStringSubmatch(match)[1]
-			parts := strings.Split(content, ":-")
-			key := parts[0]
-			if v, ok := s.options.Environment(key); ok {
-				return v
-			}
-			if len(parts) > 1 {
-				return parts[1]
-			}
-			missing = append(missing, key)
-			return match
+			return normalize(raw(path))
 		})
-		return value, nil
+		if err != nil {
+			return nil, err
+		}
+	}
+	if userConfig != nil {
+		value, err = protocol.ReplaceJavaScriptTemplatesJSON(value, "${user_config.", func(key json.RawMessage) (json.RawMessage, error) {
+			input, err := userConfig.GetOrdinaryPropertyStringJSON(key)
+			if err != nil {
+				return nil, err
+			}
+			if input == nil {
+				return nil, fmt.Errorf("Missing required user configuration value: %s. This should have been validated before variable substitution.", stringValue(key))
+			}
+			return input, nil
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+	return protocol.ReplaceJavaScriptTemplatesJSON(value, "${", func(content json.RawMessage) (json.RawMessage, error) {
+		units, err := protocol.DecodeJavaScriptJSONString(content)
+		if err != nil {
+			return nil, err
+		}
+		key, fallback := units, []uint16(nil)
+		for i := 0; i+1 < len(units); i++ {
+			if units[i] == ':' && units[i+1] == '-' {
+				key, fallback = units[:i], units[i+2:]
+				for j := 0; j+1 < len(fallback); j++ {
+					if fallback[j] == ':' && fallback[j+1] == '-' {
+						fallback = fallback[:j]
+						break
+					}
+				}
+				break
+			}
+		}
+		name := stringValue(protocol.QuoteJavaScriptUTF16(key))
+		if found, ok := s.options.Environment(name); ok {
+			return raw(found), nil
+		}
+		if fallback != nil {
+			return protocol.QuoteJavaScriptUTF16(fallback), nil
+		}
+		*missing = append(*missing, name)
+		return nil, nil
+	})
+}
+
+func (s *Service) Resolve(ctx context.Context, config, plugin protocol.JSONObject, userConfig *protocol.JSONObject, failures *[]protocol.JSONObject, pluginName, serverName string, missingVariables ...*[]string) (protocol.JSONObject, error) {
+	missing := []string{}
+	defer func() {
+		for _, target := range missingVariables {
+			if target != nil {
+				*target = append(*target, missing...)
+			}
+		}
+	}()
+	resolve := func(value json.RawMessage) (json.RawMessage, error) {
+		return s.resolvePluginValue(ctx, value, plugin, userConfig, &missing)
 	}
 	result := config.Clone()
 	set := func(target *protocol.JSONObject, key string) error {
 		if truthy(target.Get(key)) {
-			v, e := resolve(target.String(key))
+			v, e := resolve(target.Get(key))
 			if e != nil {
 				return e
 			}
-			target.Set(key, raw(v))
+			target.Set(key, v)
 		}
 		return nil
 	}
@@ -89,7 +130,7 @@ func (s *Service) Resolve(ctx context.Context, config, plugin protocol.JSONObjec
 			return protocol.JSONObject{}, e
 		}
 		if args := config.Get("args"); args != nil && truthy(args) {
-			var values []string
+			var values []json.RawMessage
 			if json.Unmarshal(args, &values) != nil {
 				return protocol.JSONObject{}, fmt.Errorf("stdioConfig.args.map is not a function")
 			}
@@ -113,11 +154,11 @@ func (s *Service) Resolve(ctx context.Context, config, plugin protocol.JSONObjec
 			if key == "CLAUDE_PLUGIN_ROOT" || key == "CLAUDE_PLUGIN_DATA" {
 				continue
 			}
-			expanded, e := resolve(stringValue(p.Value))
+			expanded, e := resolve(p.Value)
 			if e != nil {
 				return protocol.JSONObject{}, e
 			}
-			_ = env.SetPropertyJSON(p.NameJSON, raw(expanded))
+			_ = env.SetPropertyJSON(p.NameJSON, expanded)
 		}
 		result.Set("env", raw(env))
 	case "http", "sse", "ws":
@@ -127,11 +168,11 @@ func (s *Service) Resolve(ctx context.Context, config, plugin protocol.JSONObjec
 		if headers := config.Get("headers"); truthy(headers) {
 			next := protocol.NewJSONObject()
 			for _, p := range properties(object(headers)) {
-				expanded, e := resolve(stringValue(p.Value))
+				expanded, e := resolve(p.Value)
 				if e != nil {
 					return protocol.JSONObject{}, e
 				}
-				_ = next.SetPropertyJSON(p.NameJSON, raw(expanded))
+				_ = next.SetPropertyJSON(p.NameJSON, expanded)
 			}
 			result.Set("headers", raw(next))
 		}

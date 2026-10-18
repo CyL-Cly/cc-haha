@@ -7,11 +7,19 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 )
 
-var nativeConsumerKeys = []string{"claudeMdExcludes", "plansDirectory", "spinnerVerbs", "showThinkingSummaries", "autoDreamEnabled"}
+var nativeConsumerKeys = []string{"claudeMdExcludes", "plansDirectory", "spinnerVerbs", "showThinkingSummaries", "autoDreamEnabled", "spinnerTipsEnabled", "prefersReducedMotion", "syntaxHighlightingDisabled", "companyAnnouncements"}
 
 func parseNativeConsumerSettings(input protocol.JSONObject, file string) (protocol.JSONObject, []json.RawMessage) {
 	out := protocol.NewJSONObject()
 	errors := []json.RawMessage{}
+	for _, key := range []string{"spinnerTipsEnabled", "prefersReducedMotion", "syntaxHighlightingDisabled"} {
+		if value := input.Get(key); value != nil {
+			if receivedType(value) != "boolean" {
+				errors = append(errors, validationError(file, key, "boolean", receivedType(value)))
+			}
+			out.Set(key, value)
+		}
+	}
 	stringsArray := func(value json.RawMessage, path string) {
 		if receivedType(value) != "array" {
 			errors = append(errors, validationError(file, path, "array", receivedType(value)))
@@ -28,6 +36,10 @@ func parseNativeConsumerSettings(input protocol.JSONObject, file string) (protoc
 	if value := input.Get("claudeMdExcludes"); value != nil {
 		stringsArray(value, "claudeMdExcludes")
 		out.Set("claudeMdExcludes", value)
+	}
+	if value := input.Get("companyAnnouncements"); value != nil {
+		stringsArray(value, "companyAnnouncements")
+		out.Set("companyAnnouncements", value)
 	}
 	if value := input.Get("plansDirectory"); value != nil {
 		if receivedType(value) != "string" {

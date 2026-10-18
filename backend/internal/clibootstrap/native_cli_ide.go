@@ -58,7 +58,7 @@ func (m *MainPrint) startNativeIDEIntegration(scope *cooperative.Scope) error {
 		environment[k] = v
 	}
 	terminal := ideintegration.Terminal(environment)
-	configDir := m.options.Native.Environment["CLAUDE_CONFIG_DIR"]
+	configDir := m.options.Native.ConfigHomeDirectory()
 	cwd := m.state.Snapshot().OriginalCWD
 	service := ideintegration.NewNative(configDir, cwd, m.options.Platform, environment, os.Getppid())
 	ctx, cancel := context.WithCancel(context.Background())

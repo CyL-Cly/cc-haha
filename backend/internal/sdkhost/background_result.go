@@ -45,5 +45,8 @@ func (h *Host) FlushHeldBackgroundResult(scope *cooperative.Scope) error {
 	result := h.heldBackResult
 	h.heldBackResult = protocol.JSONObject{}
 	_, e = h.enqueue(scope, result)
+	if e == nil {
+		e = h.flushSDKPromptSuggestion(scope)
+	}
 	return e
 }

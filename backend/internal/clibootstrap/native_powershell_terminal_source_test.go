@@ -26,7 +26,7 @@ func TestActualSourceTerminalPowerShellFallbackPersistsLocalContextForNextHuman(
 	if bun == "" {
 		t.Skip("pinned Source Bun required")
 	}
-	const executable = "/opt/homebrew/bin/pwsh"
+	executable := physicalPowerShell(t)
 	if _, err := os.Stat(executable); err != nil {
 		t.Skip("actual pwsh required")
 	}

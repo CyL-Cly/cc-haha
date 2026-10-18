@@ -15,6 +15,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/analytics"
 	"github.com/NanmiCoder/cc-haha/backend/internal/builtinwrite"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
+	"github.com/NanmiCoder/cc-haha/backend/internal/lspruntime"
 	"github.com/NanmiCoder/cc-haha/backend/internal/nativepaths"
 	"github.com/NanmiCoder/cc-haha/backend/internal/ownerasync"
 	"github.com/NanmiCoder/cc-haha/backend/internal/powershellpolicy"
@@ -47,6 +48,7 @@ type Options struct {
 	NativeBinding                  *ownerasync.NativeBinding
 	Cache                          *builtinwrite.FileStateCache
 	Write                          *builtinwrite.Service
+	LSP                            *lspruntime.Manager
 	Home, CWD, Platform            string
 	NowMillis                      func() float64
 	Environment                    map[string]string
@@ -91,6 +93,8 @@ type Options struct {
 }
 
 type AgentRequest struct {
+	// Set only by the real AgentTool producer; direct runAgent callers remain false.
+	AgentToolInvocation                                 bool `json:"-"`
 	Name                                                string
 	ResumeAgentID                                       string
 	ResumeHistory                                       []protocol.JSONObject
@@ -129,6 +133,8 @@ type Service struct {
 	shellTool            string
 	options              Options
 	agentSnapshot        []agentcatalog.Definition
+	nativeAgentSkills    *nativeAgentSkillPreload
+	nativeAgentMCP       *nativeAgentMCPPreset
 }
 type CapabilityError struct{ Boundary string }
 
@@ -143,6 +149,9 @@ func New(o Options) (*Service, error) {
 	}
 	if o.Platform != "darwin" && o.Platform != "linux" && o.Platform != "windows" {
 		return nil, capability("Windows file, process and shell semantics")
+	}
+	if o.LSP != nil && !o.LSP.Owns(o.Owner, o.NativeBinding) {
+		return nil, capability("shared native LSP owner and writer binding")
 	}
 	environment := make(map[string]string, len(o.Environment))
 	for key, value := range o.Environment {

@@ -21,7 +21,7 @@ func (m *MainPrint) prepareNativeLinuxSandbox(scope *cooperative.Scope, install 
 	}
 	env := m.nativeOpenAIEnvironment()
 	native := m.options.Native
-	config := env["CLAUDE_CONFIG_DIR"]
+	config := native.ConfigHomeDirectory()
 	if config == "" {
 		config = filepath.Join(native.Home, ".claude")
 	}

@@ -39,7 +39,7 @@ func (p *NativeProcessSettings) Plugins(o NativePluginsManagementOptions) (*plug
 	if !filepath.IsAbs(primary) {
 		primary = filepath.Join(n.CWD, primary)
 	}
-	resolver, err := pluginsapi.NewMarketplaceResolver(pluginsapi.MarketplaceOptions{Home: n.Home, WorkDir: n.CWD, PluginsDir: primary, Environment: n.Environment, Store: store, Now: n.Now})
+	resolver, err := pluginsapi.NewMarketplaceResolver(pluginsapi.MarketplaceOptions{Home: n.Home, WorkDir: n.CWD, PluginsDir: primary, Environment: n.nativeEnvironmentSnapshot(), Store: store, Now: n.Now})
 	if err != nil {
 		return nil, err
 	}

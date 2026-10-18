@@ -71,3 +71,19 @@ describe('Swift platform checks', () => {
     expect(existsSync(home)).toBe(false)
   })
 })
+
+
+describe('explicit non-CU Swift scope', () => {
+  test('does not invoke XCTest or CU shell packaging after the exact user exclusion', async () => {
+    const run = mock(async () => { throw new Error('Excluded CU command must never start') })
+    expect(await runSwiftChecks({ platform: 'darwin', scopeExclusions: ['computer-use'], run })).toBe(0)
+    expect(run).not.toHaveBeenCalled()
+  })
+
+  test('rejects a malformed exclusion before launching any command', async () => {
+    const run = mock(async () => 0)
+    await expect(runSwiftChecks({ platform: 'darwin', scopeExclusions: ['native'] as never, run }))
+      .rejects.toThrow('Only the exact')
+    expect(run).not.toHaveBeenCalled()
+  })
+})

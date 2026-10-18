@@ -20,6 +20,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 )
 
 type nativeTeamLeaderState struct {
@@ -45,10 +46,7 @@ func (m *MainPrint) nativeTeamBindings(scope *cooperative.Scope) (*builtintools.
 	}
 	if m.teamLeader == nil {
 		n := m.options.Native
-		directory := n.Environment["CLAUDE_CONFIG_DIR"]
-		if directory == "" {
-			directory = filepath.Join(n.Home, ".claude")
-		}
+		directory := m.nativeTaskConfigDirectory()
 		config, err := teamstore.NewConfig(teamstore.ConfigOptions{ConfigDir: directory, TaskStore: m.taskStore, PID: m.options.PID, Platform: m.options.Platform, Log: func(err error) { _, _ = fmt.Fprintln(m.options.Error, err) }})
 		if err != nil {
 			return nil, err
@@ -77,11 +75,14 @@ func (m *MainPrint) nativeTeamBindings(scope *cooperative.Scope) (*builtintools.
 					paneJobs.Add(1)
 					go func() {
 						defer paneJobs.Done()
-						panes.KillPane(member.String("backendType"), member.String("tmuxPaneId"))
+						_ = panes.DialogPane(ctx, "kill", member.String("backendType"), member.String("tmuxPaneId"))
 					}()
 				}
 			}
 			paneJobs.Wait()
+			if err := ctx.Err(); err != nil {
+				return err
+			}
 			for _, member := range members {
 				path := member.String("worktreePath")
 				if path == "" {
@@ -121,7 +122,21 @@ func (m *MainPrint) nativeTeamBindings(scope *cooperative.Scope) (*builtintools.
 		}
 		m.teamLeader = &nativeTeamLeaderState{mode: mode, preferTmux: string(global.Get("preferTmuxOverIterm2")) == "true", config: config, plans: plans, manager: manager, panes: panes, colors: map[string]string{}}
 		if _, err = m.Cleanup.Register(scope, runtimecleanup.NewCallback(func(next *cooperative.Scope) (*runtimecleanup.Future, error) {
-			return nativeSkillWork(m, next, func() (struct{}, error) { return struct{}{}, manager.CleanupSession(context.Background()) })
+			ctx := context.Background()
+			cancel := func() {}
+			if n.NativeProcess {
+				// The actual process gracefulShutdown races the entire cleanup
+				// registry against 2000ms. Retain that one owner-lifetime budget
+				// for this whole team callback, including all sibling panes, and
+				// cancel/join native children when the process boundary closes.
+				// Ordinary TeamDelete keeps its independently supplied context.
+				ctx, cancel = context.WithTimeout(ctx, 2*time.Second)
+			}
+			future, err := nativeSkillWork(m, next, func() (struct{}, error) { defer cancel(); return struct{}{}, manager.CleanupSession(ctx) })
+			if err != nil {
+				cancel()
+			}
+			return future, err
 		})); err != nil {
 			return nil, err
 		}
@@ -133,10 +148,7 @@ func (m *MainPrint) nativeTeamBindings(scope *cooperative.Scope) (*builtintools.
 		member = m.teamWorker.preset.Start.Name
 	}
 	plans := m.teamLeader.plans
-	directory := m.options.Native.Environment["CLAUDE_CONFIG_DIR"]
-	if directory == "" {
-		directory = filepath.Join(m.options.Native.Home, ".claude")
-	}
+	directory := m.nativeTaskConfigDirectory()
 	return &builtintools.TeamBindings{AgentName: func(next *cooperative.Scope) (string, error) {
 		if !next.BelongsTo(m.Owner) {
 			return "", cooperative.ErrRestricted
@@ -219,7 +231,7 @@ func (m *MainPrint) nativeTeamProposal(scope *cooperative.Scope, proposal *proto
 	}
 	providerFuture, e := nativeSkillWork(m, scope, func() (map[string]bool, error) {
 		ids := map[string]bool{}
-		directory := m.options.Native.Environment["CLAUDE_CONFIG_DIR"]
+		directory := m.options.Native.ConfigHomeDirectory()
 		if directory == "" {
 			directory = filepath.Join(m.options.Native.Home, ".claude")
 		}
@@ -370,6 +382,7 @@ func (m *MainPrint) startNativeTeamTool(ctx context.Context, scope *cooperative.
 			}
 			teammate := protocol.NewJSONObject(protocol.JSONField{Name: "name", Value: quoteMain("team-lead")}, protocol.JSONField{Name: "agentType", Value: quoteMain(kind)}, protocol.JSONField{Name: "color", Value: quoteMain(color)}, protocol.JSONField{Name: "tmuxSessionName", Value: quoteMain("")}, protocol.JSONField{Name: "tmuxPaneId", Value: quoteMain("")}, protocol.JSONField{Name: "cwd", Value: quoteMain(cwd)}, protocol.JSONField{Name: "spawnedAt", Value: rawMain(m.options.Native.NowMillis())})
 			m.teamState = &nativeTeamState{snapshot: protocol.NewJSONObject(protocol.JSONField{Name: "teamName", Value: quoteMain(created.TeamName)}, protocol.JSONField{Name: "teamFilePath", Value: quoteMain(leader.config.Path(created.TeamName))}, protocol.JSONField{Name: "leadAgentId", Value: quoteMain(created.LeadAgentID)}, protocol.JSONField{Name: "teammates", Value: rawMain(protocol.NewJSONObject(protocol.JSONField{Name: created.LeadAgentID, Value: rawMain(teammate)}))})}
+			m.publishTerminalTeamFooter(next)
 		}
 		if result.created != nil && m.options.Interactive && m.options.OnLeaderInboxReady != nil {
 			if err := m.options.OnLeaderInboxReady(); err != nil {
@@ -382,6 +395,7 @@ func (m *MainPrint) startNativeTeamTool(ctx context.Context, scope *cooperative.
 				return out.Reject(next, err)
 			}
 			m.teamState = nil
+			m.publishTerminalTeamFooter(next)
 			clear(leader.colors)
 			leader.colorIndex = 0
 		}

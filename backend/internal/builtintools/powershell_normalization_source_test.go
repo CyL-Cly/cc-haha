@@ -38,7 +38,7 @@ func powerShellDecisionProjection(decision queryloop.ToolPermission) protocol.JS
 	return value
 }
 func TestActualSourcePowerShellOuterPermissionNormalizationAndBypassDenialPrecedence(t *testing.T) {
-	executable := "/opt/homebrew/bin/pwsh"
+	executable := physicalPowerShell(t)
 	bun := os.Getenv("CC_HAHA_SOURCE_BUN")
 	if bun == "" {
 		t.Skip("pinned actual Source Bun required")

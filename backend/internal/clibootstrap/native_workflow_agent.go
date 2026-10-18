@@ -434,7 +434,7 @@ func (m *MainPrint) prepareNativeWorkflowAgent(ctx context.Context, scope *coope
 	if e != nil {
 		return fail(e)
 	}
-	d := &NativeDetachedAgentOptions{authParent: m, Bootstrap: snapshot, PromptSections: []json.RawMessage{prompt, quoteMain(workflowAgentNotes), environment}, PermissionMode: mode, OmitClaudeMd: string(selected.Fields.Get("omitClaudeMd")) == "true", TaskDirectory: directory, AgentType: selected.Name}
+	d := &NativeDetachedAgentOptions{authParent: m, workflowTaskViewParent: true, Bootstrap: snapshot, PromptSections: []json.RawMessage{prompt, quoteMain(workflowAgentNotes), environment}, PermissionMode: mode, OmitClaudeMd: string(selected.Fields.Get("omitClaudeMd")) == "true", TaskDirectory: directory, AgentType: selected.Name}
 	m.bindAgentImageAuthorization(d)
 	preset, e := m.nativeAgentPreset(scope, selected)
 	if e != nil {

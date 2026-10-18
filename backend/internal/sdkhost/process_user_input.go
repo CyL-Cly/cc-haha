@@ -65,9 +65,27 @@ func (h *Host) validatePrintUserInput(content json.RawMessage) error {
 	if name == "compact" && h.options.Print.NativeProcess {
 		return nil
 	}
-	if name == "release-notes" || name == "context" || name == "heapdump" || name == "effort" && h.options.Print.NativeInteractive {
+	if name == "release-notes" || name == "context" || name == "heapdump" || (name == "effort" || name == "vim" || name == "stickers" || name == "keybindings" && h.options.Print.NativeKeybindingsEnabled != nil && h.options.Print.NativeKeybindingsEnabled()) && h.options.Print.NativeInteractive {
 		if h.options.Print.NativeLocalCommand == nil {
 			return cap("native local command /" + name)
+		}
+		return nil
+	}
+	if name == "plan" && h.options.Print.NativeInteractive {
+		if h.options.Print.NativePlanCommand == nil {
+			return cap("actual /plan local JSX executor")
+		}
+		return nil
+	}
+	if (name == "rewind" || name == "checkpoint") && h.options.Print.NativeInteractive {
+		if h.options.Print.NativeRewindCommand == nil {
+			return cap("actual /rewind local command executor")
+		}
+		return nil
+	}
+	if name == "terminal-setup" && h.options.Print.NativeInteractive {
+		if h.options.Print.NativeTerminalSetupCommand == nil {
+			return cap("actual /terminal-setup local JSX executor")
 		}
 		return nil
 	}
@@ -96,7 +114,7 @@ func (h *Host) processPrintUserInput(scope *cooperative.Scope, content, uuid jso
 	return h.processQueuedPrintInput(scope, content, uuid, false, false, nil)
 }
 
-func (h *Host) processQueuedPrintInputBase(scope *cooperative.Scope, content, uuid json.RawMessage, skipSlash, meta bool, origin json.RawMessage) (*sessioncontroller.ProcessedInput, error) {
+func (h *Host) processQueuedPrintInputBaseNormalized(scope *cooperative.Scope, content, uuid json.RawMessage, skipSlash, meta bool, origin json.RawMessage, skipAttachments bool) (*sessioncontroller.ProcessedInput, error) {
 	if restarted, e := h.consumeAgentRestartPrompt(scope, content); e != nil || restarted != nil {
 		return restarted, e
 	}
@@ -111,7 +129,11 @@ func (h *Host) processQueuedPrintInputBase(scope *cooperative.Scope, content, uu
 				return nil, e
 			}
 			var metadata []json.RawMessage
-			if inputContainsBase64Image(content) {
+			// Terminal media was already resized by its actual paste/attachment
+			// producer. Normalizing it as a second structured SDK image duplicates
+			// dimension metadata and can downsample the same image twice.
+			_, terminalMedia := h.terminalInputImageMetadata()
+			if inputContainsBase64Image(content) && !terminalMedia {
 				if h.options.Print.NativeInputMedia == nil {
 					return nil, cap("actual SDK input media normalization")
 				}
@@ -124,7 +146,25 @@ func (h *Host) processQueuedPrintInputBase(scope *cooperative.Scope, content, uu
 					return nil, e
 				}
 			}
+			// processUserInputBase awaits Promise.all(imageContents.map(...))
+			// even when an SDK string has no pasted image. The already-completed
+			// normalized image batch still crosses that real Promise reaction.
+			if e = scope.AwaitFulfilled(); e != nil {
+				return nil, e
+			}
+			attachments, attachmentsHandled, e := h.nativeInitialInputAttachments(scope, content, skipAttachments)
+			if e != nil {
+				return nil, e
+			}
 			options := storage.Object{"content": content, "uuid": uuid, "permissionMode": permission.Get("mode")}
+			if ctx := h.inputModelContext; ctx != nil {
+				if pasted, ok := ctx.Value(inputImageMetadataKey{}).(inputImageMetadata); ok {
+					if len(pasted.IDs) > 0 {
+						options["imagePasteIds"] = raw(pasted.IDs)
+					}
+					metadata = append(metadata, pasted.Texts...)
+				}
+			}
 			if meta {
 				options["isMeta"] = raw(true)
 			}
@@ -132,14 +172,16 @@ func (h *Host) processQueuedPrintInputBase(scope *cooperative.Scope, content, uu
 				options["origin"] = origin
 			}
 			user := messages.OrderedUser(h.options.Factory.CreateUser(options))
-			values := []protocol.JSONObject{user}
+			values := append([]protocol.JSONObject{user}, attachments...)
 			if len(metadata) > 0 {
-				values, e = h.appendInputMediaMetadata(scope, user, metadata)
+				var mediaValues []protocol.JSONObject
+				mediaValues, e = h.appendInputMediaMetadata(scope, user, metadata)
 				if e != nil {
 					return nil, e
 				}
+				values = append(values, mediaValues[1:]...)
 			}
-			return &sessioncontroller.ProcessedInput{Messages: values, AttachmentsHandled: len(metadata) > 0}, nil
+			return &sessioncontroller.ProcessedInput{Messages: values, AttachmentsHandled: attachmentsHandled || len(metadata) > 0}, nil
 		}
 		return nil, e
 	}
@@ -156,8 +198,17 @@ func (h *Host) processQueuedPrintInputBase(scope *cooperative.Scope, content, uu
 	if name == "compact" && h.options.Print.NativeProcess {
 		return h.processCompactInput(scope, args)
 	}
-	if name == "release-notes" || name == "context" || name == "heapdump" || name == "effort" && h.options.Print.NativeInteractive {
+	if name == "release-notes" || name == "context" || name == "heapdump" || (name == "effort" || name == "vim" || name == "stickers" || name == "keybindings" && h.options.Print.NativeKeybindingsEnabled != nil && h.options.Print.NativeKeybindingsEnabled()) && h.options.Print.NativeInteractive {
 		return h.processNativeLocalInput(scope, name, args)
+	}
+	if name == "plan" && h.options.Print.NativeInteractive {
+		return h.processNativePlanInput(scope, args)
+	}
+	if (name == "rewind" || name == "checkpoint") && h.options.Print.NativeInteractive {
+		return h.processNativeRewindInput(scope, args)
+	}
+	if name == "terminal-setup" && h.options.Print.NativeInteractive {
+		return h.processNativeTerminalSetupInput(scope, args)
 	}
 	if name == "goal" {
 		return h.processNativeGoalInput(scope, args)

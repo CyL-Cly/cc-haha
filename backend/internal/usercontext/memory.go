@@ -30,6 +30,49 @@ type ExplicitUserMemory struct {
 	Files               MemoryFiles
 }
 
+// NativeMemoryPrimitives are per-continuation OS operations. The original
+// discovery descriptor and its memo remain shared; only physical operations
+// and observing an already-running memo use this continuation's Scope.
+type NativeMemoryPrimitives interface {
+	MemoryFiles
+	ReadDir(string) ([]fs.DirEntry, error)
+	Realpath(string) (string, error)
+	MemoryDirectory() (string, error)
+	WaitMemory(<-chan struct{}) error
+	MemoryError() error
+	SyncMemoryFiles() MemoryFiles
+	SyncMemoryRealpath(string) (string, error)
+}
+
+func (m *ExplicitUserMemory) nativeReadDir(path string) ([]fs.DirEntry, error) {
+	if files, ok := m.Files.(NativeMemoryPrimitives); ok {
+		return files.ReadDir(path)
+	}
+	return m.Normal.ReadDir(path)
+}
+func (m *ExplicitUserMemory) nativeResolvePath(path string) (string, error) {
+	if files, ok := m.Files.(NativeMemoryPrimitives); ok {
+		return files.SyncMemoryRealpath(path)
+	}
+	if m.Normal.Realpath != nil {
+		return m.Normal.Realpath(path)
+	}
+	return filepath.EvalSymlinks(path)
+}
+func (m *ExplicitUserMemory) nativeSynchronousFiles() MemoryFiles {
+	if files, ok := m.Files.(NativeMemoryPrimitives); ok {
+		return files.SyncMemoryFiles()
+	}
+	return m.Files
+}
+func (m *ExplicitUserMemory) waitMemory(done <-chan struct{}) error {
+	if files, ok := m.Files.(NativeMemoryPrimitives); ok {
+		return files.WaitMemory(done)
+	}
+	<-done
+	return nil
+}
+
 func (m *ExplicitUserMemory) load(mode string, additional []string) (json.RawMessage, error) {
 	if m.Profile == NormalEmptyMemoryProfile {
 		return m.loadNormal(mode, additional)

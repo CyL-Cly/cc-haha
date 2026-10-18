@@ -68,7 +68,7 @@ func (m *MainPrint) generateNativeImage(ctx context.Context, scope *cooperative.
 		return imagegeneration.Output{}, cooperative.ErrRestricted
 	}
 	environment := m.nativeOpenAIEnvironment()
-	directory := environment["CLAUDE_CONFIG_DIR"]
+	directory := m.options.Native.ConfigHomeDirectory()
 	if directory == "" {
 		directory = filepath.Join(m.options.Native.Home, ".claude")
 	}

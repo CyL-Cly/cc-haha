@@ -88,7 +88,7 @@ func (m *MainPrint) nativeInternalReadable(scope *cooperative.Scope, path string
 	below := func(root string) bool { return strings.HasPrefix(path, filepath.Clean(root)+sep) }
 	within := func(root string) bool { return path == filepath.Clean(root) || below(root) }
 	env := m.options.Native.Environment
-	config := env["CLAUDE_CONFIG_DIR"]
+	config := m.options.Native.ConfigHomeDirectory()
 	if config == "" {
 		config = filepath.Join(m.options.Native.Home, ".claude")
 	}

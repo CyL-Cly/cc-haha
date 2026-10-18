@@ -67,7 +67,7 @@ func (h *Host) querySideQuestion(ctx context.Context, caller *cooperative.Scope,
 			return queryhooks.Context{Scope: scope, AgentID: agentID, StopHookActive: stopActive, History: history, Assistants: assistants, SystemPrompt: decision.SystemPrompt, UserContext: systemContextStrings(snapshot.raw.UserContext), SystemContext: systemContextStrings(snapshot.systemContext), ToolUseContext: actual, QuerySource: "side_question", ComputerUseInactive: true, GoalInactive: true, TeammateInactive: true}
 		}
 		var firstAPIError error
-		loop := queryloop.Host{RetryAPIError: func(value error) {
+		loop := queryloop.Host{OnNativeQuota: h.nativeQuotaConsumer(), RetryAPIError: func(value error) {
 			if firstAPIError == nil {
 				firstAPIError = value
 			}

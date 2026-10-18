@@ -54,7 +54,11 @@ func Connect(ctx context.Context, config Config, options Options) (*Client, erro
 	var t transport
 	switch config.Type {
 	case "", "stdio":
-		t = newStdioTransport(config, o)
+		if o.NativeChromeStub {
+			t = &chromeStubTransport{}
+		} else {
+			t = newStdioTransport(config, o)
+		}
 	case "sdk":
 		if o.SDK == nil || o.SDK.Send == nil {
 			return nil, errors.New("SDK MCP transport requires actual control-message binding")
@@ -71,29 +75,65 @@ func Connect(ctx context.Context, config Config, options Options) (*Client, erro
 	}
 	root, cancel := context.WithCancel(context.Background())
 	c := &Client{options: o, transport: t, ctx: root, cancel: cancel, pending: map[string]pending{}, inbound: map[string]*inbound{}}
-	connection, stop := context.WithTimeout(ctx, o.ConnectTimeout)
+	connection, stop := context.WithCancel(ctx)
 	defer stop()
-	started := make(chan error, 1)
-	go func() { started <- t.start(root, c.receive, c.transportError, c.transportClosed) }()
-	var startErr error
+	milliseconds := float64(o.ConnectTimeout.Milliseconds())
+	dynamicTimeout := options.ConnectTimeout <= 0 && config.Type != "sdk"
+	if dynamicTimeout {
+		value, err := c.environmentValue(ctx, "MCP_TIMEOUT")
+		if err != nil {
+			_ = c.Close()
+			return nil, err
+		}
+		milliseconds = sourceTimeoutMilliseconds(value, 30000)
+	}
+	// setupSdkMcpClients uses the SDK initialization request window (60s),
+	// without the ordinary connectToServer MCP_TIMEOUT Promise.race.
+	var timer *time.Timer
+	var deadline <-chan time.Time
+	if config.Type != "sdk" || options.ConnectTimeout > 0 {
+		timer = time.NewTimer(sourceTimerDelay(milliseconds))
+		deadline = timer.C
+		defer timer.Stop()
+	}
+	type initialized struct {
+		value protocol.JSONObject
+		err   error
+	}
+	finished := make(chan initialized, 1)
+	go func() {
+		err := t.start(root, c.receive, c.transportError, c.transportClosed)
+		if err != nil {
+			finished <- initialized{err: err}
+			return
+		}
+		value, err := c.Request(connection, "initialize", object(field("protocolVersion", LatestProtocolVersion), field("capabilities", o.Capabilities), field("clientInfo", o.ClientInfo)), RequestOptions{})
+		finished <- initialized{value, err}
+	}()
+	var result protocol.JSONObject
+	var err error
 	select {
-	case startErr = <-started:
-	case <-connection.Done():
-		startErr = connection.Err()
-	}
-	if startErr != nil {
+	case value := <-finished:
+		result, err = value.value, value.err
+	case <-deadline:
+		// Source captures the delay when scheduling, but re-reads process.env
+		// for the fired diagnostic; a mid-flight reload does not move the timer.
+		if dynamicTimeout {
+			if value, failure := c.environmentValue(ctx, "MCP_TIMEOUT"); failure == nil {
+				milliseconds = sourceTimeoutMilliseconds(value, 30000)
+			}
+		}
 		_ = c.Close()
-		return nil, startErr
+		return nil, &TransportError{Message: fmt.Sprintf("MCP server \"%s\" connection timed out after %sms", o.Name, sourceMillisecondsString(milliseconds))}
+	case <-ctx.Done():
+		_ = c.Close()
+		return nil, context.Cause(ctx)
 	}
-	result, err := c.Request(connection, "initialize", object(field("protocolVersion", LatestProtocolVersion), field("capabilities", o.Capabilities), field("clientInfo", o.ClientInfo)), RequestOptions{})
 	if err == nil {
 		result, err = validateResult("initialize", result)
 	}
 	if err != nil {
 		_ = c.Close()
-		if errors.Is(connection.Err(), context.DeadlineExceeded) {
-			return nil, &TransportError{Message: fmt.Sprintf("MCP server %q connection timed out after %dms", o.Name, o.ConnectTimeout.Milliseconds())}
-		}
 		return nil, err
 	}
 	version := result.String("protocolVersion")
@@ -165,11 +205,17 @@ func (c *Client) Done() <-chan struct{} { return c.ctx.Done() }
 
 func (c *Client) Request(ctx context.Context, method string, params protocol.JSONObject, options RequestOptions) (protocol.JSONObject, error) {
 	if err := ctx.Err(); err != nil {
+		if options.OnSent != nil {
+			options.OnSent(err)
+		}
 		return protocol.JSONObject{}, abortError(options.CancelReason)
 	}
 	c.mu.Lock()
 	if c.closed {
 		c.mu.Unlock()
+		if options.OnSent != nil {
+			options.OnSent(&RPCError{Code: -32000, Message: "Connection closed"})
+		}
 		return protocol.JSONObject{}, &RPCError{Code: -32000, Message: "Connection closed"}
 	}
 	id := c.nextID
@@ -189,13 +235,22 @@ func (c *Client) Request(ctx context.Context, method string, params protocol.JSO
 	}
 	message := rpcMessage{JSONRPC: "2.0", ID: raw(id), Method: method, Params: params, hasMethod: true}
 	go func() {
-		if err := c.transport.send(c.ctx, message); err != nil {
+		err := c.transport.send(c.ctx, message)
+		if options.OnSent != nil {
+			options.OnSent(err)
+		}
+		if err != nil {
 			c.deliver(key, reply{err: err})
 		}
 	}()
 	timeout := options.Timeout
 	if timeout <= 0 {
 		timeout = c.options.RequestTimeout
+	}
+	milliseconds := float64(timeout.Milliseconds())
+	if options.TimeoutMilliseconds != nil {
+		milliseconds = *options.TimeoutMilliseconds
+		timeout = sourceTimerDelay(milliseconds)
 	}
 	timer := time.NewTimer(timeout)
 	defer timer.Stop()
@@ -207,7 +262,7 @@ func (c *Client) Request(ctx context.Context, method string, params protocol.JSO
 		c.cancelRequest(key, id, err.Message)
 		return protocol.JSONObject{}, err
 	case <-timer.C:
-		err := &RPCError{Code: -32001, Message: "Request timed out", Data: raw(map[string]any{"timeout": timeout.Milliseconds()})}
+		err := &RPCError{Code: -32001, Message: "Request timed out", Data: raw(object(field("timeout", sourceMillisecondsJSON(milliseconds))))}
 		c.cancelRequest(key, id, "McpError: "+err.Error())
 		return protocol.JSONObject{}, err
 	case <-c.ctx.Done():

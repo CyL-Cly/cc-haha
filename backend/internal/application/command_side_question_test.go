@@ -20,6 +20,12 @@ func TestPublicCLISideQuestionControlsRemainIndependentAndJoinOnEOF(t *testing.T
 	sideEntered, sideCanceled := make(chan struct{}), make(chan struct{})
 	var calls atomic.Int32
 	model := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		data, _ := io.ReadAll(r.Body)
 		calls.Add(1)
 		if bytes.Contains(data, []byte("This is a side question from the user")) {

@@ -125,6 +125,7 @@ func TestActualPublicDoctorMCPDiscoverySchemasAndAuxiliaryCountConsumer(t *testi
 	n.RunSecurity = func(context.Context, securestorage.Command) ([]byte, error) {
 		return nil, errors.New("private keychain absent")
 	}
+	bindCommandPrefetchFixture(t, n)
 	m, e := NewMainCommand(MainCommandOptions{Arguments: []string{"doctor"}, Native: n, Platform: "darwin", Version: "fixture", PID: os.Getpid(), Output: io.Discard, Error: io.Discard})
 	if e != nil {
 		t.Fatal(e)

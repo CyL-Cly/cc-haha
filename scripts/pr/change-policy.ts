@@ -233,6 +233,7 @@ const goContractPrefixes = [
   'scripts/pr/go-platforms',
   'scripts/pr/run-go-matrix',
   'scripts/perf/go-main-',
+  'scripts/perf/source-parent-recorder/',
 ]
 
 function isGoContractPath(path: string) {

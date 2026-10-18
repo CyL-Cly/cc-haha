@@ -272,12 +272,22 @@ func (s *Server) teamPermissionSnapshots(ctx context.Context, parentID string) (
 	for _, entry := range s.teamChildren(parentID) {
 		entry.runtime.mu.Lock()
 		live, worker := entry.runtime.live, entry.runtime.options.TeamWorker
+		generation := entry.runtime.disconnectState().generation
 		retired := entry.runtime.retired || entry.runtime.closing != nil || entry.runtime.ctx.Err() != nil
 		entry.runtime.mu.Unlock()
 		if live == nil || retired {
 			continue
 		}
 		frames, err := live.Snapshot(ctx)
+		s.mu.Lock()
+		owned := !s.closed && !s.migration.active && !s.deleting[entry.id] && s.runtimes[entry.id] == entry.runtime
+		s.mu.Unlock()
+		entry.runtime.mu.Lock()
+		same := owned && !entry.runtime.retired && entry.runtime.closing == nil && entry.runtime.ctx.Err() == nil && entry.runtime.live == live && entry.runtime.disconnectState().generation == generation
+		entry.runtime.mu.Unlock()
+		if !same {
+			continue
+		}
 		if err != nil {
 			return nil, err
 		}

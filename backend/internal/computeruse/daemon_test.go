@@ -200,6 +200,7 @@ func daemonFixture(t *testing.T, overrides ...map[string]string) (*Service, stri
 			for key, value := range options.Environment {
 				child.Env = append(child.Env, key+"="+value)
 			}
+			capturePublicGoCoverage(t, child)
 			if err := child.Start(); err != nil {
 				return CommandResult{Code: 1}, err
 			}

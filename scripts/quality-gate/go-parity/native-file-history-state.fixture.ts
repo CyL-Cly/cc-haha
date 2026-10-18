@@ -66,7 +66,10 @@ for (const [i, row] of input.cases.entries()) {
     let release: () => void = () => {}, started: () => void = () => {}
     const gate = new Promise<void>(resolve => { release = resolve })
     const observed = new Promise<void>(resolve => { started = resolve })
-    const originalStat = fsPromises.lstat
+    // The capability guard already installed a Bun spy. Capture its concrete
+    // implementation, not the mutable mock function that spyOn will replace.
+    const originalStat = (fsPromises.lstat as any).getMockImplementation?.()
+    if (typeof originalStat !== 'function') throw new Error('Guarded lstat implementation missing')
     const spy = spyOn(fsPromises, 'lstat').mockImplementation(async (path: any, ...args: any[]) => {
      if (path === paths(action.slowPath)) { started(); await gate }
      return (originalStat as any)(path, ...args)
@@ -77,7 +80,7 @@ for (const [i, row] of input.cases.entries()) {
      await history.fileHistoryTrackEdit(update, paths(action.newPath), action.parentId)
      release()
      await making
-    } finally { release(); spy.mockRestore() }
+    } finally { release(); spy.mockImplementation(originalStat) }
    }
    else if (action.op === 'agent-noop') {
     const parent: any = { abortController: new AbortController(), readFileState: (await import('../../../src/utils/fileStateCache')).createFileStateCacheWithSizeLimit(100), getAppState: () => ({ fileHistory: current, toolPermissionContext: {} }), setAppState: () => {}, updateFileHistoryState: update }

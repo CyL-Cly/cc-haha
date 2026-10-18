@@ -7,6 +7,7 @@ import { SettingsGroup, SettingsRow, SettingsSection } from '@/components/settin
 import { Button } from '@/components/ui/Button'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { clearStoredH5Connection, getServerBaseUrl } from '@/lib/desktopRuntime'
+import { getDesktopHost } from '@/lib/desktopHost'
 import { ProviderSettings } from './ProviderSettings'
 import { H5GeneralSettings } from './H5GeneralSettings'
 
@@ -42,6 +43,7 @@ export function H5Settings() {
   ))
   const fetchProviders = useProviderStore((state) => state.fetchProviders)
   const [confirmDisconnect, setConfirmDisconnect] = useState(false)
+  const [version, setVersion] = useState('')
   // Settings always opens on the list. The provider page is a step into it,
   // kept here rather than in the remembered settings tab, so coming back to
   // Settings later starts from the list again. A link asking for the providers
@@ -57,6 +59,22 @@ export function H5Settings() {
   useEffect(() => {
     void fetchProviders().catch(() => undefined)
   }, [fetchProviders])
+
+  useEffect(() => {
+    let cancelled = false
+
+    getDesktopHost().app.getVersion()
+      .then((value) => {
+        if (!cancelled) setVersion(value)
+      })
+      .catch(() => {
+        if (!cancelled) setVersion('')
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const openList = () => setShowingProviders(false)
 
@@ -131,6 +149,15 @@ export function H5Settings() {
               <Lock size={14} strokeWidth={1.75} aria-hidden="true" className="shrink-0" />
             </div>
           ))}
+        </SettingsGroup>
+      </SettingsSection>
+
+      <SettingsSection title={t('settings.tab.about')}>
+        <SettingsGroup>
+          <SettingsRow
+            title="Claude Code Haha"
+            description={version ? `${t('settings.about.version')} ${version}` : undefined}
+          />
         </SettingsGroup>
       </SettingsSection>
 

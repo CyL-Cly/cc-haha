@@ -30,7 +30,6 @@ type State struct {
 	Legacy         string
 	Queued, Failed bool
 	Interrupted    bool
-	SDKRunning     bool
 }
 type Service struct {
 	options Options
@@ -86,7 +85,7 @@ func (s *Service) Status(ctx context.Context, id string) (protocol.JSONObject, e
 	if !activity.Interrupted && !v.Interrupted {
 		if activity.Waiting {
 			state = "waiting"
-		} else if activity.Running || v.SDKRunning {
+		} else if activity.Running {
 			state = "running"
 		} else if v.Failed {
 			state = "failed"
@@ -157,21 +156,25 @@ func (s *Service) Handle(ctx context.Context, method string, parts []string, bod
 	return 202, obj(field("messageId", messageID), field("status", "queued")), nil
 }
 
+// QueuedIDs snapshots only the legacy REST queue. Runtime activity belongs to
+// the shared session owner; neither failed nor interrupted history is live.
+func (s *Service) QueuedIDs() []string {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	ids := []string{}
+	for id, state := range s.states {
+		if state.Queued {
+			ids = append(ids, id)
+		}
+	}
+	return ids
+}
+
 func (s *Service) Interrupt(id string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	v := s.states[id]
 	v.Queued, v.Failed, v.Interrupted = false, false, true
-	s.states[id] = v
-}
-func (s *Service) RunState(id string, running bool) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	v := s.states[id]
-	v.SDKRunning = running
-	if running {
-		v.Queued, v.Failed, v.Interrupted = false, false, false
-	}
 	s.states[id] = v
 }
 func field(name string, value any) protocol.JSONField {

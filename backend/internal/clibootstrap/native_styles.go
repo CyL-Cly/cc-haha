@@ -25,29 +25,31 @@ import (
 // Native files, managed policy and Source caches are shared by its consumers;
 // listing styles never creates an Agent or initializes model credentials.
 type NativeProcessSettings struct {
-	diagnostics        *diagnostics.Process
-	mu                 sync.Mutex
-	n                  *NativeBoundary
-	platform           string
-	sources            State
-	environment        *clistartupenv.Environment
-	global             *cliglobalconfig.Service
-	borrowedGlobal     bool
-	startup            *clistartupenv.Service
-	settingsState      *clisettings.State
-	settings           *clisettings.Service
-	store              *storage.Store
-	plugins            *nativePluginBindings
-	pluginInline       []string
-	pluginAdditional   []string
-	pluginCowork       bool
-	styles             []*systemprompt.StyleLoader
-	skills             []*skillcommands.Service
-	pluginOptions      []*pluginoptions.Service
-	closed             bool
-	agentModelResolver NativeAgentMainLoopModelResolver
-	mergeCcHahaEnv     func(protocol.JSONObject) (protocol.JSONObject, error)
-	shells             *windowshell.Resolver
+	diagnostics         *diagnostics.Process
+	mu                  sync.Mutex
+	pluginReads         sync.WaitGroup
+	n                   *NativeBoundary
+	platform            string
+	sources             State
+	environment         *clistartupenv.Environment
+	global              *cliglobalconfig.Service
+	borrowedGlobal      bool
+	startup             *clistartupenv.Service
+	settingsState       *clisettings.State
+	settings            *clisettings.Service
+	store               *storage.Store
+	plugins             *nativePluginBindings
+	pluginInline        []string
+	pluginAdditional    []string
+	pluginCowork        bool
+	styles              []*systemprompt.StyleLoader
+	skills              []*skillcommands.Service
+	pluginOptions       []*pluginoptions.Service
+	closed              bool
+	agentModelResolver  NativeAgentMainLoopModelResolver
+	mergeCcHahaEnv      func(protocol.JSONObject) (protocol.JSONObject, error)
+	prepareNativePolicy func() error
+	shells              *windowshell.Resolver
 }
 
 func NewNativeProcessSettings(n *NativeBoundary, platform string, sources State, stores ...*storage.Store) (*NativeProcessSettings, error) {
@@ -101,7 +103,7 @@ func newNativeProcessSettings(n *NativeBoundary, platform string, sources State,
 	if err != nil {
 		return nil, err
 	}
-	config := n.Environment["CLAUDE_CONFIG_DIR"]
+	config := n.ConfigHomeDirectory()
 	global := shared
 	if global == nil {
 		global, err = cliglobalconfig.New(cliglobalconfig.Options{Home: n.Home, ConfigDir: originalGlobalConfigDirectory(n, config), Now: n.Now, NowMillis: n.NowMillis, PID: os.Getpid(), FS: mainGlobalFiles{n: n}})
@@ -123,12 +125,12 @@ func (p *NativeProcessSettings) ensureSettings() error {
 	}
 	if p.startup == nil {
 		n := p.n
-		config := n.Environment["CLAUDE_CONFIG_DIR"]
+		config := n.ConfigHomeDirectory()
 		state, err := clisettings.NewState(n.NowMillis)
 		if err != nil {
 			return err
 		}
-		settings, err := clisettings.NewService(clisettings.Options{State: state, ConfigHome: config, OriginalCWD: n.CWD, Profile: clisettings.NativeProcessProfile, Now: n.NowMillis, PID: os.Getpid(), FS: mainSettingsFiles{n: n}})
+		settings, err := clisettings.NewService(clisettings.Options{State: state, ConfigHome: config, OriginalCWD: n.CWD, Profile: clisettings.NativeProcessProfile, Now: n.NowMillis, PID: os.Getpid(), FS: mainSettingsFiles{n: n}, NativeUserSettingsPath: func() (string, error) { return n.nativeUserSettingsPath(n.CWD, p.environment) }})
 		if err != nil {
 			return err
 		}
@@ -136,7 +138,7 @@ func (p *NativeProcessSettings) ensureSettings() error {
 		if err != nil {
 			return err
 		}
-		p.startup, err = clistartupenv.New(clistartupenv.Options{Diagnostics: p.diagnostics, Global: p.global, Settings: settings, SettingsState: state, Environment: p.environment, ConfigHome: config, FS: mainSettingsFiles{n: n}, NowMillis: n.NowMillis, Plugins: plugins.loader, MergeCcHahaEnvironment: p.mergeCcHahaEnv, Host: clistartupenv.Host{Profile: clistartupenv.ResolvedPolicyReleaseProfile, ResolvePolicy: n.ResolvePolicy, AllowedSources: p.sources.AllowedSettingSources, FlagPath: p.sources.FlagSettingsPath}})
+		p.startup, err = clistartupenv.New(clistartupenv.Options{Diagnostics: p.diagnostics, Global: p.global, Settings: settings, SettingsState: state, Environment: p.environment, ConfigHome: config, FS: mainSettingsFiles{n: n}, NowMillis: n.NowMillis, Plugins: plugins.loader, MergeCcHahaEnvironment: p.mergeCcHahaEnv, NativeCcHahaConfigDirectory: p.nativeCcHahaConfigDirectory, Host: clistartupenv.Host{Profile: clistartupenv.ResolvedPolicyReleaseProfile, ResolvePolicy: n.ResolvePolicy, PrepareNativePolicy: p.prepareNativePolicy, AllowedSources: p.sources.AllowedSettingSources, FlagPath: p.sources.FlagSettingsPath}})
 		if err != nil {
 			return err
 		}
@@ -270,8 +272,14 @@ func nativeSettingsTruthy(value json.RawMessage) bool {
 
 func (p *NativeProcessSettings) Close(ctx context.Context) error {
 	p.mu.Lock()
-	defer p.mu.Unlock()
 	p.closed = true
+	p.mu.Unlock()
+	// Admission is closed before Wait, so no new read can Add while cleanup
+	// joins actual IO. Keep p.mu available to admitted loader callbacks and to
+	// callers that must observe closed rather than wait behind a held read.
+	p.pluginReads.Wait()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	var archiveError error
 	if p.plugins != nil {
 		archiveError = p.plugins.archive.Cleanup(ctx)

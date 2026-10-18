@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os'
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path'
 import { createSandboxedTestEnvironment } from '../../pr/test-environment'
 import { sidecarBinaryName } from '../../../desktop/electron/services/sidecarBackend'
+import { readScopeExclusions, recordComputerUseExclusion, validateScopeExclusions, type ScopeExclusion } from '../scope-exclusions'
 
 export type PackageSmokePlatform = 'macos' | 'windows' | 'linux'
 export type PackageSmokeArch = 'x64' | 'arm64'
@@ -18,6 +19,7 @@ type CheckRecord = {
 }
 
 type InspectOptions = {
+  scopeExclusions?: ScopeExclusion[]
   platform: PackageSmokePlatform
   arch?: PackageSmokeArch
   artifactsDir?: string
@@ -37,6 +39,8 @@ export type PackageSmokeArgs = {
 }
 
 export type PackageSmokeReport = {
+  scopeExclusions?: ScopeExclusion[]
+  excludedChecks?: CheckRecord[]
   platform: PackageSmokePlatform
   hostPlatform: string
   productName: string
@@ -938,6 +942,7 @@ function inspectMacosArtifacts(rootDir: string, report: PackageSmokeReport, opti
   const prebuildsDir = join(nodePtyDir, 'prebuilds')
   const sidecarDir = join(unpackedDir, 'src-tauri', 'binaries')
   addNoLegacyBusinessSidecarCheck(report, rootDir, sidecarDir, 'macOS')
+  const computerUseExcluded = options.scopeExclusions?.includes('computer-use') ?? false
   const helperApp = join(sidecarDir, 'cc-haha-computer-use.app')
   const helperInfoPlist = join(helperApp, 'Contents', 'Info.plist')
   const helperExecutable = join(helperApp, 'Contents', 'MacOS', 'cc-haha-computer-use')
@@ -955,11 +960,18 @@ function inspectMacosArtifacts(rootDir: string, report: PackageSmokeReport, opti
     releaseMode,
   )
   addPresenceCheck(report, rootDir, 'macOS node-pty package.json', join(nodePtyDir, 'package.json'))
-  addPresenceCheck(report, rootDir, 'macOS cu-helper app bundle', helperApp)
-  addPresenceCheck(report, rootDir, 'macOS cu-helper Info.plist', helperInfoPlist)
-  addPresenceCheck(report, rootDir, 'macOS cu-helper executable', helperExecutable)
-  addMacosCursorResourceCheck(report, rootDir, helperApp, options)
-  if (existsSync(helperInfoPlist)) addHelperMinimumSystemCheck(report, rootDir, helperInfoPlist)
+  if (computerUseExcluded) {
+    report.excludedChecks = [
+      { label: 'macOS CU helper bundle, deployment target, architecture, cursor resource probe and caller-chain attestation', path: toRelative(rootDir, helperApp) },
+    ]
+    report.notes.push('Computer Use was explicitly excluded by the user. No CU helper or CU authorization was verified.')
+  } else {
+    addPresenceCheck(report, rootDir, 'macOS cu-helper app bundle', helperApp)
+    addPresenceCheck(report, rootDir, 'macOS cu-helper Info.plist', helperInfoPlist)
+    addPresenceCheck(report, rootDir, 'macOS cu-helper executable', helperExecutable)
+    addMacosCursorResourceCheck(report, rootDir, helperApp, options)
+    if (existsSync(helperInfoPlist)) addHelperMinimumSystemCheck(report, rootDir, helperInfoPlist)
+  }
   addBundledRipgrepLicenseChecks(report, rootDir, sidecarDir, 'macOS')
   addMatchCheck(
     report,
@@ -981,13 +993,13 @@ function inspectMacosArtifacts(rootDir: string, report: PackageSmokeReport, opti
     addPresenceCheck(report, rootDir, `macOS ${report.arch} unpacked sidecar binary`, sidecar)
     addPresenceCheck(report, rootDir, `macOS ${report.arch} node-pty native module`, pty)
     addPresenceCheck(report, rootDir, `macOS ${report.arch} node-pty spawn-helper`, spawnHelper)
-    if (existsSync(helperExecutable)) {
+    if (!computerUseExcluded && existsSync(helperExecutable)) {
       addHelperMachOMinimumSystemCheck(report, rootDir, helperExecutable)
     }
     for (const [label, target] of [
       ['app executable', hostExecutable],
       ['sidecar', sidecar],
-      ['cu-helper', helperExecutable],
+      ...(!computerUseExcluded ? [['cu-helper', helperExecutable] as const] : []),
       ['node-pty native module', pty],
       ['node-pty spawn-helper', spawnHelper],
     ] as const) {
@@ -1025,9 +1037,11 @@ function inspectMacosArtifacts(rootDir: string, report: PackageSmokeReport, opti
     )
   }
 
-  report.notes.push('No GUI launch was attempted. Matching macOS helper architectures also run an input-free resource probe from a disposable copy of the final package.')
+  report.notes.push(computerUseExcluded
+    ? 'No GUI launch or CU helper resource execution was attempted.'
+    : 'No GUI launch was attempted. Matching macOS helper architectures also run an input-free resource probe from a disposable copy of the final package.')
   if (options.requireMacosGatekeeper) {
-    if (report.arch) {
+    if (report.arch && !computerUseExcluded) {
       const targetTriple = report.arch === 'arm64'
         ? 'aarch64-apple-darwin'
         : 'x86_64-apple-darwin'
@@ -1292,6 +1306,8 @@ function inspectLinuxArtifacts(rootDir: string, report: PackageSmokeReport) {
 }
 
 export async function inspectPackagedArtifacts(rootDir: string, options: InspectOptions): Promise<PackageSmokeReport> {
+  const scopeExclusions = validateScopeExclusions(options.scopeExclusions ?? [])
+  options = { ...options, scopeExclusions }
   const resolvedRootDir = resolve(rootDir)
   const artifactsDir = options.artifactsDir
     ? resolve(resolvedRootDir, options.artifactsDir)
@@ -1310,6 +1326,7 @@ export async function inspectPackagedArtifacts(rootDir: string, options: Inspect
     options.hostPlatform,
   )
 
+  if (scopeExclusions.length) report.scopeExclusions = scopeExclusions
   if (options.platform === 'macos') {
     inspectMacosArtifacts(resolvedRootDir, report, options)
   } else if (options.platform === 'windows') {
@@ -1370,13 +1387,17 @@ function printReport(report: PackageSmokeReport) {
     }
   }
 
+  if (report.scopeExclusions?.includes('computer-use')) {
+    recordComputerUseExclusion('cu-helper-package-smoke')
+    console.log(`[package-smoke] excludedChecks=${JSON.stringify(report.excludedChecks ?? [])}`)
+  }
   console.log(`[package-smoke] result=${report.passed ? 'PASS' : 'FAIL'}`)
 }
 
 if (import.meta.main) {
   try {
     const args = parsePackageSmokeArgs(process.argv.slice(2))
-    const report = await inspectPackagedArtifacts(process.cwd(), args)
+    const report = await inspectPackagedArtifacts(process.cwd(), { ...args, scopeExclusions: readScopeExclusions() })
     printReport(report)
     process.exit(report.passed ? 0 : 1)
   } catch (error) {

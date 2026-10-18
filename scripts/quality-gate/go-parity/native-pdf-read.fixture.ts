@@ -1,16 +1,31 @@
 import { parse } from 'acorn'
 import * as path from 'node:path'
 import { createHash } from 'node:crypto'
+import * as nativeFiles from 'node:fs/promises'
+import { execFile } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
 import { assertDisposableFixtureHome } from './fixture-guard'
 
 const input = JSON.parse(await new Response(Bun.stdin.stream()).text())
 const home = assertDisposableFixtureHome(input.home, 'Actual PDF utility and Read producer')
 if (process.env.CC_HAHA_PDF_READ_FIXTURE !== '1') throw new Error('Unowned PDF Read fixture')
+const physical = input.physical === true
+if (physical && (Bun.version !== '1.3.14' || process.env.CC_HAHA_PDF_PHYSICAL_FIXTURE !== '1' || !path.isAbsolute(input.popplerBin) || process.env.PATH.split(path.delimiter)[0] !== input.popplerBin)) throw new Error('Physical PDF primitives require the pinned declared private dependency')
+if (physical) {
+  const directory = await nativeFiles.realpath(input.popplerBin)
+  const artifacts = await nativeFiles.realpath(fileURLToPath(new URL('../../../artifacts', import.meta.url)))
+  if (!directory.startsWith(artifacts + path.sep) && !['/private/tmp/', '/tmp/', '/private/var/folders/', '/var/folders/'].some(root => directory.startsWith(root))) throw new Error('Physical PDF dependency must stay in private temporary or current project artifacts storage')
+  for (const name of ['pdfinfo', 'pdftoppm']) {
+    const executable = await nativeFiles.stat(path.join(directory, name))
+    if (!executable.isFile() || !(executable.mode & 0o111)) throw new Error('Actual executable PDF dependency is required')
+  }
+}
+const nativeResize = physical ? (await import('../../../src/utils/imageResizer')).maybeResizeAndDownsampleImageBuffer : null
 
-// Execute the unchanged Source function bodies. Only filesystem/process/codec,
-// app-state and telemetry primitives are supplied by this disposable fixture.
-// Keeping these bodies out of the wider UI import graph also makes an attempted
-// network/process/home access impossible: no such primitive is in their scope.
+// Execute the unchanged Source function bodies. The normal corpus supplies
+// controlled filesystem/process/codec primitives. The explicitly owned physical
+// branch instead uses confined private files, the declared Poppler dependency
+// and the original image codec; app-state and telemetry remain fixture inputs.
 async function source(file: string) {
   const text = await Bun.file(new URL(file, import.meta.url)).text()
   const code = new Bun.Transpiler({ loader: 'ts' }).transformSync(text)
@@ -67,6 +82,7 @@ for (const row of input.validations ?? []) {
 }
 
 const rows = []
+const physicalCache = new Map()
 for (const row of input.rows ?? []) {
   const filePath = path.join(home, row.file ?? 'report.pdf')
   const resultsDirectory = path.join(home, 'results')
@@ -83,6 +99,7 @@ for (const row of input.rows ?? []) {
     owned(value)
     calls.push({ type: 'stat', path: value })
     failure(row.statError)
+    if (physical) return nativeFiles.stat(value)
     const next = row.stats?.[Math.min(statIndex++, row.stats.length - 1)]
     return { size: next?.size ?? row.size ?? 8, mtimeMs: next?.mtime ?? row.mtime ?? 1234.75 }
   }
@@ -90,6 +107,7 @@ for (const row of input.rows ?? []) {
     owned(value)
     calls.push({ type: 'read', path: value })
     failure(row.readError)
+    if (physical) return nativeFiles.readFile(value)
     if (value === filePath) return Buffer.from(row.bytes ?? 'JVBERi0xLjQ=', 'base64')
     const name = path.basename(value)
     return Buffer.from(row.images?.[name] ?? '/9j/AA==', 'base64')
@@ -98,6 +116,7 @@ for (const row of input.rows ?? []) {
     owned(value)
     calls.push({ type: 'readdir', path: value })
     failure(row.directoryError)
+    if (physical) return nativeFiles.readdir(value)
     return row.entries ?? ['page-01.jpg']
   }
   const mkdir = async (value: string, options: any) => {
@@ -105,11 +124,20 @@ for (const row of input.rows ?? []) {
     if (options?.recursive !== true) throw new Error('Source mkdir must be recursive')
     calls.push({ type: 'mkdir', path: value })
     failure(row.mkdirError)
+    if (physical) return nativeFiles.mkdir(value, options)
   }
   const execFileNoThrow = async (executable: string, args: string[], options: any) => {
     if (executable !== 'pdfinfo' && executable !== 'pdftoppm') throw new Error('Unowned PDF process')
     if (options.useCwd !== false) throw new Error('Source PDF process unexpectedly uses current working directory')
     calls.push({ type: 'run', executable, args, timeout: options.timeout })
+    if (physical) {
+      if (args.some(value => value.includes(path.sep) && value !== filePath && !value.startsWith(resultsDirectory + path.sep))) throw new Error('Physical PDF subprocess received an unowned path')
+      const started = performance.now()
+      return await new Promise(resolve => execFile(path.join(input.popplerBin, executable), args, { cwd: home, env: { ...process.env }, timeout: options.timeout, maxBuffer: 100000000 }, (error: any, stdout, stderr) => {
+        calls.push({ type: 'physical-process', executable, elapsedMs: performance.now() - started, code: error ? typeof error.code === 'number' ? error.code : 1 : 0, stderr })
+        resolve({ code: error ? typeof error.code === 'number' ? error.code : 1 : 0, stdout, stderr })
+      }))
+    }
     const result = row.processes?.[runIndex++]
     if (!result) throw new Error('Unexpected additional PDF subprocess')
     if (row.abortAfterProcess === runIndex) abortController.abort()
@@ -122,13 +150,14 @@ for (const row of input.rows ?? []) {
     execFileNoThrow, randomUUID: () => 'fixture', getToolResultsDir: () => selectedResultsDirectory,
     formatFileSize, errorMessage, ...constants,
   })
-  const cache = new Map()
+  const cache = physical ? physicalCache : new Map()
   const dependencies = {
     ...utilities, ...utils, ...constants, path, IMAGE_EXTENSIONS: new Set(),
     getFsImplementation: () => ({ stat }), readdir, readFileAsync: readFile, formatFileSize,
     maybeResizeAndDownsampleImageBuffer: async (buffer: Buffer, originalSize: number, extension: string) => {
       calls.push({ type: 'image', bytes: buffer.toString('base64'), originalSize, extension })
       failure(row.imageError)
+      if (nativeResize) return nativeResize(buffer, originalSize, extension)
       return { buffer, mediaType: 'jpeg' }
     },
     logEvent: () => {}, logFileOperation: () => {},
@@ -172,4 +201,6 @@ process.stdout.write(JSON.stringify({ ranges: rangeRows, validations, rows, auth
   pdf: createHash('sha256').update(pdfSource.text).digest('hex'),
   utils: createHash('sha256').update(utilsSource.text).digest('hex'),
   tool: createHash('sha256').update(toolSource.text).digest('hex'),
-}, scope: 'actual utility functions and actual FileReadTool.call/validateInput/callInner, controlled native FS/process/image-codec primitives' }))
+}, scope: physical
+  ? 'actual utility functions and FileReadTool.call/validateInput/callInner with confined actual FS/Poppler/original imageResizer; fixture app-state and telemetry'
+  : 'actual utility functions and actual FileReadTool.call/validateInput/callInner, controlled native FS/process/image-codec primitives' }))

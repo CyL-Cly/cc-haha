@@ -41,6 +41,7 @@ func TestActualCLIHiddenHeapDumpNativeFilesAndNextHumanPTY(t *testing.T) {
 	defer cancel()
 	cmd := exec.CommandContext(ctx, python, "testdata/tui_heapdump_pty.py", binary, home)
 	cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "HOME=" + home, "USERPROFILE=" + home, "CLAUDE_CONFIG_DIR=" + filepath.Join(home, ".claude"), "TMPDIR=" + home, "TERM=xterm-256color", "TZ=UTC", "CC_HAHA_TUI_HEAP_HELPER=1"}
+	capturePublicGoCoverage(t, cmd)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("actual native heap PTY %v %.7000s", err, out)
@@ -60,6 +61,12 @@ func TestNativeTUIHeapDumpFixtureProcess(t *testing.T) {
 	var posts atomic.Int32
 	var history atomic.Bool
 	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		body, _ := io.ReadAll(r.Body)
 		posts.Add(1)
 		history.Store(strings.Contains(string(body), ".heap.pprof") && strings.Contains(string(body), "<local-command-stdout>"))

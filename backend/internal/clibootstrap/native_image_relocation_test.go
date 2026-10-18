@@ -49,9 +49,11 @@ func TestRelocatedInstalledGoCLIReadsAndNormalizesActualImage(t *testing.T) {
 	buildCtx, stopBuild := context.WithTimeout(context.Background(), 90*time.Second)
 	defer stopBuild()
 	build := exec.CommandContext(buildCtx, filepath.Join(runtime.GOROOT(), "bin", "go"), "build", "-mod=readonly", "-o", filepath.Join(stage, relativeBinary), "./testdata/image-relocated-cli")
+	capturePublicGoCoverage(t, build)
 	if data, err := build.CombinedOutput(); err != nil {
 		t.Fatalf("relocated actual CLI build: %v %s", err, data)
 	}
+	registerBuiltPublicGoCoverage(t, build)
 	installed := filepath.Join(root, "中文 安装目录", "Claude Code Haha.app")
 	if err = os.MkdirAll(filepath.Dir(installed), 0700); err != nil {
 		t.Fatal(err)
@@ -86,8 +88,20 @@ func TestRelocatedInstalledGoCLIReadsAndNormalizesActualImage(t *testing.T) {
 		t.Fatal(err)
 	}
 	var requests atomic.Int32
+	var heads atomic.Int32
 	var processed atomic.Bool
 	peer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodHead {
+			heads.Add(1)
+			if r.Header.Get("Authorization") != "" || r.Header.Get("X-Api-Key") != "" || r.UserAgent() != "Bun/1.3.14" {
+				t.Error("actual init HEAD acquired model credentials or changed Source user agent")
+			}
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		if r.Method != http.MethodPost {
+			t.Error("unexpected actual model method", r.Method)
+		}
 		body, _ := io.ReadAll(r.Body)
 		w.Header().Set("Content-Type", "text/event-stream")
 		switch requests.Add(1) {
@@ -145,9 +159,13 @@ func TestRelocatedInstalledGoCLIReadsAndNormalizesActualImage(t *testing.T) {
 	command := exec.CommandContext(ctx, filepath.Join(installed, relativeBinary), "--print", "--no-computer-use", "--model", "deepseek-flash", "--thinking", "disabled", "--system-prompt", "Read the actual requested image.", "--tools", "Read", "--allowedTools", "Read", "--output-format", "stream-json", "--verbose", "--max-turns", "3", "Read the actual oversized image.")
 	command.Dir = project
 	command.Env = []string{"PATH=/usr/bin:/bin", "HOME=" + home, "USERPROFILE=" + home, "CLAUDE_CONFIG_DIR=" + config, "TMPDIR=" + temp, "USER=private-image-relocation", "CC_HAHA_IMAGE_RELOCATION_ROOT=" + root, "ANTHROPIC_API_KEY=private-fake-key", "ANTHROPIC_BASE_URL=" + peer.URL, "NODE_EXTRA_CA_CERTS=" + ca, "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1", "CLAUDE_CODE_LOCAL_SKIP_REMOTE_PREFETCH=1", "CLAUDE_CODE_ATTRIBUTION_HEADER=0", "ENABLE_TOOL_SEARCH=false", "TZ=UTC"}
+	capturePublicGoCoverage(t, command)
 	output, err := command.CombinedOutput()
 	if err != nil || requests.Load() != 2 || !processed.Load() || !bytes.Contains(output, []byte("INSTALLED_GO_IMAGE_READ_OK")) {
 		t.Fatalf("relocated actual CLI result: %v requests=%d processed=%v %.7000s", err, requests.Load(), processed.Load(), output)
+	}
+	if heads.Load() != 1 {
+		t.Fatal("relocated CLI did not execute its one actual init HEAD", heads.Load())
 	}
 	data, err := os.ReadFile(filepath.Join(root, "library-receipt.json"))
 	var receipt map[string]string

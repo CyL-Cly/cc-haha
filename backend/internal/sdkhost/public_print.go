@@ -11,6 +11,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/mcptools"
 	"github.com/NanmiCoder/cc-haha/backend/internal/modelaccounting"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/provider"
 	"github.com/NanmiCoder/cc-haha/backend/internal/queryhooks"
 	"github.com/NanmiCoder/cc-haha/backend/internal/queryloop"
 	"github.com/NanmiCoder/cc-haha/backend/internal/querypreflight"
@@ -19,71 +20,87 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/sdkpermissions"
 	"github.com/NanmiCoder/cc-haha/backend/internal/sessioncontroller"
 	"github.com/NanmiCoder/cc-haha/backend/internal/skillcommands"
+	"github.com/NanmiCoder/cc-haha/backend/internal/toolschema"
 	"github.com/NanmiCoder/cc-haha/backend/internal/toolsearch"
+	"sync/atomic"
 )
 
 type PrintOptions struct {
-	NativeToolResult              func(context.Context, *cooperative.Scope, protocol.JSONObject, string, float64) (protocol.JSONObject, error)
-	NativeThinkingSummaryBeta     func(*cooperative.Scope, string) (bool, error)
-	NativeSpinnerVerb             func(*cooperative.Scope) (string, error)
-	NativeAutoDream               func(*cooperative.Scope, queryhooks.CacheSafeParams, NativeAutoDreamQuery) error
-	CloseNativeAutoDream          func(context.Context) error
-	MaxBudgetUSD                  *float64
-	TaskBudget                    *float64
-	FallbackModel                 string
-	ModelDisplayName              func(string) (string, error)
-	CompactCleanup                func(*cooperative.Scope) error
-	CompactExcludedFiles          func(*cooperative.Scope) ([]string, error)
-	CompactAttachments            func(context.Context, *cooperative.Scope, []protocol.JSONObject) ([]protocol.JSONObject, error)
-	ToolAllowedNow                func(string) bool
-	NativeMainAgentSettings       func(*cooperative.Scope) bool
-	PermissionPromptToolName      string
-	NativeTypedModelSettings      func(*cooperative.Scope) bool
-	StartSandboxNetworkPermission func(context.Context, *cooperative.Scope, queryloop.RegisteredTool, *protocol.JSONObject, queryloop.JSONToolCallContext) (*OwnerFuture[bool], error)
-	NativeInteractive             bool
-	NativeInputMedia              func(context.Context, *cooperative.Scope, json.RawMessage) (json.RawMessage, []json.RawMessage, error)
-	NativeGoalCommand             func(context.Context, *cooperative.Scope, string) (string, bool, error)
-	NativeLocalCommand            func(context.Context, *cooperative.Scope, string, string) (string, error)
-	NativeSystemContext           func(*cooperative.Scope) (protocol.JSONObject, error)
-	NativeContextUsage            func(*cooperative.Scope, bool) (protocol.JSONObject, error)
-	OnLocalInputMessages          func([]protocol.JSONObject) error
-	AppendSystemPrompt            string
-	TeamWorker                    *NativeTeamWorker
-	NativeTeamExecution           *NativeTeamExecution
-	NativeTeammateExit            *NativeTeammateExit
-	NativeTeammateStop            func(context.Context, queryhooks.Context, queryloop.Emit) (queryloop.StopDecision, error)
-	NativeLeaderInbox             func(context.Context, *cooperative.Scope, bool) (bool, error)
-	FileHistory                   *filehistory.Service
-	PreserveToolUseResults        bool
-	AgentIteratorReady            func(*cooperative.Scope) error
-	AgentRestartPrompt            *NativeAgentRestartPrompt
-	ToolSearch                    *toolsearch.Service
-	PersistPermission             func(*cooperative.Scope, protocol.JSONObject) error
-	PlanProjection                func(*cooperative.Scope) (*attachments.PlanOptions, error)
-	PlanAttachments               func(*cooperative.Scope, []queryloop.Message) ([]queryloop.Message, error)
-	NativeCloudSettings           func(*cooperative.Scope) bool
-	ContextAttachments            func(*cooperative.Scope, []queryloop.Message, *builtinwrite.CallContext) ([]queryloop.Message, error)
-	InputAttachments              func(context.Context, *cooperative.Scope, string, []queryloop.Message) ([]queryloop.Message, error)
-	AgentID                       string
-	QuerySource                   string
-	EffortValue                   json.RawMessage
-	EffortValueOverridesEnv       bool
-	Thinking                      requestcontext.Thinking
-	Permissions                   sdkpermissions.Input
-	MaxTurns                      int
-	Write                         *builtinwrite.Service
-	Tools                         *builtintools.Service
-	NativeProcess                 bool
-	Hooks                         *queryhooks.Service
-	Registry                      *PrintRegistry
-	ProcessStartMillis            float64
-	ResolvePermission             func(context.Context, *cooperative.Scope, queryloop.RegisteredTool, *protocol.JSONObject, queryloop.JSONToolCallContext) (queryloop.ToolPermission, error)
-	ResolveRuntimeModel           func(*cooperative.Scope, querypreflight.RuntimeModelInput) (string, error)
-	SkillInvocation               func(*cooperative.Scope) (skillcommands.Invocation, error)
-	ProcessSkillPrompt            func(context.Context, *cooperative.Scope, string, string, []queryloop.Message, json.RawMessage) (*sessioncontroller.ProcessedInput, error)
-	NativeMCP                     *mcptools.Service
-	NativeSynthetic               *NativeSyntheticOutput
-	NativeJSONSchema              *NativeJSONSchema
+	NativeAgentSummaryEnabled                *atomic.Bool
+	NativeAgentSummaryFeatureGate            func(*cooperative.Scope) bool
+	NativeAgentSummary                       *NativeAgentSummaryBindings
+	BeginNativeInitCatalog                   func(*cooperative.Scope) (*OwnerFuture[NativeInitCatalog], error)
+	NativeQuotaStatus                        func(*cooperative.Scope, *provider.BunHeaders, error) error
+	NativeSuggestionSuppression              func(*cooperative.Scope) (string, error)
+	NativeStatusLineSettings                 func(*cooperative.Scope) bool
+	NativePlanCommand                        func(context.Context, *cooperative.Scope, string) (string, bool, error)
+	NativeTerminalSetupCommand               func(context.Context, *cooperative.Scope, string) (string, error)
+	NativeRewindCommand                      func(context.Context, *cooperative.Scope) error
+	NativeToolResult                         func(context.Context, *cooperative.Scope, protocol.JSONObject, string, float64) (protocol.JSONObject, error)
+	NativeThinkingSummaryBeta                func(*cooperative.Scope, string) (bool, error)
+	NativeModelValidationThinkingSummaryBeta func(*cooperative.Scope, string) (bool, error)
+	NativeSpinnerVerb                        func(*cooperative.Scope) (string, error)
+	NativeTerminalSpinner                    func(*cooperative.Scope, queryloop.Yield) error
+	NativeAutoDream                          func(*cooperative.Scope, queryhooks.CacheSafeParams, NativeAutoDreamQuery) error
+	CloseNativeAutoDream                     func(context.Context) error
+	MaxBudgetUSD                             *float64
+	TaskBudget                               *float64
+	FallbackModel                            string
+	ModelDisplayName                         func(string) (string, error)
+	CompactCleanup                           func(*cooperative.Scope) error
+	CompactExcludedFiles                     func(*cooperative.Scope) ([]string, error)
+	CompactAttachments                       func(context.Context, *cooperative.Scope, []protocol.JSONObject) ([]protocol.JSONObject, error)
+	ToolAllowedNow                           func(string) bool
+	NativeMainAgentSettings                  func(*cooperative.Scope) bool
+	PermissionPromptToolName                 string
+	NativeTypedModelSettings                 func(*cooperative.Scope) bool
+	StartSandboxNetworkPermission            func(context.Context, *cooperative.Scope, queryloop.RegisteredTool, *protocol.JSONObject, queryloop.JSONToolCallContext) (*OwnerFuture[bool], error)
+	NativeInteractive                        bool
+	NativeKeybindingsEnabled                 func() bool
+	NativeInputMedia                         func(context.Context, *cooperative.Scope, json.RawMessage) (json.RawMessage, []json.RawMessage, error)
+	NativeGoalCommand                        func(context.Context, *cooperative.Scope, string) (string, bool, error)
+	NativeLocalCommand                       func(context.Context, *cooperative.Scope, string, string) (string, error)
+	NativeSystemContext                      func(*cooperative.Scope) (protocol.JSONObject, error)
+	BeginNativeSystemContext                 func(*cooperative.Scope) (*OwnerFuture[protocol.JSONObject], error)
+	NativeContextUsage                       func(*cooperative.Scope, bool) (protocol.JSONObject, error)
+	OnLocalInputMessages                     func([]protocol.JSONObject) error
+	AppendSystemPrompt                       string
+	TeamWorker                               *NativeTeamWorker
+	NativeTeamExecution                      *NativeTeamExecution
+	NativeTeammateExit                       *NativeTeammateExit
+	NativeTeammateStop                       func(context.Context, queryhooks.Context, queryloop.Emit) (queryloop.StopDecision, error)
+	NativeLeaderInbox                        func(context.Context, *cooperative.Scope, bool) (bool, error)
+	FileHistory                              *filehistory.Service
+	PreserveToolUseResults                   bool
+	AgentIteratorReady                       func(*cooperative.Scope) error
+	AgentRestartPrompt                       *NativeAgentRestartPrompt
+	ToolSearch                               *toolsearch.Service
+	PersistPermission                        func(*cooperative.Scope, protocol.JSONObject) error
+	PlanProjection                           func(*cooperative.Scope) (*attachments.PlanOptions, error)
+	PlanAttachments                          func(*cooperative.Scope, []queryloop.Message) ([]queryloop.Message, error)
+	NativeCloudSettings                      func(*cooperative.Scope) bool
+	ContextAttachments                       func(*cooperative.Scope, []queryloop.Message, *builtinwrite.CallContext) ([]queryloop.Message, error)
+	InputAttachments                         func(context.Context, *cooperative.Scope, string, []queryloop.Message) ([]queryloop.Message, error)
+	AgentID                                  string
+	QuerySource                              string
+	EffortValue                              json.RawMessage
+	EffortValueOverridesEnv                  bool
+	Thinking                                 requestcontext.Thinking
+	Permissions                              sdkpermissions.Input
+	MaxTurns                                 int
+	Write                                    *builtinwrite.Service
+	Tools                                    *builtintools.Service
+	NativeProcess                            bool
+	Hooks                                    *queryhooks.Service
+	Registry                                 *PrintRegistry
+	ProcessStartMillis                       float64
+	ResolvePermission                        func(context.Context, *cooperative.Scope, queryloop.RegisteredTool, *protocol.JSONObject, queryloop.JSONToolCallContext) (queryloop.ToolPermission, error)
+	ResolveRuntimeModel                      func(*cooperative.Scope, querypreflight.RuntimeModelInput) (string, error)
+	SkillInvocation                          func(*cooperative.Scope) (skillcommands.Invocation, error)
+	ProcessSkillPrompt                       func(context.Context, *cooperative.Scope, string, string, []queryloop.Message, json.RawMessage) (*sessioncontroller.ProcessedInput, error)
+	NativeMCP                                *mcptools.Service
+	NativeSynthetic                          *NativeSyntheticOutput
+	NativeJSONSchema                         *NativeJSONSchema
 	// A non-nil slice is the original resolved Agent tool set. Empty means no
 	// tools; nil leaves the main-session catalog unchanged.
 	OnlyToolNames *[]string
@@ -141,12 +158,21 @@ func NewOwnedPrint(scope *cooperative.Scope, o Options) (*Host, error) {
 	if o.Print.FileHistory != nil && !o.Controller.UsesNativeFileHistory(o.Print.FileHistory) {
 		return nil, cap("actual controller file history construction identity")
 	}
-	if e := validateNeutralEnvironment(o.Environment, o.OriginalEnv); e != nil {
+	if e := validateOriginalEnvironment(o.Environment, o.OriginalEnv, o.Print.NativeProcess); e != nil {
 		return nil, e
 	}
 	return newHost(scope, o)
 }
 func (h *Host) initializePrintCatalog(scope *cooperative.Scope) error {
+	if h.options.Controller.NativeRemoteFrontend() {
+		// main.tsx supplies initialTools: [] and mcpClients: [] to the CCR
+		// REPL. Its permissions describe container tools; local catalogs and
+		// Agent metadata are not producers on this sealed frontend path.
+		h.definitions = []toolschema.Definition{}
+		h.registered = []queryloop.RegisteredTool{}
+		h.originalTools = []protocol.JSONObject{}
+		return h.options.Controller.InstallPrintTools(scope, h.originalTools)
+	}
 	defs, registered, e := h.options.Print.Write.Catalog(scope)
 	if h.options.Print.Tools != nil {
 		defs, registered, e = h.options.Print.Tools.Catalog(scope)
@@ -385,6 +411,9 @@ func (h *Host) installPrintBatchWithPermission(scope *cooperative.Scope, loop *q
 	}, DeprecatedCatalog: []queryloop.ToolDescriptor{}, CancellationContent: quote("[Request interrupted by user]")}, h.options.Factory)
 	if e != nil {
 		return e
+	}
+	if h.nativeQueryTools != nil {
+		h.nativeQueryTools.batch = batch
 	}
 	loop.LookupBackfillJSON = batch.LookupBackfillJSON
 	loop.LookupBackfill = nil

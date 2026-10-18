@@ -182,6 +182,79 @@ func TestParsedSDKHistoricalLookupUsesActualCacheAndOriginalAck(t *testing.T) {
 	}
 }
 
+func TestParsedSDKLookupObserverReportsMemoResultsWithoutChangingAdmission(t *testing.T) {
+	owner, controller, serial := parsedSDKHost(t)
+	writePrivate(t, controller.writer.target(), uuidOld)
+	var observed []string
+	controller.options.OnSDKUUIDLookup = func(id json.RawMessage, historical bool) {
+		observed = append(observed, fmt.Sprintf("%s:%t", id, historical))
+		// Observation borrows neither the message UUID nor its cache key.
+		for i := range id {
+			id[i] = 'x'
+		}
+	}
+	if err := owner.Run(context.Background(), func(scope *cooperative.Scope) error {
+		for i, input := range []protocol.JSONObject{parsedInput("original-old", "historical"), parsedInput("novel", "new"), parsedInput("novel", "duplicate")} {
+			future, err := serial.AdmitParsedSDK(scope, input)
+			if err != nil {
+				return err
+			}
+			admission, err := future.Await(scope)
+			if err != nil || admission.Historical != (i == 0) || admission.Duplicate != (i != 1) {
+				return fmt.Errorf("observer changed actual admission %d: %+v/%v", i, admission, err)
+			}
+		}
+		invalid := parsedInput("must-not-lookup", "bad")
+		invalid.Set("priority", quote("invalid"))
+		if _, err := serial.AdmitParsedSDK(scope, invalid); err == nil {
+			return errors.New("invalid SDK input reached historical lookup")
+		}
+		if len(controller.queue) != 1 || string(controller.queue[0].UUID) != `"novel"` {
+			return errors.New("observer changed queued UUID")
+		}
+		return nil
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if fmt.Sprint(observed) != `["original-old":true "novel":false "novel":false]` {
+		t.Fatal("observer did not retain original memoized historical results", observed)
+	}
+}
+
+func TestSDKRecordObservationRequiresTheActualActiveRecordConsumer(t *testing.T) {
+	owner, controller, serial := parsedSDKHost(t)
+	records := 0
+	controller.options.OnSDKRecord = func() { records++ }
+	if err := owner.Run(context.Background(), func(scope *cooperative.Scope) error {
+		if _, err := serial.BeginRecord(scope, nil); err == nil || records != 0 {
+			return errors.New("inactive ASK reached Record observer")
+		}
+		input, err := serial.AdmitParsedSDK(scope, parsedInput("actual-record", "observe original record"))
+		if err != nil {
+			return err
+		}
+		if _, err := input.Await(scope); err != nil {
+			return err
+		}
+		if _, err := serial.BeginDequeued(scope); err != nil {
+			return err
+		}
+		future, err := serial.BeginRecord(scope, serial.History())
+		if err != nil {
+			return err
+		}
+		if _, err := future.Await(scope); err != nil {
+			return err
+		}
+		if records != 1 {
+			return fmt.Errorf("actual record was observed %d times", records)
+		}
+		return serial.Finally(scope)
+	}); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestParsedSDKRefusesCapabilitiesBeforeOwnerEffects(t *testing.T) {
 	for _, name := range []string{"wrong-owner", "unknown-priority", "attachments", "slash", "snapshots", "legacy"} {
 		t.Run(name, func(t *testing.T) {

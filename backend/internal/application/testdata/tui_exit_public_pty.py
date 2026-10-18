@@ -1,4 +1,5 @@
 """Exercise the actual public Go CLI, with only external native fixture seams."""
+from public_cli_fixture import PrivateLoopbackHTTPServer, PrivatePublicCLINetwork
 import fcntl, http.server, json, os, pathlib, select, struct, subprocess, sys, termios, threading, time
 if len(sys.argv) > 1 and sys.argv[1] == '_guardian':
  root, *command = sys.argv[2:]
@@ -52,9 +53,11 @@ class ModelPeer(http.server.BaseHTTPRequestHandler):
   requests.append({'method': self.command, 'path': self.path})
   self.send_response(500); self.end_headers()
  def log_message(self, *args): pass
-model_peer = http.server.ThreadingHTTPServer(('127.0.0.1', 0), ModelPeer)
+model_peer = PrivateLoopbackHTTPServer(('127.0.0.1', 0), ModelPeer)
 model_worker = threading.Thread(target=model_peer.serve_forever, daemon=True); model_worker.start()
 env = {'HOME': str(home), 'USERPROFILE': str(home), 'CLAUDE_CONFIG_DIR': str(config), 'TMPDIR': str(temp), 'CC_HAHA_NATIVE_FIXTURE_ROOT': str(root), 'PATH': '/usr/bin:/bin', 'SHELL': '/bin/bash', 'TERM': 'xterm-256color', 'TZ': 'UTC', 'USER': 'private-exit-fixture', 'ANTHROPIC_API_KEY': 'fake-private-exit-key', 'ANTHROPIC_BASE_URL': 'http://127.0.0.1:' + str(model_peer.server_address[1]), 'DISABLE_TELEMETRY': '1', 'CLAUDE_CODE_LOCAL_SKIP_REMOTE_PREFETCH': '1', 'CLAUDE_CODE_MAX_RETRIES': '0', 'CLAUDE_CODE_ATTRIBUTION_HEADER': '0'}
+network = PrivatePublicCLINetwork(env)
+fixture_version = network.seed_startup(binary, env, work, config)
 master, slave = os.openpty()
 fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack('HHHH', 30, 110, 0, 0))
 before = termios.tcgetattr(slave)
@@ -90,6 +93,7 @@ try:
  (root / 'terminal.raw').write_bytes(captured)
  after = before if state['terminalRestored'] else []
  hooks = [json.loads(line) for line in (root / 'session-end.jsonl').read_text().splitlines()]
+ network.assert_private()
  assert p.returncode == 0, (p.returncode, repr(bytes(captured[-3500:])))
  assert state['terminalRestored'], 'terminal attributes not restored'
  assert len(requests) == (2 if mode == 'after-read' else 0), requests
@@ -98,8 +102,9 @@ try:
  assert len(hooks) == 1 and hooks[0]['reason'] == 'prompt_input_exit', hooks
  assert b'unknown actual prompt command' not in captured and b'Go public CLI capability' not in captured, repr(bytes(captured[-3500:]))
  (root / 'terminal.raw').write_bytes(captured)
- print(json.dumps({'mode': mode, 'exitCode': p.returncode, 'sessionEndCount': len(hooks), 'reason': hooks[0]['reason'], 'terminalRestored': before == after, 'pidGone': p.poll() is not None, 'credentialFixture': 'fake/private', 'keychainPrimitive': 'native_process_fixture unavailable', 'modelRequests': len(requests), 'actualGoPID': state['childPID'], 'physicalRead': mode == 'after-read' and read_observed == [True]}))
+ print(json.dumps({'mode': mode, 'exitCode': p.returncode, 'sessionEndCount': len(hooks), 'reason': hooks[0]['reason'], 'terminalRestored': before == after, 'pidGone': p.poll() is not None, 'credentialFixture': 'fake/private', 'keychainPrimitive': 'native_process_fixture unavailable', 'unownedNetworkAttempts': len(network.attempts), 'fixtureVersion': fixture_version, 'modelRequests': len(requests), 'actualGoPID': state['childPID'], 'physicalRead': mode == 'after-read' and read_observed == [True]}))
 finally:
  if p.poll() is None: p.kill(); p.wait()
  os.close(master); os.close(slave)
  model_peer.shutdown(); model_peer.server_close(); model_worker.join()
+ network.close()

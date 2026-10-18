@@ -133,10 +133,12 @@ func TestLegacyKeychainFailureAndConfigFallbackAgainstActualSource(t *testing.T)
 	}
 	for i, p := range profiles {
 		t.Run(fmt.Sprint(i), func(t *testing.T) {
-			m := openAIAuthMainFixtureWithEnv(t, p["environment"].(map[string]string))
-			m.options.Native.Now = func() time.Time { return time.UnixMilli(1700000000000) }
 			var terminal bytes.Buffer
-			m.options.Error = &terminal
+			m := openAIAuthMainFixtureWithOptions(t, p["environment"].(map[string]string), func(n *NativeBoundary) {
+				n.Now = func() time.Time { return time.UnixMilli(1700000000000) }
+			}, func(options *MainPrintOptions) {
+				options.Error = &terminal
+			})
 			calls := 0
 			store, e := securestorage.New(securestorage.Options{Home: m.options.Native.Home, ConfigDir: m.options.Native.Environment["CLAUDE_CONFIG_DIR"], Platform: "darwin", Environment: m.options.Native.Environment, RunSecurity: func(context.Context, securestorage.Command) ([]byte, error) {
 				calls++

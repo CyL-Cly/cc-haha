@@ -24,5 +24,5 @@ func (s *Session) teammateLocalInput(text string) (bool, error) {
 		}
 		rows = append(rows, row)
 	}
-	return true, s.emitEvent(tui.Event{Kind: tui.TeammateMessages, Result: raw(rows)})
+	return true, s.emitEvent(tui.Event{Kind: tui.TeammateMessages, Text: text, Result: raw(rows)})
 }

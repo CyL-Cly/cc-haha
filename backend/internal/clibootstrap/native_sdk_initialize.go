@@ -172,6 +172,11 @@ func (m *MainPrint) nativeSDKAccount(scope *cooperative.Scope, env map[string]st
 			tokenSource = "ANTHROPIC_AUTH_TOKEN"
 		} else if env["CLAUDE_CODE_OAUTH_TOKEN"] != "" {
 			tokenSource = "CLAUDE_CODE_OAUTH_TOKEN"
+		} else if b.credentialFromDescriptor(env, "CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR", ".oauth_token") != "" {
+			tokenSource = "CCR_OAUTH_TOKEN_FILE"
+			if env["CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR"] != "" {
+				tokenSource = "CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR"
+			}
 		} else if openaiauth.AuthTruthy(settings.Get("apiKeyHelper")) && !managed {
 			tokenSource = "apiKeyHelper"
 		} else {
@@ -202,7 +207,7 @@ func (m *MainPrint) nativeSDKAccount(scope *cooperative.Scope, env map[string]st
 		}
 		return result, nil
 	}
-	if tokenSource == "CLAUDE_CODE_OAUTH_TOKEN" || !identity.Subscriber {
+	if tokenSource == "CLAUDE_CODE_OAUTH_TOKEN" || tokenSource == "CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR" || !identity.Subscriber {
 		result.Set("tokenSource", quoteMain(tokenSource))
 	} else {
 		name := "Claude API"

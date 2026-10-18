@@ -15,14 +15,18 @@ import (
 // MemoryPaths resolves the native storage identity shared by system sections
 // and instruction loading. It consumes original settings and filesystem state.
 type MemoryPaths struct {
-	Environment       *clistartupenv.Environment
-	Home, ConfigHome  string
-	ProjectRoot       func() string
-	SettingsForSource func(string) (*protocol.JSONObject, error)
-	Files             MemoryFiles
-	Realpath          func(string) (string, error)
-	mu                sync.Mutex
-	paths             map[string]string
+	Environment      *clistartupenv.Environment
+	Home, ConfigHome string
+	// NativeConfigDirectory preserves getClaudeConfigHomeDir's requested path.
+	// It is sampled only on a project-root memo miss; finite callers retain
+	// their explicit absolute ConfigHome without this native factory binding.
+	NativeConfigDirectory func() string
+	ProjectRoot           func() string
+	SettingsForSource     func(string) (*protocol.JSONObject, error)
+	Files                 MemoryFiles
+	Realpath              func(string) (string, error)
+	mu                    sync.Mutex
+	paths                 map[string]string
 }
 
 func (p *MemoryPaths) Clear() { p.mu.Lock(); p.paths = nil; p.mu.Unlock() }
@@ -61,6 +65,9 @@ func (p *MemoryPaths) Directory() (string, error) {
 		base := rawText(p.Environment.Get("CLAUDE_CODE_REMOTE_MEMORY_DIR"))
 		if base == "" {
 			base = p.ConfigHome
+			if p.NativeConfigDirectory != nil {
+				base = p.NativeConfigDirectory()
+			}
 		}
 		canonical := canonicalGitRoot(p.Files, p.Realpath, root)
 		if canonical == "" {
@@ -130,7 +137,13 @@ func resolveRelative(base, path string) string {
 	return filepath.Join(base, path)
 }
 func canonicalGitRoot(files MemoryFiles, realpath func(string) (string, error), start string) string {
-	root := gitRoot(files, start)
+	return ResolveCanonicalGitRoot(files, realpath, gitRoot(files, start))
+}
+
+// ResolveCanonicalGitRoot applies the same worktree structure and backlink
+// checks to an already discovered git root. Native callers with Source's
+// separate discovery/canonical memo lifetimes share this parsing boundary.
+func ResolveCanonicalGitRoot(files MemoryFiles, realpath func(string) (string, error), root string) string {
 	if root == "" {
 		return ""
 	}

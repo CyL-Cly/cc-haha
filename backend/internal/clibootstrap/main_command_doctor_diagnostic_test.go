@@ -74,6 +74,7 @@ printf '%s\n' '` + prefix + `'
 	n.RunSecurity = func(context.Context, securestorage.Command) ([]byte, error) {
 		return nil, errors.New("private keychain absent")
 	}
+	bindCommandPrefetchFixture(t, n)
 	m, e := NewMainCommand(MainCommandOptions{Arguments: []string{"doctor"}, Native: n, Platform: "darwin", Version: "2.1.288", PID: os.Getpid(), Output: io.Discard, Error: io.Discard})
 	if e != nil {
 		t.Fatal(e)
@@ -106,6 +107,7 @@ printf '%s\n' '` + prefix + `'
 		child.Env = append(child.Env, key+"="+value)
 	}
 	child.Stdin = bytes.NewReader(payload)
+	capturePublicGoCoverage(t, child)
 	out, e := child.CombinedOutput()
 	if e != nil {
 		t.Fatal(e, string(out))

@@ -47,11 +47,13 @@ func linuxBootstrap(t *testing.T, settings string, bwrap, socat bool) (*MainPrin
 		defer cancel()
 		cmd := exec.CommandContext(ctx, "go", "build", "-o", filepath.Join(root, "socat"), source)
 		cmd.Dir = root
+		capturePublicGoCoverage(t, cmd)
 		output, e := cmd.CombinedOutput()
 		if e != nil {
 			t.Fatal("generic relay compilation", e, string(output))
 		}
 		probe := exec.CommandContext(ctx, filepath.Join(root, "socat"))
+		capturePublicGoCoverage(t, probe)
 		if e := probe.Run(); e == nil || probe.ProcessState.ExitCode() != 2 {
 			t.Fatal("native relay executable probe", e)
 		}
@@ -63,6 +65,7 @@ func linuxBootstrap(t *testing.T, settings string, bwrap, socat bool) (*MainPrin
 	f.n.Environment["DEBUG"] = "1"
 	f.write(t, filepath.Join(f.config, "settings.json"), settings)
 	disabled := false
+	seedNativeReleaseWarmFixture(t, f, "fixture")
 	m, e := NewMainPrint(MainPrintOptions{Arguments: PrintArguments{ComputerUse: &disabled, Model: "fixture-model", MaxTurns: 100, Tools: []string{"Read", "Bash"}, Thinking: requestcontext.Thinking{Type: "disabled"}, AdditionalDirectories: []string{f.config}, Sources: DefaultState()}, Native: f.n, PID: os.Getpid(), Version: "fixture", Platform: "linux", Interactive: true, Input: strings.NewReader(""), Output: io.Discard, Error: io.Discard})
 	if e != nil {
 		t.Fatal(e)

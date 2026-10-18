@@ -43,7 +43,11 @@ func TestActualSourceLinuxFilesystemMountOrderingRealRipgrepSymlinksAndMissingPa
 		{Read: &ReadRestriction{DenyOnly: []string{cwd}, AllowWithinDeny: []string{filepath.Join(cwd, "secret/allowed")}}, Write: &WriteRestriction{AllowOnly: []string{filepath.Join(cwd, "workspace")}, DenyWithinAllow: []string{filepath.Join(cwd, "workspace/deep/.bashrc")}}, Depth: 2, AllowGitConfig: true},
 		{Read: &ReadRestriction{DenyOnly: []string{filepath.Join(cwd, "real-file"), filepath.Join(cwd, "missing"), filepath.Join(cwd, "secret/allowed/file")}, AllowWithinDeny: []string{filepath.Join(cwd, "secret")}}},
 	}
-	input, _ := json.Marshal(map[string]any{"cwd": cwd, "tmp": temp, "rg": rg, "rows": rows})
+	// Parallel rg traversals may return the same matches in different orders.
+	// Give both real processes the same supported serial traversal config;
+	// the consumers must still preserve that actual primitive's exact order.
+	rgArgs := []string{"--threads", "1"}
+	input, _ := json.Marshal(map[string]any{"cwd": cwd, "tmp": temp, "rg": rg, "rgArgs": rgArgs, "rows": rows})
 	fixture, _ := filepath.Abs("testdata/linux-filesystem.fixture.ts")
 	cmd := exec.Command(os.Getenv("CC_HAHA_SOURCE_BUN"), "--no-env-file", fixture)
 	cmd.Dir = home
@@ -75,7 +79,7 @@ func TestActualSourceLinuxFilesystemMountOrderingRealRipgrepSymlinksAndMissingPa
 		return out
 	}
 	for i, row := range rows {
-		f := &LinuxFilesystem{Paths: PathContext{Home: home, CWD: cwd, Realpath: filepath.EvalSymlinks}, TemporaryDirectory: temp, RipgrepCommand: rg, SearchDepth: row.Depth, AllowGitConfig: row.AllowGitConfig}
+		f := &LinuxFilesystem{Paths: PathContext{Home: home, CWD: cwd, Realpath: filepath.EvalSymlinks}, TemporaryDirectory: temp, RipgrepCommand: rg, RipgrepArguments: rgArgs, SearchDepth: row.Depth, AllowGitConfig: row.AllowGitConfig}
 		args, e := f.Arguments(context.Background(), row.Read, row.Write)
 		if e != nil {
 			t.Fatal(e)

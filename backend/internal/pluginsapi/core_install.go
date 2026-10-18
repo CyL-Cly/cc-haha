@@ -12,6 +12,32 @@ import (
 // Install is the ordinary pure operation used by the CLI handler. Intent is
 // committed once for the dependency closure before materialization starts.
 func (s *Service) Install(ctx context.Context, plugin, scope string) (protocol.JSONObject, error) {
+	return s.install(ctx, plugin, scope, false)
+}
+
+// InstallInteractive is the original Discover caller of the same resolved
+// installation. It retains UI error messages before the CLI adds its prefix.
+func (s *Service) InstallInteractive(ctx context.Context, plugin, scope string) (protocol.JSONObject, error) {
+	value, err := s.install(ctx, plugin, scope, true)
+	if err != nil {
+		if display, ok := err.(*interactiveInstallError); ok {
+			return protocol.JSONObject{}, display.error
+		}
+		return protocol.JSONObject{}, fmt.Errorf("Failed to install: %s", err)
+	}
+	return value, nil
+}
+
+type interactiveInstallError struct{ error }
+
+func (s *Service) install(ctx context.Context, plugin, scope string, interactive bool) (protocol.JSONObject, error) {
+	failure := func(message string) error {
+		value := bad(message)
+		if interactive {
+			return &interactiveInstallError{value}
+		}
+		return value
+	}
 	if s.core == nil {
 		return protocol.JSONObject{}, fmt.Errorf("plugin install requires actual CLI operation bindings")
 	}
@@ -42,7 +68,7 @@ func (s *Service) Install(ctx context.Context, plugin, scope string) (protocol.J
 		if market != "" {
 			where = "marketplace \"" + market + "\""
 		}
-		return protocol.JSONObject{}, bad("Plugin \"" + name + "\" not found in " + where)
+		return protocol.JSONObject{}, failure("Plugin \"" + name + "\" not found in " + where)
 	}
 	id := root.Entry.String("name") + "@" + market
 	policy, err := s.options.ReadSettings(ctx, "managed", "")
@@ -51,10 +77,10 @@ func (s *Service) Install(ctx context.Context, plugin, scope string) (protocol.J
 	}
 	blocked := obj(policy.Get("enabledPlugins"))
 	if string(blocked.Get(id)) == "false" {
-		return protocol.JSONObject{}, bad("Plugin \"" + root.Entry.String("name") + "\" is blocked by your organization's policy and cannot be installed")
+		return protocol.JSONObject{}, failure("Plugin \"" + root.Entry.String("name") + "\" is blocked by your organization's policy and cannot be installed")
 	}
 	if value := root.Entry.Get("source"); len(value) > 0 && value[0] == '"' && root.InstallLocation == "" {
-		return protocol.JSONObject{}, bad("Cannot install local plugin \"" + root.Entry.String("name") + "\" without marketplace install location")
+		return protocol.JSONObject{}, failure("Cannot install local plugin \"" + root.Entry.String("name") + "\" without marketplace install location")
 	}
 	allowed := map[string]bool{}
 	known, err := s.options.KnownMarketplaces(ctx)
@@ -90,11 +116,11 @@ func (s *Service) Install(ctx context.Context, plugin, scope string) (protocol.J
 				where = "marketplace \"" + currentMarket + "\""
 				hint = " Add \"" + currentMarket + "\" to allowCrossMarketplaceDependenciesOn in the ROOT marketplace's marketplace.json (the marketplace of the plugin you're installing — only its allowlist applies; no transitive trust)."
 			}
-			return bad("Dependency \"" + current + "\" (required by " + requiredBy + ") is in " + where + ", which is not in the allowlist — cross-marketplace dependencies are blocked by default. Install it manually first." + hint)
+			return failure("Dependency \"" + current + "\" (required by " + requiredBy + ") is in " + where + ", which is not in the allowlist — cross-marketplace dependencies are blocked by default. Install it manually first." + hint)
 		}
 		for _, v := range stack {
 			if v == current {
-				return bad("Dependency cycle: " + strings.Join(append(append([]string{}, stack...), current), " → "))
+				return failure("Dependency cycle: " + strings.Join(append(append([]string{}, stack...), current), " → "))
 			}
 		}
 		if visited[current] {
@@ -117,9 +143,9 @@ func (s *Service) Install(ctx context.Context, plugin, scope string) (protocol.J
 			where := "in any configured marketplace"
 			if m != "" {
 				where = ". Is the \"" + m + "\" marketplace added?"
-				return bad("Dependency \"" + current + "\" (required by " + requiredBy + ") not found" + where)
+				return failure("Dependency \"" + current + "\" (required by " + requiredBy + ") not found" + where)
 			}
-			return bad("Dependency \"" + current + "\" (required by " + requiredBy + ") not found " + where)
+			return failure("Dependency \"" + current + "\" (required by " + requiredBy + ") not found " + where)
 		}
 		stack = append(stack, current)
 		var deps []string
@@ -138,11 +164,15 @@ func (s *Service) Install(ctx context.Context, plugin, scope string) (protocol.J
 	}
 	for _, member := range closure {
 		if member != id && string(blocked.Get(member)) == "false" {
-			return protocol.JSONObject{}, bad("Plugin \"" + root.Entry.String("name") + "\" depends on \"" + member + "\", which is blocked by your organization's policy")
+			message := "Plugin \"" + root.Entry.String("name") + "\" depends on \"" + member + "\", which is blocked by your organization's policy"
+			if interactive {
+				message = "Cannot install \"" + root.Entry.String("name") + "\": dependency \"" + member + "\" is blocked by your organization's policy"
+			}
+			return protocol.JSONObject{}, failure(message)
 		}
 	}
 	if err = s.core.WriteEnabledMany(ctx, scope, closure); err != nil {
-		return protocol.JSONObject{}, bad("Failed to update settings: " + err.Error())
+		return protocol.JSONObject{}, failure("Failed to update settings: " + err.Error())
 	}
 	projectPath := project(scope, "", s.options.WorkDir)
 	for _, member := range closure {

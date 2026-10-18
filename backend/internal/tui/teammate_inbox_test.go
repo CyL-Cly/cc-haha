@@ -4,6 +4,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/charmbracelet/x/ansi"
 )
 
 func TestTeammateInboxPendingFooterProcessedAndViewedTranscriptIsolation(t *testing.T) {
@@ -25,7 +27,7 @@ func TestTeammateInboxPendingFooterProcessedAndViewedTranscriptIsolation(t *test
 	}
 	s.Apply(Event{Kind: TeammateMessages, Result: []byte(`[{"from":"worker","text":"full delivered text","summary":"delivered summary"},{"from":"hidden","text":"{\"type\":\"idle_notification\"}"}]`)})
 	s.Teammates.Exit()
-	if view := s.View("", false).Content; !strings.Contains(view, "@worker› delivered summary") || strings.Contains(view, "full delivered text") || strings.Contains(view, "@hidden") {
+	if view := ansi.Strip(s.View("", false).Content); !strings.Contains(view, "@worker❯ delivered summary") || strings.Contains(view, "full delivered text") || strings.Contains(view, "@hidden") {
 		t.Fatal("Source collapsed teammate presentation", view)
 	}
 	s.Transcript = true

@@ -1,3 +1,6 @@
+import { rm } from 'node:fs/promises'
+import path from 'node:path'
+
 export type CuHelperArch = 'arm64' | 'x86_64'
 
 /**
@@ -34,4 +37,14 @@ export function createCuHelperBuildEnv(
     delete env.CU_HELPER_IDENTITY
   }
   return env
+}
+
+/** Explicit non-CU builds must not package an older generated helper by accident. */
+export async function removeStagedCuHelperArtifacts(binariesDir: string) {
+  for (const name of [
+    'cc-haha-computer-use.app', 'cc-haha-computer-use', 'cu-helper',
+    'cu-helper_cc-haha-computer-use.bundle', 'cu-helper_cu-helper.bundle',
+  ]) {
+    await rm(path.join(binariesDir, name), { recursive: true, force: true })
+  }
 }

@@ -33,6 +33,8 @@ type nativeComputerUse struct {
 	service     *computeruse.Service
 	binder      *computerusemcp.Binder
 	ownsService bool
+	closeSignal context.Context
+	beginClose  context.CancelFunc
 }
 
 func computerUseEnvironmentEnabled(environment map[string]string) bool {
@@ -62,12 +64,13 @@ func (m *MainPrint) newNativeComputerUse() error {
 		}
 	}
 	if owns {
-		service, e = computeruse.New(computeruse.Options{HomeDir: n.Home, ConfigDir: n.Environment["CLAUDE_CONFIG_DIR"], WorkDir: n.CWD, AppRoot: options.AppRoot, TempDir: n.Temp, Executable: executable, Environment: n.Environment, Platform: m.options.Platform})
+		service, e = computeruse.New(computeruse.Options{HomeDir: n.Home, ConfigDir: n.ConfigHomeDirectory(), WorkDir: n.CWD, AppRoot: options.AppRoot, TempDir: n.Temp, Executable: executable, Environment: n.Environment, Platform: m.options.Platform})
 		if e != nil {
 			return e
 		}
 	}
-	m.computerUse = &nativeComputerUse{service: service, ownsService: owns}
+	closeSignal, beginClose := context.WithCancel(context.Background())
+	m.computerUse = &nativeComputerUse{service: service, ownsService: owns, closeSignal: closeSignal, beginClose: beginClose}
 	// This is Source CLI setup's separate gate. The shipped skill has its own
 	// config/environment visibility and does not depend on helper launchability.
 	if m.options.Arguments.ComputerUse != nil && !*m.options.Arguments.ComputerUse || !computerUseEnvironmentEnabled(n.Environment) {
@@ -166,8 +169,11 @@ func (m *MainPrint) closeNativeComputerUse() {
 	if m.computerUse == nil || m.agentChild {
 		return
 	}
+	if m.computerUse.beginClose != nil {
+		m.computerUse.beginClose()
+	}
 	if m.computerUse.binder != nil {
-		_ = m.computerUse.binder.Close(context.Background())
+		_ = m.computerUse.binder.Close(m.computerUse.closeSignal)
 	}
 	if m.computerUse.ownsService {
 		_ = m.computerUse.service.Close(context.Background())
@@ -178,5 +184,5 @@ func (m *MainPrint) closeNativeComputerUse() {
 // Source paths remain explicit. No runtime config field points to a simulated
 // stdio peer or old language business implementation.
 func (m *MainPrint) computerUseConfigPath() string {
-	return filepath.Join(m.options.Native.Environment["CLAUDE_CONFIG_DIR"], "cc-haha", "computer-use-config.json")
+	return filepath.Join(m.options.Native.ConfigHomeDirectory(), "cc-haha", "computer-use-config.json")
 }

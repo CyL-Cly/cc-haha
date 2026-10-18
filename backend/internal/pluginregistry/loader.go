@@ -39,13 +39,46 @@ type Options struct {
 	ExtractZip func(context.Context, string, string) (string, error)
 }
 type Loader struct {
-	options     Options
-	creator     *Creator
-	directories Directories
-	mu          sync.Mutex
-	cached      *Result
-	cacheID     uint64
+	options       Options
+	creator       *Creator
+	directories   Directories
+	mu            sync.Mutex
+	cached        *Result
+	cachedPending *pluginLoadFuture
+	fullPending   *pluginLoadFuture
+	cacheID       uint64
 }
+
+type pluginLoadFuture struct {
+	loader   *Loader
+	done     chan struct{}
+	result   Result
+	err      error
+	full     bool
+	once     sync.Once
+	delegate *pluginLoadFuture
+	aliases  []*pluginLoadFuture
+}
+
+func (future *pluginLoadFuture) wait(ctx context.Context) (Result, error) {
+	value := func() (Result, error) {
+		future.loader.mu.Lock()
+		defer future.loader.mu.Unlock()
+		return snapshotResult(future.result), future.err
+	}
+	select {
+	case <-future.done:
+		return value()
+	default:
+	}
+	select {
+	case <-future.done:
+		return value()
+	case <-ctx.Done():
+		return Result{}, ctx.Err()
+	}
+}
+
 type CapabilityError struct{ Boundary string }
 
 func (e *CapabilityError) Error() string {
@@ -94,38 +127,19 @@ func New(o Options) (*Loader, error) {
 func (l *Loader) SharesSettingsState(state *clisettings.State) bool {
 	return l != nil && state != nil && l.options.SettingsState == state
 }
-func (l *Loader) Clear() { l.mu.Lock(); l.cached = nil; l.options.ClearSettings(); l.mu.Unlock() }
-func (l *Loader) LoadCached(ctx context.Context) (Result, error) {
-	switch strings.ToLower(strings.TrimSpace(l.options.Environment("CLAUDE_CODE_SYNC_PLUGIN_INSTALL"))) {
-	case "1", "true", "yes", "on":
-		return l.LoadFull(ctx)
-	}
+func (l *Loader) Clear() {
 	l.mu.Lock()
-	defer l.mu.Unlock()
-	if l.cached != nil {
-		return snapshotResult(*l.cached), nil
-	}
-	result, e := l.assemble(ctx, "", false)
-	if e == nil {
-		l.cacheID++
-		result.cacheID = l.cacheID
-		l.cached = &result
-	}
-	return snapshotResult(result), e
+	l.cached = nil
+	l.cachedPending = nil
+	l.fullPending = nil
+	l.options.ClearSettings()
+	l.mu.Unlock()
+}
+func (l *Loader) LoadCached(ctx context.Context) (Result, error) {
+	return l.CachedProducer().Load(ctx)
 }
 func (l *Loader) LoadFull(ctx context.Context) (Result, error) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	if l.options.Prepare == nil {
-		return Result{}, &CapabilityError{"full plugin source materialization"}
-	}
-	result, e := l.assemble(ctx, "", true)
-	if e == nil {
-		l.cacheID++
-		result.cacheID = l.cacheID
-		l.cached = &result
-	}
-	return snapshotResult(result), e
+	return l.FullProducer().Load(ctx)
 }
 func (l *Loader) LoadProject(ctx context.Context, root string) (Result, error) {
 	return l.assemble(ctx, root, false)

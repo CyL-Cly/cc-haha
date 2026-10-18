@@ -159,6 +159,10 @@ describe('UpdateChecker', () => {
       ...browserHost,
       kind: 'electron',
       isDesktop: true,
+      app: {
+        ...browserHost.app,
+        getVersion: vi.fn().mockResolvedValue('0.1.0'),
+      },
       capabilities: {
         ...browserHost.capabilities,
         updates: true,

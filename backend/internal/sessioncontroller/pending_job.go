@@ -93,7 +93,18 @@ type statResult struct {
 	info fs.FileInfo
 	err  error
 }
+
+// pendingDrain retains the immutable original physical drain obligation. A
+// different explicit flush cannot change this job's future or error domain.
+type pendingDrain struct {
+	future       *WriteFuture
+	natural      bool
+	queueStarted bool
+	queueCursor  *transcriptQueueGeneration
+}
+
 type pendingBatch struct {
+	job      *pendingDrain
 	path     string
 	entries  []queuedEntry
 	lease    *descriptorLease
@@ -108,10 +119,21 @@ type pendingBatch struct {
 // leases/immutable bytes, never Scope, Envelope, Factory or queued entries.
 // Initial Record/prepare/metadata IO remains synchronous and is not full SDK.
 type PendingWriter struct {
-	writer          *Writer
-	owner           *cooperative.Owner
-	active          *WriteFuture
-	natural         bool
+	// The actual Source fixture's async filesystem guards, attached only by the
+	// existing Controller observer binding. Ordinary product construction is nil.
+	sdkAsyncObservers *sdkAsyncReturnObservers
+	// Optional read-only inline diagnostic. Nil in normal product construction.
+	observeWriterState func(writerObservation)
+	// Optional read-only observation of the actual transcript reducer return.
+	// It supplies no value, Scope, readiness or replacement I/O; nil in production.
+	observeUUIDLoadReturn func()
+	writer                *Writer
+	owner                 *cooperative.Owner
+	// active is only the timer-owned drain observed by Source Project.flush.
+	active *WriteFuture
+	// drains is admission order of actual in-flight physical drain jobs, never
+	// outer Flush/Record/tracked-zero or pure branch Promise observers.
+	drains          []*pendingDrain
 	closing         bool
 	hostClaimed     bool
 	closeFuture     *WriteFuture
@@ -169,79 +191,151 @@ func (pending *PendingWriter) postDrainReference(ref *ownerasync.NativeReference
 		go func() { _ = receipt.Wait(); ref.DeliveryFinished() }()
 	}
 }
+
+// Begin retains the existing physical-drain observer API. Existing SDKhost
+// tests use it to observe the original pending D rather than create another
+// Source call. Production explicit flush and metadata ACK use beginExplicit.
 func (pending *PendingWriter) Begin(scope *cooperative.Scope) (*WriteFuture, error) {
 	return pending.begin(scope, false)
 }
+
+type drainAdmission uint8
+
+const (
+	observePhysicalDrain drainAdmission = iota
+	naturalTimerDrain
+	explicitPhysicalDrain
+	closingPhysicalDrain
+)
+
 func (pending *PendingWriter) begin(scope *cooperative.Scope, natural bool) (*WriteFuture, error) {
+	if natural {
+		return pending.admitDrain(scope, naturalTimerDrain)
+	}
+	return pending.admitDrain(scope, observePhysicalDrain)
+}
+func (pending *PendingWriter) beginExplicit(scope *cooperative.Scope) (*WriteFuture, error) {
+	return pending.admitDrain(scope, explicitPhysicalDrain)
+}
+func (pending *PendingWriter) admitDrain(scope *cooperative.Scope, admission drainAdmission) (*WriteFuture, error) {
 	if !scope.BelongsTo(pending.owner) {
 		return nil, cooperative.ErrRestricted
 	}
 	var future *WriteFuture
 	err := scope.Inline(cooperative.Flush, func(*cooperative.Scope) error {
-		if pending.closing {
+		if pending.closing && admission != closingPhysicalDrain {
 			return ErrPendingClosed
 		}
-		if pending.active != nil {
-			pending.natural = pending.natural || natural
-			future = pending.active
-			return nil
+		natural := admission == naturalTimerDrain
+		if admission == observePhysicalDrain || natural {
+			if natural {
+				// Preserve the existing natural-to-natural admission policy. An explicit
+				// drain is never installed in this timer-only slot or given its errors.
+				if pending.active != nil {
+					future = pending.active
+					return nil
+				}
+			} else {
+				// Select the earliest still-pending real job, with no compatibility-only
+				// active slot and no resurrection of a completed historical error.
+				for _, job := range pending.drains {
+					select {
+					case <-job.future.Done():
+					default:
+						future = job.future
+						return nil
+					}
+				}
+			}
 		}
 		pending.writer.mu.Lock()
 		defer pending.writer.mu.Unlock()
-		// Existing Writer maps do not expose Source Map insertion order. The two
-		// original profiles have one destination; multiple targets are a typed cap.
-		if len(pending.writer.queues) > 1 {
-			return capability("independent multi-target transcript drain order")
-		}
 		if pending.writer.stop != nil {
 			pending.writer.stop()
 			pending.writer.stop = nil
 		}
 		future = newWriteFuture()
-		pending.active = future
-		pending.natural = natural
-		pending.nextLocked()
+		job := &pendingDrain{future: future, natural: natural}
+		pending.drains = append(pending.drains, job)
+		if natural {
+			pending.active = future
+		}
+		pending.nextLocked(job)
 		return nil
 	})
 	return future, err
 }
 
-// nextLocked consumes the real Writer queues/policy, retaining live references.
-func (pending *PendingWriter) nextLocked() {
-	for path, entries := range pending.writer.queues {
+// removeDrainLocked drops only this completed job's administrative registry
+// entry. It cannot clear or settle a different timer/manual drain.
+func (pending *PendingWriter) removeDrainLocked(job *pendingDrain) {
+	for index, current := range pending.drains {
+		if current == job {
+			copy(pending.drains[index:], pending.drains[index+1:])
+			pending.drains[len(pending.drains)-1] = nil
+			pending.drains = pending.drains[:len(pending.drains)-1]
+			break
+		}
+	}
+	if job.natural && pending.active == job.future {
+		pending.active = nil
+	}
+	if len(pending.drains) == 0 {
+		pending.writer.compactQueueGenerationsLocked()
+	}
+}
+
+// nextLocked advances this drain's original Map-entry iterator once per entry.
+// The same entry's late enqueue remains for a later drain. A newly inserted key
+// or a deleted/reinserted generation remains visible after the current cursor.
+func (pending *PendingWriter) nextLocked(job *pendingDrain) {
+	for {
+		path, entries, exists := job.nextQueueGenerationLocked(pending.writer)
+		if !exists {
+			break
+		}
 		if len(entries) == 0 {
-			delete(pending.writer.queues, path)
 			continue
 		}
 		pending.writer.queues[path] = nil
 		if pending.writer.skipped() {
 			pending.writer.discard(entries)
-			delete(pending.writer.queues, path)
 			continue
 		}
-		pending.open(&pendingBatch{path: path, entries: entries})
+		pending.open(&pendingBatch{job: job, path: path, entries: entries})
 		return
 	}
-	future := pending.active
-	pending.active = nil
-	pending.natural = false
-	if future != nil {
-		future.settle(nil)
-	}
+	// Source only runs this second cleanup loop after the whole main iterator
+	// succeeds. Per-batch deletion would create a different Map generation.
+	pending.writer.deleteEmptyQueuesLocked()
+	pending.removeDrainLocked(job)
+	job.future.settle(nil)
 }
 
 // dispatch must be called on owner. The worker's only mutable object is its
 // private descriptor lease; completion is an explicit owner command.
 func dispatch[T any](pending *PendingWriter, future *WriteFuture, work func() T, cleanup func(T), complete func(T)) {
+	dispatchTranscriptNativeOperation(pending, future, transcriptNativeUnwrapped, work, cleanup, complete)
+}
+
+func dispatchTranscriptNativeOperation[T any](pending *PendingWriter, future *WriteFuture, operation transcriptNativeOperation, work func() T, cleanup func(T), complete func(T)) {
 	pending.runtimeNative.begin()
 	pending.workers.Add(1)
 	go func() {
 		defer pending.workers.Done()
 		defer pending.runtimeNative.end()
 		result := work()
-		receipt, err := pending.owner.SubmitIndependent(context.Background(), cooperative.Flush, func(*cooperative.Scope) error { complete(result); return nil })
+		var reaction transcriptNativeCompletion
+		receipt, err := pending.owner.SubmitIndependent(context.Background(), cooperative.Flush, func(scope *cooperative.Scope) error {
+			var err error
+			reaction, err = completeTranscriptNativeOperation(scope, pending, operation, func(*cooperative.Scope) { complete(result) })
+			return err
+		})
 		if err == nil {
 			err = receipt.Wait()
+		}
+		if err == nil {
+			err = reaction.Wait()
 		}
 		if err != nil {
 			if cleanup != nil {
@@ -252,8 +346,8 @@ func dispatch[T any](pending *PendingWriter, future *WriteFuture, work func() T,
 	}()
 }
 func (pending *PendingWriter) open(batch *pendingBatch) {
-	files, path, future := pending.writer.options.Files, batch.path, pending.active
-	dispatch(pending, future, func() openResult {
+	files, path, future := pending.writer.options.Files, batch.path, batch.job.future
+	dispatchTranscriptNativeOperation(pending, future, transcriptNativeFSPOpen, func() openResult {
 		file, err := files.OpenFile(path, os.O_WRONLY|os.O_APPEND, 0)
 		if err != nil {
 			return openResult{err: err}
@@ -267,7 +361,7 @@ func (pending *PendingWriter) open(batch *pendingBatch) {
 		if errors.Is(result.err, fs.ErrNotExist) {
 			pending.writer.mu.Lock()
 			pending.writer.discard(batch.entries)
-			pending.nextLocked()
+			pending.nextLocked(batch.job)
 			pending.writer.mu.Unlock()
 			return
 		}
@@ -280,7 +374,7 @@ func (pending *PendingWriter) open(batch *pendingBatch) {
 	})
 }
 func (pending *PendingWriter) stat(batch *pendingBatch) {
-	lease, future := batch.lease, pending.active
+	lease, future := batch.lease, batch.job.future
 	dispatch(pending, future, func() statResult { info, err := lease.file.Stat(); return statResult{info, err} }, func(statResult) { _ = lease.close() }, func(result statResult) {
 		err := result.err
 		if err == nil && !result.info.Mode().IsRegular() {
@@ -333,7 +427,7 @@ func (pending *PendingWriter) encode(batch *pendingBatch) {
 	pending.closeBatch(batch, nil)
 }
 func (pending *PendingWriter) appendBytes(batch *pendingBatch, bytes []byte, complete func()) {
-	lease, future := batch.lease, pending.active
+	lease, future := batch.lease, batch.job.future
 	dispatch(pending, future, func() error { return writeAll(lease.file, bytes) }, func(error) { _ = lease.close() }, func(err error) {
 		if err != nil {
 			pending.closeBatch(batch, err)
@@ -343,8 +437,8 @@ func (pending *PendingWriter) appendBytes(batch *pendingBatch, bytes []byte, com
 	})
 }
 func (pending *PendingWriter) closeBatch(batch *pendingBatch, prior error) {
-	lease, future := batch.lease, pending.active
-	dispatch(pending, future, func() error { return lease.close() }, nil, func(err error) {
+	lease, future := batch.lease, batch.job.future
+	dispatchTranscriptNativeOperation(pending, future, transcriptNativeGuardedClose, func() error { return lease.close() }, nil, func(err error) {
 		// Source awaits close in finally; a failed close replaces an earlier
 		// stat/encode/append error, while successful close preserves that error.
 		if err == nil {
@@ -360,27 +454,75 @@ func (pending *PendingWriter) finish(batch *pendingBatch, err error) {
 		delete(pending.writer.liveFileHistoryEntries, item.entry)
 	}
 	if err != nil {
-		future, natural := pending.active, pending.natural
-		pending.active = nil
-		pending.natural = false
+		job := batch.job
+		pending.removeDrainLocked(job)
 		pending.writer.mu.Unlock()
-		if natural {
+		if job.natural {
 			pending.writer.options.OnError(err)
 		}
-		future.settle(err)
+		job.future.settle(err)
 		return
 	}
-	// Source deletes only queues that are still empty, retaining late enqueues.
-	if len(pending.writer.queues[batch.path]) == 0 {
-		delete(pending.writer.queues, batch.path)
-	}
-	pending.nextLocked()
+	pending.nextLocked(batch.job)
 	pending.writer.mu.Unlock()
 }
 
-// Close is off-owner and must run before Owner.Close. It stops admission and
-// waits for the independent job plus completion workers; it never inherits a
-// model cancellation signal. It does not cancel a blocked native FS operation.
+// pendingCloseDrain is an administrative join of real drain jobs, never a
+// registry entry itself and never a public Flush/Record/tracked-zero obligation.
+// It starts its final drain only after the already-admitted jobs have settled,
+// preserving held-batch/late-queue ownership. Workers are joined off-owner.
+type pendingCloseDrain struct {
+	pending *PendingWriter
+	future  *WriteFuture
+	waiting []*WriteFuture
+	index   int
+	failure error
+	final   bool
+}
+
+func (job *pendingCloseDrain) next(scope *cooperative.Scope) {
+	if job.index < len(job.waiting) {
+		future := job.waiting[job.index]
+		job.index++
+		job.wait(future, false)
+		return
+	}
+	if !job.final {
+		job.final = true
+		drain, err := job.pending.admitDrain(scope, closingPhysicalDrain)
+		if err != nil {
+			job.finish(err)
+			return
+		}
+		job.wait(drain, true)
+	}
+}
+func (job *pendingCloseDrain) wait(future *WriteFuture, final bool) {
+	err := future.thenOwner(job.pending.owner, func(scope *cooperative.Scope, failure error) {
+		if job.failure == nil {
+			job.failure = failure
+		}
+		if final {
+			job.finish(nil)
+			return
+		}
+		job.next(scope)
+	}, job.future.settle)
+	if err != nil {
+		job.future.settle(err)
+	}
+}
+func (job *pendingCloseDrain) finish(failure error) {
+	if job.failure == nil {
+		job.failure = failure
+	}
+	job.future.settle(job.failure)
+}
+
+// Close is off-owner and must run before Owner.Close. Its admission fence and
+// physical job snapshot run together on Owner. Completed historical errors are
+// absent; each public drain future keeps its original result. Administrative
+// rejection settles only this Close receipt, and never replaces workers.Wait.
 func (pending *PendingWriter) Close(ctx context.Context) error {
 	if ctx == nil {
 		return errors.New("pending writer Close requires a context")
@@ -394,20 +536,25 @@ func (pending *PendingWriter) Close(ctx context.Context) error {
 			future = pending.closeFuture
 			return nil
 		}
-		var beginErr error
-		future, beginErr = pending.begin(scope, false)
-		if beginErr != nil {
-			return beginErr
+		future = newWriteFuture()
+		job := &pendingCloseDrain{pending: pending, future: future}
+		for _, drain := range pending.drains {
+			select {
+			case <-drain.future.Done():
+			default:
+				job.waiting = append(job.waiting, drain.future)
+			}
 		}
-		pending.stopRecordAdmission()
 		pending.closeFuture = future
+		pending.stopRecordAdmission()
+		job.next(scope)
 		return nil
 	})
 	if err == nil {
 		err = receipt.Wait()
 	}
-	// Once close is admitted, observe settlement/join even if its caller stops
-	// waiting or the independent job fails. Model cancellation never owns FS.
+	// Once close is admitted, observe its independent result despite caller
+	// cancellation. An error must never abandon another actual native worker.
 	if err == nil {
 		err = future.Wait(context.Background())
 	}

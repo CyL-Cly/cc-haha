@@ -51,6 +51,12 @@ func TestPublicCLIDynamicMCPOverridesFilesStrictAndBareThenColdResumes(t *testin
 			}))
 			defer peer.Close()
 			model := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				// The original CLI init HEAD is distinct from model POSTs.
+				if r.Method == http.MethodHead {
+					w.WriteHeader(http.StatusNoContent)
+					return
+				}
+
 				data, _ := io.ReadAll(r.Body)
 				call := modelCalls.Add(1)
 				if !bytes.Contains(data, []byte(`"name":"mcp__owned__calculate"`)) {

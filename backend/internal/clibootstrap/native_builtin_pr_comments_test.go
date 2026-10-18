@@ -3,6 +3,7 @@ package clibootstrap
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -31,6 +32,10 @@ func TestActualPRCommentsSlashUsesOriginalPromptRealBashAndCanonicalResults(t *t
 		t.Fatal(err)
 	}
 	f.n.Environment["PATH"] = bin + string(os.PathListSeparator) + "/usr/bin:/bin"
+	// Bash runs as a login shell, as in Source. macOS /etc/profile can replace
+	// the child's PATH, so install the executable fixture in this private HOME's
+	// login profile instead of accidentally resolving the machine's real gh.
+	f.write(t, filepath.Join(f.home, ".bash_profile"), "export PATH='"+strings.ReplaceAll(f.n.Environment["PATH"], "'", "'\\''")+"'\n")
 	var calls atomic.Int32
 	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		body, _ := io.ReadAll(r.Body)
@@ -43,7 +48,13 @@ func TestActualPRCommentsSlashUsesOriginalPromptRealBashAndCanonicalResults(t *t
 			return
 		}
 		if n != 2 || !bytes.Contains(body, []byte("REAL_PR_ISSUE_COMMENT_3C7")) || !bytes.Contains(body, []byte("REAL_PR_REVIEW_COMMENT_3C7")) {
-			t.Errorf("physical Bash GH output did not reach actual model turn%d %.1800s", n, body)
+			var request struct{ Messages []json.RawMessage }
+			_ = json.Unmarshal(body, &request)
+			var last json.RawMessage
+			if len(request.Messages) > 0 {
+				last = request.Messages[len(request.Messages)-1]
+			}
+			t.Errorf("physical Bash GH output did not reach actual model turn%d last message %.4000s", n, last)
 		}
 		emitWorktreeModel(w, n, "", "", "## Comments\n- @fixture-reviewer src/example.go#7:\n  > REAL_PR_REVIEW_COMMENT_3C7\n- @fixture-reviewer:\n  > REAL_PR_ISSUE_COMMENT_3C7")
 	}))

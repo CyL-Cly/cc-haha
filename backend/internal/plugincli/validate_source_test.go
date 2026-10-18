@@ -104,7 +104,7 @@ func testOriginalCLIValidate(t *testing.T, name string) {
 	if code != expectedCode {
 		t.Fatal("actual Source expected validation branch failed", code, expectedCode, stderr.String(), out.String())
 	}
-	native, err := clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: home, Platform: "darwin", ManagedRoot: filepath.Join(home, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+	native, err := newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: home, Platform: "darwin", ManagedRoot: filepath.Join(home, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -83,9 +83,19 @@ func (s *Service) startAgent(ctx context.Context, in protocol.JSONObject, call q
 	if background && s.options.RunBackgroundAgent == nil {
 		return nil, capability("Agent configured background task registry/notifications")
 	}
-	for _, property := range []string{"hooks", "mcpServers"} {
-		if value := selected.Fields.Get(property); permissionFeedbackValue(value) {
-			return nil, capability("Agent configured " + property + " lifecycle")
+	var nativePresetRunner func(context.Context, *cooperative.Scope, AgentRequest) (*ownerasync.OwnerFuture[AgentRunResult], error)
+	if permissionFeedbackValue(selected.Fields.Get("hooks")) {
+		var bound bool
+		nativePresetRunner, bound = s.nativeAgentMCPRunner(scope, background)
+		if !bound {
+			return nil, capability("Agent configured hooks lifecycle")
+		}
+	}
+	if permissionFeedbackValue(selected.Fields.Get("mcpServers")) {
+		var bound bool
+		nativePresetRunner, bound = s.nativeAgentMCPRunner(scope, background)
+		if !bound {
+			return nil, capability("Agent configured mcpServers lifecycle")
 		}
 	}
 	isolation := selected.Fields.String("isolation")
@@ -97,8 +107,13 @@ func (s *Service) startAgent(ctx context.Context, in protocol.JSONObject, call q
 	}
 	var skills []string
 	_ = json.Unmarshal(selected.Fields.Get("skills"), &skills)
+	var nativeSkillRunner func(context.Context, *cooperative.Scope, AgentRequest) (*ownerasync.OwnerFuture[AgentRunResult], error)
 	if len(skills) > 0 {
-		return nil, capability("Agent configured skill preload lifecycle")
+		var bound bool
+		nativeSkillRunner, bound = s.nativeAgentSkillRunner(scope, background)
+		if !bound {
+			return nil, capability("Agent configured skill preload lifecycle")
+		}
 	}
 	_, registered, e := s.Catalog(scope)
 	if e != nil {
@@ -151,7 +166,7 @@ func (s *Service) startAgent(ctx context.Context, in protocol.JSONObject, call q
 			maxTurns = &value
 		}
 	}
-	request := AgentRequest{SelectedAgent: selected.Fields.Clone(), Prompt: in.String("prompt"), Description: in.String("description"), AgentType: agentType, Model: in.String("model"), DefinitionModel: selected.Model, Source: selected.Source, Effort: append(json.RawMessage(nil), selected.Effort...), MaxTurns: maxTurns, OmitClaudeMd: string(selected.Fields.Get("omitClaudeMd")) == "true", SystemPrompt: prompt + "\n\n" + agentNotes, SystemPromptSections: []json.RawMessage{append(json.RawMessage(nil), promptJSON...), quote(agentNotes)}, PermissionContext: childPermission, Tools: resolved.ResolvedTools, ToolUseID: append(json.RawMessage(nil), call.ToolUseID...)}
+	request := AgentRequest{AgentToolInvocation: true, SelectedAgent: selected.Fields.Clone(), Prompt: in.String("prompt"), Description: in.String("description"), AgentType: agentType, Model: in.String("model"), DefinitionModel: selected.Model, Source: selected.Source, Effort: append(json.RawMessage(nil), selected.Effort...), MaxTurns: maxTurns, OmitClaudeMd: string(selected.Fields.Get("omitClaudeMd")) == "true", SystemPrompt: prompt + "\n\n" + agentNotes, SystemPromptSections: []json.RawMessage{append(json.RawMessage(nil), promptJSON...), quote(agentNotes)}, PermissionContext: childPermission, Tools: resolved.ResolvedTools, ToolUseID: append(json.RawMessage(nil), call.ToolUseID...)}
 	request.ParentPermissionMode, request.PermissionModeOverride = permission.String("mode"), override
 	request.Name = in.String("name")
 	request.Isolation = isolation
@@ -171,6 +186,12 @@ func (s *Service) startAgent(ctx context.Context, in protocol.JSONObject, call q
 	runner := s.options.RunAgent
 	if background {
 		runner = s.options.RunBackgroundAgent
+	}
+	if nativeSkillRunner != nil {
+		runner = nativeSkillRunner
+	}
+	if nativePresetRunner != nil {
+		runner = nativePresetRunner
 	}
 	future, e := runner(ctx, scope, request)
 	if e != nil {

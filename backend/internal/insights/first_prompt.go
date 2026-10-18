@@ -117,6 +117,17 @@ func skipPrompt(v []uint16) bool {
 // FirstPrompt ports the full CLI first-meaningful-user selector, retaining
 // preceding IDE-block skipping, custom slash arguments and UTF-16 truncation.
 func FirstPrompt(records []protocol.JSONObject, builtins map[string]bool) (json.RawMessage, error) {
+	value, err := FirstMeaningfulPrompt(records, func(name string) (bool, error) { return builtins[name], nil })
+	if err == nil && value == nil {
+		return raw("No prompt"), nil
+	}
+	return value, err
+}
+
+// FirstMeaningfulPrompt preserves the selector's undefined result separately
+// from a real user saying "No prompt". The compiled-name lookup stays lazy,
+// as in the original helper's command-tag branch.
+func FirstMeaningfulPrompt(records []protocol.JSONObject, isBuiltin func(string) (bool, error)) (json.RawMessage, error) {
 	for _, record := range records {
 		if record.String("type") != "user" || truthy(record.Get("isMeta")) || truthy(record.Get("isCompactSummary")) {
 			continue
@@ -158,7 +169,14 @@ func FirstPrompt(records []protocol.JSONObject, builtins map[string]bool) (json.
 				if len(plain) > 0 && plain[0] == '/' {
 					plain = plain[1:]
 				}
-				if builtins[string(utf16.Decode(plain))] {
+				if isBuiltin == nil {
+					return nil, errors.New("meaningful prompt requires compiled builtin names")
+				}
+				builtin, err := isBuiltin(string(utf16.Decode(plain)))
+				if err != nil {
+					return nil, err
+				}
+				if builtin {
 					continue
 				}
 				args := trimUnits(extractTag(units, "command-args"))
@@ -185,5 +203,5 @@ func FirstPrompt(records []protocol.JSONObject, builtins map[string]bool) (json.
 			return protocol.QuoteJavaScriptUTF16(normalized), nil
 		}
 	}
-	return raw("No prompt"), nil
+	return nil, nil
 }

@@ -15,6 +15,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/NanmiCoder/cc-haha/backend/internal/mcpauth"
 	"github.com/NanmiCoder/cc-haha/backend/internal/mcpclient"
 	"github.com/NanmiCoder/cc-haha/backend/internal/mcpheaders"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
@@ -23,18 +24,25 @@ import (
 )
 
 type Options struct {
-	PID                 int
-	HeadersPolicy       func(context.Context) (mcpheaders.Options, error)
-	SessionIngressToken func() string
-	SDK                 func(context.Context, string, protocol.JSONObject) (*mcpclient.SDKControlBindings, error)
-	CWD, Version        string
-	Environment         map[string]string
-	HTTPClient          *http.Client
-	PrepareHTTP         func(context.Context, protocol.JSONObject, mcpclient.Config) (mcpclient.Config, *http.Client, error)
-	Auth                func(context.Context, string, protocol.JSONObject) (mcpclient.AuthProvider, error)
-	Enabled             func(context.Context, string, protocol.JSONObject) (bool, error)
-	Authenticate        func(context.Context, string, protocol.JSONObject, func(string) error) error
-	ClearOAuth          func(context.Context, string, protocol.JSONObject) error
+	AuthenticationCache        *AuthenticationCache
+	HasDiscoveryWithoutToken   func(context.Context, string, protocol.JSONObject) (bool, error)
+	ClearDiscoveryWithoutToken func(context.Context, string, protocol.JSONObject) error
+	PID                        int
+	HeadersPolicy              func(context.Context) (mcpheaders.Options, error)
+	SessionIngressToken        func() string
+	SDK                        func(context.Context, string, protocol.JSONObject) (*mcpclient.SDKControlBindings, error)
+	CWD, Version               string
+	Environment                map[string]string
+	EnvironmentValue           func(context.Context, string) (string, error)
+	HTTPClient                 *http.Client
+	PrepareHTTP                func(context.Context, protocol.JSONObject, mcpclient.Config) (mcpclient.Config, *http.Client, error)
+	Auth                       func(context.Context, string, protocol.JSONObject) (mcpclient.AuthProvider, error)
+	Enabled                    func(context.Context, string, protocol.JSONObject) (bool, error)
+	Authenticate               func(context.Context, string, protocol.JSONObject, func(string) error) error
+	AuthenticateFlow           func(context.Context, string, protocol.JSONObject, func(string) error, mcpauth.FlowOptions) error
+	HasOAuthTokens             func(context.Context, string, protocol.JSONObject) (bool, error)
+	RevokeOAuth                func(context.Context, string, protocol.JSONObject, bool) error
+	ClearOAuth                 func(context.Context, string, protocol.JSONObject) error
 }
 type Connection struct {
 	Name, Status string
@@ -68,6 +76,12 @@ type Service struct {
 	toolCache     map[string]*toolDiscovery
 	toolOrder     []string
 	discoveries   map[*toolDiscovery]bool
+	promptCache   map[string]*promptDiscovery
+	promptOrder   []string
+	promptReads   map[*promptDiscovery]bool
+	resourceCache map[string]*resourceDiscovery
+	resourceReads map[*resourceDiscovery]bool
+	resourceOrder []string
 }
 type toolDiscovery struct {
 	execution *Connection
@@ -207,7 +221,8 @@ func (s *Service) connect(ctx context.Context, key, name string, config protocol
 		if err != nil {
 			failure = err
 		} else {
-			options := mcpclient.Options{SessionIngressToken: s.options.SessionIngressToken, Name: name, Version: s.options.Version, Environment: s.options.Environment, CWD: s.options.CWD, HTTPClient: httpClient, Auth: auth, OnClose: func(bool) { s.peerClosed(key, entry) }}
+			options := mcpclient.Options{EnvironmentValue: s.options.EnvironmentValue, SessionIngressToken: s.options.SessionIngressToken, Name: name, Version: s.options.Version, Environment: s.options.Environment, CWD: s.options.CWD, HTTPClient: httpClient, Auth: auth, OnClose: func(bool) { s.peerClosed(key, entry) }}
+			options.NativeChromeStub = mcpclient.NormalizeName(name) == "claude-in-chrome" && (parsed.Type == "" || parsed.Type == "stdio")
 			if parsed.Type == "sdk" && s.options.SDK != nil {
 				options.SDK, err = s.options.SDK(ctx, name, config.Clone())
 			}
@@ -219,11 +234,28 @@ func (s *Service) connect(ctx context.Context, key, name string, config protocol
 				var unauthorized *mcpclient.AuthError
 				if errors.As(err, &unauthorized) {
 					value.Status = "needs-auth"
+					if s.options.AuthenticationCache != nil && (config.String("type") == "http" || config.String("type") == "sse" || config.String("type") == "claudeai-proxy") {
+						s.options.AuthenticationCache.Mark(name)
+					}
 				} else {
 					failure = err
 				}
 			} else {
 				value.Client, value.Status = client, "connected"
+				if config.String("type") == "http" || config.String("type") == "sse" {
+					if s.options.ClearDiscoveryWithoutToken != nil {
+						failure = s.options.ClearDiscoveryWithoutToken(context.Background(), name, config)
+					}
+					if failure == nil {
+						target := name
+						failure = s.options.AuthenticationCache.Clear(context.Background(), &target)
+					}
+					if failure != nil {
+						_ = client.Close()
+						value.Client = nil
+						value.Status = "failed"
+					}
+				}
 				if parsed.Type == "ws-ide" || parsed.Type == "sse-ide" {
 					// Source issues this notification without awaiting an IDE reply.
 					// The client owns the send and the transport's actual close path.
@@ -326,6 +358,23 @@ func (s *Service) Probe(ctx context.Context, name string, config protocol.JSONOb
 func (s *Service) ExecutionEnabled(ctx context.Context, name string, config protocol.JSONObject) (bool, error) {
 	return s.options.Enabled(ctx, name, config)
 }
+
+// Source tools/list_changed invalidates only its fetchToolsForClient LRU;
+// the actual peer and prompt/resource caches remain intact.
+func (s *Service) InvalidateTools(peer Connection) error {
+	if !s.OwnsConnection(peer) {
+		return errors.New("MCP tool invalidation belongs to a different process graph")
+	}
+	owner := peer.runtime
+	owner.mu.Lock()
+	defer owner.mu.Unlock()
+	key := owner.key(peer.Name, peer.Config)
+	delete(owner.toolCache, key)
+	if at := slices.Index(owner.toolOrder, key); at >= 0 {
+		owner.toolOrder = append(owner.toolOrder[:at], owner.toolOrder[at+1:]...)
+	}
+	return nil
+}
 func (s *Service) Disconnect(ctx context.Context, name string, config protocol.JSONObject) error {
 	return s.disconnect(ctx, name, config, nil)
 }
@@ -351,6 +400,8 @@ func (s *Service) disconnect(ctx context.Context, name string, config protocol.J
 	}
 	delete(s.entries, key)
 	delete(s.toolCache, key)
+	s.forgetPromptsLocked(key)
+	s.forgetResourcesLocked(key)
 	if at := slices.Index(s.toolOrder, key); at >= 0 {
 		s.toolOrder = append(s.toolOrder[:at], s.toolOrder[at+1:]...)
 	}
@@ -398,6 +449,8 @@ func (s *Service) peerClosed(key string, entry *pending) {
 	}
 	delete(s.entries, key)
 	delete(s.toolCache, key)
+	s.forgetPromptsLocked(key)
+	s.forgetResourcesLocked(key)
 	if at := slices.Index(s.toolOrder, key); at >= 0 {
 		s.toolOrder = append(s.toolOrder[:at], s.toolOrder[at+1:]...)
 	}

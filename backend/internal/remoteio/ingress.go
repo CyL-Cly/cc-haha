@@ -24,6 +24,7 @@ type Ingress struct {
 	Wait                func(context.Context, time.Duration) error
 	mu                  sync.Mutex
 	sessions            map[string]*ingressSession
+	heads               map[string]string
 	compactSet, compact bool
 }
 
@@ -43,15 +44,26 @@ func (i *Ingress) afterCompact() bool {
 }
 
 type ingressSession struct {
-	mu   sync.Mutex
-	last string
+	mu sync.Mutex
 }
 
 func NewIngress(client *http.Client, auth *IngressAuth, afterLastCompact func() bool) *Ingress {
 	if client == nil {
 		client = &http.Client{Transport: http.DefaultTransport.(*http.Transport).Clone()}
 	}
-	return &Ingress{HTTP: client, Auth: auth, AfterLastCompact: afterLastCompact, Wait: wait, sessions: map[string]*ingressSession{}}
+	return &Ingress{HTTP: client, Auth: auth, AfterLastCompact: afterLastCompact, Wait: wait, sessions: map[string]*ingressSession{}, heads: map[string]string{}}
+}
+
+func (i *Ingress) head(sid string) string {
+	i.mu.Lock()
+	defer i.mu.Unlock()
+	return i.heads[sid]
+}
+
+func (i *Ingress) setHead(sid, id string) {
+	i.mu.Lock()
+	defer i.mu.Unlock()
+	i.heads[sid] = id
 }
 func (i *Ingress) session(sid string) *ingressSession {
 	i.mu.Lock()
@@ -121,10 +133,7 @@ func (i *Ingress) Read(ctx context.Context, sid, target string) ([]json.RawMessa
 			return nil, errors.New("session log's last entry is not an object")
 		}
 		if value := last.String("uuid"); value != "" {
-			session := i.session(sid)
-			session.mu.Lock()
-			session.last = value
-			session.mu.Unlock()
+			i.setHead(sid, value)
 		}
 	}
 	return rows, nil
@@ -144,8 +153,8 @@ func (i *Ingress) Append(ctx context.Context, sid, target string, entry protocol
 		}
 		request.Header.Set("Authorization", "Bearer "+token)
 		request.Header.Set("Content-Type", "application/json")
-		if session.last != "" {
-			request.Header.Set("Last-Uuid", session.last)
+		if last := i.head(sid); last != "" {
+			request.Header.Set("Last-Uuid", last)
 		}
 		response, err := i.HTTP.Do(request)
 		if err == nil {
@@ -153,14 +162,14 @@ func (i *Ingress) Append(ctx context.Context, sid, target string, entry protocol
 			_ = response.Body.Close()
 			switch response.StatusCode {
 			case 200, 201:
-				session.last = entry.String("uuid")
+				i.setHead(sid, entry.String("uuid"))
 				return true, nil
 			case 401:
 				return false, nil
 			case 409:
 				last := response.Header.Get("X-Last-Uuid")
 				if last == entry.String("uuid") {
-					session.last = last
+					i.setHead(sid, last)
 					return true, nil
 				}
 				if last == "" {
@@ -178,7 +187,7 @@ func (i *Ingress) Append(ctx context.Context, sid, target string, entry protocol
 				if last == "" {
 					return false, nil
 				}
-				session.last = last
+				i.setHead(sid, last)
 				continue
 			}
 		} else if ctx.Err() != nil {

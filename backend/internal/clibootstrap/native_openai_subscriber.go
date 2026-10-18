@@ -3,7 +3,6 @@ package clibootstrap
 import (
 	"context"
 	"errors"
-	"io/fs"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/modelselection"
@@ -15,17 +14,12 @@ func (b *NativeOpenAIAuth) authDependencies(env map[string]string, bare bool) (p
 	if envTruthyNative(env["CLAUDE_CODE_REMOTE"]) || env["USER_TYPE"] == "ant" && envTruthyNative(env["COO_RUNNING_ON_HOMESPACE"]) {
 		return protocol.JSONObject{}, mainCap("native account remote/homespace credential producers")
 	}
-	for _, key := range []string{"CLAUDE_CODE_API_KEY_FILE_DESCRIPTOR", "CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR"} {
-		if !bare && env[key] != "" {
-			return protocol.JSONObject{}, mainCap("native account file descriptor credential producer")
-		}
-	}
 	var settings *protocol.JSONObject
 	var err error
 	if bare {
 		settings, err = b.main.Startup.GetSettingsForSource("flagSettings")
 	} else {
-		settings, err = b.main.Startup.GetInitialSettings()
+		settings, err = b.main.nativeSDKInitialSettings()
 	}
 	if err != nil {
 		return protocol.JSONObject{}, err
@@ -40,16 +34,6 @@ func (b *NativeOpenAIAuth) authDependencies(env map[string]string, bare bool) (p
 	}
 	return *settings, nil
 }
-func (b *NativeOpenAIAuth) checkRemoteFallback() error {
-	for _, path := range []string{"/home/claude/.claude/remote/.oauth_token", "/home/claude/.claude/remote/.api_key"} {
-		if _, err := b.main.options.Native.stat(path); err == nil {
-			return mainCap("native account remote well-known credential file")
-		} else if !errors.Is(err, fs.ErrNotExist) {
-			return err
-		}
-	}
-	return nil
-}
 func (b *NativeOpenAIAuth) claudeTokensFor(ctx context.Context, env map[string]string, bare bool) (*openaiauth.Value, error) {
 	if b.claudeTokensLoaded {
 		return b.claudeTokens, nil
@@ -57,10 +41,9 @@ func (b *NativeOpenAIAuth) claudeTokensFor(ctx context.Context, env map[string]s
 	if !bare {
 		if env["CLAUDE_CODE_OAUTH_TOKEN"] != "" {
 			b.claudeTokens = openaiauth.ClaudeEnvironmentToken(env["CLAUDE_CODE_OAUTH_TOKEN"])
+		} else if token := b.credentialFromDescriptor(env, "CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR", ".oauth_token"); token != "" {
+			b.claudeTokens = openaiauth.ClaudeEnvironmentToken(token)
 		} else {
-			if err := b.checkRemoteFallback(); err != nil {
-				return nil, err
-			}
 			raw, err := b.main.secure.ReadSourceJSON(ctx)
 			if err != nil {
 				return nil, err
@@ -72,77 +55,8 @@ func (b *NativeOpenAIAuth) claudeTokensFor(ctx context.Context, env map[string]s
 	return b.claudeTokens, nil
 }
 func (b *NativeOpenAIAuth) apiKeySource(ctx context.Context, env map[string]string, bare, preferThirdParty bool) (string, error) {
-	if env["ANTHROPIC_API_KEY"] != "" && (bare || preferThirdParty || envTruthyNative(env["CI"]) || env["NODE_ENV"] == "test") {
-		return "ANTHROPIC_API_KEY", nil
-	}
-	if bare {
-		command, err := b.main.nativeConfiguredAPIKeyHelper()
-		if err != nil {
-			return "", err
-		}
-		if command != "" {
-			return "apiKeyHelper", nil
-		}
-		return "none", nil
-	}
-	if envTruthyNative(env["CI"]) || env["NODE_ENV"] == "test" {
-		if env["CLAUDE_CODE_OAUTH_TOKEN"] == "" {
-			return "", errors.New("ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN env var is required")
-		}
-		return "none", nil
-	}
-	if env["ANTHROPIC_API_KEY"] != "" {
-		global, err := b.main.Global.Get()
-		if err != nil {
-			return "", err
-		}
-		if global != nil {
-			approved, err := openaiauth.IsCustomAPIKeyApproved(*global, quoteMain(env["ANTHROPIC_API_KEY"]))
-			if err != nil {
-				return "", err
-			}
-			if approved {
-				return "ANTHROPIC_API_KEY", nil
-			}
-		}
-	}
-	if err := b.checkRemoteFallback(); err != nil {
-		return "", err
-	}
-	command, err := b.main.nativeConfiguredAPIKeyHelper()
-	if err != nil {
-		return "", err
-	}
-	if command != "" {
-		return "apiKeyHelper", nil
-	}
-	if !b.legacyAPIKeyLoaded {
-		key, err := b.main.secure.ReadLegacyManagedAPIKey(ctx)
-		if err != nil {
-			if ctx.Err() != nil {
-				return "", err
-			}
-			if reportError := b.main.nativeLogError(ctx, err); reportError != nil {
-				return "", reportError
-			}
-		}
-		if key == "" {
-			global, err := b.main.Global.Get()
-			if err != nil {
-				return "", err
-			}
-			if global != nil {
-				key = global.String("primaryApiKey")
-				b.legacyAPIKeyPresent = openaiauth.AuthTruthy(global.Get("primaryApiKey"))
-			}
-		}
-		b.legacyAPIKeyPresent = b.legacyAPIKeyPresent || key != ""
-		b.legacyAPIKey, b.legacyAPIKeyLoaded = key, true
-	}
-	if b.legacyAPIKeyPresent {
-		return "/login managed key", nil
-	}
-	return "none", nil
+	_, source, err := b.apiKeyWithSource(ctx, env, bare, preferThirdParty)
+	return source, err
 }
 
 // IsClaudeSubscriber receives the real request's noninteractive state. The

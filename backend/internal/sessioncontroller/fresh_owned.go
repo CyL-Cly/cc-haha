@@ -9,6 +9,8 @@ const FreshPrintProfile = "source-loadInitialMessages-normal-print-v1"
 
 const FreshBareSDKProfile = "source-loadInitialMessages-bare-startup-v1"
 
+const FreshRemoteCLIProfile = "source-main-remote-teleport-startup-v1"
+
 // BeginActivateFreshOwned is the actual no-resume loadInitialMessages branch.
 // Source processSessionStartHooks is async and returns [] under bare; its await
 // then fulfills loadInitialMessages. This returns the same named two-producer
@@ -21,7 +23,8 @@ func (c *Controller) BeginActivateFreshOwned(scope *cooperative.Scope, profile s
 		return nil, err
 	}
 	normal := profile == FreshPrintProfile && c.options.PublicPrint && c.options.StartupHooks != nil
-	if !normal && (profile != FreshBareSDKProfile || c.options.ResumeOptions.Environment["CLAUDE_CODE_SIMPLE"] != "1") {
+	remote := profile == FreshRemoteCLIProfile && c.options.NativeRemoteCLI
+	if !normal && !remote && (profile != FreshBareSDKProfile || c.options.ResumeOptions.Environment["CLAUDE_CODE_SIMPLE"] != "1") {
 		return nil, capability("fresh non-bare SessionStart producer")
 	}
 	if c.active {

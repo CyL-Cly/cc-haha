@@ -13,6 +13,8 @@ import (
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/clisettings"
 	"github.com/NanmiCoder/cc-haha/backend/internal/clistartupenv"
+	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
+	"github.com/NanmiCoder/cc-haha/backend/internal/ownerasync"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 )
 
@@ -40,6 +42,8 @@ type Options struct {
 }
 
 type Future struct {
+	nativeOwner        *cooperative.Owner
+	native             *ownerasync.OwnerFuture[*protocol.JSONObject]
 	done               chan struct{}
 	value              *protocol.JSONObject
 	err                error
@@ -165,20 +169,33 @@ func (s *Service) CachedMode() (string, *Future) {
 // cache, just like lodash memoize's resolver. Returning to A after B replaces
 // the old A promise; a reset of settings alone does not clear same-mode memo.
 func (s *Service) GetUserContext() *Future {
+	f, memoryProducer, mode, directories := s.beginUserContext()
+	if memoryProducer != nil {
+		go func() {
+			memory, err := memoryProducer.load(mode, directories)
+			s.mu.Lock()
+			defer s.mu.Unlock()
+			s.finishLocked(f, memory, err)
+		}()
+	}
+	return f
+}
+
+func (s *Service) beginUserContext() (*Future, *ExplicitUserMemory, string, []string) {
 	mode, err := s.InstructionFilesMode()
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if err != nil {
 		f := &Future{done: make(chan struct{}), err: err}
 		close(f.done)
-		return f
+		return f, nil, mode, nil
 	}
 	if mode != s.mode {
 		s.mode = mode
 		s.future = nil
 	}
 	if s.future != nil {
-		return s.future
+		return s.future, nil, mode, nil
 	}
 
 	start := s.options.NowMillis()
@@ -188,7 +205,7 @@ func (s *Service) GetUserContext() *Future {
 		if err := s.options.Diagnostics.Log("info", "user_context_started", nil); err != nil {
 			f.err = err
 			close(f.done)
-			return f
+			return f, nil, mode, nil
 		}
 	}
 	disabled, err := envTruthy(s.options.Environment.Get("CLAUDE_CODE_DISABLE_CLAUDE_MDS"))
@@ -202,27 +219,19 @@ func (s *Service) GetUserContext() *Future {
 	if err != nil {
 		f.err = err
 		close(f.done)
-		return f
+		return f, nil, mode, nil
 	}
 	f.diagnosticDisabled = disabled
 	if disabled {
 		s.finishLocked(f, nil, nil)
-		return f
+		return f, nil, mode, nil
 	}
 	if s.options.Memory == nil {
 		f.err = &CapabilityError{"memory discovery/producer"}
 		close(f.done)
-		return f
+		return f, nil, mode, nil
 	}
-	memoryProducer := s.options.Memory
-	directories := append([]string{}, s.options.AdditionalDirectories...)
-	go func() {
-		memory, err := memoryProducer.load(mode, directories)
-		s.mu.Lock()
-		defer s.mu.Unlock()
-		s.finishLocked(f, memory, err)
-	}()
-	return f
+	return f, s.options.Memory, mode, append([]string{}, s.options.AdditionalDirectories...)
 }
 func (s *Service) finishLocked(f *Future, memory json.RawMessage, err error) {
 	if err != nil {

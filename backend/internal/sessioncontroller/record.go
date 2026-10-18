@@ -1,7 +1,6 @@
 package sessioncontroller
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"io/fs"
@@ -85,7 +84,7 @@ func (writer *Writer) record(messages []*protocol.JSONObject, promptID json.RawM
 			}
 			clear(writer.members)
 			writer.discard(writer.queues[writer.target()])
-			writer.queues[writer.target()] = nil
+			writer.clearQueueLocked(writer.target())
 			writer.pending = nil
 			writer.lastPrompt = nil
 		}
@@ -189,38 +188,12 @@ func (writer *Writer) record(messages []*protocol.JSONObject, promptID json.RawM
 		parent = message.Get("uuid")
 	}
 	if !writer.skipped() {
-		for _, message := range newMessages {
-			if text(message.Get("type")) != "user" || truthy(message.Get("isMeta")) || truthy(message.Get("isCompactSummary")) {
-				continue
-			}
-			content := object(message.Get("message")).Get("content")
-			var units []uint16
-			if len(bytes.TrimSpace(content)) > 0 && bytes.TrimSpace(content)[0] == '"' {
-				units, _ = protocol.DecodeJavaScriptJSONString(content)
-			} else {
-				var blocks []protocol.JSONObject
-				_ = json.Unmarshal(content, &blocks)
-				for _, block := range blocks {
-					if text(block.Get("type")) == "text" && truthy(block.Get("text")) {
-						units, _ = protocol.DecodeJavaScriptJSONString(block.Get("text"))
-						break
-					}
-				}
-			}
-			if len(units) == 0 {
-				continue
-			}
-			for index, unit := range units {
-				if unit == '\n' {
-					units[index] = ' '
-				}
-			}
-			units = trimUnits(units)
-			if len(units) > 200 {
-				units = append(trimUnits(units[:200]), '…')
-			}
-			writer.lastPrompt = protocol.QuoteJavaScriptUTF16(units)
-			break
+		values := make([]recordOriginal, len(newMessages))
+		for i, message := range newMessages {
+			values[i] = recordOriginal{record: message}
+		}
+		if _, err := writer.updateRecordPrompt(values); err != nil {
+			return nil, err
 		}
 	}
 	return parent, nil

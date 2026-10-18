@@ -56,7 +56,7 @@ func (job *appendContinuation) persistRemote(scope *cooperative.Scope) bool {
 	fatal := writer.ingressFailure
 	ccr := remote != nil && remote.Kind() == remoteio.CCR
 	legacy := ingress != nil && target != "" && enabled != nil && enabled()
-	if !(ccr || legacy) || !job.add || truthy(job.entry.Get("isSidechain")) && job.entry.Get("agentId") != nil {
+	if !job.add || truthy(job.entry.Get("isSidechain")) && job.entry.Get("agentId") != nil {
 		writer.mu.Unlock()
 		return false
 	}
@@ -64,13 +64,26 @@ func (job *appendContinuation) persistRemote(scope *cooperative.Scope) bool {
 		writer.mu.Unlock()
 		return false
 	}
+	if !(ccr || legacy) {
+		writer.mu.Unlock()
+		// appendEntry awaits the async persistToRemote even when that method
+		// returns immediately without a remote target. Only its fulfilled
+		// Promise reaction remains; it starts no filesystem/network work and
+		// does not extend enqueueWrite's already completed tracked counter.
+		fulfilled := newWriteFuture()
+		fulfilled.settle(nil)
+		if err := fulfilled.thenOwner(job.pending.owner, func(*cooperative.Scope, error) { job.future.settle(nil) }, job.future.settle); err != nil {
+			job.future.settle(err)
+		}
+		return true
+	}
 	encoded, err := writer.marshalLiveEntry(job.entry)
 	writer.mu.Unlock()
 	if err != nil {
 		writer.options.OnError(err)
 		return false
 	}
-	dispatchAppendOwned(job.pending, job.future, func() error {
+	dispatchAppendOwned(job.pending, job.future, transcriptNativeUnwrapped, func() error {
 		var payload protocol.JSONObject
 		if err := payload.UnmarshalJSON(encoded); err != nil {
 			return err

@@ -56,7 +56,7 @@ func (m *NativeMCPToolContext) ordinaryOptions(options builtintools.Options) (bu
 			return options, err
 		}
 	}
-	config := n.Environment["CLAUDE_CONFIG_DIR"]
+	config := n.ConfigHomeDirectory()
 	if config == "" {
 		config = filepath.Join(n.Home, ".claude")
 	}

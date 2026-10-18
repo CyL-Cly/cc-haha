@@ -112,7 +112,7 @@ func TestInspectionHTTPModesActualSourceAndExistingSDKControlTransport(t *testin
 	settings, global := protocol.NewJSONObject(), protocol.NewJSONObject()
 	modelOptions := modelaccounting.NativeCalculatorOptions{Environment: env, Settings: func() (*protocol.JSONObject, error) { v := settings.Clone(); return &v, nil }, Global: func() (*protocol.JSONObject, error) { v := global.Clone(); return &v, nil }}
 	o.InspectionModelOptions = &modelOptions
-	native, err := clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: home, Platform: "darwin", ManagedRoot: filepath.Join(home, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+	native, err := newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: home, Platform: "darwin", ManagedRoot: filepath.Join(home, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 	if err != nil {
 		t.Fatal(err)
 	}

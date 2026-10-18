@@ -21,7 +21,7 @@ func awaitReceived(t *testing.T, received <-chan json.RawMessage) json.RawMessag
 	}
 }
 
-func TestAdmissionPreservesSocketUserOrderWhilePermissionAndCancelBypass(t *testing.T) {
+func TestAdmissionPreservesSocketUserOrderWhilePermissionBypasses(t *testing.T) {
 	live := &transportSession{received: make(chan json.RawMessage, 40), blocked: make(chan struct{})}
 	options := testOptions(t, func(_ context.Context, _ SessionOptions, emit Emit) (LiveSession, error) {
 		live.emit = emit
@@ -30,7 +30,7 @@ func TestAdmissionPreservesSocketUserOrderWhilePermissionAndCancelBypass(t *test
 	_, host := testHost(t, options)
 	id := createTestSession(t, host, options.WorkDir)
 	socket := dial(t, host, id)
-	for range 3 {
+	for range 2 {
 		receive(t, socket)
 	}
 	if err := websocket.Message.Send(socket, `{"type":"user_message","content":"first"}`); err != nil {
@@ -50,12 +50,6 @@ func TestAdmissionPreservesSocketUserOrderWhilePermissionAndCancelBypass(t *test
 	}
 	if got := awaitReceived(t, live.received); string(got) != permission {
 		t.Fatalf("a queued user frame overtook the permission control: %s", got)
-	}
-	if err := websocket.Message.Send(socket, `{"type":"stop_generation"}`); err != nil {
-		t.Fatal(err)
-	}
-	if stringField(objectForTest(awaitReceived(t, live.received)), "type") != "stop_generation" {
-		t.Fatal("cancel was queued behind the active turn")
 	}
 	close(live.blocked)
 	for index := range 32 {
@@ -78,7 +72,7 @@ func TestShutdownCancelsAdmissionAndDropsQueuedUserFrames(t *testing.T) {
 	server, host := testHost(t, options)
 	id := createTestSession(t, host, options.WorkDir)
 	socket := dial(t, host, id)
-	for range 3 {
+	for range 2 {
 		receive(t, socket)
 	}
 	if err := websocket.Message.Send(socket, `{"type":"user_message","content":"active"}`); err != nil {

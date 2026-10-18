@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/bootstrapstate"
@@ -39,6 +40,11 @@ func must(err error) {
 type input struct {
 	Home, Origin, Temporary, SID, ResumeAt, Model              string
 	Continue, ForkSession, Checkpointing, Disabled, HoldCopies bool
+	NativeMain                                                 bool
+	NowMillis                                                  *int64
+	ClockStepMillis                                            int64
+	ClockReadStepMillis                                        int64
+	PickerSelection                                            bool
 	ResumeInterrupted, WriterOnly                              string
 	SDK                                                        []protocol.JSONObject
 	Stat                                                       map[string]resumestate.Stat
@@ -140,6 +146,15 @@ func main() {
 	counter := 0
 	var releaseCopy chan struct{}
 	var releaseOnce sync.Once
+	var onTurnStart func()
+	var nowMillis atomic.Int64
+	nowMillis.Store(1700000000000)
+	if input.NowMillis != nil {
+		nowMillis.Store(*input.NowMillis)
+	}
+	if input.ClockStepMillis < 0 || input.ClockReadStepMillis < 0 {
+		panic("Original clock step must be nonnegative")
+	}
 	phase := func(value string) {
 		mu.Lock()
 		defer mu.Unlock()
@@ -152,6 +167,12 @@ func main() {
 			counter = 0
 		}
 		if value == "ask:start" {
+			// An external clock schedule, shared by both actual ASK observers.
+			// Legacy profiles keep a zero step and their original timestamp.
+			nowMillis.Add(input.ClockStepMillis)
+			if onTurnStart != nil {
+				onTurnStart()
+			}
 			scope = "turn"
 			counter = 0
 		}
@@ -166,13 +187,30 @@ func main() {
 		}
 		return fmt.Sprintf("00000000-0000-4000-%04d-%012d", prefix, counter)
 	}
-	now := func() time.Time { return time.UnixMilli(1700000000000).UTC() }
+	now := func() time.Time { return time.UnixMilli(nowMillis.Add(input.ClockReadStepMillis)).UTC() }
 	onError := func(err error) { mu.Lock(); defer mu.Unlock(); errorRows = append(errorRows, err.Error()) }
 	diagnosticRows := []sessionresume.Diagnostic{}
 	diagnostic := func(value sessionresume.Diagnostic) {
 		mu.Lock()
 		defer mu.Unlock()
 		diagnosticRows = append(diagnosticRows, value)
+	}
+	if dynamicSDK(input) {
+		observation, stream := runNativeStructuredController(input, uuid, now, phase)
+		boundaryOrder := []string{}
+		for _, value := range phases {
+			switch value {
+			case "resume:start", "resume:return", "switch", "reset", "state:restore", "metadata:restore", "enqueue", "dequeue", "ask:start", "record", "HTTP", "lifecycle:started", "lifecycle:completed":
+				boundaryOrder = append(boundaryOrder, value)
+			}
+			if value == "HTTP" {
+				break
+			}
+		}
+		observation["boundaryOrder"] = boundaryOrder
+		must(os.WriteFile(output, []byte(source(map[string]any{"observation": observation, "nativeOnly": map[string]any{"phases": phases, "stream": stream}})), 0600))
+		fmt.Println(`{"result":"controller-result.json"}`)
+		return
 	}
 	factory, err := messages.NewFactory(uuid, now)
 	must(err)
@@ -229,11 +267,14 @@ func main() {
 	defer owner.Close()
 	bootstrap, err := bootstrapstate.New(owner, input.Temporary, input.Home, func() (string, error) { return uuid(), nil })
 	must(err)
+	uuidChecks := []map[string]any{}
 	// This corpus retains the finite component resume profile and first HTTP
 	// boundary. Only cases with an ASK need the canonical independent Record
 	// consumer; the no-ASK checkpoint case keeps its original background-copy
 	// producer. Full public resume/SessionStart is covered by CLI consumer tests.
-	controller, err := sessioncontroller.New(sessioncontroller.Options{Bootstrap: bootstrap, AsyncPersistence: input.WriterOnly == "" && len(input.SDK) > 0, RecordBranchProfile: sessioncontroller.LegacySyncRecordProfile, ResumeOptions: resumeOptions, WriterOptions: sessioncontroller.WriterOptions{ConfigDir: filepath.Join(input.Home, ".claude"), CWD: input.Home, SessionID: input.Temporary, Version: "fixture-version", Environment: environment, SessionPersistenceDisabled: input.Disabled, SettingsState: state, Files: transcriptFiles{input.Home}, Branch: branch, OnError: onError, Schedule: sessioncontroller.RealSchedule, Now: now}, Factory: factory, UUID: uuid, Now: now, OnPhase: phase, ReplayUserMessages: true, BaseToolsCLI: []string{""}, CustomSystemPrompt: json.RawMessage(`"original custom system"`)})
+	controller, err := sessioncontroller.New(sessioncontroller.Options{Bootstrap: bootstrap, AsyncPersistence: input.WriterOnly == "" && len(input.SDK) > 0, RecordBranchProfile: sessioncontroller.LegacySyncRecordProfile, ResumeOptions: resumeOptions, WriterOptions: sessioncontroller.WriterOptions{ConfigDir: filepath.Join(input.Home, ".claude"), CWD: input.Home, SessionID: input.Temporary, Version: "fixture-version", Environment: environment, SessionPersistenceDisabled: input.Disabled, SettingsState: state, Files: transcriptFiles{input.Home}, Branch: branch, OnError: onError, Schedule: sessioncontroller.RealSchedule, Now: now}, Factory: factory, UUID: uuid, Now: now, OnPhase: phase, OnSDKUUIDLookup: func(id json.RawMessage, historical bool) {
+		uuidChecks = append(uuidChecks, map[string]any{"uuid": id, "exists": historical})
+	}, OnSDKRecord: func() { phase("record") }, ReplayUserMessages: true, BaseToolsCLI: []string{""}, CustomSystemPrompt: json.RawMessage(`"original custom system"`)})
 	must(err)
 	if input.WriterOnly != "" {
 		runWriter(input, controller.Writer(), owner, bootstrap)
@@ -253,86 +294,87 @@ func main() {
 	activationHistory := controller.History()
 	appState := controller.AppState()
 	cache := controller.ReadCache().Entries()
-	uuidChecks := []map[string]any{}
-
-	ask, err := sessioncontroller.NewSerialASK(controller, owner)
-	must(err)
-	pending, err := controller.Writer().PendingWriter(owner)
-	must(err)
-	defer func() { must(pending.Close(context.Background())) }()
-	admissions := []sessioncontroller.Admission{}
-	must(owner.Run(context.Background(), func(scope *cooperative.Scope) error {
-		for _, sdk := range input.SDK {
-			future, err := ask.AdmitParsedSDK(scope, sdk)
-			if err != nil {
-				return err
-			}
-			admission, err := future.Await(scope)
-			if err != nil {
-				return err
-			}
-			admissions = append(admissions, admission)
-		}
-		return nil
-	}))
-	for index, sdk := range input.SDK {
-		if sdk.Get("uuid") != nil && string(sdk.Get("uuid")) != `""` {
-			uuidChecks = append(uuidChecks, map[string]any{"uuid": sdk.Get("uuid"), "exists": admissions[index].Historical})
-		}
-	}
-
-	var accepted *protocol.JSONObject
-	must(owner.Run(context.Background(), func(scope *cooperative.Scope) error {
-		var err error
-		accepted, err = ask.BeginDequeued(scope)
-		if err != nil || accepted == nil || input.Disabled {
-			return err
-		}
-		phase("record")
-		return ask.Record(scope, ask.History())
-	}))
 	requests := []string{}
-	if accepted != nil {
-		hostEnv := map[string]string{"ANTHROPIC_BASE_URL": input.Origin, "ANTHROPIC_API_KEY": "offline-fixture-key", "ANTHROPIC_CUSTOM_HEADERS": "x-client-request-id: original-fixture-trace"}
-		prepared, err := controller.Prepare(requestcontext.Context{Thinking: requestcontext.Thinking{Type: "disabled"}, Options: requestcontext.Options{Model: input.Model}, Host: requestcontext.Host{Profile: requestcontext.DirectRelayProfile, Env: hostEnv, DeviceID: "fixture-controller-device", SDKBetas: []string{}, TTLAllowlist: []string{}}}, requestcontext.Dependencies{UUID: uuid, Now: now})
+	var streamObservation *structuredObservation
+
+	var pending *sessioncontroller.PendingWriter
+	{
+		ask, err := sessioncontroller.NewSerialASK(controller, owner)
 		must(err)
-		request, err := prepared.BuildAttempt(requestcontext.AttemptOptions{Model: input.Model})
+		pending, err = controller.Writer().PendingWriter(owner)
 		must(err)
-		requests = append(requests, string(request.PreparedRequest.Body))
-		key := "offline-fixture-key"
-		resolved := provider.ResolveDirectClientOptions(provider.DirectClientInput{Env: hostEnv, FallbackAPIKey: &key, SessionID: controller.SessionID(), Runtime: input.Runtime, RequestID: uuid})
-		config := resolved.StreamConfig()
-		transport := &http.Transport{}
-		defer transport.CloseIdleConnections()
-		config.HTTPClient = &http.Client{Transport: transport, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
-		finalize := config.FinalizeHeaders
-		config.FinalizeHeaders = func(target string, headers http.Header) (http.Header, error) {
-			if !strings.HasPrefix(target, input.Origin+"/") {
-				return nil, errors.New("headless request escaped origin")
+		defer func() { must(pending.Close(context.Background())) }()
+		admissions := []sessioncontroller.Admission{}
+		must(owner.Run(context.Background(), func(scope *cooperative.Scope) error {
+			for _, sdk := range input.SDK {
+				future, err := ask.AdmitParsedSDK(scope, sdk)
+				if err != nil {
+					return err
+				}
+				admission, err := future.Await(scope)
+				if err != nil {
+					return err
+				}
+				admissions = append(admissions, admission)
 			}
-			return finalize(target, headers)
-		}
-		phase("HTTP")
-		stream, err := provider.NewAnthropic(config).OpenMessagesStream(context.Background(), request.PreparedRequest)
-		must(err)
-		for {
-			_, err = stream.Next()
-			if err == io.EOF {
-				break
+			return nil
+		}))
+
+		var accepted *protocol.JSONObject
+		must(owner.Run(context.Background(), func(scope *cooperative.Scope) error {
+			var err error
+			accepted, err = ask.BeginDequeued(scope)
+			if err != nil || accepted == nil || input.Disabled {
+				return err
 			}
+			return ask.Record(scope, ask.History())
+		}))
+		if accepted != nil {
+			hostEnv := map[string]string{"ANTHROPIC_BASE_URL": input.Origin, "ANTHROPIC_API_KEY": "offline-fixture-key", "ANTHROPIC_CUSTOM_HEADERS": "x-client-request-id: original-fixture-trace"}
+			prepared, err := controller.Prepare(requestcontext.Context{Thinking: requestcontext.Thinking{Type: "disabled"}, Options: requestcontext.Options{Model: input.Model}, Host: requestcontext.Host{Profile: requestcontext.DirectRelayProfile, Env: hostEnv, DeviceID: "fixture-controller-device", SDKBetas: []string{}, TTLAllowlist: []string{}}}, requestcontext.Dependencies{UUID: uuid, Now: now})
 			must(err)
+			request, err := prepared.BuildAttempt(requestcontext.AttemptOptions{Model: input.Model})
+			must(err)
+			requests = append(requests, string(request.PreparedRequest.Body))
+			key := "offline-fixture-key"
+			resolved := provider.ResolveDirectClientOptions(provider.DirectClientInput{Env: hostEnv, FallbackAPIKey: &key, SessionID: controller.SessionID(), Runtime: input.Runtime, RequestID: uuid})
+			config := resolved.StreamConfig()
+			transport := &http.Transport{}
+			defer transport.CloseIdleConnections()
+			config.HTTPClient = &http.Client{Transport: transport, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
+			finalize := config.FinalizeHeaders
+			config.FinalizeHeaders = func(target string, headers http.Header) (http.Header, error) {
+				if !strings.HasPrefix(target, input.Origin+"/") {
+					return nil, errors.New("headless request escaped origin")
+				}
+				return finalize(target, headers)
+			}
+			phase("HTTP")
+			stream, err := provider.NewAnthropic(config).OpenMessagesStream(context.Background(), request.PreparedRequest)
+			must(err)
+			for {
+				_, err = stream.Next()
+				if err == io.EOF {
+					break
+				}
+				must(err)
+			}
+			must(stream.Close())
 		}
-		must(stream.Close())
 	}
+
 	controller.AwaitBackground()
-	must(owner.Run(context.Background(), func(scope *cooperative.Scope) error {
-		flush, err := pending.Flush(scope)
-		if err != nil {
-			return err
-		}
-		return flush.Await(scope)
-	}))
-	must(controller.Writer().RefreshMetadata())
+	{
+		must(owner.Run(context.Background(), func(scope *cooperative.Scope) error {
+			flush, err := pending.Flush(scope)
+			if err != nil {
+				return err
+			}
+			return flush.Await(scope)
+		}))
+		must(controller.Writer().RefreshMetadata())
+	}
+
 	history := controller.History()
 	historySource := []string{}
 	for _, message := range history {
@@ -359,6 +401,9 @@ func main() {
 		case "resume:start", "resume:return", "switch", "reset", "state:restore", "metadata:restore", "enqueue", "dequeue", "ask:start", "record", "HTTP", "lifecycle:started", "lifecycle:completed":
 			boundaryOrder = append(boundaryOrder, value)
 		}
+		if value == "HTTP" {
+			break
+		}
 	}
 	copies := map[string]string{}
 	_ = filepath.WalkDir(filepath.Join(input.Home, ".claude", "file-history"), func(path string, entry fs.DirEntry, err error) error {
@@ -375,7 +420,7 @@ func main() {
 		return nil
 	})
 	observation := map[string]any{"boundaryOrder": boundaryOrder, "activationHistory": activationHistory, "snapshotRecords": controller.SnapshotRecords(), "background": background, "appState": appState, "cache": cache, "uuidChecks": uuidChecks, "enqueued": controller.QueueEvents(), "replays": controller.Replays(), "historySource": historySource, "requests": requests, "transcripts": transcript, "errors": errorRows, "copies": copies}
-	must(os.WriteFile(output, []byte(source(map[string]any{"observation": observation, "nativeOnly": map[string]any{"phases": phases, "diagnostics": diagnosticRows}})), 0600))
+	must(os.WriteFile(output, []byte(source(map[string]any{"observation": observation, "nativeOnly": map[string]any{"phases": phases, "diagnostics": diagnosticRows, "stream": streamObservation}})), 0600))
 	fmt.Println(`{"result":"controller-result.json"}`)
 }
 

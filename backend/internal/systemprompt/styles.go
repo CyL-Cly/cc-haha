@@ -73,7 +73,10 @@ func (l *StyleLoader) List(ctx context.Context, cwd string) ([]StyleConfig, erro
 	return append([]StyleConfig(nil), values...), nil
 }
 func (l *StyleLoader) Resolve(ctx context.Context, cwd string) (*OutputStyle, error) {
-	all, err := l.loadAll(ctx, cwd)
+	return l.resolveWithOptions(ctx, cwd, l.options, nil)
+}
+func (l *StyleLoader) resolveWithOptions(ctx context.Context, cwd string, o StyleLoaderOptions, wait func(<-chan struct{}) error) (*OutputStyle, error) {
+	all, err := l.loadAllWithOptions(ctx, cwd, o, wait)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +86,7 @@ func (l *StyleLoader) Resolve(ctx context.Context, cwd string) (*OutputStyle, er
 			return &value, nil
 		}
 	}
-	settings, err := l.options.Settings()
+	settings, err := o.Settings()
 	if err != nil {
 		return nil, err
 	}
@@ -103,25 +106,46 @@ func (l *StyleLoader) Resolve(ctx context.Context, cwd string) (*OutputStyle, er
 	return nil, nil
 }
 func (l *StyleLoader) loadAll(ctx context.Context, cwd string) ([]StyleConfig, error) {
+	return l.loadAllWithOptions(ctx, cwd, l.options, nil)
+}
+func (l *StyleLoader) loadAllWithOptions(ctx context.Context, cwd string, o StyleLoaderOptions, wait func(<-chan struct{}) error) ([]StyleConfig, error) {
 	l.mu.Lock()
 	if f := l.all[cwd]; f != nil {
 		l.mu.Unlock()
-		<-f.done
+		if wait != nil {
+			if err := wait(f.done); err != nil {
+				return nil, err
+			}
+		} else {
+			<-f.done
+		}
 		return f.values, f.err
 	}
 	f := &styleFuture{done: make(chan struct{})}
 	l.all[cwd] = f
 	l.mu.Unlock()
 	defer close(f.done)
-	custom, err := l.loadDirectories(cwd)
+	custom, err := l.loadDirectoriesWithOptions(cwd, o, wait)
+	if native, ok := o.Files.(usercontext.NativeMemoryPrimitives); ok {
+		if err := native.MemoryError(); err != nil {
+			f.err = err
+			return nil, err
+		}
+	}
 	if err != nil {
 		// Source getOutputStyleDirStyles catches discovery failures and returns [].
 		custom = nil
 	}
-	plugins, err := l.options.PluginStyles(ctx)
+	plugins, err := o.PluginStyles(ctx)
 	if err != nil {
 		f.err = err
 		return nil, err
+	}
+	if native, ok := o.Files.(usercontext.NativeMemoryPrimitives); ok {
+		if err := native.MemoryError(); err != nil {
+			f.err = err
+			return nil, err
+		}
 	}
 	values := []StyleConfig{{OutputStyle: OutputStyle{Name: "default"}, Source: "built-in", Nil: true}, {OutputStyle: OutputStyle{Name: "Explanatory", Prompt: strings.ReplaceAll(explanatoryStylePrompt, "__FIGURES_STAR__", l.star()), KeepCodingInstructions: true}, Source: "built-in", Description: "Claude explains its implementation choices and codebase patterns"}, {OutputStyle: OutputStyle{Name: "Learning", Prompt: strings.ReplaceAll(learningStylePrompt, "__FIGURES_STAR__", l.star()), KeepCodingInstructions: true}, Source: "built-in", Description: "Claude pauses and asks you to write small pieces of code for hands-on practice"}}
 	indices := map[string]int{"default": 0, "Explanatory": 1, "Learning": 2}
@@ -198,7 +222,12 @@ func pathDescendant(path, root string) bool {
 	return p != r && strings.HasPrefix(p, r+string(filepath.Separator))
 }
 func (l *StyleLoader) projectDirectories(cwd string) ([]string, error) {
-	o := l.options
+	return l.projectDirectoriesWithOptions(cwd, l.options)
+}
+func (l *StyleLoader) projectDirectoriesWithOptions(cwd string, o StyleLoaderOptions) ([]string, error) {
+	if native, ok := o.Files.(usercontext.NativeMemoryPrimitives); ok {
+		o.Files, o.Realpath = native.SyncMemoryFiles(), native.SyncMemoryRealpath
+	}
 	git := usercontext.GitRoot(o.Files, cwd)
 	session := usercontext.GitRoot(o.Files, o.ProjectRoot())
 	canonical := usercontext.CanonicalGitRoot(o.Files, o.Realpath, cwd)
@@ -241,18 +270,26 @@ func (l *StyleLoader) projectDirectories(cwd string) ([]string, error) {
 	return dirs, nil
 }
 func (l *StyleLoader) loadDirectories(cwd string) ([]StyleConfig, error) {
+	return l.loadDirectoriesWithOptions(cwd, l.options, nil)
+}
+func (l *StyleLoader) loadDirectoriesWithOptions(cwd string, o StyleLoaderOptions, wait func(<-chan struct{}) error) ([]StyleConfig, error) {
 	l.mu.Lock()
 	if f := l.directories[cwd]; f != nil {
 		l.mu.Unlock()
-		<-f.done
+		if wait != nil {
+			if err := wait(f.done); err != nil {
+				return nil, err
+			}
+		} else {
+			<-f.done
+		}
 		return f.values, f.err
 	}
 	f := &styleFuture{done: make(chan struct{})}
 	l.directories[cwd] = f
 	l.mu.Unlock()
 	defer close(f.done)
-	o := l.options
-	project, err := l.projectDirectories(cwd)
+	project, err := l.projectDirectoriesWithOptions(cwd, o)
 	if err != nil {
 		f.err = err
 		return nil, err
@@ -269,7 +306,13 @@ func (l *StyleLoader) loadDirectories(cwd string) ([]StyleConfig, error) {
 	}
 	seen := map[string]bool{}
 	for _, dir := range directories {
-		for _, path := range l.markdownPaths(dir.path) {
+		for _, path := range l.markdownPathsWithOptions(dir.path, o) {
+			if native, ok := o.Files.(usercontext.NativeMemoryPrimitives); ok {
+				if err := native.MemoryError(); err != nil {
+					f.err = err
+					return nil, err
+				}
+			}
 			identity := ""
 			if stat, err := o.Lstat(path); err == nil {
 				identity = styleFileIdentity(stat)
@@ -301,10 +344,18 @@ func (l *StyleLoader) loadDirectories(cwd string) ([]StyleConfig, error) {
 			f.values = append(f.values, StyleConfig{OutputStyle: OutputStyle{Name: name, Prompt: styleTrim(content), KeepCodingInstructions: keep}, Source: dir.source, Description: styleDescription(fields["description"], content, strings.TrimSuffix(filepath.Base(path), ".md"))})
 		}
 	}
+	if native, ok := o.Files.(usercontext.NativeMemoryPrimitives); ok {
+		if err := native.MemoryError(); err != nil {
+			f.err = err
+			return nil, err
+		}
+	}
 	return f.values, nil
 }
 func (l *StyleLoader) markdownPaths(directory string) []string {
-	o := l.options
+	return l.markdownPathsWithOptions(directory, l.options)
+}
+func (l *StyleLoader) markdownPathsWithOptions(directory string, o StyleLoaderOptions) []string {
 	paths := []string{}
 	visited := map[string]bool{}
 	var walk func(string)

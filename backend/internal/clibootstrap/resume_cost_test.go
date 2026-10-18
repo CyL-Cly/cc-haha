@@ -6,8 +6,10 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/projectpath"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
@@ -28,7 +30,7 @@ func TestNativeLongProjectResumeRestoresStoredCostAndKeepsOriginalFiles(t *testi
 	if len(work) <= 200 {
 		t.Fatal("regression must exercise the original long-path hash threshold", work)
 	}
-	native, err := NewProcessNativeBoundary(NativeProcessOptions{Environment: base.Environment, CWD: work, Platform: "darwin", ManagedRoot: filepath.Join(base.Temp, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+	native, err := newIsolatedProcessNativeBoundary(NativeProcessOptions{Environment: base.Environment, CWD: work, Platform: "darwin", ManagedRoot: filepath.Join(base.Temp, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -88,6 +90,31 @@ func testPublicResumeRestoresStoredCost(t *testing.T, n *NativeBoundary) {
 		t.Fatal(e)
 	}
 	defer p.Close()
+	// Native construction now runs main's real first-start/migration prefix.
+	// Check its exact additive fields, then require resume and /cost itself to
+	// leave every byte of that initialized persisted config untouched.
+	beforeResume, e := os.ReadFile(config)
+	if e != nil {
+		t.Fatal(e)
+	}
+	if n.NativeProcess {
+		var old, initialized map[string]any
+		if json.Unmarshal(fixture, &old) != nil || json.Unmarshal(beforeResume, &initialized) != nil {
+			t.Fatal("invalid original or initialized config")
+		}
+		stamp, ok := initialized["firstStartTime"].(string)
+		if _, err := time.Parse(time.RFC3339Nano, stamp); !ok || err != nil || initialized["migrationVersion"] != float64(11) || initialized["opusProMigrationComplete"] != true || initialized["sonnet1m45MigrationComplete"] != true {
+			t.Fatal("actual main prefix did not apply the original startup fields", initialized)
+		}
+		for _, key := range []string{"firstStartTime", "migrationVersion", "opusProMigrationComplete", "sonnet1m45MigrationComplete"} {
+			delete(initialized, key)
+		}
+		if !reflect.DeepEqual(old, initialized) {
+			t.Fatal("actual startup changed protected old config/unknown fields", old, initialized)
+		}
+	} else if !bytes.Equal(beforeResume, fixture) {
+		t.Fatal("non-native construction changed original persisted config")
+	}
 	code, e := p.Run(context.Background())
 	if e != nil || code != 0 {
 		t.Fatal(code, e, errOut.String(), out.String())
@@ -121,7 +148,7 @@ func testPublicResumeRestoresStoredCost(t *testing.T, n *NativeBoundary) {
 		t.Fatal("restoration changed the original persisted transcript rows", readErr)
 	}
 	after, e := os.ReadFile(config)
-	if e != nil || !bytes.Equal(after, fixture) {
+	if e != nil || !bytes.Equal(after, beforeResume) {
 		t.Fatal("restoration mutated old config/unknown fields", e, string(after))
 	}
 }

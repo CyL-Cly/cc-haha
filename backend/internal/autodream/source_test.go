@@ -59,7 +59,7 @@ func TestActualSourceDreamLocksPromptsCandidatesAndTasks(t *testing.T) {
 		}
 	}
 	configs = append(configs, map[string]any{"raw": map[string]any{"enabled": true}, "kairos": true}, map[string]any{"raw": map[string]any{"enabled": true}, "remote": true})
-	payload, _ := json.Marshal(map[string]any{"homeDir": home, "locks": rows, "files": files, "since": 1000, "prompts": prompts, "tasks": tasks, "configs": configs})
+	payload, _ := json.Marshal(map[string]any{"homeDir": home, "nowOverride": 1791900000002, "locks": rows, "files": files, "since": 1000, "prompts": prompts, "tasks": tasks, "configs": configs})
 	fixture, _ := filepath.Abs("../../testdata/native-autodream.fixture.ts")
 	command := exec.Command(bun, "--no-env-file", fixture)
 	command.Dir = home
@@ -144,7 +144,9 @@ func TestActualSourceDreamLocksPromptsCandidatesAndTasks(t *testing.T) {
 		_, err = os.Stat(path)
 		got.Exists = err == nil
 		if !reflect.DeepEqual(got, source.LockResults[i]) {
-			t.Fatalf("lock %d: Go %#v Source %#v", i, got, source.LockResults[i])
+			actual, _ := json.Marshal(got)
+			expected, _ := json.Marshal(source.LockResults[i])
+			t.Fatalf("lock %d: Go %s Source %s", i, actual, expected)
 		}
 	}
 	for i, row := range prompts {

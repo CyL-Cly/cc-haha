@@ -90,7 +90,7 @@ func (m *MainPrint) sendNativeInProcessTurnReport(ctx context.Context, identity 
 	if identity.Color != "" {
 		envelope.Set("color", quoteMain(identity.Color))
 	}
-	mailbox, err := teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.Environment["CLAUDE_CONFIG_DIR"], TaskStore: m.taskStore})
+	mailbox, err := teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.ConfigHomeDirectory(), TaskStore: m.taskStore})
 	if err != nil {
 		return err
 	}

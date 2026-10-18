@@ -85,6 +85,21 @@ func TestHostActionsKeepDraftAndDoNotSubmitCommandPrompt(t *testing.T) {
 	}
 }
 
+func TestPhysicalPageKeyAdapterUsesOriginalScrollKeystrokesAndModifiers(t *testing.T) {
+	for _, row := range []struct {
+		code rune
+		name string
+	}{{tea.KeyPgUp, "pageup"}, {tea.KeyPgDown, "pagedown"}, {tea.KeyKpPgUp, "pageup"}, {tea.KeyKpPgDown, "pagedown"}} {
+		for _, mod := range []tea.KeyMod{0, tea.ModAlt, tea.ModCtrl, tea.ModShift} {
+			actual := terminalKey(tea.KeyPressMsg{Code: row.code, Mod: mod})
+			stroke := keyStroke(actual)
+			if stroke == nil || stroke.Key != row.name || stroke.Alt != mod.Contains(tea.ModAlt) || stroke.Ctrl != mod.Contains(tea.ModCtrl) || stroke.Shift != mod.Contains(tea.ModShift) {
+				t.Fatal("physical terminal Page key differs from Source Scroll context", actual, stroke, row, mod)
+			}
+		}
+	}
+}
+
 func TestModifierAdapterSeparatesSuperAndAltAndRejectsExtendedInput(t *testing.T) {
 	alt := terminalKey(tea.KeyPressMsg{Code: 'k', Mod: tea.ModAlt})
 	super := terminalKey(tea.KeyPressMsg{Code: 'k', Mod: tea.ModSuper})

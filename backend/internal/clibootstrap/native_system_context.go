@@ -57,8 +57,8 @@ func nativeGitStatus(branch, main, status, log, user string) json.RawMessage {
 	return protocol.QuoteJavaScriptUTF16(result)
 }
 
-func (m *MainPrint) runContextGit(cwd, executable string, args []string) string {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+func (m *MainPrint) runContextGit(lifetime context.Context, cwd, executable string, args []string) string {
+	ctx, cancel := context.WithTimeout(lifetime, 10*time.Minute)
 	defer cancel()
 	command := exec.CommandContext(ctx, executable, args...)
 	command.Dir = cwd
@@ -83,47 +83,107 @@ func (m *MainPrint) nativeInspectionSystemContext(scope *cooperative.Scope) (pro
 	if !m.options.Native.NativeProcess {
 		return protocol.NewJSONObject(), nil
 	}
-	if m.systemContext != nil {
-		return m.systemContext.Await(scope)
-	}
-	settings, err := m.Startup.GetInitialSettings()
+	future, err := m.beginNativeInspectionSystemContext(scope)
 	if err != nil {
 		return protocol.JSONObject{}, err
+	}
+	return future.Await(scope)
+}
+
+func (m *MainPrint) beginNativeSystemContext(scope *cooperative.Scope) (*ownerasync.OwnerFuture[protocol.JSONObject], error) {
+	if _, _, err := m.nativePromptProducer(scope); err != nil {
+		return nil, err
+	}
+	if m.options.Arguments.SystemPrompt != "" || m.options.Arguments.HasCustomSystemPrompt {
+		future, err := ownerasync.NewOwnerFuture[protocol.JSONObject](m.Owner)
+		if err != nil {
+			return nil, err
+		}
+		return future, future.Resolve(scope, protocol.NewJSONObject())
+	}
+	return m.beginNativeInspectionSystemContext(scope)
+}
+
+func (m *MainPrint) beginNativeInspectionSystemContext(scope *cooperative.Scope) (*ownerasync.OwnerFuture[protocol.JSONObject], error) {
+	life, err := m.nativeInspectionContextLifetime(scope)
+	if err != nil {
+		return nil, err
+	}
+	if m.systemContext != nil {
+		return m.systemContext, nil
+	}
+	settings, err := m.nativeSDKInitialSettings()
+	if err != nil {
+		return nil, err
 	}
 	result, err := ownerasync.NewOwnerFuture[protocol.JSONObject](m.Owner)
 	if err != nil {
-		return protocol.JSONObject{}, err
+		return nil, err
 	}
 	m.systemContext = result
+	// getSystemContext's original prefix starts its Git futures and registers
+	// their reactions without awaiting them here. A legitimate inspection Read
+	// can start that same memo; no independent prompt stack or model authority
+	// is needed for this callback, and the caller awaits the returned future.
+	err = m.populateNativeSystemContext(scope, life, settings, result)
+	if err != nil {
+		_ = result.RejectAdministrative(err)
+	}
+	return result, err
+}
+
+// This existing native MainPrint factory minted the prompt lifetime during
+// initializeOnOwner. Inspection only borrows that exact graph; it cannot mint a
+// continuation from an arbitrary Read callback or relax the prompt Start guard.
+func (m *MainPrint) nativeInspectionContextLifetime(scope *cooperative.Scope) (context.Context, error) {
+	if m == nil || m.options.Native == nil || !m.options.Native.NativeProcess || !scope.BelongsTo(m.Owner) || m.userContext == nil || m.settings == nil || !m.userContext.SharesSettings(m.settings, m.settingState, m.environment) || !m.settings.UsesNativeUserSettingsPath(m.settingState) {
+		return nil, cooperative.ErrRestricted
+	}
+	if err := scope.Inline(cooperative.Read, func(*cooperative.Scope) error { return nil }); err != nil {
+		return nil, err
+	}
+	r := &m.nativePromptLife
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.closed {
+		return nil, cooperative.ErrClosed
+	}
+	if r.lanes == nil || !r.lanes.Owns(m.Owner) || r.life == nil || r.cancel == nil || r.user != m.userContext || r.settings != m.settings || r.state != m.settingState || r.environment != m.environment || r.startup != m.Startup {
+		return nil, cooperative.ErrRestricted
+	}
+	return r.life, nil
+}
+
+func (m *MainPrint) populateNativeSystemContext(scope *cooperative.Scope, life context.Context, settings *protocol.JSONObject, result *ownerasync.OwnerFuture[protocol.JSONObject]) error {
 	n := m.options.Native
 	if envTruthyNative(n.Environment["CLAUDE_CODE_REMOTE"]) || !nativeGitInstructions(n.Environment, settings) || n.Environment["NODE_ENV"] == "test" {
-		err = result.Resolve(scope, protocol.NewJSONObject())
+		err := result.Resolve(scope, protocol.NewJSONObject())
 		if err != nil {
-			return protocol.JSONObject{}, err
+			return err
 		}
-		return result.Await(scope)
+		return nil
 	}
 	cwd := m.workingDirectory()
 	root, err := m.Git.FindRoot(scope, cwd)
 	if err != nil {
 		_ = result.Reject(scope, err)
-		return protocol.JSONObject{}, err
+		return err
 	}
 	if root == "" {
 		if err := result.Resolve(scope, protocol.NewJSONObject()); err != nil {
-			return protocol.JSONObject{}, err
+			return err
 		}
-		return result.Await(scope)
+		return nil
 	}
 	branch, err := m.Git.Branch(scope)
 	if err != nil {
 		_ = result.Reject(scope, err)
-		return protocol.JSONObject{}, err
+		return err
 	}
 	main, err := m.Git.DefaultBranch(scope)
 	if err != nil {
 		_ = result.Reject(scope, err)
-		return protocol.JSONObject{}, err
+		return err
 	}
 	executable := "git"
 	for _, dir := range filepath.SplitList(n.Environment["PATH"]) {
@@ -148,14 +208,14 @@ func (m *MainPrint) nativeInspectionSystemContext(scope *cooperative.Scope) (pro
 		var jobs sync.WaitGroup
 		for i, args := range [][]string{{"--no-optional-locks", "status", "--short"}, {"--no-optional-locks", "log", "--oneline", "-n", "5"}, {"config", "user.name"}} {
 			jobs.Add(1)
-			go func(i int, args []string) { defer jobs.Done(); rows[i] = m.runContextGit(cwd, executable, args) }(i, args)
+			go func(i int, args []string) { defer jobs.Done(); rows[i] = m.runContextGit(life, cwd, executable, args) }(i, args)
 		}
 		jobs.Wait()
 		return rows, nil
 	})
 	if err != nil {
 		_ = result.Reject(scope, err)
-		return protocol.JSONObject{}, err
+		return err
 	}
 	// Resolve the shared memo from its producer reactions, independently of any
 	// awaiting consumer stack. An inspector may enter while ASK awaits the same
@@ -173,6 +233,10 @@ func (m *MainPrint) nativeInspectionSystemContext(scope *cooperative.Scope) (pro
 			return
 		}
 		settled = true
+		if failure := context.Cause(life); failure != nil {
+			_ = result.Reject(next, failure)
+			return
+		}
 		value := protocol.NewJSONObject()
 		if failure == nil {
 			value.Set("gitStatus", nativeGitStatus(branchValue, mainValue, rows[0], rows[1], rows[2]))
@@ -188,14 +252,14 @@ func (m *MainPrint) nativeInspectionSystemContext(scope *cooperative.Scope) (pro
 		finish(next, failure)
 	}, func(failure error) { _ = result.RejectAdministrative(failure) }); err != nil {
 		_ = result.Reject(scope, err)
-		return protocol.JSONObject{}, err
+		return err
 	}
 	if err := main.ThenOwner(scope, func(next *cooperative.Scope, value string, failure error) {
 		mainValue = value
 		finish(next, failure)
 	}, func(failure error) { _ = result.RejectAdministrative(failure) }); err != nil {
 		_ = result.Reject(scope, err)
-		return protocol.JSONObject{}, err
+		return err
 	}
 	if _, err := commands.Then(scope, func(next *cooperative.Scope, value [3]string, failure error) error {
 		rows = value
@@ -203,7 +267,7 @@ func (m *MainPrint) nativeInspectionSystemContext(scope *cooperative.Scope) (pro
 		return nil
 	}); err != nil {
 		_ = result.Reject(scope, err)
-		return protocol.JSONObject{}, err
+		return err
 	}
-	return result.Await(scope)
+	return nil
 }

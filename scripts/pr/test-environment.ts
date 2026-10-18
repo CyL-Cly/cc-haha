@@ -1,5 +1,5 @@
-import { chmodSync, lstatSync, mkdirSync, readdirSync, rmSync } from 'node:fs'
-import { join } from 'node:path'
+import { chmodSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+import { delimiter, join } from 'node:path'
 
 const SAFE_INHERITED_ENV_NAMES = new Set([
   'CI',
@@ -46,6 +46,29 @@ export function createOfflineTestEnvironment(
   }
 }
 
+const SECURITY_DENY_SCRIPT = '#!/bin/sh\nexit 44\n'
+
+function privateCredentialCommandPath(sandboxHome: string, inheritedPath?: string): string {
+  const directory = join(realpathSync(sandboxHome), '.cc-haha-test-bin')
+  mkdirSync(directory, { recursive: true, mode: 0o700 })
+  const directoryStat = lstatSync(directory)
+  if (!directoryStat.isDirectory() || directoryStat.uid !== process.getuid!() || (directoryStat.mode & 0o777) !== 0o700) {
+    throw new Error('Sandbox credential command directory must be private and owned')
+  }
+  const executable = join(directory, 'security')
+  try {
+    writeFileSync(executable, SECURITY_DENY_SCRIPT, { flag: 'wx', mode: 0o700 })
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error
+  }
+  const executableStat = lstatSync(executable)
+  if (!executableStat.isFile() || executableStat.uid !== process.getuid!() || executableStat.nlink !== 1 ||
+      (executableStat.mode & 0o777) !== 0o700 || readFileSync(executable, 'utf8') !== SECURITY_DENY_SCRIPT) {
+    throw new Error('Sandbox credential command must be the owned denial primitive')
+  }
+  return inheritedPath ? directory + delimiter + inheritedPath : directory
+}
+
 export function createSandboxedTestEnvironment(
   sandboxHome: string,
   overrides: Record<string, string> = {},
@@ -60,7 +83,7 @@ export function createSandboxedTestEnvironment(
     mkdirSync(directory, { recursive: true })
   }
 
-  return createOfflineTestEnvironment({
+  const environment = createOfflineTestEnvironment({
     HOME: sandboxHome,
     USERPROFILE: sandboxHome,
     APPDATA: configHome,
@@ -80,6 +103,13 @@ export function createSandboxedTestEnvironment(
     NODE_ENV: 'test',
     ...overrides,
   }, source)
+  // HOME does not isolate macOS's system keychain. Deny that external primitive
+  // even when a nested sandbox or explicit PATH override is requested. A test
+  // owning a physical fake may still prepend it after constructing this env.
+  if (process.platform !== 'win32') {
+    environment.PATH = privateCredentialCommandPath(sandboxHome, environment.PATH)
+  }
+  return environment
 }
 
 function openDirectoryTree(directory: string) {

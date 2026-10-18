@@ -54,7 +54,7 @@ func (pending *PendingWriter) Prepare(scope *cooperative.Scope, path string) (*P
 			return nil
 		}
 		directory := filepath.Dir(path)
-		dispatch(pending, future.future, func() error { return files.MkdirAll(directory, 0700) }, nil, func(err error) {
+		dispatchTranscriptNativeOperation(pending, future.future, transcriptNativeFSPMkdir, func() error { return files.MkdirAll(directory, 0700) }, nil, func(err error) {
 			if err != nil {
 				future.future.settle(err)
 				return
@@ -75,7 +75,7 @@ func (pending *PendingWriter) Prepare(scope *cooperative.Scope, path string) (*P
 }
 
 func (pending *PendingWriter) openPreparation(future *WriteFuture, files TranscriptFiles, path string) {
-	dispatch(pending, future, func() openResult {
+	dispatchTranscriptNativeOperation(pending, future, transcriptNativeFSPOpen, func() openResult {
 		file, err := files.OpenFile(path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0600)
 		if err != nil {
 			return openResult{err: err}
@@ -118,7 +118,7 @@ func (pending *PendingWriter) statPreparation(future *WriteFuture, lease *descri
 }
 
 func (pending *PendingWriter) closePreparation(future *WriteFuture, lease *descriptorLease, prior error) {
-	dispatch(pending, future, func() error { return lease.close() }, nil, func(err error) {
+	dispatchTranscriptNativeOperation(pending, future, transcriptNativeGuardedClose, func() error { return lease.close() }, nil, func(err error) {
 		// An error thrown by Source's finally await file.close overrides a stat
 		// or non-regular-file error. Successful close retains the earlier error.
 		if err == nil {

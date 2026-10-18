@@ -93,7 +93,7 @@ func (session *Session) prompt(definition Definition, host Host) (json.RawMessag
 		return definition.Prompt, nil
 	}
 	switch definition.Name {
-	case "ImageGen", "ImageEdit":
+	case "LSP", "ImageGen", "ImageEdit":
 		return definition.Prompt, nil
 	case "TeamCreate", "TeamDelete", "TeamPlan":
 		return quote(teamPrompt(definition.Name, host.TeamReviewRequired)), nil

@@ -19,6 +19,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/requestcontext"
+	"github.com/NanmiCoder/cc-haha/backend/internal/sdkhost"
 )
 
 func TestActualNativeSDKModelControlMatchesSourceHeadlessRequestsBreadcrumbsReplayAndSettings(t *testing.T) {
@@ -180,4 +181,128 @@ func fmtTurn(i int) string {
 		return "ordinary turn 1"
 	}
 	return "ordinary turn 2"
+}
+
+func TestNativeSessionAccountingUsesProcessContextThroughFreshAndColdRequests(t *testing.T) {
+	for _, tc := range []struct {
+		name, model, windows, disabled, globalOutput, providerOutput string
+		window, requestOutput                                        float64
+	}{
+		{"configured-1m-global-output", "fixture-model", `{"fixture-model":1000000}`, "", "2048", "4096", 1000000, 2048},
+		{"configured-window-before-marker", "fixture-model[1m]", `{"fixture-model":64000}`, "", "4096", "2048", 64000, 4096},
+		{"disabled-extended-context", "fixture-model", `{"fixture-model":1000000}`, "1", "", "1024", 200000, 1024},
+		{"unconfigured-original-default", "fixture-model", "", "", "", "", 200000, 32000},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := newNativePluginFixture(t)
+			f.write(t, filepath.Join(f.config, "settings.json"), `{}`)
+			var mu sync.Mutex
+			requests := []protocol.JSONObject{}
+			peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if r.Method == http.MethodHead {
+					w.WriteHeader(http.StatusNoContent)
+					return
+				}
+				if r.Method != http.MethodPost || r.URL.Path != "/v1/messages" {
+					t.Errorf("unexpected model transport %s %s", r.Method, r.URL.Path)
+					w.WriteHeader(http.StatusBadRequest)
+					return
+				}
+				data, err := io.ReadAll(r.Body)
+				var body protocol.JSONObject
+				if err != nil || body.UnmarshalJSON(data) != nil {
+					t.Error("invalid actual request body", err)
+					w.WriteHeader(http.StatusBadRequest)
+					return
+				}
+				mu.Lock()
+				requests = append(requests, body)
+				round := len(requests)
+				mu.Unlock()
+				emitWorktreeModel(w, round, "", "", "actual process-ledger result")
+			}))
+			defer peer.Close()
+			baseEnv := map[string]string{}
+			for k, v := range f.n.Environment {
+				baseEnv[k] = v
+			}
+			baseEnv["ANTHROPIC_API_KEY"] = "fake-only-loopback"
+			baseEnv["ANTHROPIC_BASE_URL"] = peer.URL
+			baseEnv["ANTHROPIC_MODEL"] = tc.model
+			baseEnv["CLAUDE_CODE_MAX_RETRIES"] = "0"
+			baseEnv["CLAUDE_CODE_DISABLE_AUTO_MEMORY"] = "true"
+			for key, value := range map[string]string{"CLAUDE_CODE_MODEL_CONTEXT_WINDOWS": tc.windows, "CLAUDE_CODE_DISABLE_1M_CONTEXT": tc.disabled, "CLAUDE_CODE_MAX_OUTPUT_TOKENS": tc.globalOutput, "CLAUDE_CODE_PROVIDER_MAX_OUTPUT_TOKENS": tc.providerOutput} {
+				if value != "" {
+					baseEnv[key] = value
+				}
+			}
+			filtered, err := sdkhost.NativePrintRequestEnvironment(baseEnv)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, present := filtered["CLAUDE_CODE_MODEL_CONTEXT_WINDOWS"]; present {
+				t.Fatal("local context window leaked into the filtered request environment")
+			}
+			ctx, cancel := context.WithTimeout(context.Background(), 35*time.Second)
+			defer cancel()
+			const sid = "90471151-1933-493f-8373-fb2fcd40e731"
+			for phase, name := range []string{"fresh", "cold-resume"} {
+				// Reconstruct NativeBoundary/MainPrint in this test process; reuse only private disk state.
+				env := map[string]string{}
+				for k, v := range baseEnv {
+					env[k] = v
+				}
+				n, err := NewProcessNativeBoundary(NativeProcessOptions{Environment: env, CWD: f.cwd, Platform: "darwin", ManagedRoot: f.managed, ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+				if err != nil {
+					t.Fatal(err)
+				}
+				n.Temp, n.RunSecurity = f.n.Temp, f.n.RunSecurity
+				bindCommandPrefetchFixture(t, n)
+				args := PrintArguments{Model: tc.model, SessionID: sid, SystemPrompt: "Actual private native accounting.", Tools: []string{"Read"}, PermissionMode: "bypassPermissions", MaxTurns: 1, Thinking: requestcontext.Thinking{Type: "disabled"}, Sources: DefaultState()}
+				if phase == 1 {
+					args.SessionID, args.Resume = "", sid
+				}
+				m, err := NewMainPrint(MainPrintOptions{Native: n, PID: os.Getpid(), Version: "fixture", Platform: "darwin", Input: strings.NewReader(""), Output: io.Discard, Error: io.Discard, Arguments: args})
+				if err != nil {
+					t.Fatal(err)
+				}
+				t.Cleanup(m.Close)
+				if err = m.StartSession(ctx); err != nil {
+					t.Fatal(name, err)
+				}
+				input := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoteMain("user")}, protocol.JSONField{Name: "uuid", Value: quoteMain(uuidMain())}, protocol.JSONField{Name: "message", Value: rawMain(map[string]any{"role": "user", "content": "Process accounting " + name})})
+				if err = m.RunTurn(ctx, input); err != nil {
+					t.Fatal(name, err)
+				}
+				usage, err := m.ReadSessionUsage(ctx)
+				if err != nil {
+					t.Fatal(name, err)
+				}
+				var models []struct {
+					Model           string  `json:"model"`
+					ContextWindow   float64 `json:"contextWindow"`
+					MaxOutputTokens float64 `json:"maxOutputTokens"`
+				}
+				if err = json.Unmarshal(usage.Get("models"), &models); err != nil || len(models) != 1 || models[0].Model != tc.model {
+					t.Fatalf("%s actual usage schema/model: %s, error %v", name, rawMain(usage), err)
+				}
+				if models[0].ContextWindow != tc.window || models[0].MaxOutputTokens != 32000 {
+					t.Fatalf("%s actual process ledger: contextWindow=%v want=%v defaultMaxOutputTokens=%v want=32000", name, models[0].ContextWindow, tc.window, models[0].MaxOutputTokens)
+				}
+				mu.Lock()
+				captured := append([]protocol.JSONObject{}, requests...)
+				mu.Unlock()
+				var maxTokens float64
+				if len(captured) != phase+1 {
+					t.Fatalf("%s usage control generated extra inference requests: %d", name, len(captured))
+				}
+				if err = json.Unmarshal(captured[phase].Get("max_tokens"), &maxTokens); err != nil || maxTokens != tc.requestOutput {
+					t.Fatalf("%s actual output priority: max_tokens=%v want=%v error=%v", name, maxTokens, tc.requestOutput, err)
+				}
+				if err = m.ShutdownSession(ctx); err != nil {
+					t.Fatal(name, err)
+				}
+			}
+		})
+	}
 }

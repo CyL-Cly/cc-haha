@@ -24,7 +24,7 @@ func initializePrint(scope *cooperative.Scope, owner *cooperative.Owner, setting
 	}
 	split := func(items []string) ([]string, error) {
 		if in.NativeProcess {
-			return nativeToolList(items, in.NativeMCPBindings, in.NativePlanBindings, in.NativeWebFetchBindings, in.NativeWebSearchBindings, in.NativeSkillBindings, in.NativeMCPResourceBindings, in.NativeWorktreeBindings, in.NativeBackgroundBindings, in.NativeToolSearchBindings, in.NativeSessionCollaborationBindings, in.NativeWorkflowBindings, in.NativeTeamToolBindings, in.NativeImageBindings)
+			return nativeToolList(items, in.NativeMCPBindings, in.NativePlanBindings, in.NativeWebFetchBindings, in.NativeWebSearchBindings, in.NativeSkillBindings, in.NativeMCPResourceBindings, in.NativeWorktreeBindings, in.NativeBackgroundBindings, in.NativeToolSearchBindings, in.NativeSessionCollaborationBindings, in.NativeWorkflowBindings, in.NativeTeamToolBindings, in.NativeImageBindings, in.NativeLSPBindings)
 		}
 		out := []string{}
 		for _, v := range items {
@@ -68,6 +68,9 @@ func initializePrint(scope *cooperative.Scope, owner *cooperative.Owner, setting
 			return nil, cap("enabled image tools without actual native producer")
 		}
 		names = append(names, "ImageGen", "ImageEdit")
+	}
+	if in.NativeLSPBindings {
+		names = append(names, "LSP")
 	}
 	names = append(names, "ListMcpResourcesTool", "ReadMcpResourceTool")
 	if in.NativeToolSearchBindings {
@@ -114,7 +117,7 @@ func initializePrint(scope *cooperative.Scope, owner *cooperative.Owner, setting
 			}
 		}
 	}
-	state := &State{owner: owner, settings: settings, context: ctx, nativeProcess: in.NativeProcess, nativePluginBindings: in.NativePluginBindings, nativeMCPBindings: in.NativeMCPBindings, nativeWebFetchBindings: in.NativeWebFetchBindings, nativeWebSearchBindings: in.NativeWebSearchBindings, nativeWorktreeBindings: in.NativeWorktreeBindings, nativeHookBindings: in.NativeHookBindings, nativeSystemContextBindings: in.NativeSystemContextBindings, nativeTeamExecutionBindings: in.NativeTeamExecutionBindings, nativeAuthHelperBindings: in.NativeAuthHelperBindings, nativeCloudSettingsBindings: in.NativeCloudSettingsBindings, nativeWorkflowKeywordBindings: in.NativeWorkflowKeywordBindings, nativeInternalReadBindings: in.NativeInternalReadBindings, nativeSandboxBindings: in.NativeSandboxBindings, nativeModelCommandBindings: in.NativeModelCommandBindings, nativeMainAgentBindings: in.NativeMainAgentBindings, nativePlanBindings: in.NativePlanBindings, nativeSpinnerBindings: in.NativeSpinnerBindings, nativeThinkingSummaryBindings: in.NativeThinkingSummaryBindings, nativeAutoDreamBindings: in.NativeAutoDreamBindings, nativeStartup: in.NativeStartup}
+	state := &State{owner: owner, settings: settings, context: ctx, nativeProcess: in.NativeProcess, nativePluginBindings: in.NativePluginBindings, nativeMCPBindings: in.NativeMCPBindings, nativeWebFetchBindings: in.NativeWebFetchBindings, nativeWebSearchBindings: in.NativeWebSearchBindings, nativeWorktreeBindings: in.NativeWorktreeBindings, nativeHookBindings: in.NativeHookBindings, nativeSystemContextBindings: in.NativeSystemContextBindings, nativeTeamExecutionBindings: in.NativeTeamExecutionBindings, nativeAuthHelperBindings: in.NativeAuthHelperBindings, nativeCloudSettingsBindings: in.NativeCloudSettingsBindings, nativeWorkflowKeywordBindings: in.NativeWorkflowKeywordBindings, nativeInternalReadBindings: in.NativeInternalReadBindings, nativeSandboxBindings: in.NativeSandboxBindings, nativeModelCommandBindings: in.NativeModelCommandBindings, nativeMainAgentBindings: in.NativeMainAgentBindings, nativePlanBindings: in.NativePlanBindings, nativeSpinnerBindings: in.NativeSpinnerBindings, nativeThinkingSummaryBindings: in.NativeThinkingSummaryBindings, nativeStatusLineBindings: in.NativeStatusLineBindings, nativeAutoDreamBindings: in.NativeAutoDreamBindings, nativeStartup: in.NativeStartup}
 	if in.NativeProcess && in.Mode == "auto" {
 		if in.NativeStartup == nil || in.NativeStartup.options.SettingsForSource == nil {
 			return nil, cap("auto startup without original native settings")
@@ -130,6 +133,7 @@ func initializePrint(scope *cooperative.Scope, owner *cooperative.Owner, setting
 // Source parseToolListFromCLI uses comma/ASCII-space separators outside
 // parentheses, preserving spaces and commas in rule content.
 func nativeToolList(items []string, mcpBinding ...bool) ([]string, error) {
+	boundLSP := len(mcpBinding) > 13 && mcpBinding[13]
 	boundMCP := len(mcpBinding) > 0 && mcpBinding[0]
 	boundPlan := len(mcpBinding) > 1 && mcpBinding[1]
 	boundFetch := len(mcpBinding) > 2 && mcpBinding[2]
@@ -218,6 +222,10 @@ func nativeToolList(items []string, mcpBinding ...bool) ([]string, error) {
 			case "EnterPlanMode", "ExitPlanMode":
 				if !boundPlan {
 					return cap("CLI PlanMode tool without actual shared host")
+				}
+			case "LSP":
+				if !boundLSP {
+					return cap("CLI LSP tool without actual shared native manager")
 				}
 			case "Read", "Write", "Edit", "NotebookEdit", "Bash", "PowerShell", "Glob", "Grep", "Agent", "TodoWrite", "AskUserQuestion", "TaskCreate", "TaskGet", "TaskUpdate", "TaskList":
 			default:

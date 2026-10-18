@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -23,6 +24,19 @@ func TestActualDesktopInspectionReadsRunningAndCompletedSameNativeContext(t *tes
 	var calls atomic.Int32
 	started := make(chan struct{}, 1)
 	release := make(chan struct{})
+	var releaseOnce sync.Once
+	releaseResponse := func() { releaseOnce.Do(func() { close(release) }) }
+	closeHTTPServer := func(label string, server *httptest.Server) {
+		done := make(chan struct{})
+		go func() { server.Close(); close(done) }()
+		timer := time.NewTimer(3 * time.Second)
+		defer timer.Stop()
+		select {
+		case <-done:
+		case <-timer.C:
+			t.Errorf("%s HTTP cleanup did not join", label)
+		}
+	}
 	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		started <- struct{}{}
@@ -33,7 +47,7 @@ func TestActualDesktopInspectionReadsRunningAndCompletedSameNativeContext(t *tes
 		}
 		response(w, "desktop-context-actual", "", nil, "ACTUAL_CONTEXT_SHARED_HARNESS")
 	}))
-	defer peer.Close()
+	defer func() { releaseResponse(); closeHTTPServer("model", peer) }()
 	o := nativeSessionOptions(t, peer.URL)
 	o.Environment["CLAUDE_CODE_MODEL_CONTEXT_WINDOWS"] = `{"fixture-model":1000000}`
 	s, err := NewDesktopServer(ServerOptions{Environment: o.Environment, HomeDir: o.Environment["HOME"], ConfigDir: o.Environment["CLAUDE_CONFIG_DIR"], WorkDir: o.WorkDir, Version: o.Version, Arguments: o.Arguments, RunSecurity: func(context.Context, securestorage.Command) ([]byte, error) { return nil, os.ErrPermission }, NativeFactory: func(env map[string]string, cwd, platform string) (*clibootstrap.NativeBoundary, error) {
@@ -42,9 +56,18 @@ func TestActualDesktopInspectionReadsRunningAndCompletedSameNativeContext(t *tes
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer s.Close(context.Background())
 	host := httptest.NewServer(s)
-	defer host.Close()
+	defer func() {
+		// A failed running inspection must release the held real response and
+		// cancel the runtime before waiting for HTTP handlers to leave.
+		releaseResponse()
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		if err := s.Close(ctx); err != nil {
+			t.Errorf("desktop runtime cleanup: %v", err)
+		}
+		cancel()
+		closeHTTPServer("desktop", host)
+	}()
 	client := &http.Client{Timeout: 15 * time.Second}
 	res, err := client.Post(host.URL+"/api/sessions", "application/json", bytes.NewReader(raw(map[string]any{"workDir": o.WorkDir, "permissionMode": "bypassPermissions"})))
 	if err != nil {
@@ -86,9 +109,9 @@ func TestActualDesktopInspectionReadsRunningAndCompletedSameNativeContext(t *tes
 	running := get()
 	contextData := obj(running.Get("context"))
 	if contextData.String("model") != "fixture-model" || string(contextData.Get("maxTokens")) != "1000000" || string(obj(running.Get("errors")).Get("context")) != "null" && obj(running.Get("errors")).Get("context") != nil || calls.Load() != 1 {
-		t.Fatal("actual running context missing", running, calls.Load())
+		t.Fatalf("actual running context missing: calls=%d response=%s", calls.Load(), raw(running))
 	}
-	close(release)
+	releaseResponse()
 	completed := false
 	for {
 		var text string
@@ -128,7 +151,7 @@ func TestActualDesktopInspectionReadsRunningAndCompletedSameNativeContext(t *tes
 	contextData = obj(afterTurn.Get("context"))
 	usage := obj(contextData.Get("apiUsage"))
 	if string(usage.Get("input_tokens")) == "0" || usage.Get("input_tokens") == nil || !bytes.Contains(contextData.Get("messageBreakdown"), []byte("assistantMessageTokens")) || calls.Load() != 1 {
-		t.Fatal("actual native context did not retain same Agent history", afterTurn, calls.Load())
+		t.Fatalf("actual native context did not retain same Agent history: calls=%d response=%s", calls.Load(), raw(afterTurn))
 	}
 	after, err := os.ReadFile(canonical)
 	if err != nil || !bytes.Equal(before, after) {

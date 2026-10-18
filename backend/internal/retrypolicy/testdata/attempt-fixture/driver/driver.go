@@ -135,7 +135,21 @@ func fault(spec Fault) error {
 	if value, exists := spec.Headers["request-id"]; exists {
 		requestID = &value
 	}
-	return &provider.SDKStreamError{Class: class, Name: "Error", Message: message, Status: spec.Status, Payload: spec.Payload, Headers: headers, RequestID: requestID, Cause: cause}
+	// The pinned SDK APIError constructor owns a nullable type even when its
+	// payload is undefined. Preserve that constructor boundary in the injected
+	// fault; the retry policy and its actual notice serializer remain unchanged.
+	errorType := json.RawMessage(`null`)
+	var payload, nested protocol.JSONObject
+	if payload.UnmarshalJSON(spec.Payload) == nil && nested.UnmarshalJSON(payload.Get("error")) == nil {
+		if value := nested.Get("type"); len(value) > 0 && string(value) != "null" {
+			errorType = value
+		}
+	}
+	var workspaceID *string
+	if value, exists := spec.Headers["anthropic-workspace-id"]; exists {
+		workspaceID = &value
+	}
+	return &provider.SDKStreamError{Class: class, Name: "Error", Message: message, Status: spec.Status, Payload: spec.Payload, Headers: headers, RequestID: requestID, Type: errorType, WorkspaceID: workspaceID, Cause: cause}
 }
 
 func observedError(failure error) any {

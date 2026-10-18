@@ -26,8 +26,12 @@ axios.get=async ()=>{const response=await physicalFetch(input.url);let data:any=
 Date.now=()=>1712345678000
 const source=await import('../../../../src/utils/releaseNotes')
 if(input.prime)await source.getStoredChangelog()
-const command=await import('../../../../src/commands/release-notes/release-notes')
-const started=performance.now();const first=await command.call();const elapsed=performance.now()-started
+const started=performance.now()
+const first=input.preload
+ ? await source.checkForReleaseNotes(input.previousVersion,input.version)
+ : await (await import('../../../../src/commands/release-notes/release-notes')).call()
+const elapsed=performance.now()-started
+const initialMemory=source.getStoredChangelogFromMemory()
 let slashResult:any
 if(input.slash){
  const {default:definition}=await import('../../../../src/commands/release-notes')
@@ -40,4 +44,4 @@ if(input.slash){
 if(input.waitAfter)await new Promise(r=>setTimeout(r,input.waitAfter))
 let disk:null|string=null;try{disk=await readFile(join(dir,'cache/changelog.md'),'utf8')}catch{}
 if(capabilities.blocked.length)throw new Error('Blocked original release cache:'+capabilities.blocked.join(', '))
-process.stdout.write(JSON.stringify({first,elapsed,disk,memory:source.getStoredChangelogFromMemory(),timestamp:config.getGlobalConfig().changelogLastFetched??null,future:config.getGlobalConfig().futureGlobal,slashResult})+'\n')
+process.stdout.write(JSON.stringify({first,elapsed,initialMemory,disk,memory:source.getStoredChangelogFromMemory(),timestamp:config.getGlobalConfig().changelogLastFetched??null,future:config.getGlobalConfig().futureGlobal,slashResult})+'\n')

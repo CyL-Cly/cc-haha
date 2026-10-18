@@ -61,7 +61,7 @@ func TestDesktopDisconnectedBashDeadlineAndStopReapRealProcess(t *testing.T) {
 			o := nativeSessionOptions(t, provider.URL)
 			o.Native = nil
 			o.NativeFactory = func(environment map[string]string, cwd, platform string) (*clibootstrap.NativeBoundary, error) {
-				return clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: environment, CWD: cwd, Platform: platform, ManagedRoot: filepath.Join(o.Environment["HOME"], "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+				return newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: environment, CWD: cwd, Platform: platform, ManagedRoot: filepath.Join(o.Environment["HOME"], "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 			}
 			pidPath = filepath.Join(o.WorkDir, "owned-background.pid")
 			deadlines := make(chan *desktopDeadlineTimer, 16)

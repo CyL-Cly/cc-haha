@@ -12,10 +12,14 @@ import (
 const NormalEmptyMemoryProfile = "source-normal-empty-memory-v1"
 
 type NormalMemoryDiscovery struct {
-	CWD, ManagedRoot             string
-	EnabledSources               []string
-	AutoMemoryEnabled            bool
-	NativeProcess                bool
+	CWD, ManagedRoot  string
+	EnabledSources    []string
+	AutoMemoryEnabled bool
+	NativeProcess     bool
+	// NativeConfigDirectory retains getClaudeConfigHomeDir's requested string.
+	// Each user file/rules lookup samples it at its original discovery boundary;
+	// the filesystem adapter alone resolves it against the native process CWD.
+	NativeConfigDirectory        func() string
 	ReadDir                      func(string) ([]fs.DirEntry, error)
 	Realpath                     func(string) (string, error)
 	Home                         string

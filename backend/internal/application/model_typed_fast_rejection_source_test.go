@@ -48,9 +48,12 @@ func TestTypedModelFastActualSourceRejectionNotificationStateAndPersistence(t *t
 			cert := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: peer.Certificate().Raw})
 			rows := []typedModelSourceRow{}
 			for i := 0; i < 2; i++ {
-				rows = append(rows, typedModelSourceRow{Name: "opus", Args: "opus", Settings: map[string]any{"model": "opus", "fastMode": true, "future": true}, State: map[string]any{"mainLoopModel": "opus", "mainLoopModelForSession": nil}, Env: map[string]string{"ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-6", "CLAUDE_CODE_MAX_RETRIES": "1"}, Global: map[string]any{"penguinModeOrgEnabled": true}, InitializeFast: true, Ask: true, ContinueStore: i > 0, Notifications: true})
+				rows = append(rows, typedModelSourceRow{Name: "opus", Args: "opus", Settings: map[string]any{"model": "opus", "fastMode": true, "future": true}, State: map[string]any{"mainLoopModel": "opus", "mainLoopModelForSession": nil}, Env: map[string]string{"ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-6", "CLAUDE_CODE_MAX_RETRIES": "1"}, Global: map[string]any{"penguinModeOrgEnabled": true}, InitializeFast: true, Ask: true, ContinueStore: i > 0, Notifications: true, Opus1mStartup: i == 0})
 			}
 			want := runTypedModelSource(t, rows, peer.URL, string(cert))
+			if want[0].Settings["model"] != "opus[1m]" {
+				t.Fatal("actual Source startup migration was not applied", want[0].Settings)
+			}
 			o := nativeSessionOptions(t, peer.URL)
 			o.Interactive = true
 			o.Arguments.Model = "opus"
@@ -118,6 +121,9 @@ func TestTypedModelFastActualSourceRejectionNotificationStateAndPersistence(t *t
 				t.Fatal(seen)
 			}
 			for i, w := range seen["Source"] {
+				if !reflect.DeepEqual(seen["Go"][i]["model"], w["model"]) {
+					t.Fatal("Source runtime override must remain separate from migrated settings", i, seen["Go"][i]["model"], w["model"])
+				}
 				if !reflect.DeepEqual(seen["Go"][i]["speed"], w["speed"]) {
 					t.Fatal("Source next speed", i, seen["Go"][i]["speed"], w["speed"])
 				}

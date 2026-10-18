@@ -180,6 +180,12 @@ func TestActualCLIStreamJSONImageUsesPublicInputPipeline(t *testing.T) {
 	data := base64.StdEncoding.EncodeToString(fixtureMediaPNG(t))
 	var observed json.RawMessage
 	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		observed, _ = io.ReadAll(r.Body)
 		response(w, "actual-cli-image", "", nil, "CLI_NATIVE_IMAGE_OK")
 	}))

@@ -16,7 +16,7 @@ type WorktreeExitSnapshot struct {
 func (m *MainPrint) PrepareWorktreeExit(ctx context.Context) (*WorktreeExitSnapshot, error) {
 	var snapshot *WorktreeExitSnapshot
 	var cwd string
-	e := m.Owner.Run(ctx, func(scope *cooperative.Scope) error {
+	receipt, e := m.Owner.SubmitIndependent(ctx, cooperative.Read, func(scope *cooperative.Scope) error {
 		if m.worktreeState == nil || m.worktreeState.current == nil {
 			return nil
 		}
@@ -24,6 +24,9 @@ func (m *MainPrint) PrepareWorktreeExit(ctx context.Context) (*WorktreeExitSnaps
 		cwd = m.workingDirectory()
 		return nil
 	})
+	if e == nil {
+		e = receipt.Wait()
+	}
 	if e != nil || snapshot == nil {
 		return snapshot, e
 	}

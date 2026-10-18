@@ -52,5 +52,13 @@ func (m *MainPrint) nativeBuiltinPromptCommands() ([]skillcommands.Definition, e
 	if err != nil {
 		return nil, err
 	}
-	return []skillcommands.Definition{agent, init, prComments, securityReview, insights}, nil
+	definitions := []skillcommands.Definition{agent, init, prComments, securityReview, insights}
+	if m.options.Interactive {
+		statusline, err := skillcommands.NativeStatuslineCommand()
+		if err != nil {
+			return nil, err
+		}
+		definitions = append(definitions, statusline)
+	}
+	return definitions, nil
 }

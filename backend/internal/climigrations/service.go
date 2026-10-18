@@ -4,10 +4,13 @@ package climigrations
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cliglobalconfig"
 	"github.com/NanmiCoder/cc-haha/backend/internal/clisettings"
+	"github.com/NanmiCoder/cc-haha/backend/internal/clistartupenv"
+	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"math"
 	"os"
@@ -65,6 +68,7 @@ type Options struct {
 }
 type Service struct {
 	options            Options
+	native             *nativeConsumer
 	mu                 sync.Mutex
 	projectKey         string
 	override           json.RawMessage
@@ -122,10 +126,34 @@ func (s *Service) emit(event Event) {
 	if s.options.Observe != nil {
 		s.options.Observe(event)
 	}
+	if s.native != nil && s.native.failure == nil {
+		switch event["kind"] {
+		case "event":
+			name, _ := event["name"].(string)
+			raw, err := json.Marshal(event["data"])
+			metadata := protocol.NewJSONObject()
+			if err == nil {
+				err = metadata.UnmarshalJSON(raw)
+			}
+			if err == nil {
+				err = s.native.options.Event(s.native.scope, name, metadata)
+			}
+			s.native.failure = err
+		case "error":
+			message, _ := event["message"].(string)
+			s.native.failure = s.native.options.LogError(s.native.scope, errors.New(strings.TrimPrefix(message, "Error: ")))
+		}
+	}
 }
 func (s *Service) Run() (*ChangelogTask, error) {
+	if s == nil || s.native != nil {
+		return nil, &CapabilityError{"native migration requires owned RunNative"}
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	return s.run()
+}
+func (s *Service) run() (*ChangelogTask, error) {
 	config, err := s.options.Global.Get()
 	if err != nil {
 		return nil, err
@@ -146,6 +174,9 @@ func (s *Service) Run() (*ChangelogTask, error) {
 			if err = step.run(); err != nil {
 				return nil, err
 			}
+			if s.native != nil && s.native.failure != nil {
+				return nil, s.native.failure
+			}
 			s.emit(Event{"kind": "migrationEnd", "name": step.name})
 		}
 		if err = s.save(func(current *protocol.JSONObject) (*protocol.JSONObject, error) {
@@ -163,6 +194,17 @@ func (s *Service) Run() (*ChangelogTask, error) {
 }
 func (s *Service) resolveProject() error {
 	if s.projectKey != "" {
+		return nil
+	}
+	if s.native != nil {
+		key, err := s.native.options.ProjectKey(s.native.scope)
+		if err != nil {
+			return err
+		}
+		if !filepath.IsAbs(key) {
+			return &CapabilityError{"native canonical project identity"}
+		}
+		s.projectKey = key
 		return nil
 	}
 	path := filepath.Clean(s.options.Host.OriginalCWD)
@@ -246,6 +288,14 @@ func (s *Service) saveProject(updater cliglobalconfig.Updater) error {
 	})
 }
 func (s *Service) settings(source string) (*protocol.JSONObject, error) {
+	if s.native != nil {
+		value, err := s.native.options.Sources.Source(s.native.scope, source)
+		if value == nil && err == nil {
+			empty := protocol.NewJSONObject()
+			value = &empty
+		}
+		return value, err
+	}
 	value, err := s.options.Settings.GetEditableSource(source, "")
 	if value == nil && err == nil {
 		empty := protocol.NewJSONObject()
@@ -263,7 +313,19 @@ func (s *Service) update(source string, patch protocol.JSONObject) error {
 		}
 	}
 	s.emit(Event{"kind": "settingsUpdate", "source": source, "patch": objectWire(&patch), "undefinedKeys": undefined})
-	result, err := s.options.Settings.UpdateEditableSource(source, "", clisettings.Patch{Object: patch})
+	var result clisettings.WriteResult
+	var err error
+	if s.native != nil {
+		update := clisettings.Patch{Object: patch}
+		for _, property := range patch.OwnProperties() {
+			if property.Value == nil {
+				update.UndefinedPaths = append(update.UndefinedPaths, []json.RawMessage{property.NameJSON})
+			}
+		}
+		result, err = s.native.options.Sources.Update(s.native.scope, source, update, s.native.options.Writer)
+	} else {
+		result, err = s.options.Settings.UpdateEditableSource(source, "", clisettings.Patch{Object: patch})
+	}
 	if err != nil {
 		return err
 	}
@@ -277,7 +339,8 @@ func (s *Service) update(source string, patch protocol.JSONObject) error {
 func (s *Service) caught(err error, prefix, event string, data map[string]any) error {
 	var capability *clisettings.CapabilityError
 	var own *CapabilityError
-	if errors.As(err, &capability) || errors.As(err, &own) {
+	var startup *clistartupenv.CapabilityError
+	if errors.As(err, &capability) || errors.As(err, &own) || errors.As(err, &startup) || errors.Is(err, cooperative.ErrRestricted) || errors.Is(err, cooperative.ErrClosed) || errors.Is(err, context.Canceled) {
 		return err
 	}
 	message := errorText(err)
@@ -336,7 +399,11 @@ func (s *Service) bypass() error {
 		return nil
 	}
 	accepted := false
-	for _, source := range []string{"userSettings", "localSettings"} {
+	sources := []string{"userSettings", "localSettings"}
+	if s.native != nil {
+		sources = append(sources, "flagSettings", "policySettings")
+	}
+	for _, source := range sources {
 		value, e := s.settings(source)
 		if e != nil {
 			return s.caught(e, "Failed to migrate bypass permissions accepted: ", "", nil)
@@ -369,6 +436,9 @@ func (s *Service) bypass() error {
 	return nil
 }
 func (s *Service) proDefault() error {
+	if s.native != nil {
+		return s.nativeProDefault()
+	}
 	config, err := s.options.Global.Get()
 	if err != nil {
 		return err
@@ -414,7 +484,14 @@ func (s *Service) sonnet1m() error {
 	})
 }
 func (s *Service) legacyOpus() error {
-	if envTruthy(s.options.Host.Environment["CLAUDE_CODE_DISABLE_LEGACY_MODEL_REMAP"]) {
+	environment := s.options.Host.Environment
+	if s.native != nil {
+		if !s.nativeFirstParty() {
+			return nil
+		}
+		environment = s.native.options.Environment()
+	}
+	if envTruthy(environment["CLAUDE_CODE_DISABLE_LEGACY_MODEL_REMAP"]) {
 		return nil
 	}
 	user, err := s.settings("userSettings")
@@ -449,8 +526,16 @@ func (s *Service) legacyOpus() error {
 
 // Empty native credential snapshot means all three subscriber predicates are
 // false. The OAuth/subscriber execution branch is deliberately not admitted.
-func (s *Service) sonnet45() error { return nil }
+func (s *Service) sonnet45() error {
+	if s.native != nil {
+		return s.nativeSonnet45()
+	}
+	return nil
+}
 func (s *Service) opus1m() error {
+	if s.native != nil {
+		return s.nativeOpus1m()
+	}
 	if envTruthy(s.options.Host.Environment["CLAUDE_CODE_DISABLE_1M_CONTEXT"]) {
 		return nil
 	}
@@ -487,4 +572,9 @@ func (s *Service) remoteControl() error {
 // In the external fork getGrowthBookClientKey() is an empty literal, so the
 // actual getter returns opt-in even if disk cache says enabled. No remote
 // payload/config override is silently accepted as an enabled auto-mode host.
-func (s *Service) autoOffer() error { return nil }
+func (s *Service) autoOffer() error {
+	if s.native != nil {
+		return s.nativeAutoOffer()
+	}
+	return nil
+}

@@ -14,8 +14,11 @@ func (m *MainPrint) nativeMergeCcHahaEnvironment(legacy protocol.JSONObject) (pr
 		return protocol.JSONObject{}, mainCap("saved provider environment actual settings owner")
 	}
 	base := map[string]string{}
-	config := m.nativeSettings.n.Environment["CLAUDE_CONFIG_DIR"]
-	service, err := providerconfig.New(providerconfig.Options{Store: m.nativeSettings.store, ConfigDir: config})
+	config, err := m.nativeCcHahaConfigDirectory()
+	if err != nil {
+		return protocol.JSONObject{}, err
+	}
+	service, err := providerconfig.NewCLIRuntime(providerconfig.Options{Store: m.nativeSettings.store, ConfigDir: config})
 	if err != nil {
 		return protocol.JSONObject{}, err
 	}
@@ -48,7 +51,11 @@ func (m *MainPrint) nativeMergeCcHahaEnvironment(legacy protocol.JSONObject) (pr
 		_ = json.Unmarshal(value, &text)
 		base[key] = text
 	}
-	env, err := providerconfig.ResolveRuntimeEnv(context.Background(), m.nativeSettings.store, config, base, nil, runtime)
+	runtimeService, err := providerconfig.NewCLIRuntime(providerconfig.Options{Store: m.nativeSettings.store, ConfigDir: config, ServerPort: runtime.ServerPort, ProxyReady: runtime.ProxyReady})
+	if err != nil {
+		return protocol.JSONObject{}, err
+	}
+	env, err := runtimeService.ResolveRuntimeEnvironment(context.Background(), base, nil)
 	if err != nil {
 		// readActiveProviderManagedEnv catches invalid/deleted records. Its
 		// caller still applies the independently parsed legacy settings env.

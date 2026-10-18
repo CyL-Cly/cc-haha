@@ -22,7 +22,7 @@ func (h *Host) nativeRequestAccountMetadata(scope *cooperative.Scope) func() (st
 				return "", err
 			}
 		}
-		settings, err := h.options.Startup.GetInitialSettings()
+		settings, err := h.nativeSDKInitialSettings()
 		if err != nil {
 			return "", err
 		}

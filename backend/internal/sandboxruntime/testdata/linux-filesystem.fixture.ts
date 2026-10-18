@@ -15,7 +15,7 @@ for(const row of input.rows){
  const bwrapMountPoints=new Set<string>()
  const dependencies={fs,path,tmpdir:()=>input.tmp,normalizePathForSandbox,normalizeCaseForComparison,isSymlinkOutsideBoundary,DANGEROUS_FILES,getDangerousDirectories,ripGrep,logForDebugging:()=>{},DEFAULT_MANDATORY_DENY_SEARCH_DEPTH:3,bwrapMountPoints,registerExitCleanupHandler:()=>{}}
  const api=new Function('dependencies',`with(dependencies){${['findSymlinkInPath','hasFileAncestor','findFirstNonExistentComponent','linuxGetMandatoryDenyPaths','generateFilesystemArgs'].map(extract).join('\n')};return generateFilesystemArgs}`)(dependencies)
- const args=await api(row.read,row.write,{command:input.rg},row.depth??3,row.allowGitConfig??false)
+ const args=await api(row.read,row.write,{command:input.rg,args:input.rgArgs},row.depth??3,row.allowGitConfig??false)
  output.push({args,mountPoints:[...bwrapMountPoints]})
 }
 process.stdout.write(JSON.stringify(output)+'\n')

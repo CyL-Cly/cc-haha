@@ -9,14 +9,25 @@ import (
 // by session hooks. Pattern filtering and last-value command deduplication
 // run against the actual native HookInput in the executor.
 func (s *Service) configuredNativeCommands(event, sid string) ([]commandMatcher, error) {
+	values, err := s.configuredNativeMatchedCommands(event, sid, true)
+	if err != nil {
+		return nil, err
+	}
+	rows := make([]commandMatcher, len(values))
+	for i, row := range values {
+		rows[i] = row.commandMatcher
+	}
+	return rows, nil
+}
+func (s *Service) configuredNativeMatchedCommands(event, sid string, includeSession bool) ([]nativeMatchedHook, error) {
 	if s.options.Commands == nil {
-		return s.nativeCommandMatchers(event, sid), nil
+		return s.nativeMatchedCommandMatchers(event, sid, includeSession), nil
 	}
 	snapshot, e := s.snapshot()
 	if e != nil {
 		return nil, e
 	}
-	rows := []commandMatcher{}
+	rows := []nativeMatchedHook{}
 	if raw := snapshot.Get(event); raw != nil {
 		var matchers []protocol.JSONObject
 		if json.Unmarshal(raw, &matchers) != nil {
@@ -28,17 +39,19 @@ func (s *Service) configuredNativeCommands(event, sid string) ([]commandMatcher,
 				return nil, unsupported("mutated hook matcher")
 			}
 			for _, hook := range hooks {
-				rows = append(rows, commandMatcher{matcher.String("matcher"), hook.Clone()})
+				rows = append(rows, nativeMatchedHook{commandMatcher: commandMatcher{matcher.String("matcher"), hook.Clone()}})
 			}
 		}
 	}
 	if !s.resolver.managedOnly {
-		rows = append(rows, s.nativeCommandMatchers(event, sid)...)
+		rows = append(rows, s.nativeMatchedCommandMatchers(event, sid, includeSession)...)
 	}
 	// SDK callbacks remain eligible under managed-only customization. They
 	// are separate function identities and are never command-key deduplicated.
 	if event != "WorktreeCreate" && event != "WorktreeRemove" {
-		rows = append(rows, s.sdkCommandMatchers(event)...)
+		for _, row := range s.sdkCommandMatchers(event) {
+			rows = append(rows, nativeMatchedHook{commandMatcher: row})
+		}
 	}
 	return rows, nil
 }
@@ -61,7 +74,22 @@ func (s *Service) activeCallbacks(event, sid string) bool {
 }
 
 func selectNativeStopCommands(event string, input protocol.JSONObject, rows []commandMatcher, promptBound ...bool) ([]protocol.JSONObject, error) {
-	selected := []protocol.JSONObject{}
+	matched := make([]nativeMatchedHook, len(rows))
+	for i, row := range rows {
+		matched[i] = nativeMatchedHook{commandMatcher: row}
+	}
+	values, err := selectNativeStopMatchedCommands(event, input, matched, promptBound...)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]protocol.JSONObject, len(values))
+	for i, row := range values {
+		out[i] = row.hook
+	}
+	return out, nil
+}
+func selectNativeStopMatchedCommands(event string, input protocol.JSONObject, rows []nativeMatchedHook, promptBound ...bool) ([]nativeMatchedHook, error) {
+	selected := []nativeMatchedHook{}
 	indices := map[string]int{}
 	for _, row := range rows {
 		if event != "Stop" && input.String("agent_type") != "" && !nativeCommandMatch(input.String("agent_type"), row.matcher) {
@@ -69,23 +97,24 @@ func selectNativeStopCommands(event string, input protocol.JSONObject, rows []co
 		}
 		hook := row.hook
 		if hook.String("type") == "callback" {
-			selected = append(selected, hook.Clone())
+			selected = append(selected, row.clone())
 			continue
 		}
-		key, e := nativeEventHookKey(hook)
+		key, e := row.key()
 		if e != nil {
 			return nil, e
 		}
 		if i, ok := indices[key]; ok {
-			selected[i] = hook.Clone()
+			selected[i] = row.clone()
 		} else {
 			indices[key] = len(selected)
-			selected = append(selected, hook.Clone())
+			selected = append(selected, row.clone())
 		}
 	}
-	grouped := make([]protocol.JSONObject, 0, len(selected))
+	grouped := make([]nativeMatchedHook, 0, len(selected))
 	for _, kind := range []string{"command", "prompt", "agent", "http", "callback"} {
-		for _, hook := range selected {
+		for _, row := range selected {
+			hook := row.hook
 			if hook.String("type") != kind {
 				continue
 			}
@@ -103,7 +132,7 @@ func selectNativeStopCommands(event string, input protocol.JSONObject, rows []co
 			if kind == "command" && (string(hook.Get("async")) == "true" || string(hook.Get("asyncRewake")) == "true") && !(len(promptBound) > 3 && promptBound[3]) {
 				return nil, unsupported("command hook asynchronous task lifecycle")
 			}
-			grouped = append(grouped, hook)
+			grouped = append(grouped, row)
 		}
 	}
 	return grouped, nil

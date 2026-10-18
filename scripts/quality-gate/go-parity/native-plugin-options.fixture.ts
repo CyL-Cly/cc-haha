@@ -31,9 +31,15 @@ const { enableConfigs } = await import('../../../src/utils/config')
 enableConfigs()
 const options = await import('../../../src/utils/plugins/pluginOptionsStorage')
 const observations = []
+const failures: string[] = []
 for (const step of input.operations) {
   if (step.action === 'load') observations.push(options.loadPluginOptions(step.id))
-  else if (step.action === 'save') options.savePluginOptions(step.id, step.values, step.schema)
+  else if (step.action === 'save') {
+    if (step.captureError) {
+      try { options.savePluginOptions(step.id, step.values, step.schema) }
+      catch (error) { failures.push((error as Error).message) }
+    } else options.savePluginOptions(step.id, step.values, step.schema)
+  }
   else if (step.action === 'delete') options.deletePluginOptions(step.id)
 }
-process.stdout.write(JSON.stringify({ observations, settings: readFileSync(join(config, 'settings.json'), 'utf8'), credentials: readFileSync(join(config, '.credentials.json'), 'utf8') }))
+process.stdout.write(JSON.stringify({ observations, settings: readFileSync(join(config, 'settings.json'), 'utf8'), credentials: readFileSync(join(config, '.credentials.json'), 'utf8'), ...(failures.length ? { failures } : {}) }))

@@ -43,7 +43,7 @@ func (p *NativeProcessSettings) Connectors(o NativeConnectorOptions) (*connector
 	if err != nil {
 		return nil, err
 	}
-	backend, err := connectors.NewPluginStore(connectors.PluginStoreOptions{ConfigDir: n.Environment["CLAUDE_CONFIG_DIR"], Store: store, Now: n.Now, UUID: uuidMain, Policy: p.Policy,
+	backend, err := connectors.NewPluginStore(connectors.PluginStoreOptions{ConfigDir: n.ConfigHomeDirectory(), Store: store, Now: n.Now, UUID: uuidMain, Policy: p.Policy,
 		MarketplaceAllowed: func(ctx context.Context, root string) error {
 			policy, err := p.Policy(ctx)
 			if err != nil {
@@ -75,7 +75,7 @@ func (p *NativeProcessSettings) Connectors(o NativeConnectorOptions) (*connector
 	if err != nil {
 		return nil, err
 	}
-	bridge, err := connectors.NewManagedBridge(n.Environment["CLAUDE_CONFIG_DIR"], catalog, backend, uuidMain)
+	bridge, err := connectors.NewManagedBridge(n.ConfigHomeDirectory(), catalog, backend, uuidMain)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +93,7 @@ func (p *NativeProcessSettings) Connectors(o NativeConnectorOptions) (*connector
 		status, count, err := o.MCP.Probe(ctx, name, config)
 		return connectors.RemoteProbe{Status: status, ToolCount: count}, err
 	}, OAuth: o.MCP.Authenticate, Disconnect: o.MCP.Disconnect, ClearOAuth: o.MCP.ClearOAuth, LoadOptions: o.PluginOptions.Load, SaveOptions: o.PluginOptions.Save, DeleteOptions: o.PluginOptions.Delete, Environment: func(key string) (string, bool) { v, ok := n.Environment[key]; return v, ok }, PluginDataDirectory: func(ctx context.Context, id string) (string, error) { return nativePluginDataDirectory(n, ctx, id) }}
-	return connectors.New(connectors.Options{Root: filepath.Join(n.Environment["CLAUDE_CONFIG_DIR"], "connectors"), Platform: platform + "-" + arch, Definitions: catalog.Definitions, Bridge: bridge, Now: n.Now, UUID: uuidMain, CreateAdapter: func(def protocol.JSONObject, root string) (connectors.Adapter, error) {
+	return connectors.New(connectors.Options{Root: filepath.Join(n.ConfigHomeDirectory(), "connectors"), Platform: platform + "-" + arch, Definitions: catalog.Definitions, Bridge: bridge, Now: n.Now, UUID: uuidMain, CreateAdapter: func(def protocol.JSONObject, root string) (connectors.Adapter, error) {
 		for _, recipe := range catalog.Skills {
 			if recipe.ID == def.String("id") && recipe.Version == def.String("version") {
 				return connectors.SkillAdapter(def, root, recipe, native.Download, uuidMain)
@@ -112,7 +112,7 @@ func nativePluginDataDirectory(n *NativeBoundary, ctx context.Context, id string
 	if err := ctx.Err(); err != nil {
 		return "", err
 	}
-	dirs := pluginregistry.ResolveDirectories(n.Home, n.Environment["CLAUDE_CONFIG_DIR"], false, func(key string) string { return n.Environment[key] })
+	dirs := pluginregistry.ResolveDirectories(n.Home, n.ConfigHomeDirectory(), false, func(key string) string { return n.Environment[key] })
 	units := utf16.Encode([]rune(id))
 	for i, c := range units {
 		if !(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '-' || c == '_') {

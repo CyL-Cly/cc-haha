@@ -23,6 +23,9 @@ func (m *MainPrint) nativeModelSelection(ctx context.Context, scope *cooperative
 		if err != nil {
 			return nil, err
 		}
+		if m.options.Native.NativeProcess && (m.options.Arguments.Remote != nil || m.options.Arguments.Teleport != "" || m.options.Arguments.TeleportWithoutValue) {
+			return modelselection.NewNativeCCRRemoteAuthentication(options, identity)
+		}
 		return modelselection.NewAnthropicAuthentication(options, identity)
 	}
 	return modelselection.NewDirectCredentials(options)

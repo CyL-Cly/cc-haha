@@ -168,6 +168,9 @@ func TestDisconnectFailedBookendRetainsProofRetriesAndJoinsOnClose(t *testing.T)
 				return
 			}
 			failing.Store(false)
+			// Finalization shares the existing owned timer factory. Advance the
+			// same retained retry explicitly, with all original assertions intact.
+			clock.latest(t).callback()
 			deadline := time.Now().Add(2 * time.Second)
 			for {
 				r.mu.Lock()

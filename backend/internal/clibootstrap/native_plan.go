@@ -13,11 +13,11 @@ func (m *MainPrint) newNativePlans() error {
 	if m.plans != nil || m.nativeSettings == nil {
 		return nil
 	}
-	config := m.options.Native.Environment["CLAUDE_CONFIG_DIR"]
+	config := m.options.Native.ConfigHomeDirectory()
 	if config == "" {
 		config = filepath.Join(m.options.Native.Home, ".claude")
 	}
-	p, e := sessionplans.New(sessionplans.Options{Bootstrap: m.state, ConfigDir: config, CWD: m.options.Native.CWD, InitialSettings: m.Startup.GetInitialSettings, OnError: func(e error) { _, _ = m.options.Error.Write([]byte(e.Error() + "\n")) }})
+	p, e := sessionplans.New(sessionplans.Options{Bootstrap: m.state, ConfigDir: config, CWD: m.options.Native.CWD, InitialSettings: m.nativeSDKInitialSettings, OnError: func(e error) { _, _ = m.options.Error.Write([]byte(e.Error() + "\n")) }})
 	if e == nil {
 		m.plans = p
 	}

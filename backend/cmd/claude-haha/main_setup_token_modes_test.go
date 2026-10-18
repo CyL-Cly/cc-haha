@@ -22,6 +22,7 @@ func TestActualSourceAndPublicSetupTokenManualEditingCopyRetryAndCancel(t *testi
 	buildRoot := t.TempDir()
 	binary := filepath.Join(buildRoot, "setup-cli")
 	build := exec.Command("go", "build", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if raw, e := build.CombinedOutput(); e != nil {
 		t.Fatal(e, string(raw))
 	}
@@ -174,6 +175,7 @@ func TestActualSourceAndPublicSetupTokenManualEditingCopyRetryAndCancel(t *testi
 						}
 					}()
 				}
+				capturePublicGoCoverage(t, cmd)
 				runErr := cmd.Run()
 				if mode == "automatic-during-invalid" {
 					if e := <-callbackDone; e != nil {

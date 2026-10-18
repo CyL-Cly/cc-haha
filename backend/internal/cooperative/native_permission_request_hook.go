@@ -26,7 +26,7 @@ func (p *NativePermissionRequestHooks) Current(scope *Scope) bool {
 	return p != nil && scope.BelongsTo(p.owner) && scope.sideContinuation != nil && scope.sideContinuation.permissionAuthority == p && scope.sideContinuation.executing.Load()
 }
 func (p *NativePermissionRequestHooks) Start(caller *Scope, ctx context.Context, produce func(*Scope, context.Context) error, complete func(*Scope, error)) error {
-	if p == nil || !caller.BelongsTo(p.owner) || caller.frame != 0 || ctx == nil || produce == nil || complete == nil {
+	if p == nil || !caller.BelongsTo(p.owner) || caller.frame != 0 || caller.sideContinuation != nil && caller.sideContinuation.promptAuthority != nil || ctx == nil || produce == nil || complete == nil {
 		return ErrRestricted
 	}
 	if err := caller.check(); err != nil {

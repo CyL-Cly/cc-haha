@@ -26,7 +26,21 @@ func (m *MainPrint) nativeIndependentAgentOptions(scope *cooperative.Scope, requ
 		return MainPrintOptions{}, e
 	}
 	snapshot := m.state.Snapshot()
-	detached := &NativeDetachedAgentOptions{authParent: m, Bootstrap: snapshot, PromptSections: sections, PermissionMode: request.PermissionModeOverride, OmitClaudeMd: request.OmitClaudeMd, TaskDirectory: directory}
+	detached := &NativeDetachedAgentOptions{AgentType: request.AgentType, authParent: m, Bootstrap: snapshot, PromptSections: sections, PermissionMode: request.PermissionModeOverride, OmitClaudeMd: request.OmitClaudeMd, TaskDirectory: directory}
+	if pool := m.nativeHTTPPool(); pool != nil {
+		detached.httpPool, e = pool.TransferOnOwner(m.Owner, scope)
+		if e != nil {
+			return MainPrintOptions{}, e
+		}
+	}
+	var skills []string
+	_ = json.Unmarshal(request.SelectedAgent.Get("skills"), &skills)
+	if len(skills) > 0 || permissionFeedbackValueNative(request.SelectedAgent.Get("mcpServers")) || permissionFeedbackValueNative(request.SelectedAgent.Get("hooks")) {
+		detached.preset, e = m.nativeAgentPreset(scope, agentcatalog.Definition{Name: request.AgentType, Source: request.Source, Fields: request.SelectedAgent.Clone()})
+		if e != nil {
+			return MainPrintOptions{}, e
+		}
+	}
 	background := agentcatalog.ResolveTools(agentcatalog.Definition{Name: request.AgentType, Source: request.Source, Fields: request.SelectedAgent}, request.Tools, true, false)
 	detached.backgroundToolNames = map[string]bool{}
 	for _, name := range background.ResolvedTools {
@@ -123,6 +137,18 @@ func (m *MainPrint) nativeAgentToolAllowed(name string) bool {
 func (m *MainPrint) nativeAgentToolFilter() func(string) bool {
 	if d := m.options.DetachedAgent; d != nil && d.isBackgrounded != nil {
 		return m.nativeAgentToolAllowed
+	}
+	if m.options.Interactive && !m.agentChild && m.teamWorker == nil {
+		// REPL recomputes the selected main-thread Agent's whitelist and
+		// disallowed tools for every turn, including after /resume. Ordinary
+		// --print deliberately retains its original unrestricted main pool.
+		return func(name string) bool {
+			if m.mainThreadAgent == nil || m.mainThreadAgent.definition == nil {
+				return true
+			}
+			resolved := agentcatalog.ResolveTools(*m.mainThreadAgent.definition, []string{name}, false, true)
+			return len(resolved.ResolvedTools) != 0
+		}
 	}
 	return nil
 }

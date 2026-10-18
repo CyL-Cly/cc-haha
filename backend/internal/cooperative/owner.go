@@ -318,7 +318,7 @@ func (scope *Scope) Frame(kind FrameKind, run func() error) error {
 	if err := scope.check(); err != nil {
 		return err
 	}
-	if kind > FrameFinish || scope.frame != 0 || scope.callback != 0 || run == nil {
+	if kind > FrameFinish || scope.frame != 0 || scope.callback != 0 || scope.sideContinuation != nil && scope.sideContinuation.promptAuthority != nil || run == nil {
 		return ErrRestricted
 	}
 	scope.frame++

@@ -1,11 +1,11 @@
 import { Command, Option } from '@commander-js/extra-typings'
 import { beforeAll, expect, test } from 'bun:test'
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
-  assertCliReferenceFeatures, captureCliInventory, cliInventoryContract, inventoryBootstrap, probeCli, snapshotCommand,
+  assertCliReferenceFeatures, assertDisposableCliOracleHome, captureCliInventory, cliInventoryContract, inventoryBootstrap, probeCli, snapshotCommand,
 } from './cliInventory'
 
 test('snapshots hidden syntax, aliases, registered defaults, negation, choices, and parsers', () => {
@@ -148,3 +148,24 @@ test('caller-owned oracle homes stay private, reject repository/shared roots, an
     expect(await readFile(preserved, 'utf8')).toBe('must stay available after a probe')
   } finally { await rm(home, { recursive: true, force: true }) }
 }, 15_000)
+
+test('an oracle repository under the temporary root cannot become HOME or share HOME with its ancestors', async () => {
+  const allocation = await mkdtemp(join(tmpdir(), 'cli-inventory-temporary-repository-'))
+  try {
+    const repository = join(allocation, 'repository')
+    const child = join(repository, 'fixture-home')
+    const home = join(allocation, 'private-home')
+    await mkdir(child, { recursive: true })
+    await mkdir(home)
+    const sentinel = join(repository, 'protected.txt')
+    await writeFile(sentinel, 'repository input must remain unchanged')
+    for (const path of [repository, child, allocation, tmpdir()]) {
+      expect(() => assertDisposableCliOracleHome(path, repository)).toThrow('real disposable temporary HOME')
+    }
+    expect(() => assertDisposableCliOracleHome(home, repository)).not.toThrow()
+    const linked = join(allocation, 'linked-home')
+    await symlink(home, linked, process.platform === 'win32' ? 'junction' : 'dir')
+    expect(() => assertDisposableCliOracleHome(linked, repository)).toThrow('real disposable temporary HOME')
+    expect(await readFile(sentinel, 'utf8')).toBe('repository input must remain unchanged')
+  } finally { await rm(allocation, { recursive: true, force: true }) }
+})

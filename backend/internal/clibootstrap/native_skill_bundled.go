@@ -8,8 +8,20 @@ import (
 )
 
 func (m *MainPrint) nativeBundledSkillDefinitions() ([]skillcommands.Definition, error) {
+	return m.loadNativeBundledSkillDefinitions(false)
+}
+
+func (m *MainPrint) nativeBundledSkillCatalog() ([]skillcommands.Definition, error) {
+	return m.loadNativeBundledSkillDefinitions(true)
+}
+
+func (m *MainPrint) loadNativeBundledSkillDefinitions(unfiltered bool) ([]skillcommands.Definition, error) {
 	m.ensureNativeSkillState()
-	return skillcommands.NativeExternalBundled(skillcommands.BundledOptions{Environment: m.options.Native.Environment, IsGit: func(ctx context.Context) (bool, error) {
+	load := skillcommands.NativeExternalBundled
+	if unfiltered {
+		load = skillcommands.NativeExternalBundledCatalog
+	}
+	return load(skillcommands.BundledOptions{Environment: m.options.Native.nativeEnvironmentSnapshot(), EnvironmentSnapshot: m.options.Native.nativeEnvironmentSnapshot, IsGit: func(ctx context.Context) (bool, error) {
 		if e := ctx.Err(); e != nil {
 			return false, e
 		}

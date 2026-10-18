@@ -1,10 +1,13 @@
 #!/usr/bin/env bun
 
-import { appendFileSync, createReadStream, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { appendFileSync, createReadStream, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { isAbsolute, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { StringDecoder } from 'node:string_decoder'
+import { mergeGoChildCoverage, writeGoChildCoverageManifest, type GoChildCoverageManifest } from './go-child-coverage'
+import { realpathSync } from 'node:fs'
+import { createGoCoverageStorage, goCoverageStorageMode, type GoCoverageStorage, type GoCoverageStorageMode } from './go-coverage-storage'
 import { parseChangedLinesFromDiff } from '../quality-gate/coverage'
 import { createHermeticGoEnvironment, goDependencyLock, hydrateGoDependencies, parseGoJsonStream } from './go-dependencies'
 import { collectGoSourceScope, goControlledModules, goNativeTarget, goPlatformEvidence, goSourceDirectories, goSourceSnapshot, scanGoSources, type GoControlledModule, type GoSourceScope } from './go-platforms'
@@ -47,8 +50,32 @@ export function collectGoSourcePaths(output: string, backendDir: string): string
   return sources
 }
 
-export function createGoTestEnvironment(sandboxHome: string, source: NodeJS.ProcessEnv = process.env) {
-  return createHermeticGoEnvironment(sandboxHome, source)
+export function batchGoFormatCommands(sources: string[], budget = 96 * 1024): string[][] {
+  const prefix = ['gofmt', '-l']
+  const size = (argument: string) => Buffer.byteLength(argument, 'utf8') + 1
+  const prefixBytes = prefix.reduce((bytes, argument) => bytes + size(argument), 0)
+  if (!Number.isSafeInteger(budget) || budget <= prefixBytes) throw new Error('Go formatting argument budget is invalid')
+  if (sources.length === 0) throw new Error('Go formatting source inventory is empty')
+  const commands: string[][] = []
+  let command = [...prefix]
+  let bytes = prefixBytes
+  for (const source of sources) {
+    const sourceBytes = size(source)
+    if (prefixBytes + sourceBytes > budget) throw new Error(`Go formatting source exceeds the argument budget: ${source}`)
+    if (bytes + sourceBytes > budget) {
+      commands.push(command)
+      command = [...prefix]
+      bytes = prefixBytes
+    }
+    command.push(source)
+    bytes += sourceBytes
+  }
+  commands.push(command)
+  return commands
+}
+
+export function createGoTestEnvironment(sandboxHome: string, source: NodeJS.ProcessEnv = process.env, rootDir?: string) {
+  return createHermeticGoEnvironment(sandboxHome, source, false, rootDir)
 }
 
 export function collectGoNoTestPackages(output: string, expectedPackages: string[]): string[] {
@@ -375,27 +402,68 @@ export async function collectGoChangedLines(
   return changed
 }
 
+type GoCacheDirectoryIdentity = {
+  path: string
+  dev: number
+  ino: number
+  uid: number
+  gid: number
+  mode: number
+}
+type PrivateGoCacheIdentity = { home: GoCacheDirectoryIdentity, cache: GoCacheDirectoryIdentity }
+
+function privateGoCacheIdentity(home: string, env: Record<string, string>, protectedPaths: string[]): PrivateGoCacheIdentity {
+  const homeStat = lstatSync(home)
+  const cache = join(home, 'go-build')
+  const cacheStat = lstatSync(cache)
+  const canonicalHome = realpathSync(home)
+  const canonicalCache = realpathSync(cache)
+  const uid = process.getuid?.()
+  if (env.HOME !== home || env.GOCACHE !== cache || !homeStat.isDirectory() || homeStat.isSymbolicLink()
+    || !cacheStat.isDirectory() || cacheStat.isSymbolicLink() || canonicalCache !== join(canonicalHome, 'go-build')
+    || uid !== undefined && (homeStat.uid !== uid || cacheStat.uid !== uid)) {
+    throw new Error('Go build cache retirement requires the captured private sandbox cache')
+  }
+  for (const path of protectedPaths) {
+    const physical = realpathSync(path)
+    if (physical === canonicalCache || physical.startsWith(canonicalCache + sep)) {
+      throw new Error(`Go build cache retirement would remove protected inputs or evidence: ${path}`)
+    }
+  }
+  const identity = (path: string, info: Omit<GoCacheDirectoryIdentity, 'path'>) => ({
+    path, dev: info.dev, ino: info.ino, uid: info.uid, gid: info.gid, mode: info.mode & 0o777,
+  })
+  // Creating/removing cache entries legitimately changes directory timestamps and link counts.
+  return { home: identity(canonicalHome, homeStat), cache: identity(canonicalCache, cacheStat) }
+}
+
 export async function runGoChecks(options: {
   rootDir: string
   artifactDir?: string
   baseRef?: string
   execute?: CommandRunner
   sourceEnvironment?: NodeJS.ProcessEnv
+  coverageStorage?: GoCoverageStorageMode
+  coverageStorageSignal?: AbortSignal
 }) {
   const rootDir = resolve(options.rootDir)
   const artifactDir = resolve(options.artifactDir ?? join(rootDir, 'artifacts', 'go-checks', new Date().toISOString().replace(/[:.]/g, '-')))
   const sandboxHome = mkdtempSync(join(tmpdir(), 'cc-haha-go-tests-'))
-  const env = createGoTestEnvironment(sandboxHome, options.sourceEnvironment)
+  const env = createGoTestEnvironment(sandboxHome, options.sourceEnvironment, rootDir)
   // Go contracts execute the actual TS oracle in guarded disposable children.
   // Bind the runtime that is executing this Bun lane, not a path inherited
   // from a developer's provider/config environment.
   env.CC_HAHA_SOURCE_BUN = process.execPath
   env.CC_HAHA_PINNED_BUN = process.execPath
+  // This is a quality storage selection, never a child/product environment override.
+  delete env.CC_HAHA_GO_PROFILE_STORAGE
   const execute = options.execute ?? runCommand
   const cwd = join(rootDir, 'backend')
   mkdirSync(artifactDir, { recursive: true })
   const logPath = join(artifactDir, 'checks.log')
   const profilePath = join(artifactDir, 'coverage.out')
+  const childCoverageDir = join(artifactDir, 'child-coverage')
+  let profileStorage: GoCoverageStorage | undefined
   const report = {
     schemaVersion: 1,
     status: 'failed' as 'passed' | 'failed',
@@ -412,9 +480,13 @@ export async function runGoChecks(options: {
     testTargets: [] as string[],
     packagesWithoutTestFiles: [] as string[],
     dependencies: undefined as { modules: number; seed: string | null } | undefined,
+    buildCacheRetirement: undefined as { before: PrivateGoCacheIdentity, after: PrivateGoCacheIdentity } | undefined,
     unit: undefined as TestEvidence | undefined,
     race: undefined as TestEvidence | undefined,
     coverage: undefined as { covered: number; total: number; pct: number } | undefined,
+    childCoverage: undefined as Awaited<ReturnType<typeof mergeGoChildCoverage>> | undefined,
+    childCoverageManifest: undefined as string | undefined,
+    coverageStorage: undefined as ReturnType<GoCoverageStorage['evidence']> | undefined,
     changedLines: undefined as ChangedCoverage | undefined,
     declarations: [] as GoDeclarationEvidence[],
     failures: [] as string[],
@@ -428,7 +500,9 @@ export async function runGoChecks(options: {
     return result.stdout
   }
   try {
+    const storageMode = goCoverageStorageMode(options.coverageStorage ?? (options.sourceEnvironment ?? process.env).CC_HAHA_GO_PROFILE_STORAGE)
     if (!existsSync(join(cwd, 'go.mod'))) throw new Error('Missing backend/go.mod; the selected Go lane cannot be skipped')
+    const initialCache = privateGoCacheIdentity(sandboxHome, env, [rootDir, artifactDir, env.GOMODCACHE])
     report.dependencies = await hydrateGoDependencies(rootDir, env, { execute, sourceEnvironment: options.sourceEnvironment ?? process.env })
     // Actual Source oracles are launched from Go tests, but their fixtures,
     // TypeScript modules and locks are outside backend/. Freeze their bytes
@@ -453,21 +527,58 @@ export async function runGoChecks(options: {
     report.sources = collectGoSourceScope(packageInventory, sources, cwd)
     const packagesWithoutTestFiles = collectGoNoTestPackages(packageInventory, report.packages)
     report.packagesWithoutTestFiles = packagesWithoutTestFiles
-    const unformatted = (await checked(['gofmt', '-l', ...sources])).trim()
+    // Keep the complete ordered inventory while bounding argv below spawn limits.
+    // Count UTF-8 bytes and each argument's terminator, rather than JS characters.
+    const unformattedBatches: string[] = []
+    for (const command of batchGoFormatCommands(sources)) {
+      const output = (await checked(command)).trim()
+      if (output) unformattedBatches.push(output)
+    }
+    const unformatted = unformattedBatches.join('\n')
     if (unformatted) throw new Error(`Go source is not formatted; run gofmt locally:\n${unformatted}`)
     await checked(['go', 'build', ...report.testTargets])
     await checked(['go', 'vet', ...report.testTargets])
     // These packages exercise actual process/socket protocols with Source's
     // short deadlines. Bound simultaneous package binaries rather than
     // weakening those deadlines on hosts with many logical CPU cores. The Go
-    // -timeout watchdog is cumulative for an entire package, not each test;
-    // the expanded clibootstrap Source suite passes in about eight minutes.
-    // Keep individual protocol deadlines intact and bound the complete suite.
-    report.unit = collectGoTestEvidence(await checked([
-      'go', 'test', '-p=4', '-json', '-count=1', '-timeout=15m', '-covermode=atomic', `-coverpkg=${report.coveragePackages.join(',')}`, `-coverprofile=${profilePath}`, ...report.testTargets,
-    ]), report.packages, packagesWithoutTestFiles)
-    if (report.platform.race === 'required') report.race = collectGoTestEvidence(await checked(['go', 'test', '-p=4', '-race', '-json', '-count=1', '-timeout=15m', ...report.testTargets]), report.packages, packagesWithoutTestFiles)
-    const coverage = await parseGoCoverageProfileFile(profilePath, module.Path, report.controlledModules)
+    // -timeout watchdog is cumulative for an entire package, not each test.
+    // The expanded instrumented Source/physical-process suite reached the
+    // former 15m bound while its next tmux test had only run for zero seconds.
+    // Keep each protocol/PTY/Source deadline intact; give the complete package
+    // a finite 30m budget so all of its unchanged consumers can actually run.
+    const childManifest: GoChildCoverageManifest = {
+      schemaVersion: 1, rootDir: realpathSync(rootDir), modulePath: module.Path,
+      target: report.platform.target, toolchain: report.platform.toolchain,
+      coveragePackages: report.coveragePackages, sourceSnapshot: report.sourceSnapshot,
+      sources: report.sources, controlledModules: report.controlledModules,
+    }
+    writeGoChildCoverageManifest(childCoverageDir, childManifest)
+    report.childCoverageManifest = join(childCoverageDir, 'manifest.json')
+    if (storageMode === 'gzip-fifo') profileStorage = createGoCoverageStorage({ directory: artifactDir, signal: options.coverageStorageSignal })
+    const unit = () => checked([
+      'go', 'test', '-p=4', '-json', '-count=1', '-timeout=30m', '-covermode=atomic', `-outputdir=${childCoverageDir}`, `-coverpkg=${report.coveragePackages.join(',')}`, `-coverprofile=${profilePath}`, ...report.testTargets,
+    ])
+    report.unit = collectGoTestEvidence(profileStorage ? await profileStorage.capture(profilePath, unit) : await unit(), report.packages, packagesWithoutTestFiles)
+    // Unit and its optional profile sink have both settled. Retain all coverage artifacts,
+    // but retire this fresh sandbox's regenerable atomic cache before compiling race.
+    const protectedPaths = [rootDir, artifactDir, env.GOMODCACHE, ...(report.dependencies.seed ? [report.dependencies.seed] : [])]
+    const beforeRetirement = privateGoCacheIdentity(sandboxHome, env, protectedPaths)
+    if (JSON.stringify(beforeRetirement) !== JSON.stringify(initialCache)) throw new Error('Private Go build cache identity changed before retirement')
+    await checked(['go', 'clean', '-cache'])
+    const afterRetirement = privateGoCacheIdentity(sandboxHome, env, protectedPaths)
+    if (JSON.stringify(afterRetirement) !== JSON.stringify(initialCache)) throw new Error('Private Go build cache identity changed during retirement')
+    report.buildCacheRetirement = { before: beforeRetirement, after: afterRetirement }
+    if (report.platform.race === 'required') report.race = collectGoTestEvidence(await checked(['go', 'test', '-p=4', '-race', '-json', '-count=1', '-timeout=30m', ...report.testTargets]), report.packages, packagesWithoutTestFiles)
+    report.childCoverage = await mergeGoChildCoverage({
+      directory: childCoverageDir, parentProfile: profilePath, outputProfile: join(artifactDir, 'coverage-with-children.out'),
+      manifest: childManifest, env, profileStorage, execute: async (command, options) => {
+        appendFileSync(logPath, `$ ${command.join(' ')}\n`)
+        const result = await execute(command, options)
+        appendFileSync(logPath, `${result.stdout}${result.stderr}\n`)
+        return result
+      },
+    })
+    const coverage = await parseGoCoverageProfileFile(report.childCoverage.outputProfile, module.Path, report.controlledModules)
     const total = [...coverage.values()].reduce((count, value) => count + value.executable.size, 0)
     const covered = [...coverage.values()].reduce((count, value) => count + value.covered.size, 0)
     report.coverage = { covered, total, pct: covered * 100 / total }
@@ -492,6 +603,13 @@ export async function runGoChecks(options: {
   } catch (error) {
     report.failures.push(error instanceof Error ? error.message : String(error))
   } finally {
+    if (profileStorage) {
+      try { await profileStorage.close() } catch (error) {
+        report.status = 'failed'
+        report.failures.push(error instanceof Error ? error.message : String(error))
+      }
+      report.coverageStorage = profileStorage.evidence()
+    }
     writeFileSync(join(artifactDir, 'report.json'), JSON.stringify(report, null, 2) + '\n')
     writeFileSync(join(artifactDir, 'report.md'), [
       '# Go Backend Checks', '',
@@ -504,6 +622,7 @@ export async function runGoChecks(options: {
       `Coverage instrumentation: ${report.coveragePackages.join(', ') || 'not established'}`,
       `Repository input bytes (including Source oracles, fixtures and locks): ${report.repositoryInputs?.length ?? 'not established'}; before/after freshness required`,
       ...report.controlledModules.map(module => `Controlled dependency module: ${module.path} ${module.version} -> ${module.directory}; explicit native test root and parent consumers supply actual coverage counters`),
+      `Public child coverage: ${report.childCoverage ? `${report.childCoverage.counterFiles} actual counter files; ${report.childCoverage.binaries} retained instrumented binary identities; ${report.childCoverage.newlyCoveredBlocks} additional matching compiler blocks` : 'not completed'}; ${report.coverageStorage ? `${report.coverageStorage.profiles.filter(profile => profile.status === 'complete').length}/${report.coverageStorage.profiles.length} completed profiles retained as verified gzip with explicit restore mapping; logical parent/child paths require explicit restoration; failed captures remain unqualified` : 'original parent profile retained'}`,
       `Go coverage: ${report.coverage ? `${report.coverage.pct.toFixed(2)}% (${report.coverage.covered}/${report.coverage.total})` : 'not measured'}`,
       `Changed executable lines: ${report.changedLines?.pct == null ? 'none measured' : `${report.changedLines.pct.toFixed(2)}% (${report.changedLines.covered}/${report.changedLines.total})`}; minimum: ${report.changedLines?.minimumPercent ?? 'unavailable'}%`,
       '', ...(report.changedLines?.skipped ?? []).map(({ file, reason }) => `- Skipped on current target: ${file}: ${reason}`),

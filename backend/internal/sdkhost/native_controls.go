@@ -76,5 +76,9 @@ func (h *Host) RefreshNativeToolCatalog(scope *cooperative.Scope) error {
 	if err := h.checkInferenceOwner(scope); err != nil {
 		return err
 	}
+	if h.nativeQueryTools != nil {
+		h.nativeQueryTools.pending = true
+		return nil
+	}
 	return h.initializePrintCatalog(scope)
 }

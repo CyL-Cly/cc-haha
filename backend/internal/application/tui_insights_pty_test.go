@@ -39,6 +39,7 @@ func TestActualCLIInsightsMenuReportAndSameHarnessRestorePTY(t *testing.T) {
 	defer cancel()
 	cmd := exec.CommandContext(ctx, python, "testdata/tui_insights_pty.py", binary, home)
 	cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "HOME=" + home, "USERPROFILE=" + home, "CLAUDE_CONFIG_DIR=" + filepath.Join(home, ".claude"), "TMPDIR=" + home, "TERM=xterm-256color", "TZ=UTC", "CC_HAHA_TUI_INSIGHTS_HELPER=1"}
+	capturePublicGoCoverage(t, cmd)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("actual Insights PTY %v %.7500s", err, out)
@@ -58,6 +59,12 @@ func TestNativeTUIInsightsFixtureProcess(t *testing.T) {
 	}
 	var posts atomic.Int32
 	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		body, _ := io.ReadAll(r.Body)
 		n := posts.Add(1)
 		text := `{}`

@@ -12,13 +12,14 @@ import (
 )
 
 type foregroundSnapshotSession struct {
-	emit      Emit
-	received  chan json.RawMessage
-	finish    chan struct{}
-	tail      chan struct{}
-	completed chan struct{}
-	once      sync.Once
-	running   atomic.Bool
+	emit        Emit
+	received    chan json.RawMessage
+	finish      chan struct{}
+	tail        chan struct{}
+	completed   chan struct{}
+	afterResult chan error
+	once        sync.Once
+	running     atomic.Bool
 }
 
 func (s *foregroundSnapshotSession) Handle(ctx context.Context, raw json.RawMessage) error {
@@ -34,6 +35,9 @@ func (s *foregroundSnapshotSession) Handle(ctx context.Context, raw json.RawMess
 	}
 	s.running.Store(false)
 	s.emit(json.RawMessage(`{"type":"message_complete","usage":{"input_tokens":1,"output_tokens":1}}`))
+	if s.afterResult != nil {
+		s.afterResult <- ctx.Err()
+	}
 	s.once.Do(func() { close(s.completed) })
 	select {
 	case <-s.tail:
@@ -55,21 +59,37 @@ func (*foregroundSnapshotSession) Close(context.Context) error { return nil }
 
 func assertForegroundSnapshot(t *testing.T, ws *websocket.Conn, active bool) {
 	t.Helper()
-	state, permissions := objectForTest(receiveType(t, ws, "session_state")), objectForTest(receiveType(t, ws, "permission_requests_snapshot"))
-	wantState, wantActive := "idle", "false"
+	state := objectForTest(receiveType(t, ws, "session_state"))
+	wantState := "idle"
 	if active {
-		wantState, wantActive = "running", "true"
+		wantState = "running"
 	}
-	if stringField(state, "turnState") != wantState || string(permissions["turnActive"]) != wantActive {
-		t.Fatalf("registered foreground snapshot mismatched: state=%s permission=%s want=%s/%s", state, permissions, wantState, wantActive)
+	if stringField(state, "turnState") != wantState {
+		t.Fatalf("registered foreground snapshot mismatched: state=%s want=%s", state, wantState)
 	}
+}
+
+func assertForegroundReconnectSnapshot(t *testing.T, ws *websocket.Conn, active bool) {
+	t.Helper()
+	permissions := objectForTest(receiveType(t, ws, "permission_requests_snapshot"))
+	wantActive := "false"
+	if active {
+		wantActive = "true"
+	}
+	if string(permissions["turnActive"]) != wantActive {
+		t.Fatalf("registered connect permission snapshot mismatched: %s want=%s", permissions, wantActive)
+	}
+	if err := websocket.Message.Send(ws, `{"type":"sync_state"}`); err != nil {
+		t.Fatal(err)
+	}
+	assertForegroundSnapshot(t, ws, active)
 }
 
 func TestDesktopSnapshotRegisteredUserBeforeFactoryAndSettlesBeforeCompletion(t *testing.T) {
 	for _, kind := range []string{"user_message", "prewarm_session", "stop-startup"} {
 		t.Run(kind, func(t *testing.T) {
 			entered, release := make(chan struct{}), make(chan struct{})
-			live := &foregroundSnapshotSession{received: make(chan json.RawMessage, 4), finish: make(chan struct{}), tail: make(chan struct{}), completed: make(chan struct{})}
+			live := &foregroundSnapshotSession{received: make(chan json.RawMessage, 4), finish: make(chan struct{}), tail: make(chan struct{}), completed: make(chan struct{}), afterResult: make(chan error, 1)}
 			options := testOptions(t, func(ctx context.Context, _ SessionOptions, emit Emit) (LiveSession, error) {
 				live.emit = emit
 				close(entered)
@@ -84,7 +104,7 @@ func TestDesktopSnapshotRegisteredUserBeforeFactoryAndSettlesBeforeCompletion(t 
 			id := createTestSession(t, host, options.WorkDir)
 			first := dial(t, host, id)
 			receiveType(t, first, "connected")
-			assertForegroundSnapshot(t, first, false)
+			assertForegroundReconnectSnapshot(t, first, false)
 			inputKind := kind
 			if kind == "stop-startup" {
 				inputKind = "user_message"
@@ -99,7 +119,7 @@ func TestDesktopSnapshotRegisteredUserBeforeFactoryAndSettlesBeforeCompletion(t 
 			}
 			second := dial(t, host, id)
 			receiveType(t, second, "connected")
-			assertForegroundSnapshot(t, second, inputKind == "user_message")
+			assertForegroundReconnectSnapshot(t, second, inputKind == "user_message")
 			if kind == "stop-startup" {
 				// A separate reader verifies Stop while the first connection may
 				// still be waiting on the suspended shared factory.
@@ -136,6 +156,9 @@ func TestDesktopSnapshotRegisteredUserBeforeFactoryAndSettlesBeforeCompletion(t 
 			}
 			close(live.finish)
 			receiveType(t, second, "message_complete")
+			if err := <-live.afterResult; err != nil {
+				t.Fatal("foreground completion canceled native checkpoint/finally", err)
+			}
 			if err := websocket.Message.Send(second, `{"type":"sync_state"}`); err != nil {
 				t.Fatal(err)
 			}

@@ -44,7 +44,9 @@ func TestNativeModelFastStatusCloseJoinsActualTLSAndTokenReadWithoutLatePersiste
 			f := newNativePluginFixture(t)
 			initial := []byte(`{"model":"opus","fastMode":true,"future":true}`)
 			f.write(t, filepath.Join(f.config, "settings.json"), string(initial))
-			f.write(t, filepath.Join(f.config, ".claude.json"), `{"penguinModeOrgEnabled":true,"future":true}`)
+			// Keep the actual fast job isolated from main's separately tested
+			// model migration, which legitimately changes old "opus" settings.
+			f.write(t, filepath.Join(f.config, ".claude.json"), `{"penguinModeOrgEnabled":true,"future":true,"migrationVersion":11}`)
 			cert := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: peer.Certificate().Raw})
 			certPath := filepath.Join(f.home, "root.pem")
 			f.write(t, certPath, string(cert))
@@ -65,6 +67,7 @@ func TestNativeModelFastStatusCloseJoinsActualTLSAndTokenReadWithoutLatePersiste
 			}
 			config, _ := desktopoauth.ResolveConfig(env)
 			config.BaseAPIURL = peer.URL
+			seedNativeReleaseWarmFixture(t, f, "fixture")
 			m, err := NewMainPrint(MainPrintOptions{Arguments: PrintArguments{Sources: DefaultState(), Model: "opus", Tools: []string{"Read"}, MaxTurns: 8, PermissionMode: "default", SessionID: "66666666-6666-4666-8666-666666666666", SystemPrompt: "private fast Close"}, Native: f.n, PID: os.Getpid(), Platform: "darwin", Version: "fixture", Interactive: true, NativeModelFastConfig: &config, Input: strings.NewReader(""), Output: io.Discard, Error: io.Discard})
 			if err != nil {
 				t.Fatal(err)

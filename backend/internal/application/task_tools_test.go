@@ -77,7 +77,7 @@ func TestNativeTaskToolsUseActualStoreAndSharedAppState(t *testing.T) {
 	managed := o.Native.ManagedRoot
 	o.Native = nil
 	o.NativeFactory = func(env map[string]string, cwd, platform string) (*clibootstrap.NativeBoundary, error) {
-		return clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: cwd, Platform: platform, ManagedRoot: managed, ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+		return newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: cwd, Platform: platform, ManagedRoot: managed, ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 	}
 	path = filepath.Join(o.Environment["CLAUDE_CONFIG_DIR"], "tasks", taskstore.SanitizePathComponent(o.Environment["CLAUDE_CODE_TASK_LIST_ID"]), "1.json")
 	taskList = taskstore.SanitizePathComponent(o.Environment["CLAUDE_CODE_TASK_LIST_ID"])

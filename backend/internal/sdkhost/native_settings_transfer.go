@@ -63,7 +63,7 @@ func (h *Host) readASKMergedSettings() (*protocol.JSONObject, error) {
 		}
 		return h.transferredASKMerged, nil
 	}
-	return h.options.Startup.GetInitialSettings()
+	return h.nativeSDKInitialSettings()
 }
 
 func (h *Host) validateTransferredASKSettings(settings, merged *protocol.JSONObject) bool {

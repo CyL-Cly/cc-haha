@@ -126,16 +126,24 @@ type appendContinuation struct {
 // Each command receives a fresh owner scope; the worker never receives a Scope,
 // JSONObject, Set, Factory or entry. Unlike model cancellation, owner lifetime
 // rejection closes unadopted leases and settles the independent append future.
-func dispatchAppendOwned[T any](pending *PendingWriter, future *WriteFuture, work func() T, cleanup func(T), complete func(*cooperative.Scope, T)) {
+func dispatchAppendOwned[T any](pending *PendingWriter, future *WriteFuture, operation transcriptNativeOperation, work func() T, cleanup func(T), complete func(*cooperative.Scope, T)) {
 	pending.runtimeNative.begin()
 	pending.workers.Add(1)
 	go func() {
 		defer pending.workers.Done()
 		defer pending.runtimeNative.end()
 		result := work()
-		receipt, err := pending.owner.SubmitIndependent(context.Background(), cooperative.Flush, func(s *cooperative.Scope) error { complete(s, result); return nil })
+		var reaction transcriptNativeCompletion
+		receipt, err := pending.owner.SubmitIndependent(context.Background(), cooperative.Flush, func(scope *cooperative.Scope) error {
+			var err error
+			reaction, err = completeTranscriptNativeOperation(scope, pending, operation, func(next *cooperative.Scope) { complete(next, result) })
+			return err
+		})
 		if err == nil {
 			err = receipt.Wait()
+		}
+		if err == nil {
+			err = reaction.Wait()
 		}
 		if err != nil {
 			if cleanup != nil {
@@ -162,7 +170,7 @@ func (job *appendContinuation) enqueue(s *cooperative.Scope) {
 		return
 	}
 	path := job.path
-	dispatchAppendOwned(job.pending, job.future, func() openResult {
+	dispatchAppendOwned(job.pending, job.future, transcriptNativeFSPOpen, func() openResult {
 		file, e := files.OpenFile(path, os.O_WRONLY|os.O_APPEND, 0)
 		if e != nil {
 			return openResult{err: e}
@@ -188,7 +196,7 @@ func (job *appendContinuation) enqueue(s *cooperative.Scope) {
 	})
 }
 func (job *appendContinuation) stat(lease *descriptorLease) {
-	dispatchAppendOwned(job.pending, job.future, func() statResult { info, e := lease.file.Stat(); return statResult{info, e} }, func(statResult) { _ = lease.close() }, func(s *cooperative.Scope, v statResult) {
+	dispatchAppendOwned(job.pending, job.future, transcriptNativeUnwrapped, func() statResult { info, e := lease.file.Stat(); return statResult{info, e} }, func(statResult) { _ = lease.close() }, func(s *cooperative.Scope, v statResult) {
 		err := v.err
 		var id identity
 		if err == nil && !v.info.Mode().IsRegular() {
@@ -202,7 +210,7 @@ func (job *appendContinuation) stat(lease *descriptorLease) {
 				job.pending.writer.mu.Unlock()
 			}
 		}
-		dispatchAppendOwned(job.pending, job.future, func() error { return lease.close() }, nil, func(s *cooperative.Scope, closed error) {
+		dispatchAppendOwned(job.pending, job.future, transcriptNativeGuardedClose, func() error { return lease.close() }, nil, func(s *cooperative.Scope, closed error) {
 			if closed != nil {
 				err = closed
 			}
@@ -217,7 +225,7 @@ func (job *appendContinuation) stat(lease *descriptorLease) {
 func (job *appendContinuation) queued(s *cooperative.Scope, id identity) {
 	writer := job.pending.writer
 	writer.mu.Lock()
-	writer.queues[job.path] = append(writer.queues[job.path], queuedEntry{job.entry, id})
+	writer.appendQueuedLocked(job.path, queuedEntry{job.entry, id})
 	if writer.stop == nil {
 		stop, err := job.pending.scheduleDrainReference(s)
 		if err != nil {
@@ -228,29 +236,40 @@ func (job *appendContinuation) queued(s *cooperative.Scope, id identity) {
 		writer.stop = stop
 	}
 	writer.mu.Unlock()
-	// The async enqueue body has returned a fulfilled Promise. Source's
-	// trackWrite finally runs after awaiting it, never in the admission stack.
-	// This is an explicit owner continuation, not a timer or a business worker.
-	future := job.future
-	receipt, err := job.pending.owner.Microtask(cooperative.Flush, func(next *cooperative.Scope) error { job.complete(next, nil); return nil })
-	if err != nil {
-		future.settle(err)
-		return
-	}
-	job.pending.workers.Add(1)
-	go func() {
-		defer job.pending.workers.Done()
-		if err := receipt.Wait(); err != nil {
-			future.settle(err)
-		}
-	}()
+	job.complete(s, nil)
 }
 func (job *appendContinuation) complete(s *cooperative.Scope, err error) {
-	if completeErr := job.token.Complete(s); err == nil {
-		err = completeErr
+	if !s.BelongsTo(job.pending.owner) {
+		job.future.settle(cooperative.ErrRestricted)
+		return
 	}
+	// enqueueWrite returns trackWrite's Promise. Its async body settlement first
+	// resumes trackWrite's await/finally; settling that returned Promise then
+	// resumes appendEntry's separate await. A zero-count observer registered by
+	// flush runs between those two reactions, before UUID/cache/remote changes.
+	// These are logical Promise reactions, with no new native work or timer.
+	body, tracked := newWriteFuture(), newWriteFuture()
+	if e := tracked.thenOwner(job.pending.owner, job.afterEnqueue, job.future.settle); e != nil {
+		job.future.settle(e)
+		return
+	}
+	if e := body.thenOwner(job.pending.owner, func(next *cooperative.Scope, err error) {
+		if completeErr := job.token.Complete(next); err == nil {
+			err = completeErr
+		}
+		tracked.settle(err)
+	}, job.future.settle); e != nil {
+		job.future.settle(e)
+		return
+	}
+	body.settle(err)
+}
+func (job *appendContinuation) afterEnqueue(s *cooperative.Scope, err error) {
 	if err == nil && job.add {
 		err = job.set.Add(s, job.entry.Get("uuid"))
+		if err == nil {
+			job.pending.observeWriter("set-add", nil, nil, job.entry.Get("uuid"))
+		}
 	}
 	if err == nil && job.persistRemote(s) {
 		return

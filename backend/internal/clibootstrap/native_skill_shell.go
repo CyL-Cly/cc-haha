@@ -25,31 +25,44 @@ func (m *MainPrint) nativeSkillShell(ctx context.Context, scope *cooperative.Sco
 // permission, while the actual child Bash service supplies the worker cwd.
 // Ordinary slash/Skill invocations continue to read this Harness's own state.
 func (m *MainPrint) nativeSkillShellWithPermission(ctx context.Context, scope *cooperative.Scope, request skillcommands.ShellRequest, inherited *protocol.JSONObject) (string, error) {
-	if !scope.BelongsTo(m.Owner) || m.nativeTools == nil {
-		return "", cooperative.ErrRestricted
+	value, err := m.nativeSkillShellJSONWithPermission(ctx, scope, request, inherited)
+	var text string
+	if err == nil {
+		err = json.Unmarshal(value, &text)
 	}
-	matches, e := skillcommands.PromptShellMatches(request.Text)
+	return text, err
+}
+
+func (m *MainPrint) nativeSkillShellJSONWithPermission(ctx context.Context, scope *cooperative.Scope, request skillcommands.ShellRequest, inherited *protocol.JSONObject) (json.RawMessage, error) {
+	if !scope.BelongsTo(m.Owner) || m.nativeTools == nil {
+		return nil, cooperative.ErrRestricted
+	}
+	text := request.TextJSON
+	if text == nil {
+		text = quoteMain(request.Text)
+	}
+	matches, e := skillcommands.PromptShellMatchesJSON(text)
 	if e != nil {
-		return "", e
+		return nil, e
 	}
 	if len(matches) == 0 {
-		return request.Text, context.Cause(ctx)
+		return text, context.Cause(ctx)
 	}
-	result := request.Text
-	all, e := ownerasync.NewOwnerFuture[string](m.Owner)
+	result := text
+	all, e := ownerasync.NewOwnerFuture[json.RawMessage](m.Owner)
 	if e != nil {
-		return "", e
+		return nil, e
 	}
 	remaining := len(matches)
 	failed := false
 	finish := func(current *cooperative.Scope, match skillcommands.PromptShellMatch, output string, failure error) error {
 		remaining--
+		if failure == nil {
+			result, failure = skillcommands.ReplacePromptShellMatchJSON(result, match, output)
+		}
 		if failure != nil && !failed {
 			failed = true
 			return all.Reject(current, failure)
-		}
-		if failure == nil {
-			result = strings.Replace(result, match.Pattern, output, 1)
 		}
 		if remaining == 0 && !failed {
 			return all.Resolve(current, result)
@@ -62,7 +75,7 @@ func (m *MainPrint) nativeSkillShellWithPermission(ctx context.Context, scope *c
 			return finish(current, match, output, failure)
 		})
 		if e != nil {
-			return "", e
+			return nil, e
 		}
 	}
 	return all.Await(scope)
@@ -91,7 +104,11 @@ func (m *MainPrint) nativeSkillShellOneWithPermission(ctx context.Context, scope
 	rules = rules.Clone()
 	rules.Set("command", rawMain(request.AllowedTools))
 	permission.Set("alwaysAllowRules", rawMain(rules))
-	in := protocol.NewJSONObject(protocol.JSONField{Name: "command", Value: quoteMain(match.Command)})
+	command := match.CommandJSON
+	if command == nil {
+		command = quoteMain(match.Command)
+	}
+	in := protocol.NewJSONObject(protocol.JSONField{Name: "command", Value: command})
 	// The original permission call allocates an empty assistant before checking.
 	_ = m.factory.CreateAssistant(storage.Object{"content": json.RawMessage("[]")})
 	name := "Bash"

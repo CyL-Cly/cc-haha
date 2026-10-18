@@ -157,7 +157,60 @@ function assertTemporaryHome(home: string) {
     || !temporaryRoots().some(root => realpathSync(home).startsWith(`${root}${sep}`))) throw new Error('Go checks require a real disposable temporary HOME')
 }
 
-export function createHermeticGoEnvironment(home: string, source: NodeJS.ProcessEnv = process.env, preparation = false) {
+function physicalFixtureEnvironment(source: NodeJS.ProcessEnv, rootDir?: string): Record<string, string> {
+  const result: Record<string, string> = {}
+  const broker = source.CC_HAHA_SANDBOX_PHYSICAL_BROKER
+  if (broker) {
+    if (broker !== '1') throw new Error('Physical sandbox broker requires explicit 1')
+    result.CC_HAHA_SANDBOX_PHYSICAL_BROKER = broker
+  }
+  const bin = source.CC_HAHA_TEST_POPPLER_BIN
+  if (bin) {
+    result.CC_HAHA_TEST_POPPLER_BIN = privateFixtureDirectory(bin, 'Physical Poppler', rootDir)
+  }
+  const sdk = source.CC_HAHA_MCPB_SOURCE_SDK
+  if (sdk) {
+    const canonical = privateFixtureDirectory(sdk, 'MCPB Source SDK', rootDir)
+    const reference = (name: string) => {
+      const path = join(canonical, name)
+      if (!existsSync(path)) throw new Error('MCPB Source SDK requires real reference files')
+      if (lstatSync(path).isSymbolicLink()) throw new Error('MCPB Source SDK reference cannot use a symlink')
+      if (!lstatSync(path).isFile()) throw new Error('MCPB Source SDK requires real reference files')
+      for (let current = path; current !== canonical; current = resolve(current, '..')) {
+        if (lstatSync(current).isSymbolicLink()) throw new Error('MCPB Source SDK reference cannot use a symlink')
+      }
+      return path
+    }
+    const manifest = JSON.parse(readFileSync(reference('package.json'), 'utf8'))
+    const zod = JSON.parse(readFileSync(reference('node_modules/zod/package.json'), 'utf8'))
+    if (manifest.name !== '@anthropic-ai/mcpb' || manifest.version !== '1.2.0' || zod.name !== 'zod' || zod.version !== '3.25.67') {
+      throw new Error('MCPB Source SDK requires the pinned 1.2.0 reference and nested Zod 3.25.67')
+    }
+    reference('dist/schemas/latest.js')
+    reference('dist/shared/config.js')
+    result.CC_HAHA_MCPB_SOURCE_SDK = canonical
+  }
+  return result
+}
+
+function privateFixtureDirectory(path: string, label: string, rootDir?: string) {
+  if (!isAbsolute(path)) throw new Error(`${label} directory must be absolute`)
+  if (existsSync(path) && lstatSync(path).isSymbolicLink()) throw new Error(`${label} directory cannot use a symlink`)
+  if (!existsSync(path) || !lstatSync(path).isDirectory()) throw new Error(`${label} requires a real private directory`)
+  const canonical = realpathSync(path)
+  const roots = [...temporaryRoots(), ...(rootDir ? [join(realpathSync(rootDir), 'artifacts')] : [])]
+  if (!roots.some(root => canonical.startsWith(`${root}${sep}`))) throw new Error(`${label} must stay in private temporary or project artifacts storage`)
+  const root = roots.find(root => canonical.startsWith(`${root}${sep}`))!
+  // Reject symlinks at every component below the private root, including a
+  // link that happens to resolve back inside that root.
+  for (let current = resolve(path); realpathSync(current) !== root; current = resolve(current, '..')) {
+    if (lstatSync(current).isSymbolicLink()) throw new Error(`${label} directory cannot use a symlink`)
+    if (resolve(current, '..') === current) throw new Error(`${label} directory escaped private storage`)
+  }
+  return canonical
+}
+
+export function createHermeticGoEnvironment(home: string, source: NodeJS.ProcessEnv = process.env, preparation = false, rootDir?: string) {
   assertTemporaryHome(home)
   const env = createSandboxedTestEnvironment(home, {
     GOENV: 'off', GOTOOLCHAIN: 'local', GOWORK: 'off', GOFLAGS: '-mod=readonly',
@@ -167,6 +220,7 @@ export function createHermeticGoEnvironment(home: string, source: NodeJS.Process
     GOPATH: join(home, 'go'), GOMODCACHE: join(home, 'go/pkg/mod'), GOCACHE: join(home, 'go-build'),
     CGO_ENABLED: '1',
   }, source)
+  Object.assign(env, physicalFixtureEnvironment(source, rootDir))
   if (preparation) {
     for (const name of ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy']) {
       const value = source[name]
@@ -305,7 +359,7 @@ export async function prepareGoDependencies(options: {
   disposableCachePath(seed, root)
   if (existsSync(seed)) throw new Error(`Go dependency seed already exists; use a fresh preparation destination: ${seed}`)
   const home = mkdtempSync(join(tmpdir(), 'go-dependency-preparation-'))
-  const env = createHermeticGoEnvironment(home, options.sourceEnvironment, !options.sourceCache)
+  const env = createHermeticGoEnvironment(home, options.sourceEnvironment, !options.sourceCache, root)
   const cwd = join(home, 'repository/backend')
   const execute = options.execute ?? executeCommand
   try {
@@ -408,7 +462,7 @@ export async function hydrateGoDependencies(rootDir: string, env: Record<string,
 }
 
 export async function createGoBuildEnvironment(rootDir: string, home: string, source: NodeJS.ProcessEnv = process.env) {
-  const env = createHermeticGoEnvironment(home, source)
+  const env = createHermeticGoEnvironment(home, source, false, rootDir)
   await hydrateGoDependencies(rootDir, env, { sourceEnvironment: source })
   return env
 }

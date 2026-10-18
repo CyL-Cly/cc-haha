@@ -55,12 +55,29 @@ type MainAgents struct {
 }
 
 func NewMainAgents(args []string, n *NativeBoundary, pid int, nonInteractive bool, out io.Writer) (*MainAgents, error) {
+	return NewMainAgentsContext(context.Background(), args, n, pid, nonInteractive, out)
+}
+
+func NewMainAgentsContext(ctx context.Context, args []string, n *NativeBoundary, pid int, nonInteractive bool, out io.Writer) (*MainAgents, error) {
+	return newMainAgentsContext(ctx, args, n, pid, nonInteractive, out, nil)
+}
+
+func NewMainAgentsContextWithInput(ctx context.Context, args []string, n *NativeBoundary, pid int, nonInteractive bool, out io.Writer, input io.Reader) (*MainAgents, error) {
+	return newMainAgentsContext(ctx, args, n, pid, nonInteractive, out, input)
+}
+
+func newMainAgentsContext(ctx context.Context, args []string, n *NativeBoundary, pid int, nonInteractive bool, out io.Writer, input io.Reader) (*MainAgents, error) {
 	if n != nil && n.NativeProcess {
-		command, err := NewMainCommand(MainCommandOptions{Arguments: args, Native: n, Platform: runtime.GOOS, Version: "999.0.0-local", PID: pid, NonInteractive: nonInteractive, Output: out, Error: os.Stderr})
+		command, err := NewMainCommand(MainCommandOptions{Input: input, Context: ctx, Arguments: args, Native: n, Platform: runtime.GOOS, Version: "999.0.0-local", PID: pid, NonInteractive: nonInteractive, Output: out, Error: os.Stderr})
 		if err != nil {
 			return nil, err
 		}
-		catalog, err := command.Settings.AgentCatalog(command.Owner, n.CWD, nonInteractive)
+		options, err := command.Settings.PluginOptions(command.Secure)
+		if err != nil {
+			command.Close()
+			return nil, err
+		}
+		catalog, err := command.Settings.AgentCatalog(command.Owner, n.CWD, nonInteractive, options)
 		if err != nil {
 			command.Close()
 			return nil, err
@@ -127,11 +144,11 @@ func NewMainAgents(args []string, n *NativeBoundary, pid int, nonInteractive boo
 	if e != nil {
 		return fail(e)
 	}
-	settings, e := clisettings.NewService(clisettings.Options{State: state, ConfigHome: n.Environment["CLAUDE_CONFIG_DIR"], OriginalCWD: n.CWD, Profile: clisettings.ExternalReleaseProfile, Now: n.NowMillis, PID: pid, FS: mainSettingsFiles{n: n}})
+	settings, e := clisettings.NewService(clisettings.Options{State: state, ConfigHome: n.ConfigHomeDirectory(), OriginalCWD: n.CWD, Profile: clisettings.ExternalReleaseProfile, Now: n.NowMillis, PID: pid, FS: mainSettingsFiles{n: n}})
 	if e != nil {
 		return fail(e)
 	}
-	config := n.Environment["CLAUDE_CONFIG_DIR"]
+	config := n.ConfigHomeDirectory()
 	global, e := cliglobalconfig.New(cliglobalconfig.Options{Home: n.Home, ConfigDir: &config, Now: n.Now, NowMillis: n.NowMillis, PID: pid, FS: mainGlobalFiles{n: n}})
 	if e != nil {
 		return fail(e)

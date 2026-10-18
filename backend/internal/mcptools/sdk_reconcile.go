@@ -186,6 +186,8 @@ func (s *Service) DisableServer(scope *cooperative.Scope, name string) error {
 	if !scope.BelongsTo(s.options.Owner) {
 		return cooperative.ErrRestricted
 	}
+	s.retireInteractivePeer(name)
+	delete(s.authenticationTools, name)
 	peers := append([]mcpruntime.Connection{}, s.connections...)
 	for i, peer := range s.connections {
 		if peer.Name == name {
@@ -220,6 +222,13 @@ func (s *Service) DisableServer(scope *cooperative.Scope, name string) error {
 	}
 	_, err = future.Await(scope)
 	return err
+}
+
+func (s *Service) retireInteractivePeer(name string) {
+	if s.peerGeneration == nil {
+		s.peerGeneration = map[string]uint64{}
+	}
+	s.peerGeneration[name]++
 }
 
 func (s *Service) ServerConfiguration(scope *cooperative.Scope, name string) (*protocol.JSONObject, error) {

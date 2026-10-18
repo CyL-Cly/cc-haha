@@ -63,7 +63,7 @@ func TestDesktopMentionsUsesActualCachedSkillsPluginMCPAndSelectedProvider(t *te
 	index, _ := json.Marshal(map[string]any{"schemaVersion": 6, "activeId": "owned-image", "providers": []any{provider}, "providerOrder": []string{"owned-image"}})
 	write(filepath.Join(config, "cc-haha", "providers.json"), string(index))
 	s, err := NewDesktopServer(ServerOptions{Environment: o.Environment, HomeDir: home, ConfigDir: config, WorkDir: o.WorkDir, Version: o.Version, Arguments: o.Arguments, NativeFactory: func(env map[string]string, cwd, platform string) (*clibootstrap.NativeBoundary, error) {
-		return clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: cwd, Platform: platform, ManagedRoot: o.Native.ManagedRoot, ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+		return newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: cwd, Platform: platform, ManagedRoot: o.Native.ManagedRoot, ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 	}})
 	if err != nil {
 		t.Fatal(err)

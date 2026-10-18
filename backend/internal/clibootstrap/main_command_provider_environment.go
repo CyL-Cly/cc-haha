@@ -25,7 +25,10 @@ type mainCommandProviderProxy struct {
 }
 
 func (m *MainCommand) mergeCLIProviderEnvironment(legacy protocol.JSONObject) (protocol.JSONObject, error) {
-	config := m.Native.Environment["CLAUDE_CONFIG_DIR"]
+	config, err := m.Settings.nativeCcHahaConfigDirectory()
+	if err != nil {
+		return protocol.JSONObject{}, err
+	}
 	service, err := providerconfig.NewCLIRuntime(providerconfig.Options{Store: m.Settings.store, ConfigDir: config})
 	if err != nil {
 		return protocol.JSONObject{}, err
@@ -98,7 +101,7 @@ func (m *MainCommand) ensureCLIProviderProxy(provider *providerconfig.Service) (
 		if err != nil {
 			return 0, err
 		}
-		user, err := settings.New(settings.Options{GitExecutable: "git", Store: m.Settings.store, ConfigDir: m.Native.Environment["CLAUDE_CONFIG_DIR"], HomeDir: m.Native.Home, Environment: func() map[string]string { return m.Native.Environment }, EnsureMigrated: upgrader.SettingsCallback, ShellEnvironment: func(context.Context) (map[string]string, error) {
+		user, err := settings.New(settings.Options{GitExecutable: "git", Store: m.Settings.store, ConfigDir: m.Native.ConfigHomeDirectory(), HomeDir: m.Native.Home, Environment: func() map[string]string { return m.Native.Environment }, EnsureMigrated: upgrader.SettingsCallback, ShellEnvironment: func(context.Context) (map[string]string, error) {
 			return nil, mainCap("standalone proxy route does not consume shell environment")
 		}})
 		if err != nil {

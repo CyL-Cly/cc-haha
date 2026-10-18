@@ -52,6 +52,11 @@ func (h *Host) overlaySkillPermission(context protocol.JSONObject) (protocol.JSO
 	if e := json.Unmarshal(h.askSkillOverrides.Get("commandRules"), &rules); e != nil {
 		return protocol.JSONObject{}, e
 	}
+	return mergeNativeSkillCommandRules(context, rules)
+}
+
+// Source Set insertion identity, shared by inline and fork-only permission views.
+func mergeNativeSkillCommandRules(context protocol.JSONObject, rules []json.RawMessage) (protocol.JSONObject, error) {
 	out := context.Clone()
 	var allow protocol.JSONObject
 	if e := allow.UnmarshalJSON(out.Get("alwaysAllowRules")); e != nil {

@@ -84,7 +84,7 @@ func (m *MainPrint) nativeReadMCPResource(ctx context.Context, scope *cooperativ
 		id := fmt.Sprintf("mcp-resource-%s-%d-%s", strings.TrimSuffix(fmt.Sprintf("%.0f", m.options.Native.NowMillis()), ".0"), i, webfetch.RandomBase36Suffix(nativeMathRandom()))
 		data := nodeResourceBase64(blob)
 		state := m.state.Snapshot()
-		config := m.options.Native.Environment["CLAUDE_CONFIG_DIR"]
+		config := m.options.Native.ConfigHomeDirectory()
 		if config == "" {
 			config = filepath.Join(m.options.Native.Home, ".claude")
 		}

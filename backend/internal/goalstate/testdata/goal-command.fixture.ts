@@ -1,6 +1,6 @@
 import {mock} from 'bun:test'
 import {join,dirname} from 'node:path'
-import {mkdir,writeFile,realpath} from 'node:fs/promises'
+import {mkdir,writeFile,realpath,readFile} from 'node:fs/promises'
 import {assertDisposableFixtureHome} from '../../../../scripts/quality-gate/go-parity/fixture-guard'
 import {absentManagedSettingsFixturePaths,installClientFixtureCapabilities} from '../../../../scripts/quality-gate/go-parity/client-options-capabilities'
 const input=JSON.parse(await new Response(Bun.stdin.stream()).text())
@@ -15,6 +15,18 @@ await mkdir(dir,{recursive:true});await writeFile(join(dir,'settings.json'),JSON
 await import('../../../../preload')
 const state=await import('../../../../src/bootstrap/state');state.setIsInteractive(!!input.interactive);state.setCwdState(home);state.setOriginalCwd(home);state.setProjectRoot(home);state.switchSession('goal-command-source')
 const config=await import('../../../../src/utils/config');config.enableConfigs()
+if(input.recordSidechainProbe){
+ state.switchSession(input.sid)
+ const storage=await import('../../../../src/utils/sessionStorage')
+ await storage.recordTranscript(input.mainMessages)
+ await storage.recordSidechainTranscript(input.childMessages,input.agentID)
+ storage.reAppendSessionMetadata()
+ await storage.flushSessionStorage()
+ const lines=async(path:string)=>(await readFile(path,'utf8')).trim().split('\n').map(line=>JSON.parse(line))
+ const main=await lines(storage.getTranscriptPath()),child=await lines(storage.getAgentTranscriptPath(input.agentID))
+ if(capabilities.blocked.length)throw new Error('Blocked original sidechain metadata:'+capabilities.blocked.join(', '))
+ process.stdout.write(JSON.stringify({main,child})+'\n');process.exit(0)
+}
 if(input.builtinNames){
  const {builtInCommandNames}=await import('../../../../src/commands')
  const names=[...builtInCommandNames()]
@@ -28,7 +40,7 @@ if(input.firstPrompts){
  const node=ast.body.find((n:any)=>n.type==='FunctionDeclaration'&&n.id.name==='extractFirstPrompt')
  if(!node)throw new Error('Original first prompt function missing')
  const original=new Function('getFirstMeaningfulUserMessageTextContent',code.slice(node.start,node.end)+'\nreturn extractFirstPrompt')(storage.getFirstMeaningfulUserMessageTextContent)
- const values=input.firstPrompts.map((messages:any)=>{try{return {value:original(messages),error:null}}catch(e:any){return {value:null,error:e.name}}})
+ const values=input.firstPrompts.map((messages:any)=>{try{return {value:original(messages),meaningful:storage.getFirstMeaningfulUserMessageTextContent(messages)??null,error:null}}catch(e:any){return {value:null,error:e.name}}})
  if(capabilities.blocked.length)throw new Error('Blocked original first prompt:'+capabilities.blocked.join(', '))
  process.stdout.write(JSON.stringify({values})+'\n');process.exit(0)
 }

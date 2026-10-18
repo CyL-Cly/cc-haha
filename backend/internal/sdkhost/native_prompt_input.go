@@ -19,7 +19,11 @@ func (h *Host) processNativePromptInput(scope *cooperative.Scope, name, args str
 		for _, record := range h.options.Controller.History() {
 			history = append(history, queryloop.Message{Record: record})
 		}
-		return process(context.Background(), scope, name, args, history, uuid)
+		ctx := h.inputModelContext
+		if ctx == nil {
+			ctx = context.Background()
+		}
+		return process(ctx, scope, name, args, history, uuid)
 	}
 	command, exists := h.options.Print.Registry.Prompt(name)
 	if !exists {

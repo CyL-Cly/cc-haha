@@ -97,7 +97,7 @@ func (s *Session) runInteractiveLeaderInbox(life context.Context, state *session
 		}
 		_ = s.emitEvent(tui.Event{Kind: tui.TeammateInboxChanged, Result: raw(inbox)})
 		s.mu.Lock()
-		canStart := len(s.pending) == 0
+		canStart := s.canStartTerminalTeamInboxLocked(inbox)
 		s.mu.Unlock()
 		if canStart && s.turnMu.TryLock() {
 			s.mu.Lock()
@@ -105,6 +105,17 @@ func (s *Session) runInteractiveLeaderInbox(life context.Context, state *session
 				s.mu.Unlock()
 				s.turnMu.Unlock()
 				return
+			}
+			if !s.canStartTerminalTeamInboxLocked(inbox) {
+				s.mu.Unlock()
+				s.turnMu.Unlock()
+				select {
+				case <-life.Done():
+					return
+				case <-ticker.C:
+				case <-state.wake:
+				}
+				continue
 			}
 			work, cancel := context.WithCancel(life)
 			id, idErr := nativeDesktopTeamUUID()

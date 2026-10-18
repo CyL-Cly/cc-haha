@@ -18,7 +18,6 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/ownerasync"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/provider"
-	"github.com/NanmiCoder/cc-haha/backend/internal/requestcontext"
 	"regexp"
 )
 
@@ -32,17 +31,35 @@ func (m *MainPrint) initializeNativeFileAnalytics(scope *cooperative.Scope) erro
 		m.analyticsParent = parent
 		return nil
 	}
+	if m.fileAnalytics != nil {
+		return nil
+	}
 	refs := &ownerasync.NativeReferences{}
 	binding, e := refs.Bind(m.Owner)
 	if e != nil {
 		return e
 	}
 	n := m.options.Native
-	m.fileAnalytics, e = analytics.New(scope, analytics.Options{Owner: m.Owner, Binding: binding, ConfigDir: n.Environment["CLAUDE_CONFIG_DIR"], UUID: uuidMain, SessionID: func(*cooperative.Scope) string { return m.Controller.SessionID() }, Environment: func(*cooperative.Scope) map[string]string { return m.nativeOpenAIEnvironment() }, Config: m.nativeAnalyticsConfig, Random: randomNativeFloat, Record: m.nativeAnalyticsRecord, Prepare: m.nativeAnalyticsRequest, HTTP: m.nativeAnalyticsHTTP, Files: analytics.OSFiles{Check: func(path string) error { return n.check("telemetry", path) }}})
+	m.fileAnalytics, e = analytics.New(scope, analytics.Options{Owner: m.Owner, Binding: binding, ConfigDir: n.ConfigHomeDirectory(), UUID: uuidMain, SessionID: func(*cooperative.Scope) string { return m.nativeAnalyticsSessionID() }, Environment: func(*cooperative.Scope) map[string]string { return m.nativeOpenAIEnvironment() }, Config: m.nativeAnalyticsConfig, Random: randomNativeFloat, Record: m.nativeAnalyticsRecord, BeginRecord: m.beginNativeAnalyticsRecord, Prepare: m.nativeAnalyticsRequest, HTTP: m.nativeAnalyticsHTTP, Files: analytics.OSFiles{Check: func(path string) error { return n.check("telemetry", path) }}})
 	if e != nil {
 		return e
 	}
-	return m.fileAnalytics.RetryPrevious(scope)
+	if e = m.fileAnalytics.RetryPrevious(scope); e != nil {
+		return e
+	}
+	if m.nativeMigrationEvents != nil {
+		return m.nativeMigrationEvents.Attach(scope, &analytics.PublicSink{Log: m.fileAnalytics.Log, LogAsync: func(next *cooperative.Scope, event analytics.Event) (*ownerasync.OwnerFuture[struct{}], error) {
+			pending, err := ownerasync.NewOwnerFuture[struct{}](m.Owner)
+			if err != nil {
+				return nil, err
+			}
+			if err = m.fileAnalytics.Log(next, event); err != nil {
+				return pending, pending.Reject(next, err)
+			}
+			return pending, pending.Resolve(next, struct{}{})
+		}})
+	}
+	return nil
 }
 
 func (m *MainPrint) nativeFileReporter() func(*cooperative.Scope, analytics.Event) error {
@@ -135,6 +152,14 @@ func (m *MainPrint) reportNativeFileEvent(scope *cooperative.Scope, event analyt
 }
 
 func (m *MainPrint) nativeAnalyticsRecord(scope *cooperative.Scope, event analytics.Event) (protocol.JSONObject, error) {
+	prefix, err := m.nativeAnalyticsPrefix(scope, event)
+	if err != nil {
+		return protocol.JSONObject{}, err
+	}
+	return m.nativeAnalyticsRecordWithPrefix(scope, event, prefix)
+}
+
+func (m *MainPrint) nativeAnalyticsRecordWithPrefix(scope *cooperative.Scope, event analytics.Event, prefix nativeAnalyticsMetadataPrefix) (protocol.JSONObject, error) {
 	if !scope.BelongsTo(m.Owner) {
 		return protocol.JSONObject{}, cooperative.ErrRestricted
 	}
@@ -142,12 +167,6 @@ func (m *MainPrint) nativeAnalyticsRecord(scope *cooperative.Scope, event analyt
 	global, e := m.Global.Get()
 	if e != nil {
 		return protocol.JSONObject{}, e
-	}
-	model := m.options.Arguments.Model
-	if m.Host != nil {
-		if selected, e := m.Host.InferenceModel(scope); e == nil {
-			model = selected
-		}
 	}
 	packages := []string{}
 	runtimes := []string{}
@@ -208,14 +227,9 @@ func (m *MainPrint) nativeAnalyticsRecord(scope *cooperative.Scope, event analyt
 		user.Set("githubActionsMetadata", raw)
 	}
 	rawContext, _ := environmentContext.MarshalJSON()
-	core := protocol.NewJSONObject(protocol.JSONField{Name: "model", Value: quoteMain(model)}, protocol.JSONField{Name: "sessionId", Value: quoteMain(m.Controller.SessionID())}, protocol.JSONField{Name: "userType", Value: quoteMain(env["USER_TYPE"])}, protocol.JSONField{Name: "isInteractive", Value: quoteMain(map[bool]string{true: "true", false: "false"}[m.options.Interactive])}, protocol.JSONField{Name: "clientType", Value: quoteMain("cli")}, protocol.JSONField{Name: "envContext", Value: rawContext})
-	if settings, e := m.Startup.GetInitialSettings(); e == nil {
-		if betas, e := requestcontext.DirectCountingBetas(model, env, settings.Clone()); e == nil && len(betas) > 0 {
-			if redacted, e := m.nativeThinkingSummaryBeta(scope, model); e == nil {
-				betas = requestcontext.WithThinkingSummaryBeta(betas, redacted)
-			}
-			core.Set("betas", quoteMain(strings.Join(betas, ",")))
-		}
+	core := protocol.NewJSONObject(protocol.JSONField{Name: "model", Value: prefix.model}, protocol.JSONField{Name: "sessionId", Value: quoteMain(m.nativeAnalyticsSessionID())}, protocol.JSONField{Name: "userType", Value: quoteMain(env["USER_TYPE"])}, protocol.JSONField{Name: "isInteractive", Value: quoteMain(map[bool]string{true: "true", false: "false"}[m.options.Interactive])}, protocol.JSONField{Name: "clientType", Value: quoteMain("cli")}, protocol.JSONField{Name: "envContext", Value: rawContext})
+	if prefix.betas != nil {
+		core.Set("betas", prefix.betas)
 	}
 	if build := env["CLAUDE_CODE_LOCAL_BUILD_TIME"]; build != "" {
 		environmentContext.Set("buildTime", quoteMain(build))

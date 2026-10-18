@@ -64,6 +64,7 @@ func TestActualMainPrintAgentSettingsOwnerHotReloadAndModelValidation(t *testing
 	f.n.Environment["ANTHROPIC_DEFAULT_OPUS_MODEL"] = "fixture-second-model"
 	f.n.Environment["CLAUDE_CODE_DISABLE_FAST_MODE"] = "1"
 	disabled := false
+	seedNativeReleaseWarmFixture(t, f, "fixture")
 	m, err := NewMainPrint(MainPrintOptions{Native: f.n, PID: os.Getpid(), Version: "fixture", Platform: "darwin", Interactive: true, Input: strings.NewReader(""), Output: io.Discard, Error: io.Discard, Arguments: PrintArguments{ComputerUse: &disabled, Tools: []string{"Read"}, Sources: DefaultState(), MaxTurns: 5, PermissionMode: "default"}})
 	if err != nil {
 		t.Fatal(err)

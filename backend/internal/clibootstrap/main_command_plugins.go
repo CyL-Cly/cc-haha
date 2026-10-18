@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"github.com/NanmiCoder/cc-haha/backend/internal/analytics"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/errorlog"
 	"github.com/NanmiCoder/cc-haha/backend/internal/plugincli"
@@ -14,11 +15,39 @@ import (
 )
 
 func (m *MainCommand) PluginCommand(ctx context.Context, scope *cooperative.Scope, command plugincli.Command) (plugincli.Result, error) {
-	if !scope.BelongsTo(m.Owner) || !m.Native.NativeProcess {
+	if m == nil || !scope.BelongsTo(m.Owner) || m.Native == nil || !m.Native.NativeProcess {
 		return plugincli.Result{}, cooperative.ErrRestricted
+	}
+	if m.ownsNativeCommandFactory() {
+		pending, err := m.importNativePluginNamespace(scope)
+		if err != nil {
+			return plugincli.Result{}, err
+		}
+		namespace, err := pending.Await(scope)
+		if err != nil {
+			return plugincli.Result{}, err
+		}
+		return namespace.invoke(ctx, scope, command)
+	}
+	return m.pluginCommandHandler(ctx, scope, command)
+}
+
+func (m *MainCommand) pluginCommandHandler(ctx context.Context, scope *cooperative.Scope, command plugincli.Command) (plugincli.Result, error) {
+	if command.Action == "update" {
+		if err := m.nativeCommandPluginEvent(scope, command); err != nil {
+			return plugincli.Result{}, err
+		}
 	}
 	if result := plugincli.Preflight(command); result != nil {
 		return *result, nil
+	}
+	if command.Action != "update" {
+		if err := m.nativeCommandPluginEvent(scope, command); err != nil {
+			return plugincli.Result{}, err
+		}
+	}
+	if command.Action == "marketplace-list" && m.nativeCommandInit != nil {
+		return m.nativeMarketplaceListOnOwner(ctx, scope, command)
 	}
 
 	data, err := scope.AwaitBytes(cooperative.NetworkOpen, func(worker context.Context) (payload []byte, failure error) {
@@ -40,7 +69,7 @@ func (m *MainCommand) PluginCommand(ctx context.Context, scope *cooperative.Scop
 			if err != nil {
 				return nil, err
 			}
-			result, err := plugincli.RunMarketplace(worker, command, manager, m.Native.Home, m.Native.CWD, m.credentialPlatform, func(line string) int { return m.emitPluginCLIProgress(worker, line) })
+			result, err := plugincli.RunMarketplaceWithAnalytics(worker, command, manager, m.Native.Home, m.Native.CWD, m.credentialPlatform, func(event analytics.Event) { m.emitPluginCLIEvent(worker, event) }, func(line string) int { return m.emitPluginCLIProgress(worker, line) })
 			if err != nil {
 				return nil, err
 			}
@@ -118,12 +147,16 @@ func (m *MainCommand) PluginCommand(ctx context.Context, scope *cooperative.Scop
 	var reply pluginCLIReply
 	err = json.Unmarshal(data, &reply)
 	if err == nil {
-		logger, e := errorlog.New(errorlog.Options{Environment: func() map[string]string { return m.Native.Environment }, Now: m.Native.Now})
-		if e != nil {
-			return plugincli.Result{}, e
-		}
 		for _, failure := range reply.IgnoreErrors {
-			logger.Log(errorlog.Error{Name: "Error", Message: failure})
+			if m.commandErrors != nil {
+				m.commandErrors.Log(errorlog.Error{Name: "Error", Message: failure})
+			} else {
+				logger, e := errorlog.New(errorlog.Options{Environment: func() map[string]string { return m.Native.Environment }, Now: m.Native.Now})
+				if e != nil {
+					return plugincli.Result{}, e
+				}
+				logger.Log(errorlog.Error{Name: "Error", Message: failure})
+			}
 		}
 	}
 	return reply.Result, err

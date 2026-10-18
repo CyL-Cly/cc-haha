@@ -18,6 +18,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/clibootstrap"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/securestorage"
+	"github.com/NanmiCoder/cc-haha/backend/testdata/keychainprefetchfixture"
 )
 
 func mcpCLIPrivateNative(t *testing.T) (*clibootstrap.NativeBoundary, string) {
@@ -36,6 +37,8 @@ func mcpCLIPrivateNative(t *testing.T) (*clibootstrap.NativeBoundary, string) {
 	n.RunSecurity = func(context.Context, securestorage.Command) ([]byte, error) {
 		return nil, errors.New("private MCP fixture Keychain unavailable")
 	}
+	n.StartKeychainPrefetch = keychainprefetchfixture.Bind(n.Temp, n.CWD, n.Home, func(ctx context.Context, call securestorage.Command) ([]byte, error) { return n.RunSecurity(ctx, call) })
+	n.PreconnectHTTP = nativeCommandFixturePreconnect
 	return n, root
 }
 func mcpCLIExecute(t *testing.T, n *clibootstrap.NativeBoundary, args []string) (int, string, string, error) {

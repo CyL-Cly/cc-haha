@@ -58,11 +58,11 @@ func (m *MainPrint) sendNativeStructuredTeamMessage(ctx context.Context, scope *
 	if message.String("type") == "shutdown_response" && string(message.Get("approve")) == "true" && m.teamWorker != nil && m.options.RequestTeammateShutdown == nil {
 		return nil, mainCap("standalone teammate actual graceful shutdown callback")
 	}
-	config, err := teamstore.NewConfig(teamstore.ConfigOptions{ConfigDir: m.options.Native.Environment["CLAUDE_CONFIG_DIR"], TaskStore: m.taskStore, PID: m.options.PID, Platform: m.options.Platform})
+	config, err := teamstore.NewConfig(teamstore.ConfigOptions{ConfigDir: m.options.Native.ConfigHomeDirectory(), TaskStore: m.taskStore, PID: m.options.PID, Platform: m.options.Platform})
 	if err != nil {
 		return nil, err
 	}
-	mailbox, err := teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.Environment["CLAUDE_CONFIG_DIR"], TaskStore: m.taskStore, Log: func(err error) { _, _ = fmt.Fprintln(m.options.Error, err) }})
+	mailbox, err := teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.ConfigHomeDirectory(), TaskStore: m.taskStore, Log: func(err error) { _, _ = fmt.Fprintln(m.options.Error, err) }})
 	if err != nil {
 		return nil, err
 	}

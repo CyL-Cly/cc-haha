@@ -168,6 +168,8 @@ func ProjectWithOptions(payload json.RawMessage, factory *messages.Factory, plan
 	var content json.RawMessage
 	var prefix string
 	switch value.String("type") {
+	case "companion_intro":
+		content = companionIntroContent(value)
 	case "workflow_keyword_request":
 		content = quoted(ultracode.KeywordReminder)
 	case "ultra_effort_enter":
@@ -247,6 +249,15 @@ func ProjectWithOptions(payload json.RawMessage, factory *messages.Factory, plan
 		content, err = concatenate(name, quoted(" hook stopped continuation: "), message)
 		if err != nil {
 			return nil, err
+		}
+	case "diagnostics":
+		var empty bool
+		content, empty, err = diagnosticsContent(value, plan)
+		if err != nil {
+			return nil, err
+		}
+		if empty {
+			return []protocol.JSONObject{}, nil
 		}
 	case "queued_command":
 		return projectQueued(value, factory)

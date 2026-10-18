@@ -99,6 +99,11 @@ func (m *MainPrint) applyNativeSDKEnvironment(scope *cooperative.Scope, variable
 	if !variables.IsObject() {
 		return mainCap("SDK environment variables object")
 	}
+	if variables.Get("CLAUDE_CONFIG_DIR") != nil {
+		if err := m.bindNativeSDKConfigSettings(scope); err != nil {
+			return err
+		}
+	}
 	changed := map[string]string{}
 	for _, property := range variables.OwnProperties() {
 		value, err := protocol.ExactJavaScriptStringJSON(property.Value)

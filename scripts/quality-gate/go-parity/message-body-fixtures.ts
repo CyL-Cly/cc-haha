@@ -14,7 +14,7 @@ export type MessageBodyFixtureInput = { homeDir: string; steps: MessageBodyStep[
 
 const billing = 'x-anthropic-billing-header: cc_version=2.1.281.abc; cc_entrypoint=sdk; cch=00000;'
 const outputFormatError = { name: 'Error', message: 'Both output_format and output_config.format were provided. Please use only output_config.format (output_format is deprecated).' }
-const authenticationError = { name: 'Error', message: 'Could not resolve authentication method. Expected either apiKey or authToken to be set. Or for one of the "X-Api-Key" or "Authorization" headers to be explicitly omitted' }
+const authenticationError = { name: 'Error', message: 'Could not resolve authentication method. Expected one of apiKey, authToken, credentials, config, or profile to be set. Or for one of the "X-Api-Key" or "Authorization" headers to be explicitly omitted' }
 const base = (extra = '') => `{"model":"fixture-model","messages":[{"role":"user","content":"hi"}],"system":[{"type":"text","text":${JSON.stringify(billing)}}],"max_tokens":32,"stream":true${extra}}`
 const sign = (body: string): MessageBodyStep => ({ operation: 'sign', body })
 const prepare = (extra = '', rest: Omit<Extract<MessageBodyStep, { operation: 'prepare' }>, 'operation' | 'paramsSource'> = {}): MessageBodyStep => ({ operation: 'prepare', paramsSource: base(extra), ...rest })

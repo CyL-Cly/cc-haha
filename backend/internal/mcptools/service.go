@@ -20,22 +20,31 @@ import (
 )
 
 type Options struct {
-	ResultOptions      func(*cooperative.Scope) (mcpruntime.RichResultOptions, error)
-	Owner              *cooperative.Owner
-	NativeBinding      *ownerasync.NativeBinding
-	Runtime            *mcpruntime.Service
-	Configurations     *mcpconfig.Service
-	All                func(context.Context) (mcpconfig.Result, error)
-	SDKConfigurations  func(context.Context) (protocol.JSONObject, error)
-	Environment        map[string]string
-	PermissionContext  func(*cooperative.Scope) (protocol.JSONObject, error)
-	ScopeForContext    func(any) *cooperative.Scope
-	ComputerUseEnabled func(context.Context) (bool, error)
+	ResultOptions           func(*cooperative.Scope) (mcpruntime.RichResultOptions, error)
+	Owner                   *cooperative.Owner
+	NativeBinding           *ownerasync.NativeBinding
+	Runtime                 *mcpruntime.Service
+	Configurations          *mcpconfig.Service
+	All                     func(context.Context) (mcpconfig.Result, error)
+	SDKConfigurations       func(context.Context) (protocol.JSONObject, error)
+	Environment             map[string]string
+	PermissionContext       func(*cooperative.Scope) (protocol.JSONObject, error)
+	ScopeForContext         func(any) *cooperative.Scope
+	ComputerUseEnabled      func(context.Context) (bool, error)
+	OnCatalogChanged        func(*cooperative.Scope) error
+	OnAuthenticationChanged func(*cooperative.Scope) error
+	OnMCPDebug              func(*cooperative.Scope, string, string) error
+	OnMCPError              func(*cooperative.Scope, string, string) error
 }
 type Service struct {
+	authenticationTools   map[string]authenticationToolView
+	authenticationJobs    *authenticationToolJobs
+	agentAuthentication   *agentAuthenticationContext
+	agentResources        *AgentResourceSnapshot
 	options               Options
 	computerUse           *computerusemcp.Binder
 	computerUseConfig     protocol.JSONObject
+	inactiveComputerUse   inactiveComputerUseCleanup
 	connections           []mcpruntime.Connection
 	dynamicConfigurations protocol.JSONObject
 	sdkControlClients     map[string]mcpruntime.Connection
@@ -45,13 +54,17 @@ type Service struct {
 	failures              []protocol.JSONObject
 	skillResources        map[string]skillResourceCatalogue
 	agentResourceSnapshot bool
+	discoveryGeneration   uint64
+	peerGeneration        map[string]uint64
+	promptCommands        map[string]promptCatalogue
+	toolNotifications     map[string]toolNotification
 }
 
 func New(o Options) (*Service, error) {
 	if o.Owner == nil || o.NativeBinding == nil || !o.NativeBinding.Owns(o.Owner) || o.Runtime == nil || o.Configurations == nil || o.PermissionContext == nil || o.ScopeForContext == nil {
 		return nil, errors.New("native MCP tools require actual shared owner, native binding, runtime, configuration and permission producers")
 	}
-	return &Service{options: o}, nil
+	return &Service{options: o, authenticationJobs: &authenticationToolJobs{}}, nil
 }
 func raw(value any) json.RawMessage { out, _ := json.Marshal(value); return out }
 func object(value json.RawMessage) protocol.JSONObject {
@@ -98,9 +111,16 @@ type discovery struct {
 }
 
 func (s *Service) Discover(scope *cooperative.Scope) error {
+	if !scope.BelongsTo(s.options.Owner) {
+		return cooperative.ErrRestricted
+	}
+	s.discoveryGeneration++
 	previous := append([]mcpruntime.Connection{}, s.connections...)
 	dynamicConfigurations := s.dynamicConfigurations.Clone()
 	future, err := native(s, scope, func() (discovery, error) {
+		if err := s.options.Runtime.BeginDiscoveryBatch(context.Background()); err != nil {
+			return discovery{}, err
+		}
 		var configs mcpconfig.Result
 		var err error
 		if s.options.All != nil {
@@ -181,7 +201,7 @@ func (s *Service) Discover(scope *cooperative.Scope) error {
 				} else if config.String("type") == "sdk" && sdkChanged {
 					peer, err = s.options.Runtime.ConnectSDKAttempt(context.Background(), name, config)
 				} else {
-					peer, err = s.options.Runtime.Connect(context.Background(), name, config)
+					peer, err = s.options.Runtime.ConnectForDiscovery(context.Background(), name, config, true)
 				}
 				if err != nil {
 					return discovery{}, err
@@ -217,6 +237,9 @@ func (s *Service) Discover(scope *cooperative.Scope) error {
 	result, err := future.Await(scope)
 	if err == nil {
 		s.connections = result.connections
+		for _, peer := range s.connections {
+			s.publishAuthenticationTool(peer)
+		}
 		s.failures = result.failures
 		// updateSdkMcp re-publishes the shared SDK tools after its changed-name pass.
 		if result.sdkChanged {
@@ -226,7 +249,22 @@ func (s *Service) Discover(scope *cooperative.Scope) error {
 				}
 			}
 		}
-		return s.prefetchSkillResources(scope)
+		prompts, err := s.beginPromptCommands(scope, s.connections)
+		if err != nil {
+			return err
+		}
+		if err := s.prefetchSkillResources(scope); err != nil {
+			return err
+		}
+		if err := s.finishPromptCommands(scope, prompts); err != nil {
+			return err
+		}
+		for _, peer := range s.connections {
+			if err := s.installToolNotifications(scope, peer); err != nil {
+				return err
+			}
+		}
+		return nil
 	}
 	return err
 }
@@ -266,6 +304,11 @@ func (s *Service) Permission(scope *cooperative.Scope, name string, input *proto
 	}
 	server := ""
 	for _, peer := range s.connections {
+		if s.hasAuthenticationTool(peer) && mcpclient.ToolName(peer.Name, "authenticate") == name {
+			server = peer.Name
+		}
+	}
+	for _, peer := range s.connections {
 		for _, tool := range peer.Tools {
 			if mcpclient.ToolName(peer.Name, tool.String("name")) == name {
 				server = peer.Name
@@ -300,7 +343,11 @@ func (s *Service) Permission(scope *cooperative.Scope, name string, input *proto
 			}
 		}
 	}
-	if ctx.String("mode") == "bypassPermissions" {
+	authentication := false
+	for _, peer := range s.connections {
+		authentication = authentication || s.hasAuthenticationTool(peer) && mcpclient.ToolName(peer.Name, "authenticate") == name
+	}
+	if ctx.String("mode") == "bypassPermissions" || authentication {
 		decision.Behavior = "allow"
 		decision.Message = nil
 	}
@@ -345,10 +392,15 @@ func (s *Service) catalog(scope *cooperative.Scope, filterDenied bool) ([]toolsc
 		return nil, nil, err
 	}
 	for _, peer := range s.connections {
-		if peer.Status != "connected" {
+		authentication := s.hasAuthenticationTool(peer)
+		if peer.Status != "connected" && !authentication {
 			continue
 		}
-		for _, metadata := range peer.Tools {
+		metadataTools := peer.Tools
+		if authentication {
+			metadataTools = []protocol.JSONObject{protocol.NewJSONObject(protocol.JSONField{Name: "name", Value: raw("authenticate")})}
+		}
+		for _, metadata := range metadataTools {
 			name := mcpclient.ToolName(peer.Name, metadata.String("name"))
 			if seen[name] {
 				continue
@@ -365,6 +417,15 @@ func (s *Service) catalog(scope *cooperative.Scope, filterDenied bool) ([]toolsc
 				}
 			}
 			if filterDenied && denied {
+				continue
+			}
+			if authentication {
+				definition, tool, err := s.authenticationTool(peer)
+				if err != nil {
+					return nil, nil, err
+				}
+				defs = append(defs, definition)
+				registered = append(registered, tool)
 				continue
 			}
 			prompt := metadata.Get("description")
@@ -428,7 +489,22 @@ func (s *Service) catalog(scope *cooperative.Scope, filterDenied bool) ([]toolsc
 						if current.Status != "connected" {
 							return queryloop.ToolCallResult{}, errors.New("MCP server \"" + peer.Name + "\" is not connected")
 						}
-						result, err := current.Client.CallToolJSON(ctx, metadata.Get("name"), input, meta, mcpclient.RequestOptions{})
+						// callMCPTool's external timeout can win before the SDK's
+						// own timeout/abort finishes. Retain its actual native work
+						// independently of the earlier model tool-result delivery.
+						var requestRef *ownerasync.NativeReference
+						receipt, acquireError := s.options.Owner.SubmitIndependent(ctx, cooperative.Read, func(next *cooperative.Scope) error {
+							var err error
+							requestRef, err = s.options.NativeBinding.Acquire(next)
+							return err
+						})
+						if acquireError != nil {
+							return queryloop.ToolCallResult{}, acquireError
+						}
+						if err := receipt.Wait(); err != nil {
+							return queryloop.ToolCallResult{}, err
+						}
+						result, err := current.Client.CallToolSource(ctx, metadata.Get("name"), input, meta, requestRef.DeliveryFinished)
 						if err != nil {
 							if attempt < 1 && mcpclient.IsSessionExpired(err) {
 								if err = s.options.Runtime.DisconnectConnection(ctx, current); err != nil {

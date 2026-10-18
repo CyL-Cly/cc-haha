@@ -40,6 +40,7 @@ func TestActualCLIUserPromptBlockingWarningAndNextHumanPhysicalToolsPTY(t *testi
 	defer cancel()
 	cmd := exec.CommandContext(ctx, python, "testdata/tui_user_prompt_pty.py", binary, home)
 	cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "HOME=" + home, "USERPROFILE=" + home, "CLAUDE_CONFIG_DIR=" + filepath.Join(home, ".claude"), "TMPDIR=" + home, "TERM=xterm-256color", "TZ=UTC", "CC_HAHA_TUI_USER_PROMPT_HELPER=1"}
+	capturePublicGoCoverage(t, cmd)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("actual user prompt PTY %v %.6500s", err, out)
@@ -61,6 +62,12 @@ func TestNativeTUIUserPromptFixtureProcess(t *testing.T) {
 	var firstBlockedZeroPOST atomic.Bool
 	var target, journal string
 	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		body, _ := io.ReadAll(r.Body)
 		index := count.Add(1)
 		if strings.Contains(string(body), "PRIVATE_FIRST_BLOCKED_PROMPT") || strings.Contains(string(body), "UserPromptSubmit operation blocked") {

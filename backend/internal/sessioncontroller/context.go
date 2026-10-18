@@ -6,6 +6,7 @@ import (
 	"errors"
 	"github.com/NanmiCoder/cc-haha/backend/internal/clisettings"
 	"github.com/NanmiCoder/cc-haha/backend/internal/clistartupenv"
+	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/requestcontext"
 	"github.com/NanmiCoder/cc-haha/backend/internal/storage"
@@ -26,21 +27,30 @@ type RawContext struct {
 // abort does not cancel or shortcut a shared original memory producer. The
 // query host checks its actual abort/blocking policies after this completes.
 func (controller *Controller) ResolveRawContext(input requestcontext.Context) (RawContext, error) {
-	return controller.resolveRawContext(context.Background(), input)
+	return controller.resolveRawContext(context.Background(), input, nil)
 }
 
 // ResolveContext is the existing finite compatibility adapter. Its ctx can
 // stop this waiter while the shared memo continues; new Source hosts must use
 // ResolveRawContext instead. It never calls requestcontext.Prepare.
 func (controller *Controller) ResolveContext(ctx context.Context, input requestcontext.Context) (requestcontext.Context, error) {
-	resolved, err := controller.resolveRawContext(ctx, input)
+	resolved, err := controller.resolveRawContext(ctx, input, nil)
 	if err != nil {
 		return requestcontext.Context{}, err
 	}
 	return controller.ProjectUserContext(resolved)
 }
 
-func (controller *Controller) resolveRawContext(ctx context.Context, input requestcontext.Context) (RawContext, error) {
+// ResolveRawContextOnOwner is the actual NativeTools ASK prefix producer.
+// Only the factory-owned bootstrap/current scope may observe the shared memo.
+func (controller *Controller) ResolveRawContextOnOwner(scope *cooperative.Scope, input requestcontext.Context) (RawContext, error) {
+	if controller.options.Bootstrap == nil || !scope.BelongsTo(controller.options.Bootstrap.Owner()) || !controller.options.PublicPrint || !controller.options.NativeTools {
+		return RawContext{}, cooperative.ErrRestricted
+	}
+	return controller.resolveRawContext(context.Background(), input, scope)
+}
+
+func (controller *Controller) resolveRawContext(ctx context.Context, input requestcontext.Context, scope *cooperative.Scope) (RawContext, error) {
 	if !controller.active {
 		return RawContext{}, errors.New("headless session is not active")
 	}
@@ -69,7 +79,14 @@ func (controller *Controller) resolveRawContext(ctx context.Context, input reque
 			}
 		}
 	}
-	resolved, err := controller.options.UserContext.GetUserContext().Await(ctx)
+	future := controller.options.UserContext.GetUserContext()
+	var resolved *protocol.JSONObject
+	var err error
+	if scope == nil {
+		resolved, err = future.Await(ctx)
+	} else {
+		resolved, err = future.AwaitOnOwner(scope)
+	}
 	if err != nil {
 		return RawContext{}, err
 	}

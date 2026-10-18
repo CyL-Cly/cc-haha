@@ -16,9 +16,13 @@ func (m *MainPrint) nativeHookCommandBindings() *queryhooks.CommandBindings {
 	}
 	bindings := &queryhooks.CommandBindings{Async: m.asyncHooks, Owner: m.Owner, Factory: m.factory, Timestamp: func() string { return m.options.Native.Now().UTC().Format("2006-01-02T15:04:05.000Z") }, NowMillis: m.options.Native.NowMillis}
 	bindings.ShellResolver = queryhooks.NewCommandShellResolver(m.options.Native.Environment, m.options.Platform)
-	if d := m.options.DetachedAgent; d != nil && d.preset != nil {
-		bindings.Store = d.preset.parent.hook.NativeCommandStore()
-		bindings.ShellResolver = d.preset.parent.hook.NativeCommandShellResolver()
+	// runAgent's getAppState retains the root sessionHooks Map even when the
+	// selected Agent has no hooks/skills/MCP preset. Share that existing store
+	// through the private actual parent producer; retain each child's Owner and
+	// process bindings. In particular StopFailure selects the global main SID.
+	if d := m.options.DetachedAgent; d != nil && d.authParent != nil && d.authParent != m && d.authParent.hook != nil {
+		bindings.Store = d.authParent.hook.NativeCommandStore()
+		bindings.ShellResolver = d.authParent.hook.NativeCommandShellResolver()
 	}
 	bindings.Input = m.nativeStopHookInput
 	bindings.Event = m.nativeHookSDKEvent
@@ -34,6 +38,12 @@ func (m *MainPrint) nativeHookCommandBindings() *queryhooks.CommandBindings {
 		environment := map[string]string{}
 		for key, value := range m.nativeOpenAIEnvironment() {
 			environment[key] = value
+		}
+		// Source's separate outside-REPL executor keeps root-scoped matching but
+		// does not pass skillRoot into execCommandHook. Preserve that exact
+		// omission for its two context-bearing session-hook wrappers.
+		if call.SkillRoot != "" && call.HookEvent != "StopFailure" && call.HookEvent != "SessionEnd" {
+			environment["CLAUDE_PLUGIN_ROOT"] = call.SkillRoot
 		}
 		sid := m.Controller.SessionID()
 		if d := m.options.DetachedAgent; d != nil && d.preset != nil {
@@ -91,11 +101,11 @@ func (m *MainPrint) nativeHookSDKEvent(call queryhooks.Context, kind, id, event 
 	if call.Scope == nil || !call.Scope.BelongsTo(m.Owner) {
 		return cooperative.ErrRestricted
 	}
-	if d := m.options.DetachedAgent; d != nil && d.preset != nil {
-		return bridgeAgentVoid(m, d.preset.parent, call.Scope, func(scope *cooperative.Scope) error {
+	if d := m.options.DetachedAgent; d != nil && (d.preset != nil || call.SkillRoot != "") && d.authParent != nil && d.authParent != m {
+		return bridgeAgentVoid(m, d.authParent, call.Scope, func(scope *cooperative.Scope) error {
 			current := call
 			current.Scope = scope
-			return d.preset.parent.nativeHookSDKEvent(current, kind, id, event, out, "")
+			return d.authParent.nativeHookSDKEvent(current, kind, id, event, out, "")
 		})
 	}
 	if !m.options.HookEvents {
@@ -152,9 +162,9 @@ func (m *MainPrint) nativeStopHookInput(ctx context.Context, call queryhooks.Con
 		return protocol.JSONObject{}, e
 	}
 	mainPath := path
-	if d := m.options.DetachedAgent; d != nil && d.preset != nil {
-		mainPath, e = nativeAgentOwnerCall(m, call.Scope, d.preset.parent, func(scope *cooperative.Scope) (string, error) {
-			return d.preset.parent.Controller.Writer().ComputedTranscriptPath(scope)
+	if d := m.options.DetachedAgent; d != nil && d.authParent != nil && d.authParent != m {
+		mainPath, e = nativeAgentOwnerCall(m, call.Scope, d.authParent, func(scope *cooperative.Scope) (string, error) {
+			return d.authParent.Controller.Writer().ComputedTranscriptPath(scope)
 		})
 		if e != nil {
 			return protocol.JSONObject{}, e
@@ -198,7 +208,7 @@ func (m *MainPrint) nativeStopHookInput(ctx context.Context, call queryhooks.Con
 	if call.AgentID != "" {
 		input.Set("agent_id", quoteMain(call.AgentID))
 		agentPath := path
-		if call.QuerySource == "side_question" && call.Scope.IsNativeSideQuestion(m.Owner) {
+		if (call.QuerySource == "side_question" || call.QuerySource == "prompt_suggestion" || call.QuerySource == "agent_summary") && call.Scope.IsNativeSideQuestion(m.Owner) {
 			agentPath, e = m.nativeAgentHookTranscript(call.Scope, call)
 			if e != nil {
 				return protocol.JSONObject{}, e

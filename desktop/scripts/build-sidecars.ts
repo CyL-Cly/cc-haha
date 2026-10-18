@@ -5,18 +5,19 @@ import {
   getBundledRipgrepName,
   stageRipgrepLicenses,
 } from './prepare-ripgrep'
-import {
-  SIDECAR_SIGNING_IDENTIFIER,
-  codesignTimestampArgument,
-  detectStableSigningIdentity,
-} from './sign-identity'
+import { signMacBinary } from './sign-identity'
+import { readScopeExclusions, recordComputerUseExclusion } from '../../scripts/quality-gate/scope-exclusions'
 import {
   createCuHelperBuildEnv,
   resolveCuHelperArch,
+  removeStagedCuHelperArtifacts,
   type CuHelperArch,
 } from './cu-helper-build-target'
 import { assertGoSidecarEnvironment } from '../electron/services/sidecarBackend'
 import { createGoSidecarBuildPlan, removeLegacyBusinessSidecars } from './go-sidecar-build'
+
+const scopeExclusions = readScopeExclusions()
+const computerUseExcluded = scopeExclusions.includes('computer-use')
 
 const desktopRoot = path.resolve(import.meta.dir, '..')
 const repoRoot = path.resolve(desktopRoot, '..')
@@ -57,7 +58,12 @@ console.log(`[build-sidecars] Built Go desktop sidecar for ${targetTriple}`)
 // identity, dropping the user's Accessibility + Screen Recording grants.
 const cuHelperArch = resolveCuHelperArch(targetTriple)
 if (process.platform === 'darwin' && cuHelperArch) {
-  await buildCuHelper(cuHelperArch)
+  if (computerUseExcluded) {
+    await removeStagedCuHelperArtifacts(binariesDir)
+    recordComputerUseExclusion('cu-helper-build')
+  } else {
+    await buildCuHelper(cuHelperArch)
+  }
 }
 
 async function stageHostRipgrepForOfflineBuild() {
@@ -140,7 +146,9 @@ async function compileGoExecutable() {
     const buildExit = await build.exited
     if (buildExit !== 0) throw new Error(`[build-sidecars] Go sidecar build failed (exit ${buildExit})`)
     if (targetTriple.includes('apple-darwin') && process.platform === 'darwin') {
-      await signMacBinary(plan.outputPath)
+      await signMacBinary(plan.outputPath, desktopRoot, {
+        adHocOnly: computerUseExcluded && process.env.CSC_IDENTITY_AUTO_DISCOVERY === 'false',
+      })
     }
     console.log(`[build-sidecars] Go CLI / Server -> ${plan.outputPath}`)
   } finally {
@@ -182,71 +190,6 @@ async function detectHostTriple() {
   }
 
   throw new Error(`[build-sidecars] Unsupported host platform/arch: ${platform}/${arch}`)
-}
-
-/**
- * Sign a compiled sidecar with the build's stable identity and — critically —
- * the FIXED identifier the helper's attestation policy expects.
- *
- * The identifier is the reason this is not just `codesign -s -`. Ad-hoc signing
- * derives the identifier from the file name plus a content hash
- * (`claude-sidecar-aarch64-apple-darwin-5555…`), which never matches
- * `com.claude-code-haha.desktop.sidecar`. `ClientAttestation.swift` compares
- * that identifier exactly, so a hash-suffixed one makes every Computer Use call
- * fail closed with `unauthorized_client`.
- *
- * `--identifier` applies to ad-hoc signatures too, so the unsigned local build
- * still gets the right identifier — it just cannot satisfy the team/leaf half of
- * the policy, which is inherent to having no certificate.
- *
- * electron-builder must not overwrite this signature; `mac.signIgnore` in
- * package.json excludes `claude-sidecar-…` for exactly that reason. That also
- * means entitlements are OUR job here — electron-builder's `entitlementsInherit`
- * never reaches a file it does not sign.
- */
-async function signMacBinary(outputPath: string) {
-  const identity = await detectStableSigningIdentity()
-  const label = identity ?? 'ad-hoc'
-  console.log(
-    `[build-sidecars] signing ${outputPath} as ${SIDECAR_SIGNING_IDENTIFIER} (${label}) ...`,
-  )
-
-  const strip = Bun.spawn(['codesign', '--remove-signature', outputPath], {
-    stdout: 'inherit',
-    stderr: 'inherit',
-  })
-  await strip.exited
-
-  const args = [
-    'codesign',
-    '--sign',
-    identity ?? '-',
-    '--force',
-    '--identifier',
-    SIDECAR_SIGNING_IDENTIFIER,
-    codesignTimestampArgument(identity),
-  ]
-  if (identity) {
-    // Hardened runtime + inherited entitlements match what electron-builder
-    // would have applied, so skipping its signing pass changes nothing else
-    // about how the sidecar runs.
-    args.push(
-      '--options',
-      'runtime',
-      '--entitlements',
-      path.join(desktopRoot, 'build', 'entitlements.mac.inherit.plist'),
-    )
-  }
-  args.push(outputPath)
-
-  const sign = Bun.spawn(args, { stdout: 'inherit', stderr: 'inherit' })
-  const signExit = await sign.exited
-  if (signExit !== 0) {
-    throw new Error(
-      `[build-sidecars] codesign failed for ${outputPath} (exit ${signExit}, identity: ${label})`,
-    )
-  }
-  console.log(`[build-sidecars] signed ${outputPath} (${label})`)
 }
 
 /**

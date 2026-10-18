@@ -26,6 +26,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/securestorage"
+	"github.com/NanmiCoder/cc-haha/backend/testdata/keychainprefetchfixture"
 )
 
 type cliOpenAIRoute struct {
@@ -183,6 +184,9 @@ func actualCLIOpenAI(t *testing.T, competingToken string, fileMode bool, modes .
 	n.RunSecurity = func(context.Context, securestorage.Command) ([]byte, error) {
 		return nil, errors.New("owned empty Keychain")
 	}
+	n.StartKeychainPrefetch = keychainprefetchfixture.Bind(n.Temp, n.CWD, n.Home, func(ctx context.Context, call securestorage.Command) ([]byte, error) {
+		return n.RunSecurity(ctx, call)
+	})
 	var out, goError bytes.Buffer
 	command, e := clibootstrap.NewMainCommand(clibootstrap.MainCommandOptions{Arguments: []string{"auth", "login", "--openai"}, Native: n, Platform: "darwin", Version: "999.0.0-local", PID: os.Getpid(), NonInteractive: true, Output: &out, Error: &goError})
 	if e != nil {

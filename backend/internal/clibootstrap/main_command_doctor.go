@@ -27,7 +27,7 @@ func (m *MainCommand) Doctor(ctx context.Context, scope *cooperative.Scope) (str
 	if err != nil {
 		return "", err
 	}
-	reportService, err := doctorapi.New(doctorapi.Options{HomeDir: m.Native.Home, ConfigDir: m.Native.Environment["CLAUDE_CONFIG_DIR"], ProjectRoot: m.Native.CWD, UsesConfigDirOverride: m.Native.Environment["CLAUDE_CONFIG_DIR"] != ""})
+	reportService, err := doctorapi.New(doctorapi.Options{HomeDir: m.Native.Home, ConfigDir: m.Native.ConfigHomeDirectory(), ProjectRoot: m.Native.CWD, UsesConfigDirOverride: m.Native.Environment["CLAUDE_CONFIG_DIR"] != ""})
 	if err != nil {
 		return "", err
 	}
@@ -58,7 +58,11 @@ func (m *MainCommand) Doctor(ctx context.Context, scope *cooperative.Scope) (str
 			fmt.Fprintf(&out, "%s: %s\n", item.Label, item.Status)
 		}
 	}
-	catalog, err := m.Settings.AgentCatalog(m.Owner, m.Native.CWD, false)
+	options, err := m.Settings.PluginOptions(m.Secure)
+	if err != nil {
+		return "", err
+	}
+	catalog, err := m.Settings.AgentCatalog(m.Owner, m.Native.CWD, false, options)
 	if err != nil {
 		return "", err
 	}
@@ -74,10 +78,6 @@ func (m *MainCommand) Doctor(ctx context.Context, scope *cooperative.Scope) (str
 		fmt.Fprintf(&out, "Warning: %s: %s\n", failure.Path, failure.Error)
 	}
 	claudeAI, err := m.NewCLIClaudeAIMCP(ctx, nil)
-	if err != nil {
-		return "", err
-	}
-	options, err := m.Settings.PluginOptions(m.Secure)
 	if err != nil {
 		return "", err
 	}
@@ -105,7 +105,7 @@ func (m *MainCommand) Doctor(ctx context.Context, scope *cooperative.Scope) (str
 	if platform == "windows" {
 		platform = "win32"
 	}
-	auth, err := mcpauth.New(mcpauth.Options{Secure: m.Secure, Home: m.Native.Home, ConfigDir: m.Native.Environment["CLAUDE_CONFIG_DIR"], CWD: m.Native.CWD, Platform: platform, Environment: m.Native.Environment, Settings: settings})
+	auth, err := mcpauth.New(mcpauth.Options{Secure: m.Secure, Home: m.Native.Home, ConfigDir: m.Native.ConfigHomeDirectory(), CWD: m.Native.CWD, Platform: platform, Environment: m.Native.Environment, Settings: settings})
 	if err != nil {
 		return "", err
 	}

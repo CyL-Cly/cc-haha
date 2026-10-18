@@ -88,6 +88,33 @@ describe('specifier resolution', () => {
 })
 
 describe('reverse dependency closure', () => {
+  test('includes the frontend package JSON leaf in the default graph and its transitive consumers', () => {
+    const root = fixtureRepo({
+      'desktop/package.json': JSON.stringify({ version: '0.7.1', description: "from './not-a-module'" }),
+      'desktop/src/lib/desktopHost/browserHost.ts': "import { version } from '../../../package.json'\nexport const frontendVersion = version",
+      'desktop/src/lib/desktopHost/index.ts': "export { frontendVersion } from './browserHost'",
+      'desktop/src/pages/About.ts': "import { frontendVersion } from '../lib/desktopHost'\nexport const shownVersion = frontendVersion",
+    })
+    try {
+      const graph = buildModuleGraph(root)
+      expect(graph.unresolved).toEqual([])
+      expect(listGraphSourceFiles(root)).toContain('desktop/package.json')
+      expect(graph.imports.get('desktop/src/lib/desktopHost/browserHost.ts'))
+        .toEqual(new Set(['desktop/package.json']))
+      expect(dependentsOf(['desktop/package.json'], graph)).toEqual([
+        'desktop/src/lib/desktopHost/browserHost.ts',
+        'desktop/src/lib/desktopHost/index.ts',
+        'desktop/src/pages/About.ts',
+      ])
+      // JSON is a dependency leaf, not executable import text to scan.
+      expect(graph.imports.has('desktop/package.json')).toBe(false)
+      expect(resolveSpecifier(root, 'desktop/src/lib/desktopHost/browserHost.ts', '../../../missing.json', new Set(listGraphSourceFiles(root))))
+        .toBeNull()
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
   test('walks transitively, excludes the seeds, and terminates on cycles', () => {
     const root = fixtureRepo({
       'src/leaf.ts': 'export const leaf = 1',
@@ -151,6 +178,10 @@ describe('this repository', () => {
       .toContain('desktop/sidecars/claude-sidecar.ts')
     expect(dependentsOf(['preload.ts'], graph))
       .toContain('desktop/sidecars/claude-sidecar.ts')
+    expect(graph.imports.get('desktop/src/lib/desktopHost/browserHost.ts'))
+      .toContain('desktop/package.json')
+    expect(dependentsOf(['desktop/package.json'], graph))
+      .toContain('desktop/src/lib/desktopHost/browserHost.ts')
   })
 
   test('resolves every repo-local module specifier so selection stays trustworthy', () => {

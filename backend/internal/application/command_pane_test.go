@@ -26,14 +26,16 @@ func TestPaneCLIIdentityOptionTupleOptOutAndInheritedRuntimeConsumers(t *testing
 	if err != nil || command.PaneTeammate != nil {
 		t.Fatal("Source authoritative optout changed", command, err)
 	}
-	if _, _, err = ParseCommand([]string{"--chrome"}, "fixture", home, home, enabled); err == nil || !strings.Contains(err.Error(), "CLI option --chrome") {
-		t.Fatal("unmigrated Chrome guard removed", err)
+	command, _, err = ParseCommand([]string{"--chrome"}, "fixture", home, home, enabled)
+	if err != nil || command.Arguments.Chrome == nil || !*command.Arguments.Chrome {
+		t.Fatal("Chrome flag lost its integration startup consumer", command, err)
 	}
 	command, _, err = ParseCommand([]string{"--chrome", "--no-chrome"}, "fixture", home, home, enabled)
 	if err != nil || command.Arguments.Chrome == nil || *command.Arguments.Chrome {
 		t.Fatal("Source final Chrome opt-out was blocked by an earlier option", command, err)
 	}
-	if _, _, err = ParseCommand([]string{"--no-chrome", "--chrome"}, "fixture", home, home, enabled); err == nil || !strings.Contains(err.Error(), "CLI option --chrome") {
-		t.Fatal("final active Chrome lacks an integration consumer", err)
+	command, _, err = ParseCommand([]string{"--no-chrome", "--chrome"}, "fixture", home, home, enabled)
+	if err != nil || command.Arguments.Chrome == nil || !*command.Arguments.Chrome {
+		t.Fatal("final active Chrome flag lost its integration consumer", command, err)
 	}
 }

@@ -30,6 +30,9 @@ func (m *MainPrint) AdmitNativeSDKInput(ctx context.Context, input protocol.JSON
 }
 
 func (m *MainPrint) RunAdmittedSDKTurn(ctx context.Context) error {
+	if m.Controller.NativeRemoteFrontend() {
+		return mainCap("remote frontend inputs must use their actual CCR session transport")
+	}
 	if !m.initialized || m.closed {
 		return cooperative.ErrClosed
 	}

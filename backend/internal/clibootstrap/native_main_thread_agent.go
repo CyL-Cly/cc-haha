@@ -16,6 +16,7 @@ import (
 type nativeMainThreadAgentState struct {
 	requestedModel, requestedPrompt string
 	definition                      *agentcatalog.Definition
+	initialDefinition               *agentcatalog.Definition
 	prompt                          json.RawMessage
 	initialPrompt                   json.RawMessage
 }
@@ -47,6 +48,8 @@ func (m *MainPrint) initializeNativeMainThreadAgent() error {
 			return err
 		}
 		if m.mainThreadAgent.definition != nil {
+			initialDefinition := *m.mainThreadAgent.definition
+			m.mainThreadAgent.initialDefinition = &initialDefinition
 			initial := m.mainThreadAgent.definition.Fields.Get("initialPrompt")
 			if units, err := protocol.DecodeJavaScriptJSONString(initial); err == nil && len(units) > 0 {
 				m.mainThreadAgent.initialPrompt = append(json.RawMessage(nil), initial...)

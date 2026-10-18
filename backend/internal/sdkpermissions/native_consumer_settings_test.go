@@ -19,6 +19,7 @@ func TestNativeConsumerSettingsRequireActualBindings(t *testing.T) {
 		{`{"showThinkingSummaries":false}`, []int{16}},
 		{`{"autoDreamEnabled":true}`, []int{17}},
 		{`{"autoDreamEnabled":false}`, []int{17}},
+		{`{"companyAnnouncements":["实际团队公告"]}`, []int{2}},
 	} {
 		parsed, err := clisettings.ValidateNativeJSONContent(row.settings, "fixture")
 		if err != nil || parsed.Settings == nil {

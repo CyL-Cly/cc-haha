@@ -20,6 +20,10 @@ type skillResourceCatalogue struct {
 }
 
 func (s *Service) prefetchSkillResources(scope *cooperative.Scope) error {
+	return s.prefetchSkillResourcesFor(scope, s.connections)
+}
+
+func (s *Service) prefetchSkillResourcesFor(scope *cooperative.Scope, peers []mcpruntime.Connection) error {
 	if !scope.BelongsTo(s.options.Owner) {
 		return cooperative.ErrRestricted
 	}
@@ -28,7 +32,7 @@ func (s *Service) prefetchSkillResources(scope *cooperative.Scope) error {
 		future *ownerasync.OwnerFuture[[]protocol.JSONObject]
 	}
 	pending := []pendingCatalogue{}
-	for _, peer := range s.connections {
+	for _, peer := range peers {
 		if peer.Status != "connected" || peer.Client == nil {
 			continue
 		}
@@ -61,18 +65,9 @@ func fetchSkillResources(ctx context.Context, peer mcpruntime.Connection) []prot
 	if !resourceSupport(peer) {
 		return rows
 	}
-	result, e := peer.Client.ListResources(ctx, nil)
+	rows, e := peer.FetchResources(ctx)
 	if e != nil {
-		// fetchResourcesForClient catches peer errors and caches []; pagination
-		// and output-schema stripping are not part of this original operation.
-		return rows
-	}
-	if e := json.Unmarshal(result.Get("resources"), &rows); e != nil {
 		return []protocol.JSONObject{}
-	}
-	for i := range rows {
-		rows[i] = rows[i].Clone()
-		rows[i].Set("server", raw(peer.Name))
 	}
 	return rows
 }
@@ -106,6 +101,9 @@ func (s *Service) installSkillResources(scope *cooperative.Scope, peer mcpruntim
 				}
 				// Source invalidates its fetch cache, while the current app
 				// resource view remains usable until the async refresh settles.
+				if e := s.options.Runtime.InvalidateResources(peer); e != nil {
+					return e
+				}
 				previous.fresh = false
 				s.skillResources[name] = previous
 				return s.prefetchSkillResources(current)

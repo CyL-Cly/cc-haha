@@ -49,8 +49,9 @@ type ProjectionService = Pick<InstanceType<typeof SessionService>, 'getSessionLa
   memoryLaunchInfo: Map<string, Record<string, unknown>>
 }
 let service = new SessionService() as unknown as ProjectionService
-const originalOpen = fs.open
-const originalStat = fs.stat
+const originalOpen = (fs.open as any).getMockImplementation?.() as typeof fs.open
+const originalStat = (fs.stat as any).getMockImplementation?.() as typeof fs.stat
+if (typeof originalOpen !== 'function' || typeof originalStat !== 'function') throw new Error('Guarded session projection implementation missing')
 const trace: Array<{ operation: string, offset?: number, length?: number, bytesRead?: number }> = []
 spyOn(fs, 'stat').mockImplementation((async (...args: Parameters<typeof fs.stat>) => {
   if (String(args[0]) === file) trace.push({ operation: 'pathStat' })

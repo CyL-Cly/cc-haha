@@ -33,6 +33,9 @@ func checkProfile(input Context) error {
 		return unsupported("first-party or unresolved provider profile")
 	}
 	for _, name := range []string{"CLAUDE_CODE_USE_BEDROCK", "CLAUDE_CODE_USE_VERTEX", "CLAUDE_CODE_USE_FOUNDRY", "CLAUDE_CODE_USE_AZURE_OPENAI", "USER_TYPE"} {
+		if name == "USER_TYPE" && input.Host.Profile == NativeDirectRelayProfile && input.Host.Env[name] != "ant" {
+			continue
+		}
 		if name == "CLAUDE_CODE_USE_VERTEX" && boundVertex {
 			continue
 		}

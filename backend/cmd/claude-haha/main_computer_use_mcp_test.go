@@ -39,6 +39,7 @@ func TestPublicComputerUseMCPActualProductionChildNoASKOrNativeInput(t *testing.
 	defer cancel()
 	binary := filepath.Join(root, "cu-go-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-mod=readonly", "-p=4", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if output, err := build.CombinedOutput(); err != nil {
 		t.Fatal(err, string(output))
 	}

@@ -43,12 +43,12 @@ func (m *MainPrint) initializeNativeModelCommandState(scope *cooperative.Scope) 
 	if err != nil {
 		return err
 	}
-	settings, err := m.Startup.GetInitialSettings()
+	settings, err := m.nativeSDKInitialSettings()
 	if err != nil {
 		return err
 	}
 	configured := settings != nil && string(settings.Get("fastMode")) == "true" && !modelCommandTruthy(settings.Get("fastModePerSessionOptIn"))
-	flag, err := m.Startup.GetSettingsForSource("flagSettings")
+	flag, err := m.nativeSDKSourceSettings("flagSettings")
 	if err != nil {
 		return err
 	}

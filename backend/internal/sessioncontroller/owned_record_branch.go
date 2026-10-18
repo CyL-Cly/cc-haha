@@ -88,6 +88,9 @@ func (c *Controller) ResolvedFastModeOnOwner(scope *cooperative.Scope, proof ...
 type OwnedRecordBranch struct {
 	state   *bootstrapstate.State
 	service *gitbranch.Service
+	// Optional read-only observer of the actual getCachedBranch Promise. It
+	// supplies no Scope, readiness, cache value or replacement implementation.
+	observeCachedReturn func(*gitbranch.BranchFuture)
 }
 
 func (binding *OwnedRecordBranch) checkBinding(state *bootstrapstate.State) error {
@@ -122,5 +125,12 @@ func (binding *OwnedRecordBranch) Begin(scope *cooperative.Scope, cwd *bootstrap
 	if !cwd.Owns(binding.state) {
 		return nil, cooperative.ErrRestricted
 	}
-	return binding.service.BranchWithCWD(scope, func(next *cooperative.Scope) (string, error) { return cwd.GetCWD(next) })
+	actual, err := binding.service.BranchWithCWD(scope, func(next *cooperative.Scope) (string, error) { return cwd.GetCWD(next) })
+	if err != nil {
+		return nil, err
+	}
+	if binding.observeCachedReturn != nil {
+		binding.observeCachedReturn(actual)
+	}
+	return beginOwnedRecordBranchReturn(scope, binding.state.Owner(), actual)
 }

@@ -38,6 +38,7 @@ func TestActualCLIThinkingPTYSelectionMidConversationCancelConfirmAndRestore(t *
 	defer cancel()
 	cmd := exec.CommandContext(ctx, python, "testdata/tui_thinking_pty.py", binary, home)
 	cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "HOME=" + home, "USERPROFILE=" + home, "CLAUDE_CONFIG_DIR=" + filepath.Join(home, ".claude"), "TMPDIR=" + home, "TERM=xterm-256color", "TZ=UTC", "CC_HAHA_TUI_THINKING_HELPER=1"}
+	capturePublicGoCoverage(t, cmd)
 	out, e := cmd.CombinedOutput()
 	if e != nil {
 		t.Fatalf("actual thinking PTY %v %.6500s", e, out)
@@ -57,6 +58,12 @@ func TestNativeTUIThinkingFixtureProcess(t *testing.T) {
 	var count atomic.Int32
 	var configOK atomic.Bool
 	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		body, _ := io.ReadAll(r.Body)
 		n := count.Add(1)
 		request := obj(body)

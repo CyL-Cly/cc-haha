@@ -9,6 +9,7 @@ import (
 	"unicode/utf16"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/markdownfrontmatter"
+	"github.com/NanmiCoder/cc-haha/backend/internal/pluginoptions"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 )
 
@@ -221,25 +222,6 @@ func expand(pattern string, b *expansionBudget) []string {
 	return out
 }
 
-var configVariable = regexp.MustCompile(`\$\{user_config\.([^}]+)\}`)
-
-func substituteUserConfig(text string, values, schema protocol.JSONObject) string {
-	return configVariable.ReplaceAllStringFunc(text, func(match string) string {
-		key := configVariable.FindStringSubmatch(match)[1]
-		var declaration protocol.JSONObject
-		if declaration.UnmarshalJSON(schema.Get(key)) == nil && string(declaration.Get("sensitive")) == "true" {
-			return "[sensitive option '" + key + "' not available in skill content]"
-		}
-		raw := values.Get(key)
-		if raw == nil {
-			return match
-		}
-		value, e := protocol.JavaScriptStringJSON(raw)
-		if e != nil {
-			return match
-		}
-		var s string
-		_ = json.Unmarshal(value, &s)
-		return s
-	})
+func substituteUserConfigJSON(text json.RawMessage, values, schema protocol.JSONObject) (json.RawMessage, error) {
+	return pluginoptions.SubstituteUserConfigInContentJSON(text, values, schema)
 }

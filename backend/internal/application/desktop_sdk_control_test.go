@@ -37,6 +37,7 @@ func TestSDKControlLifecycleMatchesActualSource(t *testing.T) {
 	cmd.Stdin = bytes.NewReader(raw(map[string]any{"homeDir": home, "cases": cases}))
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
+	capturePublicGoCoverage(t, cmd)
 	out, e := cmd.Output()
 	if e != nil {
 		t.Fatal(e, stderr.String())
@@ -145,6 +146,7 @@ func TestSDKControlRealPrivateSubprocess(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
+	capturePublicGoCoverage(t, cmd)
 	if e = cmd.Start(); e != nil {
 		t.Fatal(e)
 	}

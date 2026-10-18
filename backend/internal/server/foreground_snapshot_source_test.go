@@ -35,15 +35,22 @@ func TestActualSourceForegroundSnapshotsIgnoreSDKOnlyRunAndIncludePendingStartup
 		t.Fatal("original snapshot observer failed", err, string(output))
 	}
 	var source struct {
+		Connected                  []json.RawMessage
 		SDKRunState                string
 		SDKCliRunning              bool
 		SDKOnlySnapshot            []json.RawMessage
 		SDKOnlyPermissionsSnapshot []json.RawMessage
 		PendingStartupSnapshot     []json.RawMessage
-		Capabilities               struct{ Blocked []string }
+		StoppedPendingAdmission    struct {
+			Cancelled, ReplacementAfterStop, StillRegistered, StillQueued bool
+		}
+		Capabilities struct{ Blocked []string }
 	}
 	if err := json.Unmarshal(output, &source); err != nil || len(source.Capabilities.Blocked) != 0 {
 		t.Fatal("invalid actual Source evidence", err, string(output))
+	}
+	if len(source.Connected) != 3 || stringField(objectForTest(source.Connected[0]), "type") != "connected" || stringField(objectForTest(source.Connected[1]), "type") != "permission_request" || stringField(objectForTest(source.Connected[2]), "type") != "permission_requests_snapshot" {
+		t.Fatal("Source connect emitted unsolicited turn state or lost permission replay", string(output))
 	}
 	if source.SDKRunState != "running" || !source.SDKCliRunning || len(source.SDKOnlySnapshot) != 1 || stringField(objectForTest(source.SDKOnlySnapshot[0]), "turnState") != "idle" {
 		t.Fatal("Source SDK-only activity replaced the foreground domain", string(output))
@@ -57,5 +64,8 @@ func TestActualSourceForegroundSnapshotsIgnoreSDKOnlyRunAndIncludePendingStartup
 	}
 	if len(source.PendingStartupSnapshot) != 1 || stringField(objectForTest(source.PendingStartupSnapshot[0]), "turnState") != "running" {
 		t.Fatal("Source pre-send user registration was not active", string(output))
+	}
+	if !source.StoppedPendingAdmission.Cancelled || source.StoppedPendingAdmission.ReplacementAfterStop || source.StoppedPendingAdmission.StillRegistered || source.StoppedPendingAdmission.StillQueued {
+		t.Fatal("Source Stop failed to fence its unsent user and clear the old queue", string(output))
 	}
 }

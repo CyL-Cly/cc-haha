@@ -17,7 +17,7 @@ func (m *MainPrint) SetTeamRuntimeSnapshot(ctx context.Context, name string, cre
 		if m.Host == nil || !m.initialized || m.closed || m.options.Native == nil || m.agentChild || m.teamWorker != nil {
 			return cooperative.ErrRestricted
 		}
-		config, err := teamstore.NewConfig(teamstore.ConfigOptions{ConfigDir: m.options.Native.Environment["CLAUDE_CONFIG_DIR"], TaskStore: m.taskStore, PID: m.options.PID, Platform: m.options.Platform, Log: func(err error) { _, _ = fmt.Fprintln(m.options.Error, err) }})
+		config, err := teamstore.NewConfig(teamstore.ConfigOptions{ConfigDir: m.options.Native.ConfigHomeDirectory(), TaskStore: m.taskStore, PID: m.options.PID, Platform: m.options.Platform, Log: func(err error) { _, _ = fmt.Fprintln(m.options.Error, err) }})
 		if err != nil {
 			return err
 		}
@@ -35,6 +35,7 @@ func (m *MainPrint) SetTeamRuntimeSnapshot(ctx context.Context, name string, cre
 			return err
 		}
 		m.teamState = &nativeTeamState{snapshot: snapshot.Clone()}
+		m.publishTerminalTeamFooter(scope)
 		return nil
 	})
 	if err != nil {

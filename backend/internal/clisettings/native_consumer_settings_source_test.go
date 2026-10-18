@@ -28,6 +28,7 @@ func TestNativeConsumerSettingsAgainstActualSource(t *testing.T) {
 		`{"plansDirectory":false,"spinnerVerbs":{"mode":"bad","verbs":[1]},"claudeMdExcludes":[false],"autoUpdatesChannel":"unknown","autoMemoryEnabled":false}`,
 		`{"showThinkingSummaries":true}`, `{"showThinkingSummaries":false}`, `{"showThinkingSummaries":null}`, `{"showThinkingSummaries":"true"}`, `{"showThinkingSummaries":1}`, `{"showThinkingSummaries":[]}`, `{"showThinkingSummaries":{}}`,
 		`{"autoDreamEnabled":true}`, `{"autoDreamEnabled":false}`, `{"autoDreamEnabled":null}`, `{"autoDreamEnabled":"true"}`, `{"autoDreamEnabled":1}`, `{"autoDreamEnabled":[]}`, `{"autoDreamEnabled":{}}`,
+		`{"companyAnnouncements":[]}`, `{"companyAnnouncements":["实际团队消息","","lone\ud800"]}`, `{"companyAnnouncements":null}`, `{"companyAnnouncements":"message"}`, `{"companyAnnouncements":false}`, `{"companyAnnouncements":{}}`, `{"companyAnnouncements":[1,null,{},[],false]}`,
 	}
 	fixture, _ := filepath.Abs("../../../scripts/quality-gate/go-parity/native-plugin-settings.fixture.ts")
 	allocation := t.TempDir()
@@ -73,7 +74,7 @@ func TestNativeConsumerSettingsAgainstActualSource(t *testing.T) {
 			t.Fatal(i, string(errors), want.Errors)
 		}
 	}
-	for _, key := range []string{"claudeMdExcludes", "plansDirectory", "spinnerVerbs", "showThinkingSummaries", "autoDreamEnabled"} {
+	for _, key := range []string{"claudeMdExcludes", "plansDirectory", "spinnerVerbs", "showThinkingSummaries", "autoDreamEnabled", "companyAnnouncements"} {
 		if _, err := ValidateJSONContent(`{"`+key+`":null}`, "finite"); err == nil {
 			t.Fatal("finite schema expanded", key)
 		}

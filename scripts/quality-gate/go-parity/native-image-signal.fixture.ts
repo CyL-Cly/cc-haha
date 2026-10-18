@@ -8,7 +8,9 @@ let current: any
 const timer = spyOn(globalThis, 'setTimeout').mockImplementation(((callback: any, delay: any, ...args: any[]) => {
   if (delay === 600000) {
     current.armed = delay
-    return physicalTimeout(callback, 25, ...args)
+    // Only the timeout profile accelerates the original timer. Successful
+    // network/file work must not race a 25 ms wall clock on a busy Go lane.
+    return physicalTimeout(callback, current.kind === 'timeout' ? 25 : delay, ...args)
   }
   return physicalTimeout(callback, delay, ...args)
 }) as typeof setTimeout)
@@ -16,7 +18,7 @@ const { generateImages } = await import('../../../src/tools/ImageGenTool/backend
 const output = []
 try {
   for (const row of rows) {
-    current = {}
+    current = { kind: row.kind }
     const parent = new AbortController()
     if (row.kind === 'preaborted') parent.abort(new Error('private custom reason'))
     if (row.kind === 'caller_abort') physicalTimeout(() => parent.abort(new Error('private custom reason')), 25)
@@ -33,6 +35,9 @@ try {
       })
       images = value.images.length
     } catch (failure) { error = (failure as Error).message }
+    // Abort after completion to prove finally removed the caller listener.
+    // The combined signal must stay live on success and synchronous failures.
+    if (['success', 'upstream_error', 'invalid_output'].includes(row.kind)) parent.abort()
     await new Promise(resolve => physicalTimeout(resolve, 40))
     output.push({ kind: row.kind, armed: current.armed ?? null, aborted: captured?.aborted ?? false, images, ...(error ? { error } : {}) })
   }

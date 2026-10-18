@@ -112,12 +112,12 @@ if (import.meta.main) {
   const root = process.cwd()
   const home = mkdtempSync(join(tmpdir(), 'go-matrix-closure-'))
   try {
-    const changed = await collectGoChangedLines(root, createGoTestEnvironment(home), process.env.COVERAGE_BASE_REF ?? process.env.PR_BASE_REF)
+    const changed = await collectGoChangedLines(root, createGoTestEnvironment(home, process.env, root), process.env.COVERAGE_BASE_REF ?? process.env.PR_BASE_REF)
     const thresholds = JSON.parse(readFileSync(join(root, 'scripts/quality-gate/coverage-thresholds.json'), 'utf8'))
     const result = evaluateGoPlatformClosure(reportFiles(resolve(directory)).map(path => JSON.parse(readFileSync(path, 'utf8'))), {
       minimumPercent: thresholds.changedLines?.minimumPercent ?? Number.NaN,
       sourceSnapshot: goSourceSnapshot(root, scanGoSources(join(root, 'backend'))),
-      repositoryInputs: await collectCorpusSnapshot(root, createGoTestEnvironment(home)),
+      repositoryInputs: await collectCorpusSnapshot(root, createGoTestEnvironment(home, process.env, root)),
       goSources: scanGoSources(join(root, 'backend')).map(path => `backend/${path.slice(join(root, 'backend').length + 1).replace(/\\/g, '/')}`),
       changed: [...changed].sort(([a], [b]) => a.localeCompare(b)).map(([file, lines]) => ({ file, lines: [...lines].sort((a, b) => a - b) })),
     })

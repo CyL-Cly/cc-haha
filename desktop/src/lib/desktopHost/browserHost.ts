@@ -6,6 +6,7 @@ import type {
   NotificationPermissionState,
 } from './types'
 import { readBrowserLanguages } from '../../i18n/locale'
+import { version as frontendVersion } from '../../../package.json'
 
 const browserCapabilities: DesktopHostCapabilities = {
   appMode: false,
@@ -58,7 +59,7 @@ export const browserHost: DesktopHost = {
   },
   app: {
     async getVersion() {
-      return '0.1.0'
+      return frontendVersion
     },
     async getLocalePreference() {
       return null

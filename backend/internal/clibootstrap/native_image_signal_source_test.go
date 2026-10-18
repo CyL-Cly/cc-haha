@@ -96,12 +96,18 @@ func TestActualImageCombinedSignalTimerCallerAbortFinallyAndPhysicalCloseMatchSo
 				if ctx.Err() == nil {
 					armed = float64(delay.Milliseconds())
 				}
-				return m.nativeCombinedImageSignal(scope, ctx, 25*time.Millisecond)
+				if kind == "timeout" {
+					delay = 25 * time.Millisecond
+				}
+				return m.nativeCombinedImageSignal(scope, ctx, delay)
 			}, Environment: m.nativeOpenAIEnvironment, ConfigHome: m.options.Native.Environment["CLAUDE_CONFIG_DIR"], OutputDir: filepath.Join(m.options.Native.Home, kind), SessionID: m.Controller.SessionID, NowMillis: func() int64 { return int64(m.options.Native.NowMillis()) }, UUID: uuidMain})
 			if err != nil {
 				return err
 			}
 			result, failure := service.Generate(parent, webObject(`{"prompt":"original combined image signal","count":1}`), imagegeneration.Config{Kind: "openai_images", ProviderID: "private", Model: "private-image", APIKey: "private-fake-key", BaseURL: peer.URL})
+			if kind == "success" || kind == "upstream_error" || kind == "invalid_output" {
+				abortParent(context.Canceled)
+			}
 			if _, err = scope.AwaitBytes(cooperative.StreamNext, func(context.Context) ([]byte, error) { time.Sleep(40 * time.Millisecond); return nil, nil }); err != nil {
 				return err
 			}

@@ -16,6 +16,12 @@ import (
 func TestPublicCLIDisabledSlashReturnsSourceNoQueryThenModelUsesSkillOnColdResume(t *testing.T) {
 	var calls atomic.Int32
 	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		data, _ := io.ReadAll(r.Body)
 		if calls.Add(1) == 1 {
 			response(w, "cli-disabled-skill", "Skill", map[string]any{"skill": "private-skill"}, "")

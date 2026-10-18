@@ -17,15 +17,18 @@ import (
 
 func (m *MainPrint) nativeMemory() (*usercontext.ExplicitUserMemory, *usercontext.MemoryPaths, error) {
 	n := m.options.Native
-	files := mainSettingsFiles{n: n}
-	paths := &usercontext.MemoryPaths{Environment: m.environment, Home: n.Home, ConfigHome: n.Environment["CLAUDE_CONFIG_DIR"], Files: files, Realpath: filepath.EvalSymlinks, SettingsForSource: m.Startup.GetSettingsForSource, ProjectRoot: func() string {
+	files := nativeMemoryFiles{n: n}
+	paths := &usercontext.MemoryPaths{Environment: m.environment, Home: n.Home, ConfigHome: n.ConfigHomeDirectory(), Files: files, Realpath: files.Realpath, SettingsForSource: m.nativeSDKSourceSettings, ProjectRoot: func() string {
 		root := usercontext.GitRoot(files, n.CWD)
 		if root == "" {
 			return n.CWD
 		}
 		return root
 	}}
-	settings, err := m.Startup.GetInitialSettings()
+	if n.NativeProcess {
+		paths.NativeConfigDirectory = n.nativeConfigHomePath
+	}
+	settings, err := m.nativeSDKInitialSettings()
 	if err != nil {
 		return nil, nil, err
 	}
@@ -53,19 +56,17 @@ func (m *MainPrint) nativeMemory() (*usercontext.ExplicitUserMemory, *usercontex
 	if err != nil {
 		return nil, nil, err
 	}
-	normal := &usercontext.NormalMemoryDiscovery{CWD: n.CWD, Home: n.Home, ManagedRoot: n.ManagedRoot, EnabledSources: m.options.Arguments.Sources.EnabledSettingSources, NativeProcess: true, AutoMemoryEnabled: settings == nil || systemprompt.AutoMemoryEnabled(m.environment, *settings), AutoMemoryDirectory: paths.Directory, Excludes: excludes, Matcher: matcher, Realpath: filepath.EvalSymlinks, ReadDir: func(path string) ([]fs.DirEntry, error) {
-		if err := n.check("readdir", path); err != nil {
-			return nil, err
-		}
-		return usercontext.NativeReadDir(path)
-	}, IncludeExternal: string(project.Get("hasClaudeMdExternalIncludesApproved")) == "true", AdditionalDirectoriesEnabled: envTruthyNative(n.Environment["CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD"])}
-	return &usercontext.ExplicitUserMemory{ConfigHome: n.Environment["CLAUDE_CONFIG_DIR"], Profile: usercontext.NormalEmptyMemoryProfile, Files: files, Normal: normal}, paths, nil
+	normal := &usercontext.NormalMemoryDiscovery{CWD: n.CWD, Home: n.Home, ManagedRoot: n.ManagedRoot, EnabledSources: m.options.Arguments.Sources.EnabledSettingSources, NativeProcess: true, AutoMemoryEnabled: settings == nil || systemprompt.AutoMemoryEnabled(m.environment, *settings), AutoMemoryDirectory: paths.Directory, Excludes: excludes, Matcher: matcher, Realpath: files.Realpath, ReadDir: files.ReadDir, IncludeExternal: string(project.Get("hasClaudeMdExternalIncludesApproved")) == "true", AdditionalDirectoriesEnabled: envTruthyNative(n.Environment["CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD"])}
+	if n.NativeProcess {
+		normal.NativeConfigDirectory = n.nativeConfigHomePath
+	}
+	return &usercontext.ExplicitUserMemory{ConfigHome: n.ConfigHomeDirectory(), Profile: usercontext.NormalEmptyMemoryProfile, Files: files, Normal: normal}, paths, nil
 }
 
 func (m *MainPrint) nativeSystemPrompt(uc *usercontext.Service, paths *usercontext.MemoryPaths) (*systemprompt.Service, error) {
 	n := m.options.Native
 	var style *systemprompt.StyleLoader
-	style, err := nativeStyleLoader(n, m.environment, m.options.Platform, m.options.Arguments.Sources, m.Startup.GetInitialSettings, func(ctx context.Context) ([]systemprompt.StyleConfig, error) {
+	style, err := nativeStyleLoader(n, m.environment, m.options.Platform, m.options.Arguments.Sources, m.nativeSDKInitialSettings, func(ctx context.Context) ([]systemprompt.StyleConfig, error) {
 		plugins, err := m.nativeSettings.LoadPlugins(ctx, "", false)
 		if err != nil {
 			return nil, err
@@ -79,7 +80,7 @@ func (m *MainPrint) nativeSystemPrompt(uc *usercontext.Service, paths *userconte
 	return systemprompt.New(systemprompt.Options{AdditionalDirectories: append([]string{}, m.nativePermissionInitial.AdditionalDirectories...), Environment: m.environment, CWD: m.workingDirectory, Model: m.options.Arguments.Model, Platform: m.options.Platform, OSInfo: nativeOSInfo, IsGit: func(context.Context) (bool, error) {
 		return usercontext.GitRoot(mainSettingsFiles{n: n}, m.workingDirectory()) != "", nil
 	}, InitialSettings: func() (protocol.JSONObject, error) {
-		value, err := m.Startup.GetInitialSettings()
+		value, err := m.nativeSDKInitialSettings()
 		if value == nil {
 			return protocol.NewJSONObject(), err
 		}
@@ -91,7 +92,7 @@ func (m *MainPrint) nativeSystemPrompt(uc *usercontext.Service, paths *userconte
 			commands = append(commands, systemprompt.Command{Name: name})
 		}
 		return commands, nil
-	}, OutputStyle: style.Resolve, GlobalCacheScope: func() bool { return nativeGlobalCacheScope(n.Environment) }, AutoMemory: &systemprompt.AutoMemory{Directory: paths.Directory, Mkdir: mainSettingsFiles{n: n}.MkdirAll}})
+	}, OutputStyle: style.Resolve, GlobalCacheScope: func() bool { return nativeGlobalCacheScope(n.Environment) }, AutoMemory: &systemprompt.AutoMemory{Directory: paths.Directory, Mkdir: nativeMemoryFiles{n: n}.MkdirAll}})
 }
 
 func nativeGlobalCacheScope(env map[string]string) bool {
@@ -134,7 +135,7 @@ func nativeStyleLoader(n *NativeBoundary, environment *clistartupenv.Environment
 	}
 	style, err := systemprompt.NewStyleLoader(systemprompt.StyleLoaderOptions{
 		Environment: environment, Platform: platform, Home: n.Home,
-		ConfigHome: n.Environment["CLAUDE_CONFIG_DIR"], ManagedRoot: n.ManagedRoot,
+		ConfigHome: n.ConfigHomeDirectory(), ManagedRoot: n.ManagedRoot,
 		Files: mainSettingsFiles{n: n}, ReadDir: func(path string) ([]fs.DirEntry, error) {
 			if err := n.check("readdir", path); err != nil {
 				return nil, err

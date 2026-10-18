@@ -31,7 +31,7 @@ func (m *MainPrint) nativeEnsureStandaloneProxy(service *providerconfig.Service)
 		if err != nil {
 			return 0, err
 		}
-		userSettings, err := settings.New(settings.Options{GitExecutable: "git", Store: m.nativeSettings.store, ConfigDir: m.options.Native.Environment["CLAUDE_CONFIG_DIR"], HomeDir: m.options.Native.Home, Environment: func() map[string]string { return m.options.Native.Environment }, EnsureMigrated: upgrader.SettingsCallback, ShellEnvironment: func(context.Context) (map[string]string, error) {
+		userSettings, err := settings.New(settings.Options{GitExecutable: "git", Store: m.nativeSettings.store, ConfigDir: m.options.Native.ConfigHomeDirectory(), HomeDir: m.options.Native.Home, Environment: func() map[string]string { return m.options.Native.Environment }, EnsureMigrated: upgrader.SettingsCallback, ShellEnvironment: func(context.Context) (map[string]string, error) {
 			return nil, mainCap("standalone proxy route does not consume shell environment")
 		}})
 		if err != nil {

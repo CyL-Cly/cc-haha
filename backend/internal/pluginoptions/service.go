@@ -85,10 +85,12 @@ func (s *Service) Save(ctx context.Context, id string, values, schema protocol.J
 	defer s.writeMu.Unlock()
 	nonSensitive, sensitive := protocol.NewJSONObject(), protocol.NewJSONObject()
 	for _, p := range values.OwnProperties() {
-		var key string
-		_ = json.Unmarshal(p.NameJSON, &key)
-		if string(object(schema.Get(key)).Get("sensitive")) == "true" {
-			text, err := protocol.JavaScriptStringJSON(p.Value)
+		declaration, err := schema.GetPropertyJSON(p.NameJSON)
+		if err != nil {
+			return err
+		}
+		if string(object(declaration).Get("sensitive")) == "true" {
+			text, err := protocol.ExactJavaScriptStringJSON(p.Value)
 			if err != nil {
 				return err
 			}
@@ -107,9 +109,9 @@ func (s *Service) Save(ctx context.Context, id string, values, schema protocol.J
 	}
 	scrubbed := oldSecure.Clone()
 	for _, p := range nonSensitive.OwnProperties() {
-		var k string
-		_ = json.Unmarshal(p.NameJSON, &k)
-		scrubbed.Delete(k)
+		if err := scrubbed.DeletePropertyJSON(p.NameJSON); err != nil {
+			return err
+		}
 	}
 	if len(sensitive.OwnProperties()) > 0 || len(oldSecure.OwnProperties()) != len(scrubbed.OwnProperties()) {
 		result, err := s.options.Secure.Change(ctx, func(current protocol.JSONObject) error {
@@ -136,10 +138,12 @@ func (s *Service) Save(ctx context.Context, id string, values, schema protocol.J
 	oldSettings := object(config.Get("options"))
 	paths := [][]json.RawMessage{}
 	for _, p := range sensitive.OwnProperties() {
-		var key string
-		_ = json.Unmarshal(p.NameJSON, &key)
-		if oldSettings.Get(key) != nil {
-			paths = append(paths, jsonPath("pluginConfigs", id, "options", key))
+		old, err := oldSettings.GetPropertyJSON(p.NameJSON)
+		if err != nil {
+			return err
+		}
+		if old != nil {
+			paths = append(paths, append(jsonPath("pluginConfigs", id, "options"), append(json.RawMessage(nil), p.NameJSON...)))
 		}
 	}
 	if len(nonSensitive.OwnProperties()) > 0 || len(paths) > 0 {

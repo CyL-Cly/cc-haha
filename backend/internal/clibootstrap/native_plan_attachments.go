@@ -196,7 +196,7 @@ func (m *MainPrint) nativePlanProjection(scope *cooperative.Scope) (*attachments
 	// MainPrint's actual NewDirectCredentials selector suppresses subscription
 	// identity. Its admitted external build has no embedded-tools or experiment
 	// override producer; these are the original external release defaults.
-	return &attachments.PlanOptions{MapToolResult: nativeAttachmentToolResult, Environment: map[string]string{"CLAUDE_CODE_PLAN_V2_AGENT_COUNT": n.Environment["CLAUDE_CODE_PLAN_V2_AGENT_COUNT"], "CLAUDE_CODE_PLAN_V2_EXPLORE_AGENT_COUNT": n.Environment["CLAUDE_CODE_PLAN_V2_EXPLORE_AGENT_COUNT"]}, InterviewPhase: interview, ExplorePlanAgentsEnabled: true, ProjectAllowedTools: allowed}, nil
+	return &attachments.PlanOptions{MapToolResult: nativeAttachmentToolResult, Environment: nativeDiagnosticProjectionEnvironment(n.Environment), InterviewPhase: interview, ExplorePlanAgentsEnabled: true, ProjectAllowedTools: allowed}, nil
 }
 
 func nativeAttachmentToolResult(name string, data, id json.RawMessage) (protocol.JSONObject, error) {
@@ -206,4 +206,12 @@ func nativeAttachmentToolResult(name string, data, id json.RawMessage) (protocol
 		return protocol.JSONObject{}, &attachments.CapabilityError{Boundary: native.Boundary}
 	}
 	return result, e
+}
+
+func nativeDiagnosticProjectionEnvironment(source map[string]string) map[string]string {
+	out := map[string]string{}
+	for _, key := range []string{"CLAUDE_CODE_PLAN_V2_AGENT_COUNT", "CLAUDE_CODE_PLAN_V2_EXPLORE_AGENT_COUNT", "TERM", "WT_SESSION", "TERMINUS_SUBLIME", "ConEmuTask", "TERM_PROGRAM", "TERMINAL_EMULATOR"} {
+		out[key] = source[key]
+	}
+	return out
 }

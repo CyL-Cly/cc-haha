@@ -124,7 +124,7 @@ func mcpRefreshPhysical[T any](a *nativeClaudeMCPRefresh, ctx context.Context, w
 
 func (a *nativeClaudeMCPRefresh) checkImpl(ctx context.Context, retry int, force bool) (bool, error) {
 	m := a.command
-	dir := m.Native.Environment["CLAUDE_CONFIG_DIR"]
+	dir := m.Native.ConfigHomeDirectory()
 	if dir == "" && !m.Native.ConfigDirExplicit {
 		dir = filepath.Join(m.Native.Home, ".claude")
 	}

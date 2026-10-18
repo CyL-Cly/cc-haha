@@ -7,7 +7,11 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/tui"
 )
 
-type pendingModelPicker struct{ id string }
+type pendingModelPicker struct {
+	id       string
+	config   *terminalLocalPanelState
+	teammate bool
+}
 
 // InvokeModelPicker is called by the shared interactive action dispatcher.
 // Typed /model dispatch and hotkeys reach this same native picker consumer.
@@ -51,9 +55,43 @@ func (s *Session) RespondModelPicker(ctx context.Context, id string, result tui.
 	}
 	s.modelPicker = nil
 	s.mu.Unlock()
-	notice, err := s.process.ApplyNativeModelPicker(ctx, id, result)
+	var notice string
+	var err error
+	changed := !result.Cancelled
+	if pending.teammate {
+		changed, err = s.process.ApplyNativeTeammateModelPicker(ctx, id, result)
+	} else if pending.config != nil {
+		notice, err = s.process.ApplyNativeConfigModelPicker(ctx, id, result)
+	} else {
+		notice, err = s.process.ApplyNativeModelPicker(ctx, id, result)
+	}
 	if err != nil {
 		return err
+	}
+	if pending.config != nil {
+		state := pending.config
+		state.mu.Lock()
+		defer state.mu.Unlock()
+		s.mu.Lock()
+		active := s.terminalPanel == state
+		s.mu.Unlock()
+		if !active {
+			return &tui.UnsupportedAction{Action: "stale Config model picker callback"}
+		}
+		if changed {
+			if state.configDirty == nil {
+				state.configDirty = map[string]bool{}
+			}
+			key := "model"
+			if pending.teammate {
+				key = "teammateDefaultModel"
+			}
+			state.configDirty[key] = true
+		}
+		if err = s.refreshTerminalPanel(ctx, state); err != nil {
+			return err
+		}
+		return emit(tui.Event{Kind: tui.LocalPanelOpened, LocalPanel: &state.props})
 	}
 	if notice != "" {
 		return emit(tui.Event{Kind: tui.Notice, Text: notice})

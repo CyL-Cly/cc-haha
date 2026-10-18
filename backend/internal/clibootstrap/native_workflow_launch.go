@@ -168,7 +168,7 @@ func (m *MainPrint) launchNativeWorkflow(ctx context.Context, scope *cooperative
 		case <-ctx.Done():
 			return context.Cause(ctx)
 		}
-	}, Stop: func(scope *cooperative.Scope, now float64) error { return run.stop(scope, now, "killed") }}
+	}, Stop: func(scope *cooperative.Scope, now float64) error { return run.stop(scope, now, "killed") }, WorkflowControl: run.control}
 	if e = bindings.Register(scope, entry); e != nil {
 		cancel(e)
 		return protocol.JSONObject{}, e

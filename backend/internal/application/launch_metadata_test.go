@@ -38,7 +38,7 @@ func TestDesktopMemoryLaunchMetadataUpdatesOnlyAfterAcceptedHostControls(t *test
 	}
 	managed := o.Native.ManagedRoot
 	o.NativeFactory = func(env map[string]string, cwd, platform string) (*clibootstrap.NativeBoundary, error) {
-		return clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: cwd, Platform: platform, ManagedRoot: managed, ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+		return newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: cwd, Platform: platform, ManagedRoot: managed, ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 	}
 	store := storage.New(storage.Options{})
 	upgrader, err := migrations.New(migrations.Options{Store: store})

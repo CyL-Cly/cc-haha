@@ -65,6 +65,7 @@ func testUnixPTY(t *testing.T, scenario string) {
 	defer cancel()
 	command := exec.CommandContext(ctx, python, "testdata/pty.py", binary, home, scenario)
 	command.Env = []string{"PATH=" + os.Getenv("PATH"), "HOME=" + home, "USERPROFILE=" + home, "CLAUDE_CONFIG_DIR=" + filepath.Join(home, ".claude"), "TMPDIR=" + home, "TERM=xterm-256color", "TZ=UTC", "TUI_PTY_HELPER=1", "TUI_PTY_SCENARIO=" + scenario}
+	capturePublicGoCoverage(t, command)
 	output, err := command.CombinedOutput()
 	if err != nil {
 		t.Fatalf("native PTY failed: %v\n%s", err, output)

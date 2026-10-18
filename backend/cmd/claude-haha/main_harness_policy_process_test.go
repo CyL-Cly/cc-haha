@@ -64,6 +64,7 @@ func TestActualSourceAndPublicCLIBudgetFallbackWorkload(t *testing.T) {
 	defer cancel()
 	binary := filepath.Join(root, "actual-harness-policy-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if output, err := build.CombinedOutput(); err != nil {
 		t.Fatal(err, string(output))
 	}
@@ -114,7 +115,7 @@ func TestActualSourceAndPublicCLIBudgetFallbackWorkload(t *testing.T) {
 			var mu sync.Mutex
 			var requests []json.RawMessage
 			var agents []string
-			peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			peer := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 				body, _ := io.ReadAll(r.Body)
 				mu.Lock()
 				requests = append(requests, append(json.RawMessage(nil), body...))
@@ -257,6 +258,7 @@ func runHarnessSequentialASKs(t *testing.T, cmd *exec.Cmd) (int, []byte, []byte)
 	output := &authStatusProcessWriter{result: make(chan struct{}, 1)}
 	var stderr bytes.Buffer
 	cmd.Stdout, cmd.Stderr = output, &stderr
+	capturePublicGoCoverage(t, cmd)
 	if err := cmd.Start(); err != nil {
 		t.Fatal(err)
 	}

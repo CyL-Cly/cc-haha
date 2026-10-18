@@ -47,7 +47,8 @@ func TestPublicGoCLIAdapterDefaultTelegramFactoryActualPollingReplyAndClose(t *t
 	replied := make(chan struct{})
 	blocked := make(chan struct{})
 	aborted := make(chan struct{})
-	var replyOnce, blockOnce, abortOnce sync.Once
+	commands := make(chan struct{})
+	var replyOnce, blockOnce, abortOnce, commandsOnce sync.Once
 	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		method := r.URL.Path[strings.LastIndex(r.URL.Path, "/")+1:]
 		var payload protocol.JSONObject
@@ -84,6 +85,8 @@ func TestPublicGoCLIAdapterDefaultTelegramFactoryActualPollingReplyAndClose(t *t
 			}
 			result = map[string]int{"message_id": 1}
 			replyOnce.Do(func() { close(replied) })
+		case "setMyCommands":
+			commandsOnce.Do(func() { close(commands) })
 		}
 		w.Header().Set("Content-Type", "application/json")
 		wire, _ := json.Marshal(map[string]any{"ok": true, "result": result})
@@ -125,6 +128,13 @@ func TestPublicGoCLIAdapterDefaultTelegramFactoryActualPollingReplyAndClose(t *t
 	case <-blocked:
 	case <-time.After(time.Second):
 		t.Fatal("public CLI did not resume long polling")
+	}
+	// Source starts menu synchronization and polling independently. A reply or
+	// the next long poll cannot prove that setMyCommands has already arrived.
+	select {
+	case <-commands:
+	case <-time.After(5 * time.Second):
+		t.Fatal("public CLI did not publish its actual command menu")
 	}
 	cancel()
 	select {

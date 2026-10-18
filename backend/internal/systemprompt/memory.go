@@ -55,6 +55,12 @@ func (m *AutoMemory) Load(ctx context.Context, environment *clistartupenv.Enviro
 	// Original mkdir logs failures and continues prompt building. The eventual
 	// Write tool reports a real permissions error at its normal execution seam.
 	_ = m.Mkdir(directory)
+	return m.Instructions(environment, directory)
+}
+
+// Instructions is the existing pure text builder. Agent memory is already
+// gated by its caller and keeps its own directory-creation lifetime.
+func (m *AutoMemory) Instructions(environment *clistartupenv.Environment, directory string) (*string, error) {
 	base := memoryNormalLines
 	if enabled(m.SkipIndex) {
 		base = memorySkipLines

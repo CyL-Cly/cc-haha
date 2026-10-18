@@ -45,8 +45,10 @@ type NativeOwnerBoundary interface {
 	IsAdministrative(error) bool
 }
 type OwnerNativeIO struct {
-	boundary NativeOwnerBoundary
-	observe  func(OwnerNativeEvent)
+	boundary  NativeOwnerBoundary
+	observe   func(OwnerNativeEvent)
+	pool      *NativeHTTP1Pool
+	poolReuse bool
 }
 
 // CheckNativeOwnerBoundary checks the real host scope without constructing a
@@ -66,7 +68,32 @@ func NewOwnerNativeIO(boundary NativeOwnerBoundary, observe func(OwnerNativeEven
 	if err := CheckNativeOwnerBoundary(boundary); err != nil {
 		return nil, err
 	}
-	return &OwnerNativeIO{boundary, observe}, nil
+	return &OwnerNativeIO{boundary: boundary, observe: observe}, nil
+}
+
+func NewPooledOwnerNativeIO(boundary NativeOwnerBoundary, pool *NativeHTTP1Pool, observe func(OwnerNativeEvent)) (*OwnerNativeIO, error) {
+	driver, err := NewOwnerNativeIO(boundary, observe)
+	if err != nil {
+		return nil, err
+	}
+	if pool == nil {
+		return nil, fmt.Errorf("%w: explicit shared native HTTP pool", ErrHTTPExchangeProfile)
+	}
+	driver.pool = pool
+	driver.poolReuse = pool.keepAlive()
+	return driver, nil
+}
+
+// CaptureNativeFetchOptions is called at the actual getAnthropicClient ARGS
+// producer, after its async auth/helper consumers and before provider branches.
+func (driver *OwnerNativeIO) CaptureNativeFetchOptions() error {
+	if err := driver.CheckOwner(); err != nil {
+		return err
+	}
+	if driver.pool != nil {
+		driver.poolReuse = driver.pool.keepAlive()
+	}
+	return nil
 }
 
 // CheckOwner validates the currently captured original Scope before client
@@ -108,7 +135,12 @@ func (driver *OwnerNativeIO) openResponse(caller, ctx context.Context, request *
 		return nil, fmt.Errorf("%w: owner native direct HTTP1 request", ErrHTTPExchangeProfile)
 	}
 	if request.URL.Scheme == "http" && (exchange.VerifiedTLS != nil || exchange.ResolveVerifiedTLS != nil) {
-		return nil, fmt.Errorf("%w: TLS configuration on plaintext native request", ErrHTTPExchangeProfile)
+		// Source fetch receives the process TLS options for both protocols.
+		// A plaintext request does not consume or validate TLS trust, as with
+		// RawHTTP1Exchange.Do and the native fetch redirect producer.
+		selected := *exchange
+		selected.VerifiedTLS, selected.ResolveVerifiedTLS = nil, nil
+		exchange = &selected
 	}
 	limit := exchange.MaxHeaderBytes
 	if limit == 0 {
@@ -184,7 +216,11 @@ func (driver *OwnerNativeIO) openResponse(caller, ctx context.Context, request *
 		if failure != nil {
 			return nil, failure
 		}
-		resource, err = newNativeTLSHTTP1ProxyReservation(ctx, nativeTargetAuthority(request.URL), wire.Bytes(), limit, verified, exchange.ProxyURL)
+		if driver.pool != nil {
+			resource, err = driver.pool.reserve(ctx, nativeHTTP1PoolKey{scheme: "https", authority: nativeTargetAuthority(request.URL), proxy: exchange.ProxyURL, trust: verified, tlsOptions: exchange.NativeTLSOptions}, wire.Bytes(), limit, driver.poolReuse)
+		} else {
+			resource, err = newNativeTLSHTTP1ProxyReservation(ctx, nativeTargetAuthority(request.URL), wire.Bytes(), limit, verified, exchange.ProxyURL)
+		}
 	} else {
 		authority := nativeTargetAuthority(request.URL)
 		if exchange.ProxyURL != "" {
@@ -193,7 +229,11 @@ func (driver *OwnerNativeIO) openResponse(caller, ctx context.Context, request *
 				return nil, err
 			}
 		}
-		resource, err = NewNativeHTTP1Reservation(ctx, authority, wire.Bytes(), limit)
+		if driver.pool != nil {
+			resource, err = driver.pool.reserve(ctx, nativeHTTP1PoolKey{scheme: "http", authority: nativeTargetAuthority(request.URL), proxy: exchange.ProxyURL}, wire.Bytes(), limit, driver.poolReuse)
+		} else {
+			resource, err = NewNativeHTTP1Reservation(ctx, authority, wire.Bytes(), limit)
+		}
 	}
 	if err != nil {
 		return nil, err

@@ -130,19 +130,22 @@ type cacheEntry struct {
 	dirty bool
 }
 type Service struct {
-	options           Options
-	roots             []rootEntry
-	dirs              map[string]dirValue
-	initialized       bool
-	init              *Future
-	gitDir, commonDir *string
-	refPath           string
-	watched           map[string]func()
-	branch            *cacheEntry
-	defaultBranch     *cacheEntry
-	workers           sync.WaitGroup
-	closed            bool
-	watchFault        error
+	// Optional read-only observer at the actual computeBranch return boundary.
+	// It only registers observations on this current Owner; nil in production.
+	observeBranchComputeReturn func(*cooperative.Scope)
+	options                    Options
+	roots                      []rootEntry
+	dirs                       map[string]dirValue
+	initialized                bool
+	init                       *Future
+	gitDir, commonDir          *string
+	refPath                    string
+	watched                    map[string]func()
+	branch                     *cacheEntry
+	defaultBranch              *cacheEntry
+	workers                    sync.WaitGroup
+	closed                     bool
+	watchFault                 error
 }
 
 func New(o Options) (*Service, error) {

@@ -21,6 +21,12 @@ func TestPublicVerboseJSONUsesActualSharedHarnessAndPreservesSingleResultMode(t 
 		t.Run(map[bool]string{false: "single-result", true: "full-array"}[verbose], func(t *testing.T) {
 			originalKinds := originalPublicJSONKinds(t, verbose)
 			peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				// The original CLI init HEAD is distinct from model POSTs.
+				if r.Method == http.MethodHead {
+					w.WriteHeader(http.StatusNoContent)
+					return
+				}
+
 				response(w, "verbose-json-physical", "", nil, "VERBOSE_JSON_PHYSICAL_DONE")
 			}))
 			defer peer.Close()

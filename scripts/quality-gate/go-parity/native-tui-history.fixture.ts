@@ -22,13 +22,20 @@ const { normalizeMessages, isNotEmptyMessage, shouldShowUserMessage, getMessages
 const { isEnvTruthy, isEnvDefinedFalsy } = await import('../../../src/utils/envUtils')
 const fullscreen = input.fullscreen.map((row: any) => {
   let probes = 0
+  const processView = {env: row.environment}
+  let current = row
   const actual = new Function('process', 'isEnvTruthy', 'isEnvDefinedFalsy', 'spawnSync', 'logForDebugging', 'let loggedTmuxCcDisable=false; let tmuxControlModeProbed;\n' + code + ';return isFullscreenEnvEnabled')(
-    { env: row.environment }, isEnvTruthy, isEnvDefinedFalsy,
+    processView, isEnvTruthy, isEnvDefinedFalsy,
     (command: string, args: string[], options: any) => {
       if (command !== 'tmux' || JSON.stringify(args) !== JSON.stringify(['display-message', '-p', '#{client_control_mode}']) || options.timeout !== 2000) throw new Error('Physical probe contract changed')
       probes++
-      return { status: row.error ? 1 : 0, stdout: row.output ?? '' }
+      return { status: current.error ? 1 : 0, stdout: current.output ?? '' }
     }, () => {})
+  if (row.steps) return {steps: row.steps.map((step: any) => {
+    current = step
+    processView.env = step.environment
+    return {enabled: actual(), probes}
+  })}
   return { enabled: actual(), probes }
 })
 const shutdownSource = readFileSync(new URL('../../../src/utils/gracefulShutdown.ts', import.meta.url), 'utf8')

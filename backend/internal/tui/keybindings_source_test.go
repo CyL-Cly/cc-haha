@@ -76,7 +76,8 @@ func TestActualSourceKeybindingsAndSlashParsing(t *testing.T) {
 				t.Fatalf("Source failed %v: %s", err, stderr.String())
 			}
 			var want struct {
-				Keys []struct {
+				Template string
+				Keys     []struct {
 					Parsed             Keystroke
 					Canonical, Display string
 				}
@@ -113,6 +114,9 @@ func TestActualSourceKeybindingsAndSlashParsing(t *testing.T) {
 			}
 			if got := DefaultKeybindings(profile.platform, true, profile.flags); !reflect.DeepEqual(got, want.Defaults) {
 				t.Fatalf("Source default bindings differ\nGo: %#v\nSource: %#v", got, want.Defaults)
+			}
+			if got, err := KeybindingsTemplate(profile.platform, true, profile.flags); err != nil || got != want.Template {
+				t.Fatalf("actual Source keybindings template differs: %v\nGo: %s\nSource: %s", err, got, want.Template)
 			}
 			for i, event := range events {
 				current := keyStroke(Key{Name: KeystrokeString(*event.Current)})

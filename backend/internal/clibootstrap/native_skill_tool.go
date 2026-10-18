@@ -62,6 +62,14 @@ func (m *MainPrint) nativeSkillCall(ctx context.Context, scope *cooperative.Scop
 	if args != nil {
 		actualArgs = *args
 	}
+	if meta.String("context") == "fork" {
+		run, err := m.nativeRunForkedSkill(ctx, scope, *command.Definition, actualArgs, m.nativeForkSkillProgress(call))
+		if err != nil {
+			return queryloop.ToolCallResult{}, err
+		}
+		data := protocol.NewJSONObject(protocol.JSONField{Name: "success", Value: json.RawMessage("true")}, protocol.JSONField{Name: "commandName", Value: nameJSON}, protocol.JSONField{Name: "status", Value: quoteMain("forked")}, protocol.JSONField{Name: "agentId", Value: quoteMain(run.AgentID)}, protocol.JSONField{Name: "result", Value: quoteMain(nativeForkSkillResultText(run.Messages, "Skill execution completed"))})
+		return queryloop.ToolCallResult{Data: rawMain(data)}, nil
+	}
 	processed, e := m.nativeSkillPrompt(ctx, scope, *command.Definition, actualArgs, actual.Messages, nil)
 	if e != nil {
 		return queryloop.ToolCallResult{}, e

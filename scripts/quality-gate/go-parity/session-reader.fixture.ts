@@ -37,7 +37,10 @@ const { readBoundedHistoryPage, streamBoundedHistory, displayPreview, withHistor
 const results: Array<{ bytes?: string; error?: { code: string; status?: number; message?: string } }> = []
 const pages: Array<Awaited<ReturnType<typeof readBoundedHistoryPage>> | undefined> = []
 const trace: Array<{ operation: string; offset?: number; length?: number; bytesRead?: number }> = []
-const originalOpen = fs.open
+// The capability adapter has already installed a Bun spy. Retain its concrete
+// guarded implementation before replacing that spy with the read observer.
+const originalOpen = (fs.open as any).getMockImplementation?.() as typeof fs.open
+if (typeof originalOpen !== 'function') throw new Error('Guarded session reader open implementation missing')
 let reads = 0
 let closes = 0
 spyOn(fs, 'open').mockImplementation((async (...args: Parameters<typeof fs.open>) => {

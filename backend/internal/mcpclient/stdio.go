@@ -181,7 +181,10 @@ func (t *stdioTransport) send(ctx context.Context, m rpcMessage) error {
 	if stdin == nil {
 		return errors.New("Not connected")
 	}
-	_, err := stdin.Write(b)
+	n, err := stdin.Write(b)
+	if err == nil && n != len(b) {
+		err = io.ErrShortWrite
+	}
 	if err != nil && t.onError != nil {
 		t.onError(err)
 	}

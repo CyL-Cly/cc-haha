@@ -69,8 +69,12 @@ func (h *Host) runLocalOutput(scope *cooperative.Scope, local *sessioncontroller
 	if e != nil {
 		return e
 	}
+	resultText := local.Text
+	if local.ResultText != nil {
+		resultText = *local.ResultText
+	}
 	result := protocol.NewJSONObject(
-		protocol.JSONField{Name: "type", Value: quote("result")}, protocol.JSONField{Name: "subtype", Value: quote("success")}, protocol.JSONField{Name: "is_error", Value: raw(false)}, protocol.JSONField{Name: "duration_ms", Value: raw(h.options.NowMillis() - local.StartMillis)}, protocol.JSONField{Name: "duration_api_ms", Value: duration.Get("totalAPIDuration")}, protocol.JSONField{Name: "ttft_ms", Value: raw(0)}, protocol.JSONField{Name: "decode_ms", Value: raw(0)}, protocol.JSONField{Name: "num_turns", Value: raw(h.serial.HistoryLength() - 1)}, protocol.JSONField{Name: "result", Value: quote(local.Text)}, protocol.JSONField{Name: "stop_reason", Value: json.RawMessage("null")}, protocol.JSONField{Name: "session_id", Value: quote(h.options.Controller.SessionID())}, protocol.JSONField{Name: "total_cost_usd", Value: snapshot.Get("totalCostUSD")}, protocol.JSONField{Name: "usage", Value: raw(zeroUsage())}, protocol.JSONField{Name: "modelUsage", Value: snapshot.Get("modelUsage")}, protocol.JSONField{Name: "permission_denials", Value: raw([]any{})}, protocol.JSONField{Name: "fast_mode_state", Value: quote("off")}, protocol.JSONField{Name: "uuid", Value: quote(h.options.UUID())})
+		protocol.JSONField{Name: "type", Value: quote("result")}, protocol.JSONField{Name: "subtype", Value: quote("success")}, protocol.JSONField{Name: "is_error", Value: raw(false)}, protocol.JSONField{Name: "duration_ms", Value: raw(h.options.NowMillis() - local.StartMillis)}, protocol.JSONField{Name: "duration_api_ms", Value: duration.Get("totalAPIDuration")}, protocol.JSONField{Name: "ttft_ms", Value: raw(0)}, protocol.JSONField{Name: "decode_ms", Value: raw(0)}, protocol.JSONField{Name: "num_turns", Value: raw(h.serial.HistoryLength() - 1)}, protocol.JSONField{Name: "result", Value: quote(resultText)}, protocol.JSONField{Name: "stop_reason", Value: json.RawMessage("null")}, protocol.JSONField{Name: "session_id", Value: quote(h.options.Controller.SessionID())}, protocol.JSONField{Name: "total_cost_usd", Value: snapshot.Get("totalCostUSD")}, protocol.JSONField{Name: "usage", Value: raw(zeroUsage())}, protocol.JSONField{Name: "modelUsage", Value: snapshot.Get("modelUsage")}, protocol.JSONField{Name: "permission_denials", Value: raw([]any{})}, protocol.JSONField{Name: "fast_mode_state", Value: quote("off")}, protocol.JSONField{Name: "uuid", Value: quote(h.options.UUID())})
 	_, e = h.enqueue(scope, result)
 	return e
 }

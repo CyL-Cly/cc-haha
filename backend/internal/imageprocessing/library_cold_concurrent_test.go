@@ -26,6 +26,7 @@ func TestActualBundledCodecColdConcurrentInitializationAndReadInFreshProcess(t *
 	for i := 0; i < 3; i++ {
 		cmd := exec.Command(executable, "-test.run=^TestBundledCodecColdConcurrentProcessProbe$", "-test.v")
 		cmd.Env = append(os.Environ(), "CC_HAHA_BUNDLED_CODEC_COLD_PROBE=1")
+		capturePublicGoCoverage(t, cmd)
 		p, e := cmd.CombinedOutput()
 		if e != nil {
 			t.Fatalf("actual cold process%d %v\n%s", i, e, p)

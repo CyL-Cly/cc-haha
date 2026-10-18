@@ -18,12 +18,14 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/projectpath"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/provider"
 	"github.com/NanmiCoder/cc-haha/backend/internal/queryloop"
 	"github.com/NanmiCoder/cc-haha/backend/internal/requestcontext"
 	"github.com/NanmiCoder/cc-haha/backend/internal/resumestate"
 	"github.com/NanmiCoder/cc-haha/backend/internal/sdkhost"
 	"github.com/NanmiCoder/cc-haha/backend/internal/sessioncontroller"
 	"github.com/NanmiCoder/cc-haha/backend/internal/streamhistory"
+	"github.com/NanmiCoder/cc-haha/backend/internal/tracecapture"
 )
 
 // Every case starts from the frozen original on-disk files, real activation,
@@ -136,6 +138,40 @@ func requireFailure(t *testing.T, result map[string]any, text string) {
 	failure, ok := result["runError"].(map[string]any)
 	if !ok || !strings.Contains(failure["message"].(string), text) {
 		t.Fatalf("expected %q, got %#v", text, result["runError"])
+	}
+}
+
+func TestActualBareSDKCustomHeadersUseExistingClientTransportWithoutChangingOriginalInput(t *testing.T) {
+	var requests int
+	var fetches, fulfilled int
+	_, result := originalBoundary(t, nativeControls{Configure: func(options *sdkhost.Options) {
+		options.OriginalEnv["ANTHROPIC_CUSTOM_HEADERS"] = "x-sdk-fixture: raw caller value\nx-client-request-id: original-custom-id"
+		observe := options.ObserveRequest
+		options.ObserveRequest = func(url string, headers http.Header, body json.RawMessage) {
+			requests++
+			if headers.Get("x-sdk-fixture") != "raw caller value" || headers.Get("x-client-request-id") != "original-custom-id" {
+				t.Error("actual SDK request lost the caller's custom headers", headers)
+			}
+			observe(url, headers, body)
+		}
+		options.ObserveFetch = func(input tracecapture.FetchInput) {
+			fetches++
+			if input.Method != "POST" || !json.Valid(input.PlainBody) || input.Headers.Get("x-sdk-fixture") != "raw caller value" {
+				t.Error("actual SDK fetch observer changed the network input", input.Method, input.Headers)
+			}
+			// The observer cannot alter the SDK's prepared request or actual
+			// transport. The same physical server must still complete both ASKs.
+			input.PlainBody[0] = 'x'
+			input.Headers.Set("x-sdk-fixture", "changed observer copy")
+		}
+		options.ObserveNativeFetch = func(event provider.OwnerNativeEvent) {
+			if event.Kind == "fetch-fulfilled" {
+				fulfilled++
+			}
+		}
+	}})
+	if requests != 2 || fetches != 2 || fulfilled != 2 || len(result["requests"].([]string)) != 2 || result["runError"] != nil {
+		t.Fatal("custom header environment changed the actual two-ASK lifecycle", requests, fetches, fulfilled, result["runError"])
 	}
 }
 func TestOriginalHostRejectsBeforeAdmission(t *testing.T) {

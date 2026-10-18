@@ -58,8 +58,8 @@ func (p *nativeAgentPreset) skillDefinitions(ctx context.Context, child *MainPri
 			return nil, e
 		}
 		all = append(all, workflows...)
-		all = append(all, p.parent.skillCommands.PluginCommands(ctx, plugins.Enabled)...)
-		all = append(all, p.parent.skillCommands.PluginSkills(ctx, plugins.Enabled)...)
+		all = append(all, p.parent.skillCommands.MemoizedPluginCommands(ctx, plugins.Enabled)...)
+		all = append(all, p.parent.skillCommands.MemoizedPluginSkills(ctx, plugins.Enabled)...)
 		bundled, e := p.parent.nativeBundledSkillDefinitions()
 		if e != nil {
 			return nil, e
@@ -156,15 +156,15 @@ func (p *nativeAgentPreset) loadSkills(ctx context.Context, child *MainPrint, sc
 	if len(valid) == 0 {
 		return []protocol.JSONObject{}, nil
 	}
-	loaded := make([]string, len(valid))
-	all, e := ownerasync.NewOwnerFuture[[]string](child.Owner)
+	loaded := make([]json.RawMessage, len(valid))
+	all, e := ownerasync.NewOwnerFuture[[]json.RawMessage](child.Owner)
 	if e != nil {
 		return nil, e
 	}
 	remaining, rejected := len(valid), false
 	for i, item := range valid {
 		_, e = child.Owner.SubmitIndependent(context.Background(), cooperative.Read, func(current *cooperative.Scope) error {
-			text, failure := p.skillPrompt(ctx, child, current, item.definition)
+			text, failure := p.skillPromptJSON(ctx, child, current, item.definition)
 			remaining--
 			if failure != nil && !rejected {
 				rejected = true
@@ -190,17 +190,26 @@ func (p *nativeAgentPreset) loadSkills(ctx context.Context, child *MainPrint, sc
 	for i, item := range valid {
 		name, text := item.name, loaded[i]
 		metadata := "<command-message>" + name + "</command-message>\n<command-name>" + name + "</command-name>\n<skill-format>true</skill-format>"
-		blocks := []protocol.JSONObject{protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoteMain("text")}, protocol.JSONField{Name: "text", Value: quoteMain(metadata)}), protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoteMain("text")}, protocol.JSONField{Name: "text", Value: quoteMain(text)})}
+		blocks := []protocol.JSONObject{protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoteMain("text")}, protocol.JSONField{Name: "text", Value: quoteMain(metadata)}), protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoteMain("text")}, protocol.JSONField{Name: "text", Value: text})}
 		out = append(out, messages.OrderedUser(child.factory.CreateUser(storage.Object{"content": rawMain(blocks), "isMeta": json.RawMessage("true")})))
 	}
 	return out, nil
 }
 
 func (p *nativeAgentPreset) skillPrompt(ctx context.Context, child *MainPrint, scope *cooperative.Scope, d skillcommands.Definition) (string, error) {
-	return nativeAgentOwnerCall(child, scope, p.parent, func(parentScope *cooperative.Scope) (string, error) {
+	value, err := p.skillPromptJSON(ctx, child, scope, d)
+	var text string
+	if err == nil {
+		err = json.Unmarshal(value, &text)
+	}
+	return text, err
+}
+
+func (p *nativeAgentPreset) skillPromptJSON(ctx context.Context, child *MainPrint, scope *cooperative.Scope, d skillcommands.Definition) (json.RawMessage, error) {
+	return nativeAgentOwnerCall(child, scope, p.parent, func(parentScope *cooperative.Scope) (json.RawMessage, error) {
 		inv, e := p.parent.nativeSkillInvocation(parentScope)
 		if e != nil {
-			return "", e
+			return nil, e
 		}
 		inv.ExecuteShell = func(ctx context.Context, request skillcommands.ShellRequest) (string, error) {
 			if err := p.parent.validateNativePromptShell(parentScope, request); err != nil {
@@ -217,8 +226,31 @@ func (p *nativeAgentPreset) skillPrompt(ctx context.Context, child *MainPrint, s
 				return child.nativeSkillShellWithPermission(ctx, childScope, request, &permission)
 			})
 		}
+		inv.ExecuteShellJSON = func(ctx context.Context, request skillcommands.ShellRequest) (json.RawMessage, error) {
+			if err := p.parent.validateNativePromptShell(parentScope, request); err != nil {
+				return nil, err
+			}
+			text := request.TextJSON
+			if text == nil {
+				text = quoteMain(request.Text)
+			}
+			matches, err := skillcommands.PromptShellMatchesJSON(text)
+			if err != nil {
+				return nil, err
+			}
+			if len(matches) == 0 {
+				return text, context.Cause(ctx)
+			}
+			permission, err := p.parent.nativeToolPermissionContext(parentScope)
+			if err != nil {
+				return nil, err
+			}
+			return nativeAgentOwnerCall(p.parent, parentScope, child, func(childScope *cooperative.Scope) (json.RawMessage, error) {
+				return child.nativeSkillShellJSONWithPermission(ctx, childScope, request, &permission)
+			})
+		}
 		args := ""
-		return d.Prompt(ctx, &args, inv)
+		return d.PromptJSON(ctx, &args, inv)
 	})
 }
 func (p *nativeAgentPreset) connectMCP(ctx context.Context, child *MainPrint, scope *cooperative.Scope) ([]mcpruntime.Connection, []mcpruntime.Connection, error) {

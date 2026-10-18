@@ -13,6 +13,8 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/NanmiCoder/cc-haha/backend/internal/clibootstrap"
+	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/tui"
 )
 
@@ -159,6 +161,14 @@ func TestNativeModelPickerActionCancelPersistenceAndNextSharedRequest(t *testing
 	restartOptions := o
 	restartOptions.Arguments.Model = ""
 	restartOptions.Arguments.SessionID = "fe210ac4-5364-4b5e-a0b8-e351b70e0a18"
+	// A fresh Source process shares persisted files, not the first process's
+	// mutable launch snapshot or bound environment. Keep the first Session live.
+	restartOptions.Native, err = clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: restartOptions.Environment, CWD: restartOptions.WorkDir, Platform: restartOptions.Platform, ManagedRoot: o.Native.ManagedRoot, ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+	if err != nil {
+		t.Fatal(err)
+	}
+	restartOptions.Native.RunSecurity = o.Native.RunSecurity
+	restartOptions.Native.PreconnectHTTP = o.Native.PreconnectHTTP
 	restarted, err := NewSession(context.Background(), restartOptions)
 	if err != nil {
 		t.Fatal(err)

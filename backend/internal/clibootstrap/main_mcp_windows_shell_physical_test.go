@@ -19,7 +19,7 @@ import (
 // factory does not stop at a total Windows capability guard. Native Windows
 // process creation/TTY is a separate platform acceptance lane.
 func TestWindowsMCPShellFactoryRunsActualPowerShellAndEnforcesMandatoryPolicy(t *testing.T) {
-	const executable = "/opt/homebrew/bin/pwsh"
+	executable := physicalPowerShell(t)
 	if _, err := os.Stat(executable); err != nil {
 		t.Skip("actual PowerShell required")
 	}
@@ -114,6 +114,12 @@ func TestWindowsMCPShellFactoryRunsActualPowerShellAndEnforcesMandatoryPolicy(t 
 						}
 						subdir := filepath.Join(f.cwd, "mcp-ps-cwd")
 						if err := os.MkdirAll(subdir, 0700); err != nil {
+							t.Fatal(err)
+						}
+						// The physical interpreter reports canonical cwd, including
+						// macOS's /var → /private/var namespace transition.
+						subdir, err = filepath.EvalSymlinks(subdir)
+						if err != nil {
 							t.Fatal(err)
 						}
 						for index, command := range []string{"Set-Location -LiteralPath '" + subdir + "'; Write-Output 'ACTUAL_WINDOWS_MCP_CWD'", "(Get-Location).Path", "Write-Output 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jBuoAAAAASUVORK5CYII='"} {

@@ -9,8 +9,9 @@ type Input = { home: string; args: string[]; entry: boolean; operation: 'default
 const input = JSON.parse(await new Response(Bun.stdin.stream()).text()) as Input
 const home = assertDisposableFixtureHome(input.home, 'auto-mode')
 const network: { method: string; path: string }[] = []
+const received: { method: string; path: string }[] = []
 const server = Bun.serve({ hostname: '127.0.0.1', port: 0, fetch(request) {
-  network.push({ method: request.method, path: new URL(request.url).pathname })
+  received.push({ method: request.method, path: new URL(request.url).pathname })
   return new Response('', { status: 200 })
 } })
 const origin = `http://127.0.0.1:${server.port}`
@@ -30,8 +31,18 @@ const capabilities = await installClientFixtureCapabilities(home, {
     `/Library/Managed Preferences/${userInfo().username}/com.anthropic.claudecode.plist`,
     '/Library/Managed Preferences/com.anthropic.claudecode.plist'],
 })
+// Source init deliberately fires preconnect without awaiting its response. Its
+// fetch invocation is observable before process.exit; physical receipt can race
+// the short config handler and is retained separately, never asserted as a
+// completed Source request. Keep the exact-origin capability wrapper underneath.
+const guardedFetch = globalThis.fetch
+globalThis.fetch = ((value: Parameters<typeof fetch>[0], init?: RequestInit) => {
+  const url = new URL(value instanceof Request ? value.url : String(value))
+  network.push({ method: init?.method ?? (value instanceof Request ? value.method : 'GET'), path: url.pathname })
+  return guardedFetch(value, init)
+}) as typeof fetch
 const checkpoints: string[] = []
-process.on('exit', code => fs.writeFileSync(join(home, 'auto-mode-evidence.json'), JSON.stringify({ code, network, checkpoints, ...capabilities })))
+process.on('exit', code => fs.writeFileSync(join(home, 'auto-mode-evidence.json'), JSON.stringify({ code, network, received, checkpoints, ...capabilities })))
 process.argv = [process.execPath, new URL('../../../src/entrypoints/cli.tsx', import.meta.url).pathname, ...input.args]
 await import('../../../preload')
 if (input.entry) {

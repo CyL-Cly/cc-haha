@@ -32,7 +32,7 @@ func TestWorkflowNativeHTTPHistoryAndResumeSidecarsAgainstActualSource(t *testin
 		t.Error("Workflow history created a Harness")
 		return nil, fmt.Errorf("no model allowed")
 	})
-	n, err := clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: map[string]string{"HOME": options.HomeDir, "CLAUDE_CONFIG_DIR": options.ConfigDir, "DISABLE_TELEMETRY": "1"}, CWD: options.WorkDir, Platform: runtime.GOOS, ManagedRoot: filepath.Join(options.HomeDir, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+	n, err := newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: map[string]string{"HOME": options.HomeDir, "CLAUDE_CONFIG_DIR": options.ConfigDir, "DISABLE_TELEMETRY": "1"}, CWD: options.WorkDir, Platform: runtime.GOOS, ManagedRoot: filepath.Join(options.HomeDir, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -14,6 +14,12 @@ import (
 func TestPublicCLIExplicitEmptyCustomPromptSkipsDefaultProducer(t *testing.T) {
 	var request []byte
 	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		request, _ = io.ReadAll(r.Body)
 		response(w, "explicit-empty-system", "", nil, "EMPTY_CUSTOM_SOURCE_OK")
 	}))

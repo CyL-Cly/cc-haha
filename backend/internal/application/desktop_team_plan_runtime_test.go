@@ -125,7 +125,7 @@ func TestActualDesktopApprovedTeamRuntimeBarrierTasksQuestionIdleMailboxWakeAndS
 		t.Fatal(err)
 	}
 	s, err := NewDesktopServer(ServerOptions{Environment: o.Environment, HomeDir: o.Environment["HOME"], ConfigDir: o.Environment["CLAUDE_CONFIG_DIR"], WorkDir: o.WorkDir, Version: o.Version, Arguments: o.Arguments, NativeFactory: func(env map[string]string, cwd, platform string) (*clibootstrap.NativeBoundary, error) {
-		native, err := clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: cwd, Platform: platform, ManagedRoot: filepath.Join(o.Environment["HOME"], "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+		native, err := newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: cwd, Platform: platform, ManagedRoot: filepath.Join(o.Environment["HOME"], "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 		if err == nil && env["CC_HAHA_TEAM_WORKER"] == "1" {
 			prepared.Add(1)
 		}
@@ -280,6 +280,10 @@ func TestActualDesktopApprovedTeamRuntimeBarrierTasksQuestionIdleMailboxWakeAndS
 		}
 		return true
 	})
+	// Drain the earlier leader result before admitting the cleanup turn. The
+	// pong is an actual socket-order fence, so its next result belongs to cleanup.
+	send(map[string]any{"type": "ping"})
+	receive("pong")
 	send(map[string]any{"type": "user_message", "content": "CLEANUP_ACTUAL_TEAM"})
 	await(func() bool { return config.Read("actual-team") == nil })
 	receive("message_complete")

@@ -1,5 +1,5 @@
 import { join } from 'node:path'
-import { mkdir, writeFile, readFile, readdir, stat, symlink, link, unlink } from 'node:fs/promises'
+import { mkdir, writeFile, readFile, readdir, stat, symlink, link, rename } from 'node:fs/promises'
 import { assertDisposableFixtureHome } from './fixture-guard'
 import { absentManagedSettingsFixturePaths, installClientFixtureCapabilities } from './client-options-capabilities'
 
@@ -23,7 +23,10 @@ for (const [index, row] of input.cases.entries()) {
   const sessionId = state.getSessionId()
   const path = join(work, 'input.txt')
   if (!row.missing) await writeFile(path, row.before, { mode: row.mode ?? 0o640 })
-  if (row.symlink) { await symlink(path, join(work, 'alias')); await unlink(path); await symlink(join(work, 'alias'), path) }
+  // Keep the protected target inside the disposable home. The Source lstat
+  // still sees and rejects a symlink, without creating an unresolvable cycle
+  // that the independent filesystem guard correctly refuses to follow.
+  if (row.symlink) { await rename(path, join(work, 'alias')); await symlink(join(work, 'alias'), path) }
   if (row.hardlink) await link(path, join(work, 'alias'))
   let current: any = { snapshots: [{ schemaVersion: 2, messageId: 'original-user', trackedFileBackups: {}, timestamp: new Date() }], trackedFiles: new Set(), snapshotSequence: 1 }
   const update = (fn: any) => { current = fn(current) }

@@ -19,10 +19,16 @@ var transientMessage = regexp.MustCompile(`(?i)timeout|timed out|etimedout|econn
 // The directory layout, ten-second stale threshold and five-second heartbeat
 // retain proper-lockfile's default lease used by the original provider.
 func (p *Provider) refreshLock(ctx context.Context) (func(), error) {
-	if err := os.MkdirAll(p.service.options.ConfigDir, 0777); err != nil {
+	directory := p.service.options.ConfigDir
+	if p.service.options.NativeConfigDirectory != nil {
+		directory = p.service.options.NativeConfigDirectory()
+	}
+	// refreshAuthorization captures claudeDir before its first mkdir await.
+	// Every retry, heartbeat and release keeps that same admitted lease target.
+	if err := p.service.options.MkdirAll(directory, 0777); err != nil {
 		return nil, err
 	}
-	path := filepath.Join(p.service.options.ConfigDir, "mcp-refresh-"+keySanitize.ReplaceAllString(p.key, "_")+".lock.lock")
+	path := filepath.Join(directory, "mcp-refresh-"+keySanitize.ReplaceAllString(p.key, "_")+".lock.lock")
 	for retry := 0; retry < 5; retry++ {
 		err := os.Mkdir(path, 0777)
 		if err == nil {

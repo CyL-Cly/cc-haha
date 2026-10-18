@@ -562,3 +562,19 @@ test('generic performance scripts do not require Go environments or invoke live 
   expect(generic.checks.policy).toBe(true)
   expect(generic.checks.go).toBe(false)
 })
+
+
+test.each([
+  'scripts/perf/source-parent-recorder/record_source_parent.py',
+  'scripts/perf/source-parent-recorder/credential_capability.py',
+  'scripts/perf/source-parent-recorder/record-source-parent.ts',
+  'scripts/perf/source-parent-recorder/formal-command.ts',
+  'scripts/perf/source-parent-recorder/formal-transport.ts',
+])('routes parent producer-only changes to existing Go and contract gates: %s', file => {
+  const result = evaluateChangePolicy([file], [], [])
+  // No dependent JS imports or companion benchmark edit may be required.
+  expect(result.checks.policy).toBe(true)
+  for (const check of ['go', 'goParity', 'server', 'desktop', 'adapters', 'desktopNative', 'providerContract', 'chatContract', 'agentFlow', 'agentE2e', 'persistence', 'coverage'] as const) {
+    expect(result.checks[check], `${file} must select ${check}`).toBe(true)
+  }
+})

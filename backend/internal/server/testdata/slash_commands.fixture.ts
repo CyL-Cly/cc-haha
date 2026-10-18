@@ -7,7 +7,11 @@ const home=assertDisposableFixtureHome(input.home,'Session slash commands')
 if(process.env.CC_HAHA_SLASH_COMMANDS_FIXTURE!=='1')throw new Error('Unowned slash commands fixture')
 const ancestors:string[]=[]
 for(let current=input.cwd??home;;current=join(current,'..')){ancestors.push(join(current,'.git'));if(current===join(current,'..'))break}
-const capabilities=await installClientFixtureCapabilities(home,{absentPaths:[...absentManagedSettingsFixturePaths(),join(dirname(process.execPath),'rg'),...(process.env.PATH??'').split(':').map(path=>join(path,'rg')),...ancestors.filter(path=>!path.startsWith(home+'/'))]})
+// The external Source build cannot override its managed root. Model only the
+// exact empty collection directories as absent, matching the Go caller's
+// empty managed fixture without reading an OS-owned directory.
+const managedRoot=dirname(absentManagedSettingsFixturePaths()[0]!)
+const capabilities=await installClientFixtureCapabilities(home,{absentPaths:[...absentManagedSettingsFixturePaths(),join(managedRoot,'.claude','skills'),join(managedRoot,'.claude','commands'),join(dirname(process.execPath),'rg'),...(process.env.PATH??'').split(':').map(path=>join(path,'rg')),...ancestors.filter(path=>!path.startsWith(home+'/'))]})
 await import('../../../../preload')
 await mkdir(join(home,'.claude'),{recursive:true});await writeFile(join(home,'.claude/settings.json'),JSON.stringify(input.settings??{}))
 const state=await import('../../../../src/bootstrap/state');state.setCwdState(input.cwd??home);state.setOriginalCwd(input.cwd??home);state.setProjectRoot(input.projectRoot??input.cwd??home)

@@ -74,7 +74,7 @@ func (m *MainPrint) nativeWebFetchBindings() (*builtintools.WebFetchBindings, er
 			return nil, cooperative.ErrRestricted
 		}
 		snapshot := m.state.Snapshot()
-		config := n.Environment["CLAUDE_CONFIG_DIR"]
+		config := n.ConfigHomeDirectory()
 		if config == "" {
 			config = filepath.Join(n.Home, ".claude")
 		}

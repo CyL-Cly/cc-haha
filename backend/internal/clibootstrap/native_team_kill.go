@@ -70,6 +70,7 @@ func (m *MainPrint) killNativeTeammateOnOwner(scope *cooperative.Scope, id strin
 			teammates.Delete(agentID)
 			snapshot.Set("teammates", rawMain(teammates))
 			m.teamState.snapshot = snapshot
+			m.publishTerminalTeamFooter(scope)
 		}
 	}
 	write, err := nativeSkillWork(m, scope, func() (struct{}, error) {

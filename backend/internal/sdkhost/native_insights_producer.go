@@ -14,7 +14,7 @@ import (
 func (h *Host) consumeInsightsModel(ctx context.Context, scope *cooperative.Scope, input requestretry.Input, receive func(modelyield.Yield) error) error {
 	deps := h.requestDependencies(scope)
 	deps.NativeInsightsSource = h.nativeInsightsModels
-	_, e := modelyield.RunQueued(ctx, input, modelyield.QueuedDependencies{Request: deps, Activity: h.options.Activity, Session: h.sessionAccounting, AgentContext: h.agentContext, StreamClock: h.streamClock, StreamPolicy: h.streamPolicy, SuccessDuration: &modelaccounting.SuccessDuration{NowMillis: h.options.NowMillis, GetPermission: h.options.Controller.SuccessPermissionOnOwner, Ignored: h.permissionRejections}, Start: func(first *cooperative.Scope, it *modelyield.QueryIterator, _ *modelyield.ResourceControl) (*ownerasync.OwnerFuture[struct{}], error) {
+	_, e := modelyield.RunQueued(ctx, input, modelyield.QueuedDependencies{OnNativeQuota: h.nativeQuotaConsumer(), Request: deps, Activity: h.options.Activity, Session: h.sessionAccounting, AgentContext: h.agentContext, StreamClock: h.streamClock, StreamPolicy: h.streamPolicy, SuccessDuration: &modelaccounting.SuccessDuration{NowMillis: h.options.NowMillis, GetPermission: h.options.Controller.SuccessPermissionOnOwner, Ignored: h.permissionRejections}, Start: func(first *cooperative.Scope, it *modelyield.QueryIterator, _ *modelyield.ResourceControl) (*ownerasync.OwnerFuture[struct{}], error) {
 		done, e := ownerasync.NewOwnerFuture[struct{}](h.options.Owner)
 		if e != nil {
 			return nil, e

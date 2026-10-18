@@ -34,6 +34,9 @@ func main() {
 }
 
 func run(ctx context.Context, args []string) int {
+	if code, handled := runChromeFastPath(ctx, args); handled {
+		return code
+	}
 	if len(args) > 0 && args[0] == "--computer-use-mcp" {
 		return runComputerUseMCP(ctx)
 	}
@@ -127,12 +130,16 @@ func run(ctx context.Context, args []string) int {
 			}
 			stat, e := os.Stdout.Stat()
 			nonInteractive := e != nil || stat.Mode()&os.ModeCharDevice == 0
-			process, e := clibootstrap.NewMainAgents(args, native, os.Getpid(), nonInteractive, os.Stdout)
+			process, e := clibootstrap.NewMainAgentsContextWithInput(ctx, args, native, os.Getpid(), nonInteractive, os.Stdout, os.Stdin)
 			if e != nil {
 				fmt.Fprintln(os.Stderr, e)
 				return 1
 			}
 			defer process.Close()
+			if e := process.BeginNativeAPIPreconnect(ctx); e != nil {
+				fmt.Fprintln(os.Stderr, e)
+				return 1
+			}
 			code, e := process.Run(ctx)
 			if e != nil {
 				fmt.Fprintln(os.Stderr, e)

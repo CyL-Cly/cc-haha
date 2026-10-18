@@ -37,57 +37,7 @@ func (m *MainPrint) startNativeSettingsWatcher(scope *cooperative.Scope) error {
 
 func (m *MainPrint) nativeSettingsFileChanged(ctx context.Context, source, path string) error {
 	receipt, err := m.Owner.Submit(ctx, cooperative.Input, func(scope *cooperative.Scope) error {
-		if ctx.Err() != nil {
-			return ctx.Err()
-		}
-		if m.closed || m.shuttingDown {
-			return nil
-		}
-		previous, _, err := m.Controller.SDKSettingsOnOwner(scope)
-		if err != nil {
-			return err
-		}
-		if path != "" {
-			results, err := m.hook.ExecuteConfigChange(ctx, settingswatch.ConfigSource(source), quoteMain(path), queryhooks.Context{Scope: scope})
-			if err != nil {
-				return err
-			}
-			if queryhooks.HasBlockingOutsideResult(results) {
-				return nil
-			}
-		}
-		// fanOut is the single producer of cache reset. MDM notifications skip
-		// file ConfigChange just as the original process polling branch does.
-		m.settingState.ResetSettingsCache()
-		if err := m.refreshNativeSandbox(scope); err != nil {
-			return err
-		}
-		if err := m.hook.UpdateSnapshot(); err != nil {
-			return err
-		}
-		rules, err := m.nativePermissionRules()
-		if err != nil {
-			return err
-		}
-		if err := m.Host.ApplyNativeSettingsChange(scope, rules); err != nil {
-			return err
-		}
-		next, _, err := m.Controller.SDKSettingsOnOwner(scope)
-		if err != nil {
-			return err
-		}
-		// Reparsed JSON env objects have a new JS identity even when their
-		// bytes are equal. Two absent env properties remain equal undefined.
-		if m.apiKeyHelper != nil {
-			m.apiKeyHelper.Clear()
-		}
-		m.clearNativeCloudCredentialCaches()
-		if settingsEnvironmentReferenceChanged(previous, next) {
-			if err := m.nativeSettingsEnvironmentChanged(scope); err != nil {
-				m.environmentHookNotice(err.Error(), true)
-			}
-		}
-		return nil
+		return m.nativeSettingsChangedOnOwner(ctx, scope, source, path)
 	})
 	if err != nil {
 		return err
@@ -98,4 +48,62 @@ func (m *MainPrint) nativeSettingsFileChanged(ctx context.Context, source, path 
 	case <-ctx.Done():
 		return ctx.Err()
 	}
+}
+
+func (m *MainPrint) nativeSettingsChangedOnOwner(ctx context.Context, scope *cooperative.Scope, source, path string) error {
+	if !scope.BelongsTo(m.Owner) {
+		return cooperative.ErrRestricted
+	}
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+	if m.closed || m.shuttingDown {
+		return nil
+	}
+	previous, _, err := m.Controller.SDKSettingsOnOwner(scope)
+	if err != nil {
+		return err
+	}
+	if path != "" {
+		results, err := m.hook.ExecuteConfigChange(ctx, settingswatch.ConfigSource(source), quoteMain(path), queryhooks.Context{Scope: scope})
+		if err != nil {
+			return err
+		}
+		if queryhooks.HasBlockingOutsideResult(results) {
+			return nil
+		}
+	}
+	// fanOut is the single producer of cache reset. MDM notifications skip
+	// file ConfigChange just as the original process polling branch does.
+	m.settingState.ResetSettingsCache()
+	if err := m.refreshNativeSandbox(scope); err != nil {
+		return err
+	}
+	if err := m.hook.UpdateSnapshot(); err != nil {
+		return err
+	}
+	rules, err := m.nativePermissionRules()
+	if err != nil {
+		return err
+	}
+	if err := m.Host.ApplyNativeSettingsChange(scope, rules); err != nil {
+		return err
+	}
+	next, _, err := m.Controller.SDKSettingsOnOwner(scope)
+	if err != nil {
+		return err
+	}
+	// Reparsed JSON env objects have a new JS identity even when their
+	// bytes are equal. Two absent env properties remain equal undefined.
+	if m.apiKeyHelper != nil {
+		m.apiKeyHelper.Clear()
+	}
+	m.clearNativeCloudCredentialCaches()
+	if settingsEnvironmentReferenceChanged(previous, next) {
+		if err := m.nativeSettingsEnvironmentChanged(scope); err != nil {
+			m.environmentHookNotice(err.Error(), true)
+		}
+	}
+	m.publishNativeTerminalStatusLineChanged()
+	return nil
 }

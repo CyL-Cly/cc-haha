@@ -46,6 +46,40 @@ func TestNeutralEnvironmentNoHiddenRegistryFlags(t *testing.T) {
 		t.Fatal("nil env")
 	}
 }
+
+func TestNativePrintAbsentDirectoryKeepsExactEnvironmentIdentity(t *testing.T) {
+	original := map[string]string{"HOME": "/private/original", "CLAUDE_CODE_SIMPLE": "1", "CLAUDE_CODE_ENTRYPOINT": "sdk-cli"}
+	object := protocol.NewJSONObject()
+	for name, value := range original {
+		object.Set(name, quote(value))
+	}
+	environment, err := clistartupenv.NewEnvironment(object)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = validateOriginalEnvironment(environment, original, true); err != nil {
+		t.Fatal("actual native absent directory was synthesized", err)
+	}
+	if err = validateNeutralEnvironment(environment, original); err == nil {
+		t.Fatal("finite neutral filesystem provenance was expanded")
+	}
+	_ = environment.SetProperty(quote("CLAUDE_CONFIG_DIR"), quote("/private/synthesized"))
+	if err = validateOriginalEnvironment(environment, original, true); err == nil {
+		t.Fatal("native absent directory was rewritten by the host")
+	}
+	environment, _ = clistartupenv.NewEnvironment(object)
+	if err = environment.SetProperty(quote("ENABLE_LSP_TOOL"), quote("1")); err != nil {
+		t.Fatal(err)
+	}
+	if err = validateOriginalEnvironment(environment, original, true); err == nil {
+		t.Fatal("native absent directory hid another registry environment")
+	}
+	object.Set("CLAUDE_CONFIG_DIR", []byte(`null`))
+	environment, _ = clistartupenv.NewEnvironment(object)
+	if err = validateOriginalEnvironment(environment, original, true); err == nil {
+		t.Fatal("native non-string directory was admitted")
+	}
+}
 func TestNeutralOwnedConstructorRejectsBeforeServices(t *testing.T) {
 	owner := cooperative.New()
 	defer owner.Close()

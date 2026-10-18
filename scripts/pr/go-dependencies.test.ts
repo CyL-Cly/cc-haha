@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
@@ -80,6 +80,83 @@ describe('Go dependency preparation and offline hydration', () => {
       expect(() => createHermeticGoEnvironment(home, { HTTPS_PROXY: 'https://user:password@proxy.invalid' }, true)).toThrow('authenticated')
       expect(() => createHermeticGoEnvironment('/')).toThrow('temporary HOME')
     } finally { rmSync(home, { recursive: true, force: true }) }
+  })
+
+  test('forwards only explicit physical fixture opt-ins and a real private Poppler directory', () => {
+    const home = mkdtempSync(join(tmpdir(), 'go-physical-env-'))
+    const root = fixtureRoot(false)
+    const bin = join(root, 'artifacts/private-poppler/bin')
+    mkdirSync(bin, { recursive: true })
+    try {
+      const physical = createHermeticGoEnvironment(home, { CC_HAHA_TEST_POPPLER_BIN: bin, CC_HAHA_SANDBOX_PHYSICAL_BROKER: '1', CC_HAHA_OTHER_PRIVATE: 'must-not-inherit' }, false, root)
+      expect(physical.CC_HAHA_TEST_POPPLER_BIN).toBe(realpathSync(bin))
+      expect(physical.CC_HAHA_SANDBOX_PHYSICAL_BROKER).toBe('1')
+      expect(physical.CC_HAHA_OTHER_PRIVATE).toBeUndefined()
+      expect(createHermeticGoEnvironment(home, {}, false, root).CC_HAHA_SANDBOX_PHYSICAL_BROKER).toBeUndefined()
+      expect(() => createHermeticGoEnvironment(home, { CC_HAHA_SANDBOX_PHYSICAL_BROKER: 'true' }, false, root)).toThrow('explicit 1')
+      expect(() => createHermeticGoEnvironment(home, { CC_HAHA_TEST_POPPLER_BIN: 'relative' }, false, root)).toThrow('absolute')
+      expect(() => createHermeticGoEnvironment(home, { CC_HAHA_TEST_POPPLER_BIN: join(bin, 'missing') }, false, root)).toThrow('real private directory')
+      expect(() => createHermeticGoEnvironment(home, { CC_HAHA_TEST_POPPLER_BIN: '/usr/bin' }, false, root)).toThrow('private')
+      const link = join(root, 'artifacts/poppler-link')
+      symlinkSync(bin, link)
+      expect(() => createHermeticGoEnvironment(home, { CC_HAHA_TEST_POPPLER_BIN: link }, false, root)).toThrow('symlink')
+    } finally { rmSync(home, { recursive: true, force: true }); rmSync(root, { recursive: true, force: true }) }
+  })
+
+  test.skipIf(!process.env.CC_HAHA_MCPB_SOURCE_SDK)('loads the actual pinned private MCPB SDK through the hermetic child environment', async () => {
+    const home = mkdtempSync(join(tmpdir(), 'go-mcpb-env-'))
+    const root = fixtureRoot(false)
+    const sdk = join(root, 'artifacts/private-mcpb')
+    cpSync(process.env.CC_HAHA_MCPB_SOURCE_SDK!, sdk, { recursive: true })
+    const code = `
+      import {readFileSync} from 'node:fs'
+      import {join} from 'node:path'
+      import {pathToFileURL} from 'node:url'
+      const sdk = process.env.CC_HAHA_MCPB_SOURCE_SDK
+      const {McpbManifestSchema} = await import(pathToFileURL(join(sdk, 'dist/schemas/latest.js')).href)
+      const {getMcpConfigForManifest} = await import(pathToFileURL(join(sdk, 'dist/shared/config.js')).href)
+      const manifest = McpbManifestSchema.parse({manifest_version:'0.3',name:'private-peer',version:'1.0',description:'private',author:{name:'private'},server:{type:'node',entry_point:'server.js',mcp_config:{command:'node',args:['\u0024{__dirname}/server.js','\u0024{user_config.flags}'],env:{FEATURE:'\u0024{user_config.enabled}'}}},user_config:{flags:{type:'string',title:'flags',description:'flags',multiple:true},enabled:{type:'boolean',title:'enabled',description:'enabled'}}})
+      const config = await getMcpConfigForManifest({manifest,extensionPath:join(process.env.HOME,'extension'),systemDirs:{},pathSeparator:'/',userConfig:{flags:['alpha','beta'],enabled:true}})
+      process.stdout.write(JSON.stringify({sdkVersion:JSON.parse(readFileSync(join(sdk,'package.json'),'utf8')).version,zodVersion:JSON.parse(readFileSync(join(sdk,'node_modules/zod/package.json'),'utf8')).version,config,rejectsUnknown:!McpbManifestSchema.safeParse({...manifest,unknown:true}).success,secret:process.env.ANTHROPIC_API_KEY??null}))
+    `
+    try {
+      const env = createHermeticGoEnvironment(home, { CC_HAHA_MCPB_SOURCE_SDK: sdk, ANTHROPIC_API_KEY: 'must-not-inherit' }, false, root)
+      const child = Bun.spawn([process.execPath, '--no-env-file', '--eval', code], { cwd: home, env, stdin: 'ignore', stdout: 'pipe', stderr: 'pipe' })
+      const [exit, output, error] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()])
+      expect({ exit, error }).toEqual({ exit: 0, error: '' })
+      expect(JSON.parse(output)).toEqual({ sdkVersion: '1.2.0', zodVersion: '3.25.67', config: { command: 'node', args: [join(home, 'extension/server.js'), 'alpha', 'beta'], env: { FEATURE: 'true' } }, rejectsUnknown: true, secret: null })
+    } finally { rmSync(home, { recursive: true, force: true }); rmSync(root, { recursive: true, force: true }) }
+  })
+
+  test.each(['relative', 'missing', 'outside-private-root', 'directory-link', 'ancestor-link', 'manifest-link', 'nested-zod-link', 'wrong-sdk-name', 'wrong-sdk-version', 'wrong-zod-version', 'missing-reference'])('rejects invalid MCPB Source preparation before invoking a child: %s', scenario => {
+    const home = mkdtempSync(join(tmpdir(), 'go-mcpb-boundary-'))
+    const root = fixtureRoot(false)
+    const sdk = join(root, 'artifacts/reference-sdk')
+    const manifest = join(sdk, 'package.json')
+    const zod = join(sdk, 'node_modules/zod/package.json')
+    const latest = join(sdk, 'dist/schemas/latest.js')
+    const config = join(sdk, 'dist/shared/config.js')
+    for (const path of ['node_modules/zod', 'dist/schemas', 'dist/shared']) mkdirSync(join(sdk, path), { recursive: true })
+    writeFileSync(manifest, JSON.stringify({ name: '@anthropic-ai/mcpb', version: '1.2.0' }))
+    writeFileSync(zod, JSON.stringify({ name: 'zod', version: '3.25.67' }))
+    writeFileSync(latest, 'export {}')
+    writeFileSync(config, 'export {}')
+    let path = sdk
+    try {
+      if (scenario === 'relative') path = 'relative'
+      if (scenario === 'missing') path = join(sdk, 'missing')
+      if (scenario === 'outside-private-root') path = '/usr/bin'
+      if (scenario === 'directory-link') { path = join(root, 'artifacts/sdk-link'); symlinkSync(sdk, path, 'dir') }
+      if (scenario === 'ancestor-link') { const alias = join(root, 'artifact-alias'); symlinkSync(join(root, 'artifacts'), alias, 'dir'); path = join(alias, 'reference-sdk') }
+      if (scenario === 'manifest-link') { const original = join(sdk, 'package.original.json'); writeFileSync(original, readFileSync(manifest)); rmSync(manifest); symlinkSync(original, manifest) }
+      if (scenario === 'nested-zod-link') { const original = join(sdk, 'zod.original.json'); writeFileSync(original, readFileSync(zod)); rmSync(zod); symlinkSync(original, zod) }
+      if (scenario === 'wrong-sdk-name') writeFileSync(manifest, JSON.stringify({ name: 'foreign', version: '1.2.0' }))
+      if (scenario === 'wrong-sdk-version') writeFileSync(manifest, JSON.stringify({ name: '@anthropic-ai/mcpb', version: '1.1.0' }))
+      if (scenario === 'wrong-zod-version') writeFileSync(zod, JSON.stringify({ name: 'zod', version: '4.0.0' }))
+      if (scenario === 'missing-reference') rmSync(config)
+      const expected = scenario.includes('link') ? 'symlink' : scenario.startsWith('wrong-') ? 'pinned' : scenario === 'relative' ? 'absolute' : scenario === 'missing-reference' ? 'reference files' : 'private'
+      expect(() => createHermeticGoEnvironment(home, { CC_HAHA_MCPB_SOURCE_SDK: path }, false, root)).toThrow(expected)
+    } finally { rmSync(home, { recursive: true, force: true }); rmSync(root, { recursive: true, force: true }) }
   })
 
   test('binds a verified seed to both lock files, hydrates independent private copies, and never writes the seed or original module', async () => {

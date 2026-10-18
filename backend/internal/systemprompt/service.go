@@ -136,7 +136,10 @@ func (s *Service) resolveSections(sections []section) ([]*string, error) {
 }
 
 func (s *Service) Resolve(ctx context.Context, tools []protocol.JSONObject) ([]json.RawMessage, error) {
-	return s.resolveForModel(ctx, tools, s.options.Model)
+	s.mu.Lock()
+	model := s.options.Model
+	s.mu.Unlock()
+	return s.resolveForModel(ctx, tools, model)
 }
 
 // ResolveForModel uses the same section cache and original native producers
@@ -145,7 +148,10 @@ func (s *Service) ResolveForModel(ctx context.Context, tools []protocol.JSONObje
 	return s.resolveForModel(ctx, tools, model)
 }
 func (s *Service) resolveForModel(ctx context.Context, tools []protocol.JSONObject, model string) ([]json.RawMessage, error) {
+	s.mu.Lock()
 	o := s.options
+	o.AdditionalDirectories = append([]string{}, s.options.AdditionalDirectories...)
+	s.mu.Unlock()
 	o.Model = model
 	if envEnabled(o.Environment, "CLAUDE_CODE_SIMPLE") {
 		prefix, _ := protocol.DecodeJavaScriptJSONString(quoted("You are Claude Code, Anthropic's official CLI for Claude.\n\nCWD: " + o.CWD() + "\nDate: "))
@@ -173,6 +179,10 @@ func (s *Service) resolveForModel(ctx context.Context, tools []protocol.JSONObje
 	if err != nil {
 		return nil, err
 	}
+	return s.renderWithOptions(ctx, o, tools, skills, style, settings, s.resolveSections)
+}
+
+func (s *Service) renderWithOptions(ctx context.Context, o Options, tools []protocol.JSONObject, skills []Command, style *OutputStyle, settings protocol.JSONObject, resolve func([]section) ([]*string, error)) ([]json.RawMessage, error) {
 	names := make(map[string]bool, len(tools))
 	for _, tool := range tools {
 		names[rawString(tool.Get("name"))] = true
@@ -228,7 +238,7 @@ func (s *Service) resolveForModel(ctx context.Context, tools []protocol.JSONObje
 		{name: "frc", compute: func() (*string, error) { return nil, nil }},
 		{name: "summarize_tool_results", compute: func() (*string, error) { return pointer(summarizeText), nil }},
 	}
-	dynamic, err := s.resolveSections(sections)
+	dynamic, err := resolve(sections)
 	if err != nil {
 		return nil, err
 	}
@@ -281,6 +291,10 @@ func (s *Service) environmentWithOptions(ctx context.Context, o Options) (string
 	if err := errors.Join(errGit, errOS); err != nil {
 		return "", err
 	}
+	return s.environmentValues(o, git, osinfo), nil
+}
+
+func (s *Service) environmentValues(o Options, git bool, osinfo OSInfo) string {
 	items := []string{"# Environment", "You have been invoked in the following environment: ", " - Primary working directory: " + o.CWD()}
 	if enabled(o.Worktree) {
 		items = append(items, " - This is a git worktree — an isolated copy of the repository. Run all commands from this directory. Do NOT `cd` to the original repository root.")
@@ -318,7 +332,7 @@ func (s *Service) environmentWithOptions(ctx context.Context, o Options) (string
 		items = append(items, " - Assistant knowledge cutoff is "+cutoff+".")
 	}
 	items = append(items, " - The most recent Claude models are the Claude 5 family and Haiku 4.5. Model IDs — Fable 5.1: 'claude-fable-5-1', Opus 5.5: 'claude-opus-5-5', Sonnet 5.5: 'claude-sonnet-5-5', Haiku 4.5: 'claude-haiku-4-5-20251001'. When building AI applications, default to the latest and most capable Claude models.", " - Claude Code is available as a CLI in the terminal, desktop app (Mac/Windows), web app (claude.ai/code), and IDE extensions (VS Code, JetBrains).", " - Fast mode for Claude Code uses Claude Opus with faster output (it does not downgrade to a smaller model). It can be toggled with /fast.")
-	return strings.Join(items, "\n"), nil
+	return strings.Join(items, "\n")
 }
 
 // Environment computes the main session's original simple environment section.

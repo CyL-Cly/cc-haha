@@ -27,7 +27,7 @@ func (m *MainPrint) initializeNativeFileHistory(scope *cooperative.Scope) error 
 			return false, e
 		}
 		return string(global.Get("fileCheckpointingEnabled")) != "false", nil
-	}, m.options.Native.Now, func() (string, error) { return uuidMain(), nil }, sessionrewind.NativeFiles{ConfigHome: m.options.Native.Environment["CLAUDE_CONFIG_DIR"]})
+	}, m.options.Native.Now, func() (string, error) { return uuidMain(), nil }, sessionrewind.NativeFiles{ConfigHome: m.options.Native.ConfigHomeDirectory()})
 	if e != nil {
 		return e
 	}

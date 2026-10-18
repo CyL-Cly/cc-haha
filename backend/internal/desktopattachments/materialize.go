@@ -29,6 +29,20 @@ var extension = regexp.MustCompile(`(?i)\.([a-z0-9]+)$`)
 var imageExtension = regexp.MustCompile(`(?i)\.(png|jpe?g|gif|webp)$`)
 
 func Build(content, sessionID string, attachments json.RawMessage, o Options) (json.RawMessage, error) {
+	encoded, err := json.Marshal(content)
+	if err != nil {
+		return nil, err
+	}
+	return BuildJSON(encoded, sessionID, attachments, o)
+}
+
+// BuildJSON retains the original JS string from terminal editing while sharing
+// the desktop attachment staging and ordering boundary with Build.
+func BuildJSON(content json.RawMessage, sessionID string, attachments json.RawMessage, o Options) (json.RawMessage, error) {
+	text, err := protocol.DecodeJavaScriptJSONString(content)
+	if err != nil {
+		return nil, err
+	}
 	if !filepath.IsAbs(o.HomeDir) || o.NewID == nil {
 		return nil, errors.New("desktop attachments require explicit HOME and UUID producer")
 	}
@@ -98,20 +112,20 @@ func Build(content, sessionID string, attachments json.RawMessage, o Options) (j
 		}
 		paths = append(paths, path)
 	}
-	text := strings.TrimFunc(content, jsWhitespace)
+	text = trimTextUnits(text)
 	if len(paths) > 0 {
-		if text == "" {
-			text = "Please analyze the attached files."
+		if len(text) == 0 {
+			text = utf16.Encode([]rune("Please analyze the attached files."))
 		}
 		quoted := make([]string, len(paths))
 		for i, path := range paths {
 			quoted[i] = `@"` + path + `"`
 		}
-		text = strings.TrimFunc(strings.Join(quoted, " ")+" "+text, jsWhitespace)
+		text = trimTextUnits(append(utf16.Encode([]rune(strings.Join(quoted, " ")+" ")), text...))
 	}
 	blocks := []protocol.JSONObject{}
-	if text != "" {
-		blocks = append(blocks, imageText(text))
+	if len(text) > 0 {
+		blocks = append(blocks, protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: json.RawMessage(`"text"`)}, protocol.JSONField{Name: "text", Value: protocol.QuoteJavaScriptUTF16(text)}))
 	} else if len(images) > 0 {
 		blocks = append(blocks, imageText("Please analyze the attached image."))
 	}
@@ -123,6 +137,16 @@ func Build(content, sessionID string, attachments json.RawMessage, o Options) (j
 		blocks = append(blocks, imageText(""))
 	}
 	return json.Marshal(blocks)
+}
+
+func trimTextUnits(text []uint16) []uint16 {
+	for len(text) > 0 && protocol.IsJavaScriptWhitespace(rune(text[0])) {
+		text = text[1:]
+	}
+	for len(text) > 0 && protocol.IsJavaScriptWhitespace(rune(text[len(text)-1])) {
+		text = text[:len(text)-1]
+	}
+	return text
 }
 func imageText(text string) protocol.JSONObject {
 	raw, _ := json.Marshal(text)
@@ -250,7 +274,4 @@ func decodeNodeBase64(value string) []byte {
 	}
 	decoded, _ := base64.RawStdEncoding.DecodeString(data)
 	return decoded
-}
-func jsWhitespace(r rune) bool {
-	return r == '\t' || r == '\n' || r == '\v' || r == '\f' || r == '\r' || r == ' ' || r == '\u00a0' || r == '\u1680' || r >= '\u2000' && r <= '\u200a' || r == '\u2028' || r == '\u2029' || r == '\u202f' || r == '\u205f' || r == '\u3000' || r == '\ufeff'
 }

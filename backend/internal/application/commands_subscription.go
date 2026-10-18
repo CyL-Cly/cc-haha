@@ -38,10 +38,26 @@ func (s *Session) setCommands(commands []sdkhost.ControlCommand, notify bool) er
 		completions = append(completions, tui.Completion{Name: command.Name, Description: command.Description, Kind: command.Kind, ArgumentHint: command.ArgumentHint, RequiresArguments: command.RequiresArguments, ArgumentNames: append([]string(nil), command.ArgumentNames...), Hidden: command.Hidden})
 	}
 	if s.terminalInteractive && s.process != nil && !s.process.SlashCommandsDisabled() {
+		completions = append(completions, terminalPanelCommands()...)
+		completions = append(completions, s.terminalConversationCommands()...)
+		if s.process.NativeUsageCommandEnabled() {
+			completions = append(completions, tui.Completion{Name: "usage", Description: "Show plan usage limits", Kind: "local-jsx"})
+		}
+		if s.process.NativeWorkflowsCommandEnabled() {
+			completions = append(completions, tui.Completion{Name: "workflows", Description: "Watch and manage dynamic workflow runs", Kind: "local-jsx"})
+		}
+		if s.process.NativeFastCommandEnabled() {
+			completions = append(completions, tui.Completion{Name: "fast", Description: "Toggle fast mode (Opus 4.8 only)", Kind: "local-jsx", ArgumentHint: "[on|off]"})
+		}
 		if s.process.NativeDoctorEnabled() {
 			completions = append(completions, tui.Completion{Name: "doctor", Description: "Diagnose and verify your Claude Code installation and settings", Kind: "local-jsx"})
 		}
 		completions = append(completions, tui.Completion{Name: "ide", Description: "Manage IDE integrations and show status", Kind: "local-jsx", ArgumentHint: "[open]"})
+		completions = append(completions, s.process.NativeTerminalSetupCompletion())
+		if s.process.NativeKeybindingsEnabled() {
+			completions = append(completions, tui.Completion{Name: "keybindings", Description: "Open or create your keybindings configuration file", Kind: "local"})
+		}
+		completions = append(completions, tui.Completion{Name: "rewind", Description: "Restore the code and/or conversation to a previous point", Kind: "local"}, tui.Completion{Name: "checkpoint", Description: "Restore the code and/or conversation to a previous point", Kind: "local"})
 	}
 	s.mu.Lock()
 	if s.closed {

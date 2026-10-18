@@ -17,6 +17,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/filehistorycopy"
 	"github.com/NanmiCoder/cc-haha/backend/internal/messages"
 	"github.com/NanmiCoder/cc-haha/backend/internal/modelaccounting"
+	"github.com/NanmiCoder/cc-haha/backend/internal/ownerasync"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/queryhooks"
 	"github.com/NanmiCoder/cc-haha/backend/internal/requestcontext"
@@ -28,6 +29,8 @@ import (
 )
 
 type Options struct {
+	NativeRemoteCLI          bool
+	NativeRemoteFrontend     bool
 	TeamContext              *TeamContext
 	InProcessTeammateContext *InProcessTeammateContext
 	// Bootstrap binds the existing CLI owner state as the sole live SID authority.
@@ -45,7 +48,11 @@ type Options struct {
 	NowMillis              func() float64
 	Diagnostics            *diagnostics.Process
 	OnPhase                func(string)
-	ReplayUserMessages     bool
+	// OnSDKUUIDLookup observes the actual memoized historical lookup without
+	// admitting a message or substituting its result.
+	OnSDKUUIDLookup    func(json.RawMessage, bool)
+	OnSDKRecord        func()
+	ReplayUserMessages bool
 	// The finite profile resolves original --tools "" and a custom system prompt.
 	// Full permissions/commands/default prompt and SDK controls remain refused.
 	PublicPrint            bool
@@ -59,6 +66,8 @@ type Options struct {
 	// preparation. The resolver owns its session cache and native producers.
 	ResolveSystemPrompt         func(context.Context, []protocol.JSONObject) ([]json.RawMessage, error)
 	ResolveSystemPromptForModel func(context.Context, []protocol.JSONObject, string) ([]json.RawMessage, error)
+	BeginNativeDefaultPrompt    func(*cooperative.Scope, []protocol.JSONObject, string) (*ownerasync.OwnerFuture[[]json.RawMessage], error)
+	BeginNativeUserContext      func(*cooperative.Scope) (*ownerasync.OwnerFuture[*protocol.JSONObject], error)
 	UserContext                 *usercontext.Service
 	// Public headless restore reads the same current-project config after the
 	// adopted SID's file pointer reset. Interactive save/reset has another host.
@@ -72,6 +81,8 @@ type Options struct {
 	LiveSDKSettings      func(*cooperative.Scope) (*protocol.JSONObject, protocol.JSONObject, error)
 }
 type Controller struct {
+	sdkAsyncObservers           *sdkAsyncReturnObservers
+	nativeParentSession         *nativeParentSessionSnapshot
 	commandLifecycle            func(json.RawMessage, string)
 	permissionModeChanged       func(*cooperative.Scope, string, string) error
 	commandLifecycleIDs         []json.RawMessage
@@ -80,6 +91,7 @@ type Controller struct {
 	fileHistorySink             *FileHistorySink
 	options                     Options
 	inputProcessor              *InputProcessor
+	pendingInput                *acceptedInputPreparation
 	localInputResult            *LocalInputResult
 	promptInputResult           *ProcessedInput
 	registeredTools             []protocol.JSONObject
@@ -104,6 +116,7 @@ type Controller struct {
 	resumeReturnedSnapshotCount int
 	newSDKAdmitted              bool
 	legacyEnvironment           *clistartupenv.Environment
+	nativeTaskEnvironment       *clistartupenv.Environment
 	promptID                    json.RawMessage
 	sessionInbox                *sessioninbox.Inbox
 	inboxScope                  *cooperative.Scope
@@ -114,6 +127,9 @@ type Controller struct {
 	taskNotificationPublisher   func(*cooperative.Scope, TaskNotificationCommand) (bool, error)
 	taskNotificationGeneration  uint64
 }
+
+func (c *Controller) NativeRemoteFrontend() bool { return c != nil && c.options.NativeRemoteFrontend }
+
 type command struct {
 	Content, UUID            json.RawMessage
 	Priority                 string
@@ -176,7 +192,10 @@ func New(options Options) (*Controller, error) {
 	if _, err := protocol.DecodeJavaScriptJSONString(options.CustomSystemPrompt); err != nil && options.ResolveSystemPrompt == nil && options.ResolveSystemPromptForModel == nil {
 		return nil, capability("default/non-string system prompt")
 	}
-	if options.ResumeOptions.Environment["USER_TYPE"] == "ant" || envTruthy(options.ResumeOptions.Environment["CLAUDE_CODE_SAVE_HOOK_ADDITIONAL_CONTEXT"]) {
+	if options.NativeRemoteFrontend && (!options.NativeRemoteCLI || !options.NativeTools || !options.PublicPrint || !options.PublicResumeStartup.NativeRemoteCCRProfile()) {
+		return nil, capability("remote frontend requires the actual native CCR startup producer")
+	}
+	if options.ResumeOptions.Environment["USER_TYPE"] == "ant" && !options.NativeRemoteFrontend || envTruthy(options.ResumeOptions.Environment["CLAUDE_CODE_SAVE_HOOK_ADDITIONAL_CONTEXT"]) {
 		return nil, capability("internal/hook transcript policy")
 	}
 	var legacyEnvironment *clistartupenv.Environment
@@ -588,17 +607,11 @@ func (controller *Controller) logQueue(operation string, content json.RawMessage
 func (controller *Controller) logQueueOwned(scope *cooperative.Scope, operation string, content json.RawMessage) error {
 	entry := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quote("queue-operation")}, protocol.JSONField{Name: "operation", Value: quote(operation)}, protocol.JSONField{Name: "timestamp", Value: quote(controller.options.Now().UTC().Format("2006-01-02T15:04:05.000Z"))}, protocol.JSONField{Name: "sessionId", Value: quote(controller.SessionID())}, protocol.JSONField{Name: "content", Value: content})
 	if scope != nil {
-		token, err := controller.writer.async.BeginTrackedWrite(scope)
+		future, err := controller.writer.async.BeginQueueOperation(scope, controller.options.ResumeOptions.Loader, &entry)
 		if err != nil {
-			return err
-		}
-		future, err := controller.writer.async.BeginAppend(scope, controller.options.ResumeOptions.Loader, &entry, "")
-		if err != nil {
-			_ = token.Complete(scope)
 			return err
 		}
 		_ = future.thenOwner(controller.writer.async.owner, func(scope *cooperative.Scope, err error) {
-			_ = token.Complete(scope)
 			if err != nil {
 				controller.writer.options.OnError(err)
 			}
@@ -717,7 +730,20 @@ func (controller *Controller) acceptNext(scope *cooperative.Scope) (*protocol.JS
 	controller.promptID = promptID
 	controller.localInputResult = nil
 	controller.promptInputResult = nil
+	if scope != nil && controller.options.PublicPrint && controller.options.NativeTools && controller.inputProcessor != nil {
+		// Native QueryEngine.submitMessage processes the input inside the ASK
+		// generator's first demand. Dequeue owns only the original command;
+		// the real processor runs after the caller's actual ASK delegation.
+		target := &protocol.JSONObject{}
+		controller.pendingInput = &acceptedInputPreparation{input: input, batch: batch, target: target}
+		return target, nil
+	}
+	return controller.prepareAcceptedInput(scope, input, batch)
+}
+
+func (controller *Controller) prepareAcceptedInput(scope *cooperative.Scope, input command, batch []command) (*protocol.JSONObject, error) {
 	var processed *ProcessedInput
+	var err error
 	if controller.inputProcessor != nil {
 		if controller.options.NativeInteractiveQueue && len(batch) > 1 {
 			if controller.inputProcessor.ProcessQueuedBatch == nil {
@@ -737,10 +763,18 @@ func (controller *Controller) acceptNext(scope *cooperative.Scope) (*protocol.JS
 		if err != nil {
 			return nil, err
 		}
+		// QueryEngine.submitMessage awaits the processUserInput Promise before
+		// pushing its result and recording the transcript. A fulfilled input
+		// processor result retains the same reaction on the canonical Owner.
+		if scope != nil && controller.options.PublicPrint && controller.options.NativeTools {
+			if err = scope.AwaitFulfilled(); err != nil {
+				return nil, err
+			}
+		}
 	}
 	var message protocol.JSONObject
 	if processed != nil {
-		if len(processed.Messages) == 0 {
+		if len(processed.Messages) == 0 && !(processed.TerminalRewindSkip && processed.NoQuery && processed.LocalResult == nil && scope != nil && controller.options.Bootstrap != nil && scope.BelongsTo(controller.options.Bootstrap.Owner()) && controller.options.PublicPrint && controller.options.NativeTools) {
 			return nil, capability("actual processUserInput output")
 		}
 		for _, current := range processed.Messages {
@@ -750,7 +784,9 @@ func (controller *Controller) acceptNext(scope *cooperative.Scope) (*protocol.JS
 			}
 			controller.messages = append(controller.messages, &record)
 		}
-		message = processed.Messages[0]
+		if len(processed.Messages) > 0 {
+			message = processed.Messages[0]
+		}
 		controller.localInputResult = processed.LocalResult
 		if processed.LocalResult == nil {
 			controller.promptInputResult = processed
@@ -769,7 +805,7 @@ func (controller *Controller) acceptNext(scope *cooperative.Scope) (*protocol.JS
 		if err := controller.primeMembers(); err != nil {
 			return nil, err
 		}
-		if _, err := controller.writer.Record(controller.messages, promptID); err != nil {
+		if _, err := controller.writer.Record(controller.messages, controller.promptID); err != nil {
 			return nil, err
 		}
 	}
@@ -785,6 +821,9 @@ func (controller *Controller) Prepare(input requestcontext.Context, dependencies
 }
 func (controller *Controller) Writer() *Writer { return controller.writer }
 func (controller *Controller) SessionID() string {
+	if controller.nativeParentSession != nil {
+		return controller.nativeParentSession.parent.SessionID()
+	}
 	if controller.options.Bootstrap != nil {
 		return controller.options.Bootstrap.SessionID()
 	}

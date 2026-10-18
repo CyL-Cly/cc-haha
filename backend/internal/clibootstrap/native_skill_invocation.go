@@ -2,6 +2,7 @@ package clibootstrap
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"regexp"
 
@@ -29,6 +30,22 @@ func (m *MainPrint) nativeSkillInvocation(scope *cooperative.Scope) (skillcomman
 			return m.nativeSkillShell(ctx, scope, request)
 		}
 		return request.Text, context.Cause(ctx)
+	}, ExecuteShellJSON: func(ctx context.Context, request skillcommands.ShellRequest) (json.RawMessage, error) {
+		if err := m.validateNativePromptShell(scope, request); err != nil {
+			return nil, err
+		}
+		text := request.TextJSON
+		if text == nil {
+			text = quoteMain(request.Text)
+		}
+		matches, err := skillcommands.PromptShellMatchesJSON(text)
+		if err != nil {
+			return nil, err
+		}
+		if len(matches) == 0 {
+			return text, context.Cause(ctx)
+		}
+		return m.nativeSkillShellJSONWithPermission(ctx, scope, request, nil)
 	}}, nil
 }
 

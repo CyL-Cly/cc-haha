@@ -43,58 +43,8 @@ func shortPath(value string, cwd string) string {
 }
 func (controller *Controller) restoreAppState(metadata protocol.JSONObject, history []*protocol.JSONObject) error {
 	if envTruthy(controller.options.ResumeOptions.Environment["CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING"]) && !envTruthy(controller.options.ResumeOptions.Environment["CLAUDE_CODE_DISABLE_FILE_CHECKPOINTING"]) {
-		snapshots, err := parseObjects(metadata.Get("fileHistorySnapshots"))
-		if err != nil && metadata.Get("fileHistorySnapshots") != nil {
+		if err := controller.restoreFileHistory(metadata); err != nil {
 			return err
-		}
-		if len(snapshots) > 0 {
-			restored := []protocol.JSONObject{}
-			tracked := []string{}
-			seen := map[string]bool{}
-			for _, snapshot := range snapshots {
-				original := snapshot.Clone()
-				schema := snapshot.Get("schemaVersion")
-				var number float64
-				if len(schema) != 0 && !bytes.Equal(schema, []byte("null")) {
-					var err error
-					number, err = strconv.ParseFloat(string(schema), 64)
-					if err != nil && !errors.Is(err, strconv.ErrRange) {
-						return capability("non-numeric snapshot schemaVersion coercion")
-					}
-				}
-				if number < 2 {
-					original.Set("schemaVersion", raw(2))
-				}
-				for _, field := range []string{"trackedFileBackups", "completedFileBackups"} {
-					value := object(snapshot.Get(field))
-					if !value.IsObject() {
-						if field == "trackedFileBackups" {
-							return capability("non-object tracked file-history backups")
-						}
-						continue
-					}
-					rewritten := protocol.NewJSONObject()
-					for _, property := range value.OwnProperties() {
-						units, err := protocol.DecodeJavaScriptJSONString(property.NameJSON)
-						if err != nil {
-							return err
-						}
-						path := string(utf16.Decode(units))
-						if !bytes.Equal(protocol.QuoteJavaScriptUTF16(units), quote(path)) || strings.ContainsRune(path, 0) {
-							return capability("snapshot path with unpaired UTF-16 or NUL")
-						}
-						relative := shortPath(path, controller.options.ResumeOptions.OriginalCWD)
-						rewritten.Set(relative, property.Value)
-						if field == "trackedFileBackups" && !seen[relative] {
-							seen[relative] = true
-							tracked = append(tracked, relative)
-						}
-					}
-					original.Set(field, raw(rewritten))
-				}
-				restored = append(restored, original)
-			}
-			controller.appState.FileHistory = protocol.NewJSONObject(protocol.JSONField{Name: "snapshots", Value: raw(restored)}, protocol.JSONField{Name: "trackedFiles", Value: raw(tracked)}, protocol.JSONField{Name: "snapshotSequence", Value: raw(len(restored))})
 		}
 	}
 	// SDK uses legacy TodoWrite unless the actual original environment explicitly
@@ -152,3 +102,67 @@ func (controller *Controller) AppState() AppState {
 	return out
 }
 func (controller *Controller) ReadCache() *ReadCache { return controller.readCache.Clone() }
+
+// restoreFileHistory is the shared original snapshot conversion. Startup keeps
+// its SDK checkpoint gate; the interactive REPL calls it for every nonempty log.
+func (controller *Controller) restoreFileHistory(metadata protocol.JSONObject) error {
+	return controller.restoreFileHistoryAt(metadata, controller.options.ResumeOptions.OriginalCWD)
+}
+
+func (controller *Controller) restoreFileHistoryAt(metadata protocol.JSONObject, originalCWD string) error {
+	snapshots, err := parseObjects(metadata.Get("fileHistorySnapshots"))
+	if err != nil && metadata.Get("fileHistorySnapshots") != nil {
+		return err
+	}
+	if len(snapshots) > 0 {
+		restored := []protocol.JSONObject{}
+		tracked := []string{}
+		seen := map[string]bool{}
+		for _, snapshot := range snapshots {
+			original := snapshot.Clone()
+			schema := snapshot.Get("schemaVersion")
+			var number float64
+			if len(schema) != 0 && !bytes.Equal(schema, []byte("null")) {
+				var err error
+				number, err = strconv.ParseFloat(string(schema), 64)
+				if err != nil && !errors.Is(err, strconv.ErrRange) {
+					return capability("non-numeric snapshot schemaVersion coercion")
+				}
+			}
+			if number < 2 {
+				original.Set("schemaVersion", raw(2))
+			}
+			for _, field := range []string{"trackedFileBackups", "completedFileBackups"} {
+				value := object(snapshot.Get(field))
+				if !value.IsObject() {
+					if field == "trackedFileBackups" {
+						return capability("non-object tracked file-history backups")
+					}
+					continue
+				}
+				rewritten := protocol.NewJSONObject()
+				for _, property := range value.OwnProperties() {
+					units, err := protocol.DecodeJavaScriptJSONString(property.NameJSON)
+					if err != nil {
+						return err
+					}
+					path := string(utf16.Decode(units))
+					if !bytes.Equal(protocol.QuoteJavaScriptUTF16(units), quote(path)) || strings.ContainsRune(path, 0) {
+						return capability("snapshot path with unpaired UTF-16 or NUL")
+					}
+					relative := shortPath(path, originalCWD)
+					rewritten.Set(relative, property.Value)
+					if field == "trackedFileBackups" && !seen[relative] {
+						seen[relative] = true
+						tracked = append(tracked, relative)
+					}
+				}
+				original.Set(field, raw(rewritten))
+			}
+			restored = append(restored, original)
+		}
+		controller.appState.FileHistory = protocol.NewJSONObject(protocol.JSONField{Name: "snapshots", Value: raw(restored)}, protocol.JSONField{Name: "trackedFiles", Value: raw(tracked)}, protocol.JSONField{Name: "snapshotSequence", Value: raw(len(restored))})
+	}
+
+	return nil
+}

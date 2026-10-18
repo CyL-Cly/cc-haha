@@ -39,6 +39,7 @@ type NativeHTTP1Operation struct {
 	waits        sync.WaitGroup
 	closeOnce    sync.Once
 	closeErr     error
+	reader       *bufio.Reader
 }
 
 type NativeHTTP1State string
@@ -188,11 +189,15 @@ func (operation *NativeHTTP1Operation) AdoptResponse(request *http.Request) (*ht
 	}
 	operation.adopted = true
 	operation.mu.Unlock()
-	response, err := http.ReadResponse(bufio.NewReader(operation), request)
+	reader := bufio.NewReader(operation)
+	response, err := http.ReadResponse(reader, request)
 	if err != nil {
 		_ = operation.Close()
 		return nil, err
 	}
+	operation.mu.Lock()
+	operation.reader = reader
+	operation.mu.Unlock()
 	response.Body = &nativeHTTP1Body{ReadCloser: response.Body, operation: operation}
 	return response, nil
 }

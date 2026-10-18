@@ -37,6 +37,7 @@ func TestMCPClientSecretNativeTTYUnicodeBackspaceAndCancel(t *testing.T) {
 	fixture, _ := filepath.Abs("../../../scripts/quality-gate/go-parity/native-cli-mcp-secret-tty.fixture.ts")
 	cmd := exec.CommandContext(ctx, python, "testdata/mcp_secret_pty.py", binary, bun, fixture, home)
 	cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "HOME=" + home, "USERPROFILE=" + home, "CLAUDE_CONFIG_DIR=" + filepath.Join(home, ".claude"), "TMPDIR=" + home, "TERM=xterm-256color", "BUN_OPTIONS=--no-env-file", "CC_HAHA_FIXTURE_TEMP_ROOT=" + filepath.Dir(home), "CC_HAHA_MCP_SECRET_PTY_HELPER=1", "CC_HAHA_CLI_MCP_SECRET_TTY_FIXTURE=1"}
+	capturePublicGoCoverage(t, cmd)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatal("actual MCP secret PTY", err, string(out))

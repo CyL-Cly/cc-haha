@@ -24,9 +24,22 @@ func (s *State) SetInitialHistory(records []protocol.JSONObject, fullscreen bool
 	for _, record := range records {
 		id := record.String("uuid")
 		kind := record.String("type")
+		if kind == "attachment" {
+			attachment := presentationObject(record.Get("attachment"))
+			if attachment.String("type") == "teammate_mailbox" {
+				var messages []protocol.JSONObject
+				_ = json.Unmarshal(attachment.Get("messages"), &messages)
+				for _, message := range messages {
+					if teammateVisible(message) {
+						s.Entries = append(s.Entries, Entry{TurnID: id, Kind: "teammate", Subtype: string(TeammateMessageAttachment), Text: teammateTranscriptText(message), Input: rawTeammatePresentation(message)})
+					}
+				}
+			}
+			continue
+		}
 		if kind == "system" {
 			if text := record.String("content"); text != "" && record.String("subtype") != "microcompact_boundary" {
-				s.Entries = append(s.Entries, Entry{TurnID: id, Kind: "system", Text: text, Level: record.String("level")})
+				s.Entries = append(s.Entries, Entry{TurnID: id, Kind: "system", Text: text, Level: record.String("level"), Subtype: record.String("subtype")})
 			}
 			continue
 		}
@@ -89,6 +102,9 @@ func (s *State) SetInitialHistory(records []protocol.JSONObject, fullscreen bool
 }
 
 func historicalUserText(text string) (string, string) {
+	if strings.HasPrefix(text, "<local-command-stdout") || strings.HasPrefix(text, "<local-command-stderr") {
+		return "user", text
+	}
 	if strings.Contains(text, "<local-command-caveat>") || strings.Contains(text, "<tick>") {
 		return "", ""
 	}

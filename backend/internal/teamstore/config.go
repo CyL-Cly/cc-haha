@@ -58,7 +58,7 @@ func SanitizeName(name string) string {
 	return out.String()
 }
 func (c *Config) Directory(name string) string {
-	return filepath.Join(c.options.ConfigDir, "teams", SanitizeName(name))
+	return filepath.Join(c.configDirectory(), "teams", SanitizeName(name))
 }
 func (c *Config) Path(name string) string { return filepath.Join(c.Directory(name), "config.json") }
 func validConfig(v protocol.JSONObject) bool {

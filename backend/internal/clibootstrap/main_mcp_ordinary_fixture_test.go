@@ -137,6 +137,7 @@ func ordinaryGoContext(t *testing.T, home, cwd string, env map[string]string) (*
 		}
 		return nil, os.ErrNotExist
 	}
+	bindCommandPrefetchFixture(t, n)
 	command, e := NewMainCommand(MainCommandOptions{Arguments: []string{"mcp", "serve"}, Native: n, Platform: "darwin", Version: "fixture", PID: os.Getpid(), NonInteractive: true, Output: &bytes.Buffer{}, Error: &bytes.Buffer{}})
 	if e != nil {
 		t.Fatal(e)
@@ -170,7 +171,7 @@ func ordinaryFixtureStderr(c *ordinarySourceClient) string {
 	return c.stderr.String()
 }
 
-func checkOrdinarySecureReadReceipt(t *testing.T, stderr string, goReads int) {
+func checkOrdinaryLogicalSecureReadReceipt(t *testing.T, stderr string) {
 	t.Helper()
 	const prefix = "MCP_SECURE_READ_RECEIPT:"
 	var sourceReads struct {
@@ -185,8 +186,8 @@ func checkOrdinarySecureReadReceipt(t *testing.T, stderr string, goReads int) {
 			found = true
 		}
 	}
-	if !found || sourceReads.Reads == 0 || goReads != sourceReads.Reads {
-		t.Fatalf("actual readonly source storage receipt missing: Source=%d Go=%d found=%v", sourceReads.Reads, goReads, found)
+	if !found || sourceReads.Reads != 1 {
+		t.Fatalf("actual direct-server logical source storage receipt changed: Source=%d want=1 found=%v", sourceReads.Reads, found)
 	}
-	t.Logf("actual readonly empty credential consumers: Source opaque storage reads=%d Go native fake primitive reads=%d", sourceReads.Reads, goReads)
+	t.Logf("actual direct-server logical empty credential consumer: Source opaque storage reads=%d; physical startup primitives are compared against whole main/serve separately", sourceReads.Reads)
 }

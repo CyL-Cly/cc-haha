@@ -29,6 +29,9 @@ type Options struct {
 	FS                               FileSystem
 	Observe                          func(Effect)
 	Diagnostic                       func(json.RawMessage)
+	// NativeUserSettingsPath reads the current native process path. Per-source
+	// settings caches remain keyed by source until the existing cache reset.
+	NativeUserSettingsPath func() (string, error)
 }
 type Effect struct {
 	Kind    string `json:"kind"`
@@ -57,6 +60,9 @@ func NewService(options Options) (*Service, error) {
 	}
 	if options.Profile != ExternalReleaseProfile && options.Profile != NativeProcessProfile {
 		return nil, &CapabilityError{"schema host profile"}
+	}
+	if options.NativeUserSettingsPath != nil && options.Profile != NativeProcessProfile {
+		return nil, &CapabilityError{"native user settings path producer"}
 	}
 	if options.FS == nil {
 		options.FS = OSFileSystem{}
@@ -136,6 +142,16 @@ func (s *Service) parseFile(path string) (*ParsedSettings, error) {
 func (s *Service) Path(source, projectOverride string) (string, error) {
 	switch source {
 	case "userSettings":
+		if s.options.NativeUserSettingsPath != nil {
+			path, err := s.options.NativeUserSettingsPath()
+			if err != nil {
+				return "", err
+			}
+			if !filepath.IsAbs(path) {
+				return "", &CapabilityError{"unresolved native user settings path"}
+			}
+			return path, nil
+		}
 		return filepath.Join(s.options.ConfigHome, "settings.json"), nil
 	case "projectSettings":
 		root := s.options.OriginalCWD

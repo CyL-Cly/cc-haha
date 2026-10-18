@@ -55,7 +55,7 @@ func TestActualDesktopTeamWorkerPrepareBarrierParentQuestionAndStop(t *testing.T
 	o.Environment["DISABLE_TELEMETRY"] = "1"
 	o.Environment["CLAUDE_CODE_DISABLE_AUTO_MEMORY"] = "true"
 	s, err := NewDesktopServer(ServerOptions{Environment: o.Environment, HomeDir: o.Environment["HOME"], ConfigDir: o.Environment["CLAUDE_CONFIG_DIR"], WorkDir: o.WorkDir, Version: o.Version, Arguments: o.Arguments, NativeFactory: func(env map[string]string, cwd, platform string) (*clibootstrap.NativeBoundary, error) {
-		return clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: cwd, Platform: platform, ManagedRoot: filepath.Join(o.Environment["HOME"], "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+		return newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: cwd, Platform: platform, ManagedRoot: filepath.Join(o.Environment["HOME"], "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 	}})
 	if err != nil {
 		t.Fatal(err)
@@ -140,6 +140,21 @@ func TestActualDesktopTeamWorkerPrepareBarrierParentQuestionAndStop(t *testing.T
 	}
 	id := pending.String("requestId")
 	send(map[string]any{"type": "sync_state"})
+	assertDesktopIdleSnapshot(t, receive("session_state"))
+	// MAIN sync_state owns only the foreground state. A new physical pane
+	// connection replays the same outstanding worker question and its ledger.
+	previous := ws
+	ws, err = websocket.Dial("ws"+strings.TrimPrefix(host.URL, "http")+"/ws/"+parentID, "", host.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer ws.Close()
+	ws.SetDeadline(time.Now().Add(25 * time.Second))
+	previous.Close()
+	receive("connected")
+	if replay := receive("permission_request"); replay.String("requestId") != id || replay.String("agentId") != "first@team-private" {
+		t.Fatal("reconnect replaced worker permission identity", string(raw(replay)))
+	}
 	for {
 		snapshot := receive("permission_requests_snapshot")
 		var ids []string

@@ -56,7 +56,8 @@ async function record(scenario: StreamHistoryScenario, kind: 'typescript' | 'go'
       env: createSandboxedTestEnvironment(home, {
         CC_HAHA_STREAM_HISTORY_FIXTURE: '1', CC_HAHA_STREAM_HTTP_FIXTURE: '1', CC_HAHA_FIXTURE_TEMP_ROOT: allocationRoot,
         NODE_ENV: 'production', CLAUDE_CODE_SIMPLE: '1', CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1',
-        CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK: '1', ANTHROPIC_API_KEY: 'offline-fixture-key', ANTHROPIC_BASE_URL: origin,
+        CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK: '1', CLAUDE_CODE_MAX_RETRIES: '0', CLAUDE_STREAM_TRANSIENT_RETRY_MAX: '0',
+        ANTHROPIC_API_KEY: 'offline-fixture-key', ANTHROPIC_BASE_URL: origin,
       }),
       stdin: new Blob([JSON.stringify({ homeDir: home, wire: scenario.wire, model: scenario.model, nonInteractive: scenario.nonInteractive, httpOrigin: origin, prepared })]), stdout: 'pipe', stderr: 'pipe',
     })

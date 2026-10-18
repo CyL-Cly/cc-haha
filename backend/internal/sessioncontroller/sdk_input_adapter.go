@@ -115,6 +115,10 @@ func (a *SerialASK) admitParsedSDK(scope *cooperative.Scope, input protocol.JSON
 		afterExistence(scope, false)
 		return f, nil
 	}
+	observers, err := controller.sdkAsyncObserverBinding(scope)
+	if err != nil {
+		return nil, err
+	}
 	cache, err := a.pending.SessionUUIDs(scope, controller.options.ResumeOptions.Loader, controller.SessionID())
 	if err != nil {
 		return nil, err
@@ -126,10 +130,25 @@ func (a *SerialASK) admitParsedSDK(scope *cooperative.Scope, input protocol.JSON
 	_ = cache.future.thenOwner(a.owner, func(scope *cooperative.Scope, err error) {
 		if err == nil {
 			historical, err = cache.set.OwnerHas(scope, uuid)
+			if err == nil && observers == nil && controller.options.OnSDKUUIDLookup != nil {
+				controller.options.OnSDKUUIDLookup(append(json.RawMessage(nil), uuid...), historical)
+			}
 		}
 		exists.settle(err)
 	}, exists.settle)
-	_ = exists.thenOwner(a.owner, func(scope *cooperative.Scope, err error) {
+	observed := exists
+	if observers != nil {
+		// The Source observer is itself async: await original lookup, observe,
+		// return the same boolean. print awaits this outer Promise, not exists.
+		observed = newWriteFuture()
+		_ = exists.thenOwner(a.owner, func(scope *cooperative.Scope, err error) {
+			if err == nil {
+				controller.options.OnSDKUUIDLookup(append(json.RawMessage(nil), uuid...), historical)
+			}
+			observed.settle(err)
+		}, observed.settle)
+	}
+	_ = observed.thenOwner(a.owner, func(scope *cooperative.Scope, err error) {
 		if err != nil {
 			complete(scope, err)
 			return

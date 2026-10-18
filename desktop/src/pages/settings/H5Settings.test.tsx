@@ -4,6 +4,8 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { H5Settings } from './H5Settings'
 import { Settings } from '../Settings'
 import { ProviderSettings } from './ProviderSettings'
+import { browserHost } from '@/lib/desktopHost/browserHost'
+import { version as frontendVersion } from '../../../package.json'
 import { useUIStore } from '@/stores/uiStore'
 import { useSettingsStore } from '@/stores/settingsStore'
 import { useProviderStore } from '@/stores/providerStore'
@@ -132,4 +134,29 @@ it.each([true, false])('shows beta details on focus without overflowing narrow f
   const description = await screen.findByRole('tooltip')
   expect(description).toHaveTextContent('CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1')
   expect(description.classList.contains('[overflow-wrap:anywhere]')).toBe(true)
+})
+
+it('shows the actual renderer version in the reachable browser Settings About section without desktop update controls', async () => {
+  const getVersion = vi.spyOn(browserHost.app, 'getVersion')
+  const update = vi.spyOn(settingsApi, 'updateUser')
+  render(<Settings />)
+
+  const about = screen.getByRole('heading', { name: 'About' }).closest('section')!
+  expect(within(about).getByText('Claude Code Haha')).toBeInTheDocument()
+  expect(await within(about).findByText(`Version ${frontendVersion}`)).toBeInTheDocument()
+  expect(getVersion).toHaveBeenCalledOnce()
+  expect(within(about).queryAllByRole('button')).toHaveLength(0)
+  expect(within(about).queryAllByRole('switch')).toHaveLength(0)
+  expect(update).not.toHaveBeenCalled()
+})
+
+it('keeps browser About readable when the version lookup fails without inventing a version or exposing the failure', async () => {
+  const getVersion = vi.spyOn(browserHost.app, 'getVersion').mockRejectedValueOnce(new Error('private-version-fixture-detail'))
+  render(<Settings />)
+
+  const about = screen.getByRole('heading', { name: 'About' }).closest('section')!
+  await waitFor(() => expect(getVersion).toHaveBeenCalledOnce())
+  expect(within(about).getByText('Claude Code Haha')).toBeInTheDocument()
+  expect(within(about).queryByText(/^Version /)).not.toBeInTheDocument()
+  expect(screen.queryByText('private-version-fixture-detail')).not.toBeInTheDocument()
 })

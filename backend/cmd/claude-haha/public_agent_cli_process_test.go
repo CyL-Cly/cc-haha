@@ -37,6 +37,7 @@ func TestActualPublicCLISelectedAgentSourceReadEOF(t *testing.T) {
 	binary := filepath.Join(root, "actual-public-agent")
 	build := exec.CommandContext(ctx, "go", "build", "-p=4", "-race", "-tags=native_process_fixture", "-o", binary, ".")
 	auditPublicAgentInputs(t, "child-build-before")
+	capturePublicGoCoverage(t, build)
 	out, buildError := build.CombinedOutput()
 	auditPublicAgentInputs(t, "child-build-after")
 	if buildError != nil {
@@ -56,7 +57,7 @@ func TestActualPublicCLISelectedAgentSourceReadEOF(t *testing.T) {
 			var mu sync.Mutex
 			requests := []json.RawMessage{}
 			activeWork := ""
-			peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			peer := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 				data, _ := io.ReadAll(r.Body)
 				if r.URL.Path != "/v1/messages" {
 					http.Error(w, "no nonmodel in private peer", 404)
@@ -216,6 +217,7 @@ func TestActualPublicCLISelectedAgentSourceReadEOF(t *testing.T) {
 				requests = nil
 				mu.Unlock()
 				auditPublicAgentInputs(t, runtime+"-process-before")
+				capturePublicGoCoverage(t, command)
 				if profile == "sdk-initial-blocks" || profile == "sdk-settings-initial" {
 					err = runPublicAgentInitialStream(command, &stdout, &stderr, profile == "sdk-initial-blocks")
 				} else {
@@ -377,6 +379,7 @@ func TestActualPublicCLISelectedAgentRestoresOriginalMetadataHooksAndNextASK(t *
 	binary := filepath.Join(root, "actual-public-agent-restore")
 	build := exec.CommandContext(ctx, "go", "build", "-race", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
 	auditPublicAgentInputs(t, "child-build-before")
+	capturePublicGoCoverage(t, build)
 	data, buildError := build.CombinedOutput()
 	auditPublicAgentInputs(t, "child-build-after")
 	if buildError != nil {
@@ -413,7 +416,7 @@ func TestActualPublicCLISelectedAgentRestoresOriginalMetadataHooksAndNextASK(t *
 		var mu sync.Mutex
 		requests := []json.RawMessage{}
 		hooks := []protocol.JSONObject{}
-		peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		peer := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 			data, _ := io.ReadAll(r.Body)
 			if r.URL.Path == "/agent-hook" {
 				var row protocol.JSONObject
@@ -487,6 +490,7 @@ func TestActualPublicCLISelectedAgentRestoresOriginalMetadataHooksAndNextASK(t *
 			command.Stdout = &stdout
 			command.Stderr = &stderr
 			auditPublicAgentInputs(t, runtime+"-"+phase+"-process-before")
+			capturePublicGoCoverage(t, command)
 			processError := command.Run()
 			auditPublicAgentInputs(t, runtime+"-"+phase+"-process-after")
 			if processError != nil {

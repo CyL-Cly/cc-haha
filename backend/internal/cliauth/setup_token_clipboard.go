@@ -25,6 +25,9 @@ type SetupTokenClipboard struct {
 	linuxCopy     string
 	// Run is the OS process primitive. Nil uses the actual private/frozen env.
 	Run func(context.Context, string, []string, string) int
+	// afterActualStart observes the real OS Start result; configure before Copy.
+	// Nil leaves the native process path unchanged.
+	afterActualStart func(*exec.Cmd, error)
 }
 
 func NewSetupTokenClipboard(ctx context.Context, platform, cwd string, env map[string]string) *SetupTokenClipboard {
@@ -85,7 +88,11 @@ func (c *SetupTokenClipboard) runAdmitted(ctx context.Context, name string, args
 	}
 	command.Stdin = strings.NewReader(text)
 	command.WaitDelay = 2 * time.Second
-	if command.Start() != nil {
+	startErr := command.Start()
+	if c.afterActualStart != nil {
+		c.afterActualStart(command, startErr)
+	}
+	if startErr != nil {
 		return 1
 	}
 	if admitted != nil {

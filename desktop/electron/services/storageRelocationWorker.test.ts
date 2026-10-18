@@ -6,6 +6,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { DataMigration, type DataMigrationHooks } from './dataMigration'
 import { resolveSidecarExecutable } from './sidecarManager'
 import { runStorageRelocationWorker } from './storageRelocationWorker'
+import { removeTestSandbox } from '../../../scripts/pr/test-environment'
 
 let root: string
 let desktopRoot: string
@@ -17,14 +18,41 @@ beforeAll(async () => {
   await fs.mkdir(path.dirname(executable), { recursive: true })
   env = { ...process.env, HOME: path.join(root, 'home'), USERPROFILE: path.join(root, 'home'), CLAUDE_CONFIG_DIR: path.join(root, 'home', '.claude'), TMPDIR: root }
   await fs.mkdir(env.HOME!, { recursive: true })
+  const repositoryRoot = path.resolve(import.meta.dirname, '../../..')
+  const buildHome = path.join(root, 'build-home')
+  await fs.mkdir(buildHome, { recursive: true })
+  // Use the same checksum-verified, offline seed as all other Go consumers.
+  // The physical worker test must not download modules or inherit a real cache
+  // when Vitest runs under a disposable desktop HOME. Execute the Bun-only
+  // tool in its own runtime; Electron's Node typecheck does not import it.
+  const dependencyModule = path.join(repositoryRoot, 'scripts/pr/go-dependencies.ts')
+  const preparation = `
+    import { execFileSync } from 'node:child_process'
+    const { createHermeticGoEnvironment, hydrateGoDependencies } = await import(${JSON.stringify(dependencyModule)})
+    const env = createHermeticGoEnvironment(${JSON.stringify(buildHome)}, process.env, false, ${JSON.stringify(repositoryRoot)})
+    await hydrateGoDependencies(${JSON.stringify(repositoryRoot)}, env, {
+      execute: async (command, options) => {
+        try {
+          const stdout = execFileSync(command[0], command.slice(1), { ...options, encoding: 'utf8', stdio: 'pipe', timeout: 120_000, maxBuffer: 16 * 1024 * 1024 })
+          return { exitCode: 0, stdout, stderr: '' }
+        } catch (error) {
+          return { exitCode: error.status ?? 1, stdout: String(error.stdout ?? ''), stderr: String(error.stderr ?? error) }
+        }
+      },
+    })
+    process.stdout.write(JSON.stringify(env))
+  `
+  const buildEnv: NodeJS.ProcessEnv = JSON.parse(execFileSync('bun', ['--no-env-file', '-e', preparation], {
+    cwd: repositoryRoot, env: process.env, encoding: 'utf8', stdio: 'pipe', timeout: 120_000, maxBuffer: 16 * 1024 * 1024,
+  }))
   execFileSync(process.env.CC_HAHA_GO_EXECUTABLE || 'go', ['build', '-o', executable, './cmd/claude-haha'], {
-    cwd: path.resolve(import.meta.dirname, '../../../backend'),
-    env: { ...process.env, GOENV: 'off', GOTOOLCHAIN: 'local', GOFLAGS: '-mod=readonly', GOTELEMETRY: 'off', CGO_ENABLED: '0' },
+    cwd: path.join(repositoryRoot, 'backend'),
+    env: buildEnv,
     timeout: 120_000,
     stdio: 'pipe',
   })
 }, 130_000)
-afterAll(async () => { if (root) await fs.rm(root, { recursive: true, force: true }) })
+afterAll(async () => { if (root) removeTestSandbox(root, 'storage relocation worker') })
 
 async function fixture(name: string, invalid = false) {
   const home = path.join(root, name, 'home')

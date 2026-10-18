@@ -156,6 +156,7 @@ func (m *MainPrint) spawnNativePaneTeamAgent(ctx context.Context, scope *coopera
 	roster.Set(id, rawMain(protocol.NewJSONObject(protocol.JSONField{Name: "name", Value: quoteMain(name)}, protocol.JSONField{Name: "agentType", Value: input.Get("subagent_type")}, protocol.JSONField{Name: "color", Value: quoteMain(color)}, protocol.JSONField{Name: "tmuxSessionName", Value: quoteMain(session)}, protocol.JSONField{Name: "tmuxPaneId", Value: quoteMain(pane)}, protocol.JSONField{Name: "cwd", Value: quoteMain(cwd)}, protocol.JSONField{Name: "spawnedAt", Value: rawMain(m.options.Native.NowMillis())})))
 	snapshot.Set("teammates", rawMain(roster))
 	m.teamState = &nativeTeamState{snapshot: snapshot}
+	m.publishTerminalTeamFooter(scope)
 	if err = m.Controller.SetLeaderTeamOnOwner(scope, team); err != nil {
 		return nil, err
 	}

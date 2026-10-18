@@ -60,6 +60,7 @@ type Context struct {
 	PromptToolNames                                     *[]string
 	HookIndex                                           *int
 	HookID, HookEvent, HookName                         string
+	SkillRoot                                           string
 	InputFields                                         protocol.JSONObject
 	Scope                                               *cooperative.Scope
 	StopHookActive                                      bool
@@ -186,6 +187,51 @@ func (service *Service) StartStopFailure(call Context, last *streamhistory.Envel
 	if service.simple() || call.Interactive && !call.TrustAccepted {
 		return completed(), nil
 	}
+	if service.options.Commands != nil {
+		rows, err := service.configuredNativeMatchedCommands("StopFailure", service.mainSessionID(), call.ToolUseContext != nil)
+		if err != nil {
+			return nil, err
+		}
+		if len(rows) > 0 {
+			errorType := last.Record.Get("error")
+			if errorType == nil || string(errorType) == "null" {
+				errorType = commandJSON("unknown")
+			}
+			fields := protocol.NewJSONObject(protocol.JSONField{Name: "permission_mode", Value: nil}, protocol.JSONField{Name: "error", Value: errorType}, protocol.JSONField{Name: "error_details", Value: last.Record.Get("errorDetails")})
+			units := []uint16{}
+			first := true
+			for _, block := range last.Content {
+				if block == nil || block.Object.String("type") != "text" {
+					continue
+				}
+				text, err := protocol.DecodeJavaScriptJSONString(block.Object.Get("text"))
+				if err != nil {
+					continue
+				}
+				if !first {
+					units = append(units, '\n')
+				}
+				first = false
+				units = append(units, text...)
+			}
+			for len(units) > 0 && protocol.IsJavaScriptWhitespace(rune(units[0])) {
+				units = units[1:]
+			}
+			for len(units) > 0 && protocol.IsJavaScriptWhitespace(rune(units[len(units)-1])) {
+				units = units[:len(units)-1]
+			}
+			if len(units) > 0 {
+				fields.Set("last_assistant_message", protocol.QuoteJavaScriptUTF16(units))
+			}
+			service.mu.Unlock()
+			defer service.mu.Lock()
+			_, err = service.ExecuteOutside(context.Background(), OutsideInput{Event: "StopFailure", SessionID: service.mainSessionID(), MatchQuery: protocol.NewJSONObject(protocol.JSONField{Name: "error", Value: errorType}).String("error"), Fields: fields, Call: call})
+			if err != nil {
+				return nil, err
+			}
+			return completed(), nil
+		}
+	}
 	active := service.active("StopFailure", service.mainSessionID())
 	if active {
 		return nil, unsupported("StopFailure execution")
@@ -228,8 +274,8 @@ func (service *Service) StopHooks(ctx context.Context, call Context, emit queryl
 		}
 	}
 	// afterward. An owner-native await must never retain the resolver mutex.
-	if !call.ComputerUseInactive && call.AgentID == "" {
-		_ = call.CleanupComputerUse(ctx)
+	if call.AgentID == "" && call.CleanupComputerUse != nil {
+		_ = call.CleanupComputerUse(context.WithoutCancel(ctx))
 	}
 	if call.AgentID == "" && service.options.Prompts != nil && service.options.Prompts.RestoreGoal != nil {
 		var err error
@@ -260,7 +306,7 @@ func (service *Service) StopHooks(ctx context.Context, call Context, emit queryl
 	if service.simple() || call.Interactive && !call.TrustAccepted {
 		return queryloop.StopDecision{BlockingMessages: []queryloop.Message{}}, nil
 	}
-	commands, err := service.configuredNativeCommands(event, sid)
+	commands, err := service.configuredNativeMatchedCommands(event, sid, call.ToolUseContext != nil)
 	if err != nil {
 		return queryloop.StopDecision{}, err
 	}
@@ -270,7 +316,7 @@ func (service *Service) StopHooks(ctx context.Context, call Context, emit queryl
 		}
 		service.mu.Unlock()
 		defer service.mu.Lock()
-		return service.executeNativeCommandStop(ctx, call, event, toolUseID, commands, emit)
+		return service.executeNativeMatchedCommandStop(ctx, call, event, toolUseID, commands, emit)
 	}
 	active := service.active(event, sid)
 	if active {

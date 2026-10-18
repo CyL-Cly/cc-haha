@@ -12,11 +12,10 @@ func (service *Service) AbortCleanup(ctx context.Context, call Context) error {
 	if call.AgentID != "" {
 		return nil
 	}
-	if !call.ComputerUseInactive {
-		if call.CleanupComputerUse == nil {
-			return unsupported("abort computer-use overlay/badge/hidden-app/lock lifecycle")
-		}
+	if call.CleanupComputerUse != nil {
 		_ = call.CleanupComputerUse(context.WithoutCancel(ctx))
+	} else if !call.ComputerUseInactive {
+		return unsupported("abort computer-use overlay/badge/hidden-app/lock lifecycle")
 	}
 	return nil
 }

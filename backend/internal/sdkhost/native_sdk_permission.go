@@ -14,7 +14,7 @@ import (
 
 type nativeSDKPermissionState struct {
 	open    bool
-	pending map[string]*OwnerFuture[protocol.JSONObject]
+	pending map[string]*NativeSDKPermissionPrompt
 }
 
 // The stdio channel is selected by the public permission-prompt-tool option.
@@ -26,7 +26,7 @@ func (h *Host) bindNativeSDKPermissionInput(scope *cooperative.Scope, input *Pla
 	if !scope.BelongsTo(h.options.Owner) || !h.options.Print.NativeProcess {
 		return cooperative.ErrRestricted
 	}
-	h.sdkPermissions = &nativeSDKPermissionState{open: true, pending: map[string]*OwnerFuture[protocol.JSONObject]{}}
+	h.sdkPermissions = &nativeSDKPermissionState{open: true, pending: map[string]*NativeSDKPermissionPrompt{}}
 	previousResponse, previousClose := input.sandboxResponse, input.sandboxClose
 	input.sandboxResponse = func(scope *cooperative.Scope, message protocol.JSONObject) (bool, error) {
 		if handled, err := h.nativeSDKPermissionResponse(scope, message); handled || err != nil {
@@ -89,20 +89,23 @@ func (h *Host) nativeSDKPermissionResponse(scope *cooperative.Scope, message pro
 	}
 	response := object(message.Get("response"))
 	id := response.String("request_id")
-	future := h.sdkPermissions.pending[id]
-	if future == nil {
+	prompt := h.sdkPermissions.pending[id]
+	if prompt == nil {
 		return false, nil
+	}
+	if prompt.context.Err() != nil {
+		return true, prompt.Cancel(scope)
 	}
 	delete(h.sdkPermissions.pending, id)
 	h.forgetSDKPermissionRequest(id)
 	if response.String("subtype") == "error" {
-		return true, future.Reject(scope, errors.New(response.String("error")))
+		return true, prompt.future.Reject(scope, errors.New(response.String("error")))
 	}
 	parsed, err := sdkPermissionOutput(response.Get("response"))
 	if err != nil {
-		return true, future.Reject(scope, err)
+		return true, prompt.future.Reject(scope, err)
 	}
-	return true, future.Resolve(scope, parsed)
+	return true, prompt.future.Resolve(scope, parsed)
 }
 func (h *Host) closeNativeSDKPermissionInput(scope *cooperative.Scope) error {
 	if !scope.BelongsTo(h.options.Owner) {
@@ -112,10 +115,18 @@ func (h *Host) closeNativeSDKPermissionInput(scope *cooperative.Scope) error {
 		return nil
 	}
 	h.sdkPermissions.open = false
-	for id, future := range h.sdkPermissions.pending {
+	for id, prompt := range h.sdkPermissions.pending {
+		// Source's AbortSignal listener runs before a later stream close.
+		// Native context callbacks can still be waiting for Owner admission.
+		if prompt.context.Err() != nil {
+			if err := prompt.Cancel(scope); err != nil {
+				return err
+			}
+			continue
+		}
 		delete(h.sdkPermissions.pending, id)
 		h.forgetSDKPermissionRequest(id)
-		if err := future.Reject(scope, errors.New("Tool permission stream closed before response received")); err != nil {
+		if err := prompt.future.Reject(scope, errors.New("Tool permission stream closed before response received")); err != nil {
 			return err
 		}
 	}
@@ -137,6 +148,7 @@ func sdkPermissionErrorText(err error) string {
 
 type NativeSDKPermissionPrompt struct {
 	host      *Host
+	context   context.Context
 	tool      queryloop.RegisteredTool
 	input     *protocol.JSONObject
 	call      queryloop.JSONToolCallContext
@@ -218,7 +230,7 @@ func (h *Host) BeginNativeSDKPermissionPrompt(ctx context.Context, scope *cooper
 	if h == nil || ctx == nil || !scope.BelongsTo(h.options.Owner) || input == nil || h.options.Print == nil || h.options.Print.PermissionPromptToolName != "stdio" {
 		return nil, cooperative.ErrRestricted
 	}
-	prompt := &NativeSDKPermissionPrompt{host: h, tool: tool, input: input, call: call, requestID: h.options.UUID()}
+	prompt := &NativeSDKPermissionPrompt{host: h, context: ctx, tool: tool, input: input, call: call, requestID: h.options.UUID()}
 	var err error
 	prompt.future, err = NewOwnerFuture[protocol.JSONObject](h.options.Owner)
 	if err != nil {
@@ -228,7 +240,7 @@ func (h *Host) BeginNativeSDKPermissionPrompt(ctx context.Context, scope *cooper
 		err = prompt.future.Reject(scope, errors.New("Stream closed"))
 		return prompt, err
 	}
-	h.sdkPermissions.pending[prompt.requestID] = prompt.future
+	h.sdkPermissions.pending[prompt.requestID] = prompt
 	prompt.stop = context.AfterFunc(ctx, func() {
 		_, _ = h.options.Owner.SubmitIndependent(context.Background(), cooperative.Cancel, func(next *cooperative.Scope) error { return prompt.Cancel(next) })
 	})

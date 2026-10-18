@@ -137,13 +137,20 @@ func (s *Service) computerUseCatalog(scope *cooperative.Scope) ([]toolschema.Def
 // Normal completion and cancellation keep the isolated JS bindings, but release
 // the native turn/lease. Closing the host additionally closes its worker.
 func (s *Service) EndTurnOwner(scope *cooperative.Scope) error {
+	return s.EndTurnOwnerContext(scope, context.Background())
+}
+
+func (s *Service) EndTurnOwnerContext(scope *cooperative.Scope, cleanupContext context.Context) error {
 	if !scope.BelongsTo(s.options.Owner) {
 		return cooperative.ErrRestricted
 	}
-	if s.computerUse == nil {
-		return nil
+	if cleanupContext == nil {
+		return cooperative.ErrRestricted
 	}
-	future, e := native(s, scope, func() (struct{}, error) { return struct{}{}, s.computerUse.EndTurn(context.Background()) })
+	if s.computerUse == nil {
+		return s.endInactiveComputerUseTurn(scope)
+	}
+	future, e := native(s, scope, func() (struct{}, error) { return struct{}{}, s.computerUse.EndTurn(cleanupContext) })
 	if e != nil {
 		return e
 	}

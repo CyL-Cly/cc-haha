@@ -4,6 +4,7 @@ import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { createSandboxedTestEnvironment, removeTestSandbox } from './test-environment'
+import { readScopeExclusions, recordComputerUseExclusion, validateScopeExclusions, type ScopeExclusion } from '../quality-gate/scope-exclusions'
 
 type SwiftCheckRunner = (
   command: string[],
@@ -11,9 +12,15 @@ type SwiftCheckRunner = (
 ) => Promise<number>
 
 export async function runSwiftChecks(options: {
+  scopeExclusions?: ScopeExclusion[]
   platform?: NodeJS.Platform
   run?: SwiftCheckRunner
 } = {}): Promise<number> {
+  const exclusions = validateScopeExclusions(options.scopeExclusions ?? [])
+  if (exclusions.includes('computer-use')) {
+    recordComputerUseExclusion('swift-cu-helper-tests')
+    return 0
+  }
   const platform = options.platform ?? process.platform
   if (platform !== 'darwin') {
     console.log(`[swift-checks] not applicable on ${platform}: cu-helper targets macOS; PR CI requires the macOS Swift job separately`)
@@ -48,4 +55,4 @@ export async function runSwiftChecks(options: {
   }
 }
 
-if (import.meta.main) process.exit(await runSwiftChecks())
+if (import.meta.main) process.exit(await runSwiftChecks({ scopeExclusions: readScopeExclusions() }))

@@ -76,15 +76,9 @@ func NewProcessNativeBoundary(o NativeProcessOptions) (*NativeBoundary, error) {
 	} else if !info.IsDir() {
 		return nil, errors.New("working directory is not a directory")
 	}
-	config := env["CLAUDE_CONFIG_DIR"]
-	if config == "" {
-		config = filepath.Join(home, ".claude")
-	}
-	config, err = filepath.Abs(config)
-	if err != nil {
-		return nil, err
-	}
-	env["HOME"], env["CLAUDE_CONFIG_DIR"] = home, config
+	// process.env retains the launch bytes, including an absent or explicitly
+	// empty directory. Filesystem consumers resolve their own paths against
+	// the child process CWD rather than rewriting that environment authority.
 	managed := o.ManagedRoot
 	if managed == "" {
 		switch o.Platform {
@@ -100,7 +94,7 @@ func NewProcessNativeBoundary(o NativeProcessOptions) (*NativeBoundary, error) {
 		}
 	}
 	now := time.Now
-	n := &NativeBoundary{Home: home, CWD: cwd, Temp: os.TempDir(), ManagedRoot: managed, Environment: env, Now: now, NowMillis: func() float64 { return float64(now().UnixMilli()) }, NativeProcess: true, ConfigDirExplicit: o.Environment["CLAUDE_CONFIG_DIR"] != ""}
+	n := &NativeBoundary{Home: home, CWD: cwd, Temp: os.TempDir(), ManagedRoot: managed, Environment: env, Now: now, NowMillis: func() float64 { return float64(now().UnixMilli()) }, NativeProcess: true, ConfigDirExplicit: o.Environment["CLAUDE_CONFIG_DIR"] != "", platform: o.Platform}
 	readMDM := o.ReadMDM
 	n.mdm = &nativeMDMCache{read: func(ctx context.Context) (*protocol.JSONObject, *protocol.JSONObject, error) {
 		if err := ctx.Err(); err != nil {
@@ -129,52 +123,79 @@ func nativeSettings(raw []byte, path string) (*protocol.JSONObject, error) {
 }
 
 func (n *NativeBoundary) resolveNativePolicy(readMDM func() (*protocol.JSONObject, *protocol.JSONObject, error)) (*protocol.JSONObject, error) {
+	observation, err := n.resolveNativePolicyObserved(readMDM)
+	if err == nil {
+		n.mu.Lock()
+		n.policyObservation = &observation
+		n.mu.Unlock()
+	}
+	return observation.Settings, err
+}
+func (n *NativeBoundary) resolveNativePolicyObserved(readMDM func() (*protocol.JSONObject, *protocol.JSONObject, error)) (observation NativePolicyObservation, err error) {
+	environment := n.nativeEnvironmentSnapshot()
+	observe := func(value *protocol.JSONObject, origin string, hasBase, hasDropIns bool, e error) (NativePolicyObservation, error) {
+		return NativePolicyObservation{Settings: value, Origin: origin, HasBase: hasBase, HasDropIns: hasDropIns}, e
+	}
 	// The remote cache is eligible only for first-party Anthropic credentials.
 	// DeepSeek/custom origins must never inherit an unrelated Anthropic cache.
-	base := n.Environment["ANTHROPIC_BASE_URL"]
+	base := environment["ANTHROPIC_BASE_URL"]
 	u, _ := url.Parse(base)
 	firstParty := base == "" || u != nil && u.Hostname() == "api.anthropic.com"
 	for _, k := range []string{"CLAUDE_CODE_USE_BEDROCK", "CLAUDE_CODE_USE_VERTEX", "CLAUDE_CODE_USE_FOUNDRY", "CLAUDE_CODE_USE_AZURE_OPENAI"} {
-		if envTruthyNative(n.Environment[k]) {
+		if envTruthyNative(environment[k]) {
 			firstParty = false
 		}
 	}
-	if firstParty && n.Environment["CLAUDE_CODE_LOCAL_SKIP_REMOTE_PREFETCH"] != "1" && n.Environment["CLAUDE_CODE_ENTRYPOINT"] != "local-agent" {
-		if n.Environment["ANTHROPIC_API_KEY"] != "" || n.Environment["CLAUDE_CODE_OAUTH_TOKEN"] != "" {
-			p := filepath.Join(n.Environment["CLAUDE_CONFIG_DIR"], "remote-settings.json")
+	n.mu.Lock()
+	remote := n.remoteManaged
+	n.mu.Unlock()
+	if remote != nil {
+		if value := remote.snapshot(); value != nil && len(value.OwnProperties()) > 0 {
+			return observe(value, "remote", false, false, nil)
+		}
+	} else if firstParty && environment["CLAUDE_CODE_LOCAL_SKIP_REMOTE_PREFETCH"] != "1" && environment["CLAUDE_CODE_ENTRYPOINT"] != "local-agent" {
+		if environment["ANTHROPIC_API_KEY"] != "" || environment["CLAUDE_CODE_OAUTH_TOKEN"] != "" {
+			p := filepath.Join(n.ConfigHomeDirectory(), "remote-settings.json")
 			if raw, err := n.readFile(p); err == nil {
 				var object protocol.JSONObject
 				if object.UnmarshalJSON(raw) == nil && object.IsObject() && len(object.OwnProperties()) > 0 {
-					return nativeSettings(raw, p)
+					value, e := nativeSettings(raw, p)
+					return observe(value, "remote", false, false, e)
 				}
 			}
-			// Remote prefetch has not been ported; never claim a cache miss is
-			// proof that the enterprise policy is absent.
-			return nil, mainCap("first-party remote managed policy prefetch")
+			// A standalone finite resolver has no init authority. Only the
+			// actual process factory's installed service can prove fail-open.
+			return observation, mainCap("first-party remote managed policy prefetch")
 		}
 	}
 	admin, userPolicy, err := readMDM()
 	if err != nil {
-		return nil, err
+		return observation, err
 	}
 	if admin != nil && len(admin.OwnProperties()) > 0 {
-		return admin, nil
+		origin := "plist"
+		if n.platform == "windows" {
+			origin = "hklm"
+		}
+		return observe(admin, origin, false, false, nil)
 	}
 	layers := []*protocol.JSONObject{}
+	hasBase, hasDropIns := false, false
 	basePath := filepath.Join(n.ManagedRoot, "managed-settings.json")
 	if raw, err := n.readFile(basePath); err == nil {
 		parsed, err := nativeSettings(raw, basePath)
 		if err != nil {
-			return nil, err
+			return observation, err
 		}
 		layers = append(layers, parsed)
+		hasBase = hasBase || parsed != nil && len(parsed.OwnProperties()) > 0
 	} else if !errors.Is(err, fs.ErrNotExist) && !errors.Is(err, fs.ErrPermission) {
-		return nil, err
+		return observation, err
 	}
 	dropRoot := filepath.Join(n.ManagedRoot, "managed-settings.d")
 	entries, err := n.readDir(dropRoot)
 	if err != nil && !errors.Is(err, fs.ErrNotExist) && !errors.Is(err, fs.ErrPermission) {
-		return nil, err
+		return observation, err
 	}
 	sort.Slice(entries, func(i, j int) bool { return entries[i].Name() < entries[j].Name() })
 	for _, entry := range entries {
@@ -182,25 +203,30 @@ func (n *NativeBoundary) resolveNativePolicy(readMDM func() (*protocol.JSONObjec
 		if strings.HasPrefix(name, ".") || !strings.HasSuffix(name, ".json") || !(entry.Type().IsRegular() || entry.Type()&fs.ModeSymlink != 0) {
 			continue
 		}
+		hasDropIns = true
 		p := filepath.Join(dropRoot, name)
 		raw, err := n.readFile(p)
 		if err != nil {
 			if errors.Is(err, fs.ErrNotExist) || errors.Is(err, fs.ErrPermission) {
 				continue
 			}
-			return nil, err
+			return observation, err
 		}
 		parsed, err := nativeSettings(raw, p)
 		if err != nil {
-			return nil, err
+			return observation, err
 		}
 		layers = append(layers, parsed)
 	}
 	merged, err := clistartupenv.MergePolicyLayers(layers...)
 	if err != nil || merged != nil {
-		return merged, err
+		return observe(merged, "file", hasBase, hasDropIns, err)
 	}
-	return userPolicy, nil
+	origin := ""
+	if userPolicy != nil && len(userPolicy.OwnProperties()) > 0 {
+		origin = "hkcu"
+	}
+	return observe(userPolicy, origin, false, false, nil)
 }
 
 func envTruthyNative(v string) bool {
@@ -270,7 +296,7 @@ func readProcessMDMContext(parentContext context.Context, platform, home string,
 }
 
 func (n *NativeBoundary) nativePluginsAbsent() (bool, error) {
-	root := filepath.Join(n.Environment["CLAUDE_CONFIG_DIR"], "plugins")
+	root := filepath.Join(n.ConfigHomeDirectory(), "plugins")
 	entries, err := n.readDir(root)
 	if errors.Is(err, fs.ErrNotExist) {
 		return true, nil

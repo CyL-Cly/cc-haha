@@ -44,6 +44,12 @@ func (w *usageControlOutput) Write(p []byte) (int, error) {
 func TestPublicCLIUsageControlsReadSharedLedgerWithoutAdditionalModelOrTranscriptTurns(t *testing.T) {
 	var calls atomic.Int32
 	provider := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		calls.Add(1)
 		response(w, "original-ledger-response", "", nil, "ordinary result")
 	}))

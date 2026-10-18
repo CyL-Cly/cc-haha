@@ -62,6 +62,9 @@ func (c *Client) CallTool(ctx context.Context, name string, arguments, meta prot
 
 func (c *Client) CallToolJSON(ctx context.Context, name json.RawMessage, arguments, meta protocol.JSONObject, options RequestOptions) (protocol.JSONObject, error) {
 	if _, err := protocol.DecodeJavaScriptJSONString(name); err != nil {
+		if options.OnSent != nil {
+			options.OnSent(err)
+		}
 		return protocol.JSONObject{}, err
 	}
 	params := object()

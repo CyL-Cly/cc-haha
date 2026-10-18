@@ -99,6 +99,7 @@ type transcriptFiles struct {
 	client           *http.Client
 	notified         *sync.Once
 	assistantWritten func()
+	beforeStat       func(string)
 }
 type observedFile struct {
 	sessioncontroller.TranscriptFile
@@ -139,6 +140,9 @@ func (f transcriptFiles) OpenFile(path string, flag int, mode fs.FileMode) (sess
 	return observedFile{file, f}, nil
 }
 func (f transcriptFiles) Stat(path string) (fs.FileInfo, error) {
+	if f.beforeStat != nil {
+		f.beforeStat(path)
+	}
 	must(guard(f.home, path, true))
 	return os.Stat(path)
 }
@@ -159,11 +163,14 @@ func source(value any) string {
 }
 
 type nativeControls struct {
-	Configure                func(*sdkhost.Options)
-	Run                      func(sdkhost.Options, *sdkhost.Host, []protocol.JSONObject) error
-	AllowFailure             bool
-	ExternalWire             *originalLoopbackWire
-	WaitFirstAssistantAppend bool
+	Configure                 func(*sdkhost.Options)
+	Run                       func(sdkhost.Options, *sdkhost.Host, []protocol.JSONObject) error
+	AllowFailure              bool
+	ExternalWire              *originalLoopbackWire
+	WaitFirstAssistantAppend  bool
+	BeforeTranscriptStat      func(string)
+	SnapshotObserved          func()
+	AdministrativeJoinStarted func()
 }
 
 func runNative(t *testing.T, originalInput input, supplied ...nativeControls) ([]byte, map[string]any) {
@@ -293,7 +300,7 @@ func runNative(t *testing.T, originalInput input, supplied ...nativeControls) ([
 	defer owner.Close()
 	bootstrap, err := bootstrapstate.New(owner, input.Temporary, input.Home, func() (string, error) { return uuid(), nil })
 	must(err)
-	controller, err := sessioncontroller.New(sessioncontroller.Options{Bootstrap: bootstrap, AsyncPersistence: true, RecordBranchProfile: sessioncontroller.LegacySyncRecordProfile, ResumeOptions: resumeOptions, WriterOptions: sessioncontroller.WriterOptions{ConfigDir: filepath.Join(input.Home, ".claude"), CWD: input.Home, SessionID: input.Temporary, Version: "fixture-version", Environment: environment, SessionPersistenceDisabled: input.Disabled, SettingsState: state, Files: transcriptFiles{home: input.Home, origin: input.Origin, client: client, notified: &notified, assistantWritten: func() { assistantNotified.Do(func() { close(firstAssistantWritten) }) }}, Branch: branch, OnError: onError, Schedule: sessioncontroller.RealSchedule, Now: now}, Factory: factory, UUID: uuid, Now: now, OnPhase: phase, ReplayUserMessages: true, BaseToolsCLI: []string{""}, CustomSystemPrompt: json.RawMessage(`"original custom system"`)})
+	controller, err := sessioncontroller.New(sessioncontroller.Options{Bootstrap: bootstrap, AsyncPersistence: true, RecordBranchProfile: sessioncontroller.LegacySyncRecordProfile, ResumeOptions: resumeOptions, WriterOptions: sessioncontroller.WriterOptions{ConfigDir: filepath.Join(input.Home, ".claude"), CWD: input.Home, SessionID: input.Temporary, Version: "fixture-version", Environment: environment, SessionPersistenceDisabled: input.Disabled, SettingsState: state, Files: transcriptFiles{home: input.Home, origin: input.Origin, client: client, notified: &notified, beforeStat: control.BeforeTranscriptStat, assistantWritten: func() { assistantNotified.Do(func() { close(firstAssistantWritten) }) }}, Branch: branch, OnError: onError, Schedule: sessioncontroller.RealSchedule, Now: now}, Factory: factory, UUID: uuid, Now: now, OnPhase: phase, ReplayUserMessages: true, BaseToolsCLI: []string{""}, CustomSystemPrompt: json.RawMessage(`"original custom system"`)})
 	must(err)
 
 	var selection json.RawMessage
@@ -359,6 +366,23 @@ func runNative(t *testing.T, originalInput input, supplied ...nativeControls) ([
 		control.Configure(&hostOptions)
 	}
 	host, e := sdkhost.New(hostOptions)
+	if host != nil {
+		defer func() {
+			// Retire actual native work only after the original result snapshot.
+			// Keep the fixture HOME alive without changing Source cleanup/flush.
+			if control.AdministrativeJoinStarted != nil {
+				control.AdministrativeJoinStarted()
+			}
+			waitError := host.WaitTranscriptRuntime(context.Background())
+			joinError := host.Join(context.Background())
+			if waitError != nil {
+				t.Errorf("fixture transcript native retirement: %v", waitError)
+			}
+			if joinError != nil {
+				t.Errorf("fixture transcript administrative join: %v", joinError)
+			}
+		}()
+	}
 	var runError error
 	if e != nil {
 		runError = e
@@ -446,6 +470,9 @@ func runNative(t *testing.T, originalInput input, supplied ...nativeControls) ([
 	joined := bytes.Join(outputs, []byte("\n"))
 	if len(joined) > 0 {
 		joined = append(joined, '\n')
+	}
+	if control.SnapshotObserved != nil {
+		control.SnapshotObserved()
 	}
 	return joined, result
 }

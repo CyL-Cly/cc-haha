@@ -26,7 +26,7 @@ func TestWindowsNativeProcessIdentityUsesProfileConfigAndPhysicalCWD(t *testing.
 	if err != nil {
 		t.Fatal(err)
 	}
-	if n.Home != home || n.CWD != physical || n.Environment["HOME"] != home || n.Environment["CLAUDE_CONFIG_DIR"] != config || !n.ConfigDirExplicit {
+	if n.Home != home || n.CWD != physical || n.Environment["HOME"] != ignored || n.Environment["CLAUDE_CONFIG_DIR"] != config || !n.ConfigDirExplicit {
 		t.Fatalf("native identity: home=%q cwd=%q config=%q", n.Home, n.CWD, n.Environment["CLAUDE_CONFIG_DIR"])
 	}
 	if _, err := os.Stat(filepath.Join(ignored, ".claude")); !os.IsNotExist(err) {

@@ -116,7 +116,7 @@ func (server *Server) connectSocket(id string, socket *connection, messageAllowe
 		server.armDisconnect(id)
 	}()
 	_ = socket.object(map[string]string{"type": "connected", "sessionId": id})
-	server.sendSnapshot(id, socket)
+	server.sendSnapshot(id, socket, false)
 	for {
 		var raw string
 		if err := websocket.Message.Receive(ws, &raw); err != nil {
@@ -140,7 +140,7 @@ func (server *Server) connectSocket(id string, socket *connection, messageAllowe
 		case "ping":
 			_ = socket.object(map[string]string{"type": "pong"})
 		case "sync_state":
-			server.sendSnapshot(id, socket)
+			server.sendSnapshot(id, socket, true)
 		case "user_message", "prewarm_session":
 			server.enqueue(id, socket, json.RawMessage(raw))
 		case "permission_response", "computer_use_permission_response", "set_permission_mode", "set_runtime_config", "stop_generation", "ask_user_question_activity", "stop_background_task":
@@ -224,6 +224,16 @@ func (server *Server) runtime(id string) (*runtimeSession, error) {
 func (server *Server) enqueue(id string, socket *connection, raw json.RawMessage) {
 	var message protocol.JSONObject
 	_ = message.UnmarshalJSON(raw)
+	if message.String("type") == "prewarm_session" {
+		// Source defers repository checkout until the first real user turn.
+		// Read current launch metadata before creating or touching a runtime.
+		if info, err := server.findSession(server.ctx, id); err == nil {
+			var metadata protocol.JSONObject
+			if metadata.UnmarshalJSON(info.Metadata) == nil && sourceJSONTruthy(metadata.Get("repository")) {
+				return
+			}
+		}
+	}
 	runtime, err := server.runtime(id)
 	if err != nil {
 		socket.failure(err.Error(), "USER_TURN_FAILED")
@@ -244,6 +254,9 @@ func (server *Server) enqueue(id string, socket *connection, raw json.RawMessage
 		userTurn = registerUserTurn(runtime)
 	}
 	inputContext := runtime.ctx
+	if userTurn != nil {
+		inputContext = userTurn.ctx
+	}
 	if input, ok := runtime.live.(PlanRuntimeApprovalSession); ok && message.String("type") == "user_message" {
 		inputContext = input.CaptureRuntimeInput(inputContext)
 	}
@@ -289,9 +302,14 @@ func (server *Server) admit(id string, runtime *runtimeSession) {
 		runtime.admitting = true
 		runtime.activeUserTurn = frame.userTurn
 		runtime.mu.Unlock()
-		server.forwardRuntime(id, runtime, frame.socket, frame.raw, frame.ctx)
+		if frame.ctx == nil || frame.ctx.Err() == nil {
+			server.forwardRuntime(id, runtime, frame.socket, frame.raw, frame.ctx)
+		}
 		runtime.mu.Lock()
 		settleRegisteredUserTurn(runtime, frame.userTurn)
+		if frame.userTurn != nil {
+			frame.userTurn.cancel()
+		}
 		if runtime.activeUserTurn == frame.userTurn {
 			runtime.activeUserTurn = nil
 		}
@@ -389,6 +407,9 @@ func (server *Server) liveRuntime(id string, runtime *runtimeSession) (LiveSessi
 				options.OnRuntimeClosed = func(ctx context.Context, ended LiveSession) error {
 					return server.retireSelfClosedRuntime(ctx, id, runtime, ended)
 				}
+				options.OnBackgroundTaskStopped = func(taskID string, alreadyGone bool) func() {
+					return server.claimBackgroundTaskStopped(id, runtime, generation, taskID, alreadyGone)
+				}
 				originalSDK := options.OnSDK
 				options.OnSDK = func(raw json.RawMessage) {
 					if server.observeDisconnectSDK(id, runtime, generation, raw) && originalSDK != nil {
@@ -451,6 +472,13 @@ func (server *Server) forward(id string, socket *connection, raw json.RawMessage
 func (server *Server) forwardRuntime(id string, runtime *runtimeSession, socket *connection, raw json.RawMessage, ingress ...context.Context) {
 	var incoming protocol.JSONObject
 	_ = incoming.UnmarshalJSON(raw)
+	inputContext := runtime.ctx
+	if len(ingress) > 0 && ingress[0] != nil {
+		inputContext = ingress[0]
+	}
+	if incoming.String("type") == "user_message" && inputContext.Err() != nil {
+		return
+	}
 	if incoming.String("type") == "stop_generation" {
 		runtime.mu.Lock()
 		cancelRegisteredUserTurn(runtime)
@@ -495,20 +523,24 @@ func (server *Server) forwardRuntime(id string, runtime *runtimeSession, socket 
 	}
 	var reservation *sessioncollaboration.Reservation
 	if incoming.String("type") == "user_message" {
-		if err := server.collaborationBarrier(runtime.ctx); err != nil {
-			server.runtimeFailure(id, socket, err)
+		if err := server.collaborationBarrier(inputContext); err != nil {
+			if inputContext.Err() == nil {
+				server.runtimeFailure(id, socket, err)
+			}
 			return
 		}
 		var err error
-		reservation, err = server.collaboration.service.AdmitUserTurn(runtime.ctx, id, func() bool { return runtime.ctx.Err() == nil })
+		reservation, err = server.collaboration.service.AdmitUserTurn(inputContext, id, func() bool { return inputContext.Err() == nil })
 		if err == nil {
-			err = server.collaboration.service.OnUserInput(runtime.ctx, id, false)
+			err = server.collaboration.service.OnUserInput(inputContext, id, false)
 		}
 		if err != nil {
 			if reservation != nil {
 				_ = reservation.Release(context.WithoutCancel(runtime.ctx))
 			}
-			server.runtimeFailure(id, socket, err)
+			if inputContext.Err() == nil {
+				server.runtimeFailure(id, socket, err)
+			}
 			return
 		}
 		defer func() {
@@ -522,6 +554,11 @@ func (server *Server) forwardRuntime(id string, runtime *runtimeSession, socket 
 		}
 	}
 	live, err := server.liveRuntime(id, runtime)
+	// Startup belongs to the shared runtime. A stopped admission can wait for
+	// that factory to settle, but must never submit its old message afterward.
+	if incoming.String("type") == "user_message" && inputContext.Err() != nil {
+		return
+	}
 	if err == nil && incoming.String("type") == "user_message" && socket != nil {
 		err = server.TeamLeadUserMessage(runtime.ctx, id)
 	}
@@ -539,23 +576,28 @@ func (server *Server) forwardRuntime(id string, runtime *runtimeSession, socket 
 				}
 			}
 		} else {
-			ctx := runtime.ctx
-			if len(ingress) > 0 && ingress[0] != nil {
-				ctx = ingress[0]
+			stopTask := incoming.String("type") == "stop_background_task"
+			stopAll := incoming.String("type") == "stop_generation"
+			taskID := trimJS(incoming.String("taskId"))
+			if stopTask || stopAll {
+				server.setBackgroundTaskStopRequested(id, runtime, live, taskID, stopAll, true)
 			}
-			err = live.Handle(ctx, append(json.RawMessage(nil), raw...))
+			err = live.Handle(inputContext, append(json.RawMessage(nil), raw...))
+			if err != nil && (stopTask || stopAll) {
+				server.setBackgroundTaskStopRequested(id, runtime, live, taskID, stopAll, false)
+			}
 		}
 	}
 	if err == nil && incoming.String("type") == "stop_generation" {
 		server.bookendDisconnectTasks(id, runtime, "stopped")
 	}
-	if err != nil && runtime.ctx.Err() == nil {
+	if err != nil && runtime.ctx.Err() == nil && inputContext.Err() == nil {
 		server.runtimeFailure(id, socket, err)
 	}
 	server.armDisconnect(id)
 }
 
-func (server *Server) sendSnapshot(id string, socket *connection) {
+func (server *Server) sendSnapshot(id string, socket *connection, stateOnly bool) {
 	server.mu.Lock()
 	runtime := server.runtimes[id]
 	server.mu.Unlock()
@@ -572,32 +614,44 @@ func (server *Server) sendSnapshot(id string, socket *connection) {
 		if registered {
 			state = "running"
 		}
-		_ = socket.object(map[string]any{"type": "session_state", "turnState": state, "activeBackgroundTaskIds": []string{}})
-		_ = socket.object(map[string]any{"type": "permission_requests_snapshot", "toolRequestIds": []string{}, "computerUseRequestIds": []string{}, "turnActive": registered})
+		if stateOnly {
+			_ = socket.object(map[string]any{"type": "session_state", "turnState": state, "activeBackgroundTaskIds": []string{}})
+		} else {
+			_ = socket.object(map[string]any{"type": "permission_requests_snapshot", "toolRequestIds": []string{}, "computerUseRequestIds": []string{}, "turnActive": registered})
+		}
 		return
 	}
 	frames, err := live.Snapshot(server.ctx)
 	if err == nil {
 		frames = server.disconnectSnapshot(runtime, frames)
-		frames, err = server.teamSnapshot(server.ctx, id, frames)
+		if !stateOnly {
+			frames, err = server.teamSnapshot(server.ctx, id, frames)
+		}
 	}
 	if err != nil {
 		socket.failure(err.Error(), "SESSION_STATE_FAILED")
 		return
 	}
 	for _, raw := range frames {
-		if registered {
-			var frame protocol.JSONObject
-			if frame.UnmarshalJSON(raw) == nil {
-				switch frame.String("type") {
-				case "session_state":
-					frame.Set("turnState", json.RawMessage(`"running"`))
-				case "permission_requests_snapshot":
-					frame.Set("turnActive", json.RawMessage(`true`))
-				}
-				raw, _ = frame.MarshalJSON()
-			}
+		var frame protocol.JSONObject
+		if frame.UnmarshalJSON(raw) != nil || (frame.String("type") == "session_state") != stateOnly {
+			continue
 		}
+		switch frame.String("type") {
+		case "session_state":
+			state := json.RawMessage(`"idle"`)
+			if registered {
+				state = json.RawMessage(`"running"`)
+			}
+			frame.Set("turnState", state)
+		case "permission_requests_snapshot":
+			active := json.RawMessage(`false`)
+			if registered {
+				active = json.RawMessage(`true`)
+			}
+			frame.Set("turnActive", active)
+		}
+		raw, _ = frame.MarshalJSON()
 		_ = socket.send(raw)
 	}
 }

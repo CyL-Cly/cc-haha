@@ -53,6 +53,11 @@ func runNativeNonstreamFallback(ctx context.Context, input requestretry.Input, d
 	var envelope *streamhistory.Envelope
 	if err != nil {
 		failure := err
+		if deps.OnNativeQuota != nil {
+			if e := deps.OnNativeQuota(requestDeps.StreamScope, nil, failure); e != nil {
+				return Outcome{}, e
+			}
+		}
 		var selected bool
 		envelope, selected, err = apipresentation.NativeMediaFailure(failure, domain, factory, mediaPresentationOptions(input, history))
 		if err != nil {

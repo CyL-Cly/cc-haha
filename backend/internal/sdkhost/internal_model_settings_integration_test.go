@@ -71,7 +71,7 @@ func testActualNativeMenuSettingsLifecycle(t *testing.T, mutate func(*protocol.J
 		t.Fatal(err)
 	}
 	env := map[string]string{"HOME": home, "CLAUDE_CONFIG_DIR": config, "ANTHROPIC_BASE_URL": server.URL, "ANTHROPIC_API_KEY": "fake-only-loopback", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1", "CLAUDE_CODE_MAX_RETRIES": "0", "CLAUDE_CODE_DISABLE_FAST_MODE": "1", "CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK": "1", "PATH": "/usr/bin:/bin", "TZ": "UTC", "ANTHROPIC_DEFAULT_SONNET_MODEL": "actual-first-model", "ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES": "effort,max_effort", "ANTHROPIC_DEFAULT_OPUS_MODEL": "actual-second-model", "ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES": "effort,max_effort"}
-	native, err := clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: work, Platform: "darwin", ManagedRoot: managed, ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+	native, err := newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: work, Platform: "darwin", ManagedRoot: managed, ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 	if err != nil {
 		t.Fatal(err)
 	}

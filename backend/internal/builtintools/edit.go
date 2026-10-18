@@ -326,6 +326,9 @@ func (s *Service) editWithParent(ctx context.Context, in protocol.JSONObject, sc
 	if e := (builtinwrite.OSFiles{}).WriteFlush(target, bytes); e != nil {
 		return nil, e
 	}
+	if s.options.LSP != nil {
+		s.options.LSP.NotifyChange(p, quote(updated))
+	}
 	stamp, e := mtime(p)
 	if e != nil {
 		return nil, e

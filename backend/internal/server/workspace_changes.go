@@ -184,24 +184,30 @@ func (server *Server) workspaceTranscriptChanges(ctx context.Context, info sessi
 	if info.memory {
 		return []workspaceChange{}, nil
 	}
-	stat, err := os.Stat(info.Path)
+	data, err := server.recoverSessionHistory(ctx, info)
 	if err != nil {
 		return nil, err
 	}
-	if stat.Size() > 16*1024*1024 {
+	var recovery struct {
+		Status       string `json:"status"`
+		Completeness struct {
+			Workspace *bool `json:"workspace"`
+		} `json:"completeness"`
+		Messages []json.RawMessage `json:"messages"`
+	}
+	if err := json.Unmarshal(data, &recovery); err != nil {
+		return nil, err
+	}
+	complete := recovery.Status == "ready"
+	if recovery.Completeness.Workspace != nil {
+		complete = *recovery.Completeness.Workspace
+	}
+	if !complete {
 		return nil, &apiError{413, "HISTORY_WORKSPACE_LIMIT", "Workspace transcript exceeds the viewing budget"}
 	}
-	entries, exists, complete, err := server.rawEvidenceTranscript(ctx, info.Path)
-	if err != nil {
-		return nil, err
-	}
-	if !exists || !complete {
-		return nil, &apiError{413, "HISTORY_WORKSPACE_LIMIT", "Workspace transcript evidence is incomplete"}
-	}
-	// The original workspace API consumes root history recovery. Turn checkpoint
-	// evidence separately joins child tools; using it here would add changes that
-	// the workspace's original recovery projection does not expose.
-	projected, _ := projectHistory(entries)
+	// Workspace uses the bounded root recovery projection and its workspace
+	// completeness, independently of activity and full turn checkpoint budgets.
+	projected := recovery.Messages
 	messages := []historyObject{}
 	errors := map[string]bool{}
 	for _, raw := range projected {

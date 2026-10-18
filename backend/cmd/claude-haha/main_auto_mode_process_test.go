@@ -11,11 +11,45 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"strings"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/NanmiCoder/cc-haha/backend/internal/cliargs"
+	"github.com/NanmiCoder/cc-haha/backend/internal/provider"
 )
+
+func autoCommandSignedSystem(t *testing.T, request json.RawMessage, body map[string]any) any {
+	t.Helper()
+	// Every fresh native process has a distinct device/session identity. Verify
+	// the actual whole-body checksum before comparing the rest of the system;
+	// retaining a checksum from another request must fail this consumer.
+	pattern := regexp.MustCompile(`\bcch=[a-f0-9]{5};`)
+	matches := pattern.FindAllIndex(request, -1)
+	if len(matches) != 1 {
+		t.Fatal("standalone action lacks a unique actual billing checksum")
+	}
+	unsigned := pattern.ReplaceAll(request, []byte("cch=00000;"))
+	if provider.SignClaudeCodeCCHInString(string(unsigned)) != string(request) {
+		t.Fatal("standalone action billing checksum does not match its physical body")
+	}
+	system, ok := body["system"].([]any)
+	if !ok || len(system) < 2 {
+		t.Fatal("standalone action system shape")
+	}
+	first, ok := system[0].(map[string]any)
+	if !ok {
+		t.Fatal("standalone action billing block shape")
+	}
+	text, ok := first["text"].(string)
+	if !ok || !strings.HasPrefix(text, "x-anthropic-billing-header:") || len(pattern.FindAllStringIndex(text, -1)) != 1 {
+		t.Fatal("standalone action checksum outside billing block")
+	}
+	first["text"] = pattern.ReplaceAllString(text, "cch=00000;")
+	return system
+}
 
 func TestActualSourceAndPublicAutoModeCommands(t *testing.T) {
 	bun := os.Getenv("CC_HAHA_SOURCE_BUN")
@@ -30,6 +64,7 @@ func TestActualSourceAndPublicAutoModeCommands(t *testing.T) {
 	defer cancel()
 	binary := filepath.Join(root, "actual-auto-mode-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if data, err := build.CombinedOutput(); err != nil {
 		t.Fatal(err, string(data))
 	}
@@ -62,7 +97,7 @@ func TestActualSourceAndPublicAutoModeCommands(t *testing.T) {
 				}
 				return home
 			}
-			sourceHome, goHome := makeHome("source"), makeHome("go")
+			sourceHome, goHome, nativeHome := makeHome("source"), makeHome("go"), makeHome("native")
 			args := []string{"auto-mode", profile.operation}
 			if profile.operation == "critique" {
 				args = append(args, "--model", "fixture-model")
@@ -85,7 +120,7 @@ func TestActualSourceAndPublicAutoModeCommands(t *testing.T) {
 			}
 			var mu sync.Mutex
 			var requests []json.RawMessage
-			peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			peer := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 				body, _ := io.ReadAll(r.Body)
 				mu.Lock()
 				requests = append(requests, body)
@@ -132,7 +167,42 @@ func TestActualSourceAndPublicAutoModeCommands(t *testing.T) {
 					}
 				}
 			}
-			for _, home := range []string{goHome, sourceHome} {
+			// Keep the physical compiled entry above. This second fresh action
+			// also records the original consumers in the normal Go test profile.
+			mu.Lock()
+			requests = nil
+			mu.Unlock()
+			native := nativeCommandConsumerBoundary(t, root, nativeHome, resumeErrorEnv(nativeHome, root, peer.URL))
+			parsed := cliargs.Parse(args, cliargs.Config{Version: version})
+			if parsed.Parsed == nil {
+				t.Fatal("native public command parse", parsed)
+			}
+			var nativeOut, nativeErr bytes.Buffer
+			nativeCode := runNativeAutoModeCommand(ctx, args, parsed.Parsed, native, &nativeOut, &nativeErr)
+			if nativeCode != sc || !bytes.Equal(nativeOut.Bytes(), so) || !bytes.Equal(nativeErr.Bytes(), se) {
+				t.Fatalf("same public action differs Native(%d,%q,%q) Source(%d,%q,%q)", nativeCode, nativeOut.String(), nativeErr.String(), sc, so, se)
+			}
+			mu.Lock()
+			nativeRequests := append([]json.RawMessage{}, requests...)
+			mu.Unlock()
+			if len(nativeRequests) != len(got) {
+				t.Fatal("native action physical request count", len(nativeRequests), len(got))
+			}
+			for i := range got {
+				var physical, inProcess map[string]any
+				if json.Unmarshal(got[i], &physical) != nil || json.Unmarshal(nativeRequests[i], &inProcess) != nil {
+					t.Fatal("native action request JSON")
+				}
+				for _, key := range []string{"model", "messages", "max_tokens", "tools", "tool_choice", "stream", "thinking"} {
+					if !reflect.DeepEqual(physical[key], inProcess[key]) {
+						t.Errorf("native action request %s differs Physical=%v Native=%v", key, physical[key], inProcess[key])
+					}
+				}
+				if !reflect.DeepEqual(autoCommandSignedSystem(t, got[i], physical), autoCommandSignedSystem(t, nativeRequests[i], inProcess)) {
+					t.Error("native action system differs after verifying each physical checksum")
+				}
+			}
+			for _, home := range []string{goHome, sourceHome, nativeHome} {
 				after, err := os.ReadFile(filepath.Join(home, ".claude/settings.json"))
 				if err != nil || string(after) != profile.settings {
 					t.Fatal("inspection action mutated user rules", err)

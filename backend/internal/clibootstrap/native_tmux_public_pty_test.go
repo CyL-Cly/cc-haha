@@ -40,6 +40,7 @@ func TestActualPublicGoTmuxWorktreeClassicControlExistingPTYAndCleanup(t *testin
 	// is canceled. Bound that join so a fixture timeout reports a build failure.
 	build.WaitDelay = time.Second
 	build.Env = os.Environ()
+	capturePublicGoCoverage(t, build)
 	if out, e := build.CombinedOutput(); e != nil {
 		t.Fatalf("actual public Go CLI build %v %.4000s", e, out)
 	}
@@ -56,6 +57,7 @@ func TestActualPublicGoTmuxWorktreeClassicControlExistingPTYAndCleanup(t *testin
 			cmd := exec.CommandContext(ctx, python, "testdata/tmux_public_pty.py", binary, owned, tmux, mode)
 			cmd.WaitDelay = time.Second
 			cmd.Env = []string{"HOME=" + owned, "TMPDIR=" + owned, "PATH=/usr/bin:/bin"}
+			capturePublicGoCoverage(t, cmd)
 			out, e := cmd.CombinedOutput()
 			if e != nil {
 				t.Fatalf("actual public PTY %s %v %.5000s", mode, e, out)

@@ -2,6 +2,7 @@ package pluginsapi
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -10,18 +11,30 @@ import (
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/pluginschema"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/provider"
 )
 
 func ReadKnownMarketplaces(ctx context.Context, pluginsDir string) (protocol.JSONObject, error) {
 	if err := ctx.Err(); err != nil {
 		return protocol.JSONObject{}, err
 	}
-	data, err := lspRead(filepath.Join(pluginsDir, "known_marketplaces.json"))
-	if os.IsNotExist(err) {
+	data, err := os.ReadFile(filepath.Join(pluginsDir, "known_marketplaces.json"))
+	return ParseKnownMarketplaces(data, err)
+}
+
+// ParseKnownMarketplaces is the original loadKnownMarketplacesConfig body after
+// its actual file await. It performs no I/O, cache mutation or path sampling.
+func ParseKnownMarketplaces(data []byte, readFailure error) (protocol.JSONObject, error) {
+	if os.IsNotExist(readFailure) {
 		return rec(), nil
 	}
-	if err != nil {
-		return protocol.JSONObject{}, fmt.Errorf("Failed to load marketplace configuration: %s", err)
+	if readFailure != nil {
+		return protocol.JSONObject{}, fmt.Errorf("Failed to load marketplace configuration: %s", readFailure)
+	}
+	data = protocol.DecodeJavaScriptUTF8(data)
+	if !json.Valid(data) {
+		message, _ := provider.PinnedJavaScriptJSONSyntaxMessage(string(data))
+		return protocol.JSONObject{}, fmt.Errorf("Failed to load marketplace configuration: %s", stringValue(message))
 	}
 	schemas, err := pluginschema.Declarations()
 	if err != nil {

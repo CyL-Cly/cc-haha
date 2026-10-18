@@ -30,11 +30,11 @@ func (m *MainPrint) nativeStandaloneTeamMailbox(scope *cooperative.Scope) (*team
 	w := m.teamWorker
 	if w.mailbox == nil {
 		var err error
-		w.mailbox, err = teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.Environment["CLAUDE_CONFIG_DIR"], TaskStore: m.taskStore, Log: func(err error) { _, _ = fmt.Fprintln(m.options.Error, err) }})
+		w.mailbox, err = teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.ConfigHomeDirectory(), TaskStore: m.taskStore, Log: func(err error) { _, _ = fmt.Fprintln(m.options.Error, err) }})
 		if err != nil {
 			return nil, nil, err
 		}
-		w.config, err = teamstore.NewConfig(teamstore.ConfigOptions{ConfigDir: m.options.Native.Environment["CLAUDE_CONFIG_DIR"], TaskStore: m.taskStore, PID: m.options.PID, Platform: m.options.Platform})
+		w.config, err = teamstore.NewConfig(teamstore.ConfigOptions{ConfigDir: m.options.Native.ConfigHomeDirectory(), TaskStore: m.taskStore, PID: m.options.PID, Platform: m.options.Platform})
 		if err != nil {
 			return nil, nil, err
 		}

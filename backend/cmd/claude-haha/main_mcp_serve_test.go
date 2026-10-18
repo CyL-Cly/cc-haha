@@ -29,6 +29,7 @@ func TestPublicMCPServeBareActualStdioReadEditCacheAndErrors(t *testing.T) {
 	defer cancel()
 	binary := filepath.Join(root, "go-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-mod=readonly", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	output, err := build.CombinedOutput()
 	if err != nil {
 		t.Fatal(err, string(output))
@@ -117,6 +118,7 @@ func TestPublicMCPServeOrdinaryActualStdioCatalogReadEditAndNoASK(t *testing.T) 
 	defer cancel()
 	binary := filepath.Join(root, "go-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-mod=readonly", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	output, err := build.CombinedOutput()
 	if err != nil {
 		t.Fatal(err, string(output))

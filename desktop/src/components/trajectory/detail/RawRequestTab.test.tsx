@@ -95,9 +95,9 @@ describe('RawRequestTab', () => {
     render(<RawRequestTab sessionId="s1" row={ROW} />)
 
     expect(await screen.findByText(/Closest captured call by time/)).toBeInTheDocument()
+    expect(await screen.findByText('Response from the model')).toBeInTheDocument()
     // The record locator reaches calls beyond the capture's indexed window.
     expect(getTraceCall).toHaveBeenCalledWith('s1', 'match', '9000-12000')
-    expect(await screen.findByText('Response from the model')).toBeInTheDocument()
     // Where the call went and with which model sit at the top.
     expect(screen.getByTestId('trajectory-request-endpoint')).toHaveTextContent(/POST\s*https:\/\/api\/v1\/messages/)
     expect(screen.getByTestId('trajectory-request-model')).toHaveTextContent('claude-x')

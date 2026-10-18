@@ -10,7 +10,7 @@ if (process.env.CC_HAHA_NATIVE_SDK_SYSTEM_OUTPUT_FIXTURE !== '1') throw new Erro
 const absent = absentManagedSettingsFixturePaths()
 for (const start of new Set([home, realpathSync(home)])) {
   for (let path = dirname(start); ; path = dirname(path)) {
-    absent.push(join(path, '.git'), join(path, '.claude', 'skills'), join(path, '.claude', 'workflows'))
+    absent.push(join(path, '.git'), join(path, '.agents', 'skills'), join(path, '.claude', 'skills'), join(path, '.claude', 'workflows'))
     if (dirname(path) === path) break
   }
 }

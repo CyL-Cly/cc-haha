@@ -31,6 +31,7 @@ func TestActualPublicGoTUIExitAliasesAndCtrlDDrainSessionEndRestorePTY(t *testin
 	// Test process environment is hermetic; the subprocess itself receives its
 	// explicit private HOME/config/TMP and the tag isolates actual Keychain/MDM.
 	build.Env = os.Environ()
+	capturePublicGoCoverage(t, build)
 	if out, err := build.CombinedOutput(); err != nil {
 		t.Fatalf("actual public CLI build %v %.4000s", err, out)
 	}
@@ -47,6 +48,7 @@ func TestActualPublicGoTUIExitAliasesAndCtrlDDrainSessionEndRestorePTY(t *testin
 			defer stop()
 			cmd := exec.CommandContext(childCtx, python, "testdata/tui_exit_public_pty.py", binary, root, mode)
 			cmd.Env = []string{"PATH=/usr/bin:/bin", "HOME=" + root, "TMPDIR=" + root}
+			capturePublicGoCoverage(t, cmd)
 			out, err := cmd.CombinedOutput()
 			if err != nil {
 				t.Fatalf("actual public CLI %s %v %.5000s", mode, err, out)

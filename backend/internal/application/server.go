@@ -27,6 +27,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/memoryapi"
 	"github.com/NanmiCoder/cc-haha/backend/internal/migrations"
 	"github.com/NanmiCoder/cc-haha/backend/internal/modelaccounting"
+	"github.com/NanmiCoder/cc-haha/backend/internal/nativepaths"
 	"github.com/NanmiCoder/cc-haha/backend/internal/nativeprovidermodels"
 	"github.com/NanmiCoder/cc-haha/backend/internal/nativeprovidertest"
 	"github.com/NanmiCoder/cc-haha/backend/internal/opentargets"
@@ -44,6 +45,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/tlsconfig"
 	"github.com/NanmiCoder/cc-haha/backend/internal/tracecapture"
 	"github.com/NanmiCoder/cc-haha/backend/internal/uipreferences"
+	"golang.org/x/text/unicode/norm"
 )
 
 type ServerOptions struct {
@@ -161,7 +163,7 @@ func NewDesktopServer(o ServerOptions) (*server.Server, error) {
 		return nil, err
 	}
 	skills, err := skillregistry.New(skillregistry.Options{
-		Home: stylesNative.Home, ConfigDir: stylesNative.Environment["CLAUDE_CONFIG_DIR"],
+		Home: stylesNative.Home, ConfigDir: stylesNative.ConfigHomeDirectory(),
 		CWD: stylesNative.CWD, ProjectRoot: stylesNative.CWD,
 		Environment: func(key string) string { return stylesNative.Environment[key] },
 		Settings: func(context.Context) (protocol.JSONObject, error) {
@@ -182,7 +184,7 @@ func NewDesktopServer(o ServerOptions) (*server.Server, error) {
 		_ = nativeSettings.Close(context.Background())
 		return nil, err
 	}
-	memory, err := memoryapi.New(memoryapi.Options{Home: stylesNative.Home, ConfigDir: stylesNative.Environment["CLAUDE_CONFIG_DIR"], CWD: stylesNative.CWD, Environment: func(key string) string { return stylesNative.Environment[key] }})
+	memory, err := memoryapi.New(memoryapi.Options{Home: stylesNative.Home, ConfigDir: stylesNative.ConfigHomeDirectory(), CWD: stylesNative.CWD, Environment: func(key string) string { return stylesNative.Environment[key] }})
 	if err != nil {
 		_ = nativeSettings.Close(context.Background())
 		return nil, err
@@ -191,7 +193,7 @@ func NewDesktopServer(o ServerOptions) (*server.Server, error) {
 	if openPlatform == "windows" {
 		openPlatform = "win32"
 	}
-	openTargets, err := opentargets.New(opentargets.Options{Home: stylesNative.Home, ConfigDir: stylesNative.Environment["CLAUDE_CONFIG_DIR"], CWD: stylesNative.CWD, Platform: openPlatform, TempDir: stylesNative.Temp, Environment: stylesNative.Environment})
+	openTargets, err := opentargets.New(opentargets.Options{Home: stylesNative.Home, ConfigDir: stylesNative.ConfigHomeDirectory(), CWD: stylesNative.CWD, Platform: openPlatform, TempDir: stylesNative.Temp, Environment: stylesNative.Environment})
 	if err != nil {
 		_ = nativeSettings.Close(context.Background())
 		return nil, err
@@ -600,9 +602,16 @@ func RunServer(ctx context.Context, args []string, environment map[string]string
 	if o.HomeDir == "" {
 		return errors.New("server requires a home directory")
 	}
-	o.ConfigDir = environment["CLAUDE_CONFIG_DIR"]
-	if o.ConfigDir == "" {
+	var configDirPresent bool
+	o.ConfigDir, configDirPresent = environment["CLAUDE_CONFIG_DIR"]
+	if !configDirPresent {
 		o.ConfigDir = filepath.Join(o.HomeDir, ".claude")
+	}
+	o.ConfigDir = norm.NFC.String(o.ConfigDir)
+	if runtime.GOOS == "windows" {
+		o.ConfigDir = nativepaths.ResolveWindows(o.ConfigDir, norm.NFC.String(cwd))
+	} else if !filepath.IsAbs(o.ConfigDir) {
+		o.ConfigDir = filepath.Join(norm.NFC.String(cwd), o.ConfigDir)
 	}
 	listener, err := net.Listen("tcp", net.JoinHostPort(host, strconv.Itoa(o.Port)))
 	if err != nil {

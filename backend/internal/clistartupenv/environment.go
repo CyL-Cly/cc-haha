@@ -8,6 +8,7 @@ import (
 	"math"
 	"strconv"
 	"strings"
+	"sync"
 	"unicode/utf16"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
@@ -20,8 +21,12 @@ func (e *CapabilityError) Error() string { return "CLI startup environment capab
 // Environment retains Bun's JS property view. Raw numeric values are not
 // stringified prematurely; nil is own undefined, different from absent.
 // Mutable arrays/objects and getters are explicitly outside this scalar seam.
-// A CLI host retains one instance and serializes its access, like process.env.
-type Environment struct{ object protocol.JSONObject }
+// A CLI host retains one instance. Native background consumers take scalar
+// snapshots without keeping the REPL owner occupied during external I/O.
+type Environment struct {
+	mu     sync.RWMutex
+	object protocol.JSONObject
+}
 
 func NewEnvironment(initial protocol.JSONObject) (*Environment, error) {
 	if !initial.IsObject() {
@@ -33,9 +38,22 @@ func NewEnvironment(initial protocol.JSONObject) (*Environment, error) {
 	}
 	return e, nil
 }
-func (e *Environment) Snapshot() protocol.JSONObject   { return e.object.Clone() }
-func (e *Environment) Get(name string) json.RawMessage { return e.object.Get(name) }
+func (e *Environment) Snapshot() protocol.JSONObject {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+	return e.object.Clone()
+}
+func (e *Environment) Get(name string) json.RawMessage {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+	return append(json.RawMessage(nil), e.object.Get(name)...)
+}
 func (e *Environment) SetProperty(key, value json.RawMessage) error {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	return e.setProperty(key, value)
+}
+func (e *Environment) setProperty(key, value json.RawMessage) error {
 	if value != nil && (!json.Valid(value) || bytes.ContainsAny(bytes.TrimSpace(value)[:1], "{[")) {
 		return &CapabilityError{"mutable/reference or invalid environment value"}
 	}
@@ -43,14 +61,19 @@ func (e *Environment) SetProperty(key, value json.RawMessage) error {
 }
 
 // Assign preserves earlier assignments if a later admitted-domain guard fails.
+// One synchronous Object.assign cannot expose an intermediate snapshot to a
+// background reader, even though separate JS assignments remain independent.
 func (e *Environment) Assign(source protocol.JSONObject) error {
+	e.mu.Lock()
+	defer e.mu.Unlock()
 	for _, property := range source.OwnProperties() {
-		if err := e.SetProperty(property.NameJSON, property.Value); err != nil {
+		if err := e.setProperty(property.NameJSON, property.Value); err != nil {
 			return err
 		}
 	}
 	return nil
 }
+
 func rawKind(raw json.RawMessage) string {
 	raw = bytes.TrimSpace(raw)
 	if len(raw) == 0 {

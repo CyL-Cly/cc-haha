@@ -11,12 +11,34 @@ import (
 // carries a second unexamined set of flags. This is initialization provenance,
 // not a wildcard setting or environment allowlist.
 func validateNeutralEnvironment(environment *clistartupenv.Environment, original map[string]string) error {
+	return validateOriginalEnvironment(environment, original, false)
+}
+
+// Only the actual native print graph has a filesystem producer for Source's
+// absent directory. Finite neutral hosts still require their declared root.
+// Snapshot identity and every other filesystem/registry check remain exact.
+func validateOriginalEnvironment(environment *clistartupenv.Environment, original map[string]string, optionalConfig bool) error {
 	if environment == nil {
 		return cap("neutral original environment")
 	}
 	expected := protocol.NewJSONObject()
 	for _, key := range []string{"HOME", "CLAUDE_CONFIG_DIR"} {
 		value := environment.Get(key)
+		if key == "CLAUDE_CONFIG_DIR" && optionalConfig {
+			declared, present := original[key]
+			if !present && value != nil {
+				return cap("neutral original filesystem environment")
+			}
+			if present {
+				encoded, _ := json.Marshal(declared)
+				if !bytes.Equal(value, encoded) {
+					return cap("neutral original filesystem environment")
+				}
+			}
+		}
+		if key == "CLAUDE_CONFIG_DIR" && optionalConfig && value == nil {
+			continue
+		}
 		if _, e := protocol.DecodeJavaScriptJSONString(value); e != nil {
 			return cap("neutral original filesystem environment")
 		}

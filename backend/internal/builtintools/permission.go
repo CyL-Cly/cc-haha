@@ -173,7 +173,10 @@ func globMatch(pattern, path string) bool {
 				i = j
 			}
 		default:
-			out.WriteString(regexp.QuoteMeta(string(pattern[i])))
+			// The grammar indexes ASCII metacharacters by byte. Preserve the
+			// original UTF-8 bytes for literal filenames rather than converting
+			// each byte into a separate Unicode code point.
+			out.WriteString(regexp.QuoteMeta(pattern[i : i+1]))
 		}
 	}
 	out.WriteString("$")
@@ -181,6 +184,10 @@ func globMatch(pattern, path string) bool {
 	return e == nil && r.MatchString(path)
 }
 func (s *Service) Permission(scope *cooperative.Scope, name string, in protocol.JSONObject) (string, error) {
+	if name == "LSP" {
+		d, e := s.lspPermission(scope, &in)
+		return d.Behavior, e
+	}
 	if name == "PowerShell" {
 		decision, err := s.powerShellPermissionDecision(scope, &in)
 		return decision.Behavior, err
@@ -393,6 +400,9 @@ func (s *Service) Permission(scope *cooperative.Scope, name string, in protocol.
 // PermissionDecision retains the Source resolver's model-visible denial text.
 // The behavior-only seam remains for the original finite Write profile.
 func (s *Service) PermissionDecision(scope *cooperative.Scope, name string, in *protocol.JSONObject) (queryloop.ToolPermission, error) {
+	if name == "LSP" {
+		return s.lspPermission(scope, in)
+	}
 	if name == "PowerShell" {
 		return s.powerShellPermissionDecision(scope, in)
 	}

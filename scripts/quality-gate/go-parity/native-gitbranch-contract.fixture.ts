@@ -23,6 +23,7 @@ const caps=await installClientFixtureCapabilities(home,{absentPaths:absent})
 ;(globalThis as any).MACRO={BUILD_TIME:'',VERSION:'fixture-version',PACKAGE_URL:'',README_URL:'',ISSUES_URL:''}
 process.env.CLAUDE_CODE_SIMPLE='1';process.env.CLAUDE_CODE_MANAGED_SETTINGS_PATH=join(home,'policy')
 const values:any[]=[];const asyncReads:any[]=[];let watchEvent: (()=>void)|undefined
+const watchTrace: Array<{ path: string; phase: string; initialMissing?: boolean }> = []
 // Explicit new caller control. The archived original fixture/golden are
 // unchanged; only these two actual initial missing-loose-ref callbacks are
 // awaited. No sleep, general task drain, cache mutation, or count filtering.
@@ -32,14 +33,28 @@ const missingRefPaths = ['work/.git/refs/heads/first', 'work/.git/refs/heads/sec
 const firstRefCallback = async (path: string) => {
  if (firstRefCallbacks.has(path)) return
  await new Promise<void>((resolve, reject) => {
-  const timeout = setTimeout(() => reject(new Error('Actual Source initial missing-loose-ref callback did not arrive')), 5000)
+  const timeout = setTimeout(() => reject(new Error('Actual Source initial missing-loose-ref callback did not arrive '+JSON.stringify({watchTrace,values,asyncReads}))), 5000)
   timeout.unref()
   firstRefWaiters.set(path, () => { clearTimeout(timeout); resolve() })
  })
 }
 const fsActual=await import('fs'), originalWatch=fsActual.watchFile
-mock.module('fs',()=>({...fsActual,watchFile:(path:any,options:any,cb:any)=>originalWatch(local(String(path)),options,(...args:any[])=>{cb(...args);const p=String(path);if(missingRefPaths.includes(p)){firstRefCallbacks.add(p);firstRefWaiters.get(p)?.()};if(p===local('work/.git/HEAD'))watchEvent?.()})}))
-const originalRead=fsp.readFile,originalStat=fsp.stat
+const watched = ((path:any,options:any,cb:any)=>{
+ const p=local(String(path))
+ watchTrace.push({path:relative(home,p),phase:'registered'})
+ return originalWatch(p,options,(...args:any[])=>{
+  cb(...args)
+  watchTrace.push({path:relative(home,p),phase:'native-callback',initialMissing:args[0]?.nlink===0&&args[1]?.nlink===0})
+  if(missingRefPaths.includes(p)){firstRefCallbacks.add(p);firstRefWaiters.get(p)?.()}
+  if(p===local('work/.git/HEAD'))watchEvent?.()
+ })
+}) as typeof fs.watchFile
+mock.module('fs',()=>({...fsActual,watchFile:watched}))
+// The capability guard already spied these exports. Bun mutates that mock
+// function in place when another spy is installed; capturing the mock itself
+// recurses into our observer. Retain its guarded implementation closure.
+const originalRead=(fsp.readFile as any).getMockImplementation?.(),originalStat=(fsp.stat as any).getMockImplementation?.()
+if(typeof originalRead!=='function'||typeof originalStat!=='function')throw new Error('Original guarded fs implementations unavailable')
 spyOn(fsp,'readFile').mockImplementation((async(...args:any[])=>{asyncReads.push({operation:'read',path:relative(home,String(args[0]))});return (originalRead as any)(...args)}) as any)
 spyOn(fsp,'stat').mockImplementation((async(...args:any[])=>{asyncReads.push({operation:'stat',path:relative(home,String(args[0]))});return (originalStat as any)(...args)}) as any)
 const bootstrap=await import('../../../src/bootstrap/state')
@@ -77,4 +92,4 @@ for(const op of input.profile.ops){
 branch.resetGitFileWatcher()
 if(caps.blocked.length)throw new Error('Git fixture capability violation '+JSON.stringify(caps.blocked))
 const norm=(v:any):any=>typeof v==='string'?v.split(home).join('<HOME>'):Array.isArray(v)?v.map(norm):v&&typeof v==='object'?Object.fromEntries(Object.entries(v).map(([k,x])=>[k,norm(x)])):v
-console.log(JSON.stringify(norm({values,asyncReads,clockCalls,cwdReads,caps:{blocked:caps.blocked,secureReads:caps.secureReads},scope:'actual exported helpers; async IO/branch values; source-only watch callback phase; no full Record'})))
+console.log(JSON.stringify(norm({values,asyncReads,clockCalls,cwdReads,watchTrace,caps:{blocked:caps.blocked,secureReads:caps.secureReads},scope:'actual exported helpers; async IO/branch values; source-only watch callback phase; no full Record'})))

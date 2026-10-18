@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -15,6 +16,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/builtinwrite"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cliglobalconfig"
 	"github.com/NanmiCoder/cc-haha/backend/internal/clisettings"
+	"github.com/NanmiCoder/cc-haha/backend/internal/clistartupenv"
 	"github.com/NanmiCoder/cc-haha/backend/internal/diagnostics"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/resumestate"
@@ -39,18 +41,29 @@ type NativeBoundary struct {
 	// An explicit external path primitive for disposable CCR fixtures; ordinary
 	// processes use the original /home/claude/.claude/remote location.
 	CCRCredentialDirectory string
-	Environment            map[string]string
-	Now                    func() time.Time
-	NowMillis              func() float64
+	// Environment is the external launch/setup view. After MainPrint binds its
+	// canonical process environment, asynchronous consumers use that authority.
+	Environment        map[string]string
+	processEnvironment *clistartupenv.Environment
+	Now                func() time.Time
+	NowMillis          func() float64
 	// Timer is the OS timer primitive; nil uses the production real clock.
-	Timer             func(time.Duration, func()) func()
-	ExternalAbsent    bool
-	NativeProcess     bool
-	ConfigDirExplicit bool
-	ResolvePolicy     func() (*protocol.JSONObject, error)
-	RunSecurity       func(context.Context, securestorage.Command) ([]byte, error)
+	Timer                 func(time.Duration, func()) func()
+	ExternalAbsent        bool
+	NativeProcess         bool
+	ConfigDirExplicit     bool
+	ResolvePolicy         func() (*protocol.JSONObject, error)
+	RunSecurity           func(context.Context, securestorage.Command) ([]byte, error)
+	StartKeychainPrefetch func(context.Context, securestorage.Command) (*securestorage.KeychainPrefetchProcess, error)
+	// Optional external HTTP primitive for isolated normal-CLI init fixtures.
+	// It cannot replace model transport, auth, settings or the preconnect gate.
+	PreconnectHTTP    func(*http.Request, *http.Client) (*http.Response, error)
 	internalRead      *nativeInternalReadState
+	credentials       *nativeCredentialDescriptors
 	mdm               *nativeMDMCache
+	remoteManaged     *nativeRemoteManagedPolicy
+	policyObservation *NativePolicyObservation
+	platform          string
 	mu                sync.Mutex
 	Trace             []NativeEvent
 	roots             []string
@@ -309,35 +322,37 @@ type mainGlobalFiles struct {
 	n *NativeBoundary
 }
 
-func (f mainGlobalFiles) ReadFile(p string) ([]byte, error) { return f.n.readFile(p) }
+func (f mainGlobalFiles) ReadFile(p string) ([]byte, error) {
+	return f.n.readFile(f.n.nativePhysicalPath(p))
+}
 func (f mainGlobalFiles) Stat(p string) (cliglobalconfig.FileStat, error) {
-	i, e := f.n.stat(p)
+	i, e := f.n.stat(f.n.nativePhysicalPath(p))
 	if e != nil {
 		return cliglobalconfig.FileStat{}, e
 	}
 	return cliglobalconfig.FileStat{Mtime: float64(i.ModTime().UnixNano()) / 1e6, Size: i.Size(), Mode: i.Mode()}, nil
 }
-func (f mainGlobalFiles) Exists(p string) bool { _, e := f.n.stat(p); return e == nil }
+func (f mainGlobalFiles) Exists(p string) bool { _, e := f.Stat(p); return e == nil }
 func (f mainGlobalFiles) MkdirAll(p string) error {
 	if e := f.n.check("mkdirAll", p); e != nil {
 		return e
 	}
-	return f.OSFileSystem.MkdirAll(p)
+	return f.OSFileSystem.MkdirAll(f.n.nativePhysicalPath(p))
 }
 func (f mainGlobalFiles) Mkdir(p string) error {
 	if e := f.n.check("mkdir", p); e != nil {
 		return e
 	}
-	return f.OSFileSystem.Mkdir(p)
+	return f.OSFileSystem.Mkdir(f.n.nativePhysicalPath(p))
 }
 func (f mainGlobalFiles) Remove(p string) error {
 	if e := f.n.check("remove", p); e != nil {
 		return e
 	}
-	return os.Remove(p)
+	return os.Remove(f.n.nativePhysicalPath(p))
 }
 func (f mainGlobalFiles) ReadDir(p string) ([]string, error) {
-	es, e := f.n.readDir(p)
+	es, e := f.n.readDir(f.n.nativePhysicalPath(p))
 	if e != nil {
 		return nil, e
 	}
@@ -354,29 +369,31 @@ func (f mainGlobalFiles) CopyFile(p, q string) error {
 	if e := f.n.check("copy-to", q); e != nil {
 		return e
 	}
-	return f.OSFileSystem.CopyFile(p, q)
+	return f.OSFileSystem.CopyFile(f.n.nativePhysicalPath(p), f.n.nativePhysicalPath(q))
 }
 func (f mainGlobalFiles) Readlink(p string) (string, error) {
-	return (mainSettingsFiles{n: f.n}).Readlink(p)
+	return (mainSettingsFiles{n: f.n}).Readlink(f.n.nativePhysicalPath(p))
 }
 func (f mainGlobalFiles) Realpath(p string) (string, error) {
-	return (mainSettingsFiles{n: f.n}).EvalSymlinks(p)
+	return (mainSettingsFiles{n: f.n}).EvalSymlinks(f.n.nativePhysicalPath(p))
 }
 func (f mainGlobalFiles) Chmod(p string, m fs.FileMode) error {
-	return (mainSettingsFiles{n: f.n}).Chmod(p, m)
+	return (mainSettingsFiles{n: f.n}).Chmod(f.n.nativePhysicalPath(p), m)
 }
 func (f mainGlobalFiles) Chtimes(p string, t time.Time) error {
 	if e := f.n.check("chtimes", p); e != nil {
 		return e
 	}
-	return f.OSFileSystem.Chtimes(p, t)
+	return f.OSFileSystem.Chtimes(f.n.nativePhysicalPath(p), t)
 }
-func (f mainGlobalFiles) Rename(p, q string) error { return (mainSettingsFiles{n: f.n}).Rename(p, q) }
+func (f mainGlobalFiles) Rename(p, q string) error {
+	return (mainSettingsFiles{n: f.n}).Rename(f.n.nativePhysicalPath(p), f.n.nativePhysicalPath(q))
+}
 func (f mainGlobalFiles) WriteFlush(p string, b []byte, m *fs.FileMode) error {
 	if e := f.n.check("writeFlush", p); e != nil {
 		return e
 	}
-	return f.OSFileSystem.WriteFlush(p, b, m)
+	return f.OSFileSystem.WriteFlush(f.n.nativePhysicalPath(p), b, m)
 }
 
 type mainResumeFiles struct {

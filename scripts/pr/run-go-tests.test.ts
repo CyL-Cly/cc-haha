@@ -1,11 +1,13 @@
 import { describe, expect, test } from 'bun:test'
 import { createHash } from 'node:crypto'
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+import { closeSync, constants, existsSync, lstatSync, mkdirSync, mkdtempSync, openSync, readFileSync, realpathSync, renameSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { setImmediate as nextTurn } from 'node:timers/promises'
 import { goNativeTarget } from './go-platforms'
 import { prepareGoDependencies } from './go-dependencies'
 import {
+  batchGoFormatCommands,
   collectGoChangedLines,
   collectGoDeclarationEvidence,
   collectGoSourcePaths,
@@ -112,6 +114,88 @@ describe('offline Go checks', () => {
     expect(() => collectGoSourcePaths('', '/fixture/backend')).toThrow('no source files')
     expect(() => collectGoSourcePaths('/fixture/backend/../other.go', '/fixture/backend')).toThrow('outside')
     expect(() => collectGoSourcePaths('query.go', '/fixture/backend')).toThrow('outside')
+  })
+  test('formatting argv budgets count UTF-8 bytes and preserve boundary entries', () => {
+    const prefixBytes = Buffer.byteLength('gofmt\0-l\0', 'utf8')
+    const paths = ['/目录/🧪.go', '/second.go', '/目录/🧪.go']
+    const budget = prefixBytes + Buffer.byteLength(paths[0], 'utf8') + 1
+    expect(paths[0].length + prefixBytes + 1).toBeLessThan(budget)
+    expect(batchGoFormatCommands(paths, budget)).toEqual(paths.map(path => ['gofmt', '-l', path]))
+    expect(batchGoFormatCommands(paths, budget).flatMap(command => command.slice(2))).toEqual(paths)
+    expect(() => batchGoFormatCommands([], budget)).toThrow('inventory is empty')
+    for (const invalid of [0, prefixBytes, -1, 1.5, Number.NaN, Number.POSITIVE_INFINITY]) {
+      expect(() => batchGoFormatCommands(paths, invalid)).toThrow('budget is invalid')
+    }
+    expect(() => batchGoFormatCommands(['/small.go', '/very-long.go'], prefixBytes + 11)).toThrow('source exceeds')
+  })
+  test.each(['formatted', 'unformatted', 'failed-batch'] as const)('formatting batches keep every long UTF-8 source path in the actual lane: %s', async mode => {
+    const root = tempRoot()
+    const commands: string[][] = []
+    const budget = 96 * 1024
+    try {
+      mkdirSync(join(root, 'backend'), { recursive: true })
+      mkdirSync(join(root, 'scripts/quality-gate'), { recursive: true })
+      writeFileSync(join(root, 'backend/go.mod'), `module ${modulePath}\n\ngo 1.25.7\n`)
+      writeFileSync(join(root, 'scripts/quality-gate/coverage-thresholds.json'), JSON.stringify({ changedLines: { minimumPercent: 90 } }))
+      const names = Array.from({ length: 800 }, (_, index) => `源码🧪-${String(index).padStart(4, '0')}-${'目录'.repeat(28)}.go`)
+      for (const [index, name] of names.entries()) writeFileSync(join(root, 'backend', name), `package fixture\nvar value${index} = 1\n`)
+      writeFileSync(join(root, 'backend/query_test.go'), 'package fixture\n')
+      const sources = [...names, 'query_test.go'].map(name => join(root, 'backend', name)).sort()
+      expect(sources.reduce((sum, path) => sum + Buffer.byteLength(path, 'utf8') + 1, 0)).toBeGreaterThan(budget)
+      let formattingBatches = 0
+      const unformatted: string[] = []
+      const report = await runGoChecks({ rootDir: root, artifactDir: join(root, 'artifacts'), sourceEnvironment: { PATH: '/fixture/bin' },
+        async execute(command) {
+          commands.push(command)
+          let stdout = ''
+          if (command[0] === 'gofmt') {
+            if (command.reduce((sum, arg) => sum + Buffer.byteLength(arg, 'utf8') + 1, 0) > budget) return { exitCode: 7, stdout: '', stderr: 'fixture E2BIG: full UTF-8 argv exceeds formatting budget' }
+            formattingBatches++
+            if (mode === 'failed-batch' && formattingBatches === 2) return { exitCode: 9, stdout: '', stderr: 'fixture formatting batch failed' }
+            if (mode === 'unformatted') {
+              const path = command[2]!
+              unformatted.push(path)
+              stdout = `${path}\n`
+            }
+          } else if (command[1] === 'env') {
+            const [GOOS, GOARCH] = goNativeTarget().split('/')
+            stdout = JSON.stringify({ GOOS, GOARCH, GOVERSION: 'go1.25.7' })
+          } else if (command[1] === 'mod') stdout = JSON.stringify({ Require: [] })
+          else if (command.includes('-m')) stdout = JSON.stringify({ Path: modulePath, Dir: join(root, 'backend') })
+          else if (command[1] === 'list' && command.includes('-e')) stdout = JSON.stringify({ ImportPath: modulePath, Dir: join(root, 'backend'), GoFiles: names, TestGoFiles: ['query_test.go'] })
+          else if (command[1] === 'list') stdout = modulePath
+          else if (command[1] === 'test') {
+            stdout = passingEvents
+            const profile = command.find(arg => arg.startsWith('-coverprofile='))
+            if (profile) writeFileSync(profile.slice('-coverprofile='.length), 'mode: atomic\n' + names.map(name => `${modulePath}/${name}:2.1,2.20 1 1\n`).join(''))
+          } else if (command.includes('merge-base')) stdout = 'a'.repeat(40)
+          else if (command.includes('--cached')) stdout = ['backend/go.mod', 'scripts/quality-gate/coverage-thresholds.json', ...sources.map(path => 'backend/' + path.slice(join(root, 'backend').length + 1))].join('\0') + '\0'
+          return { exitCode: 0, stdout, stderr: '' }
+        },
+      })
+      const formatting = commands.filter(command => command[0] === 'gofmt')
+      expect(formatting.length).toBeGreaterThan(1)
+      const checkedSources = formatting.flatMap(command => command.slice(2))
+      expect(checkedSources).toEqual(mode === 'failed-batch' ? sources.slice(0, checkedSources.length) : sources)
+      expect(new Set(checkedSources).size).toBe(checkedSources.length)
+      expect(formatting.every(command => command.reduce((bytes, arg) => bytes + Buffer.byteLength(arg, 'utf8') + 1, 0) <= budget)).toBe(true)
+      expect(report.sources?.formatted.length).toBe(sources.length)
+      if (mode === 'formatted') {
+        expect(report.status).toBe('passed')
+        expect(report.failures).toEqual([])
+        expect(report.changedLines?.minimumPercent).toBe(90)
+      } else {
+        expect(report.status).toBe('failed')
+        expect(commands.some(command => command[0] === 'go' && ['build', 'vet', 'test'].includes(command[1]!))).toBe(false)
+        if (mode === 'unformatted') expect(report.failures).toEqual([`Go source is not formatted; run gofmt locally:\n${unformatted.join('\n')}`])
+        else {
+          expect(formattingBatches).toBe(2)
+          expect(checkedSources.length).toBeLessThan(sources.length)
+          expect(report.failures).toHaveLength(1)
+          expect(report.failures[0]).toContain('exited 9: fixture formatting batch failed')
+        }
+      }
+    } finally { rmSync(root, { recursive: true, force: true }) }
   })
   test('isolates all user and Go state and drops provider credentials and inherited Go config', () => {
     const home = tempRoot()
@@ -553,7 +637,7 @@ describe('offline Go checks', () => {
         expect(packageTests).toHaveLength(2)
         for (const command of packageTests) {
           expect(command).toContain('-p=4')
-          expect(command).toContain('-timeout=15m')
+          expect(command).toContain('-timeout=30m')
           expect(command).toContain('./...')
         }
         expect(report.changedLines?.minimumPercent).toBe(90)
@@ -700,3 +784,263 @@ go.mau.fi/whatsmeow/proto/waMultiDevice/extra.go:3.48,3.49 0 0
     })
   })
 }
+
+
+type QualityCacheFixtureControls = {
+  command?: (command: string[]) => void
+  unit?: (path: string, env: Record<string, string>, artifact: string) => void | Promise<void>
+  clean?: (env: Record<string, string>, artifact: string) => Promise<{ exitCode: number, stdout: string, stderr: string }> | { exitCode: number, stdout: string, stderr: string }
+  expectedFailure?: string
+}
+
+async function runLosslessQualityFixture(mode: 'regular' | 'gzip-fifo', fault?: 'no-producer' | 'unit-failure', controls: QualityCacheFixtureControls = {}) {
+  const root = realpathSync(tempRoot())
+  const commands: string[][] = []
+  const homes: string[] = []
+  try {
+    mkdirSync(join(root, 'backend'))
+    mkdirSync(join(root, 'scripts/quality-gate'), { recursive: true })
+    writeFileSync(join(root, 'backend/go.mod'), `module ${modulePath}\n\ngo 1.25.7\n`)
+    writeFileSync(join(root, 'backend/query.go'), 'package fixture\nfunc query() int { return 1 }\n')
+    writeFileSync(join(root, 'backend/query_test.go'), 'package fixture\nimport "testing"\nfunc TestQuery(t *testing.T) { if query()!=1 { t.Fatal("query") } }\n')
+    writeFileSync(join(root, 'scripts/quality-gate/coverage-thresholds.json'), '{"changedLines":{"minimumPercent":90}}')
+    const artifact = join(root, 'artifacts')
+    const report = await runGoChecks({ rootDir: root, artifactDir: artifact,
+      sourceEnvironment: { PATH: process.env.PATH, CC_HAHA_GO_PROFILE_STORAGE: mode },
+      async execute(command, options) {
+        commands.push(command)
+        controls.command?.(command)
+        homes.push(options.env.HOME)
+        expect(options.env.CC_HAHA_GO_PROFILE_STORAGE).toBeUndefined()
+        let stdout = ''
+        if (command[1] === 'env') {
+          const [GOOS, GOARCH] = goNativeTarget().split('/')
+          stdout = JSON.stringify({ GOOS, GOARCH, GOVERSION: 'go1.25.7' })
+        } else if (command[1] === 'mod' && command[2] === 'edit') stdout = JSON.stringify({ Require: [] })
+        else if (command.includes('-m')) stdout = JSON.stringify({ Path: modulePath, Dir: join(root, 'backend') })
+        else if (command[1] === 'list' && command.includes('-e')) stdout = JSON.stringify({ ImportPath: modulePath, Dir: join(root, 'backend'), GoFiles: ['query.go'], TestGoFiles: ['query_test.go'] })
+        else if (command[1] === 'list') stdout = modulePath
+        else if (command[1] === 'test') {
+          const path = command.find(value => value.startsWith('-coverprofile='))?.slice('-coverprofile='.length)
+          if (path && fault !== 'no-producer') writeFileSync(path, `mode: atomic\n${modulePath}/query.go:2.1,2.30 1 1\n`)
+          if (path) await controls.unit?.(path, options.env, artifact)
+          if (path && fault === 'unit-failure') return { exitCode: 7, stdout: 'original owned unit failure', stderr: 'original nonzero producer' }
+          stdout = passingEvents
+        } else if (command[1] === 'clean' && controls.clean) {
+          return controls.clean(options.env, artifact)
+        } else if (command.includes('merge-base')) stdout = 'a'.repeat(40)
+        else if (command.includes('--cached')) stdout = 'backend/query.go\0backend/query_test.go\0scripts/quality-gate/coverage-thresholds.json\0'
+        return { exitCode: 0, stdout, stderr: '' }
+      },
+    })
+    if (controls.expectedFailure) {
+      expect(report.status).toBe('failed')
+      expect(report.failures.join('\n')).toContain(controls.expectedFailure)
+      expect(report.race).toBeUndefined()
+      expect(report.childCoverage).toBeUndefined()
+      expect(report.changedLines).toBeUndefined()
+    } else if (!fault) {
+      expect(report.status).toBe('passed')
+      expect(report.failures).toEqual([])
+      expect(report.changedLines?.minimumPercent).toBe(90)
+      expect(report.coverage?.total).toBe(1)
+      expect(report.coverage?.covered).toBe(1)
+      if (mode === 'gzip-fifo') {
+        expect(existsSync(join(artifact, 'coverage.out'))).toBe(false)
+        expect(report.coverageStorage).toMatchObject({ mode: 'gzip-fifo', ownedStreams: 0, ownedAnchors: 0 })
+        expect(report.coverageStorage!.profiles.every(row => row.status === 'complete')).toBe(true)
+        expect(readFileSync(join(artifact, 'report.md'), 'utf8')).toContain('verified gzip with explicit restore mapping')
+      } else {
+        expect(report.coverageStorage).toBeUndefined()
+        expect(existsSync(join(artifact, 'coverage-storage'))).toBe(false)
+        expect(readFileSync(join(artifact, 'coverage.out'), 'utf8')).toContain('mode: atomic')
+      }
+    } else {
+      expect(report.status).toBe('failed')
+      expect(report.race).toBeUndefined()
+      expect(report.childCoverage).toBeUndefined()
+      expect(report.changedLines).toBeUndefined()
+      expect(report.failures.join('\n')).toContain(fault === 'no-producer' ? 'did not emit a complete atomic profile' : 'original nonzero producer')
+      expect(commands.some(command => command[1] === 'clean')).toBe(false)
+      expect(commands.some(command => command.includes('-race'))).toBe(false)
+      expect(report.coverageStorage).toMatchObject({ ownedStreams: 0, ownedAnchors: 0, profiles: [{ status: 'failed' }] })
+    }
+    expect(homes.length).toBeGreaterThan(0)
+    expect(homes.every(path => !existsSync(path))).toBe(true)
+    return { commands: commands.map(command => command.map(value => value.replaceAll(root, '<root>'))), coverage: report.coverage, unit: report.unit, race: report.race }
+  } finally { rmSync(root, { recursive: true, force: true }) }
+}
+
+test.skipIf(process.platform === 'win32')('keeps the original quality Go commands and evidence through opt-in lossless storage', async () => {
+  const regular = await runLosslessQualityFixture('regular')
+  const stored = await runLosslessQualityFixture('gzip-fifo')
+  expect(stored).toEqual(regular)
+  const tests = stored.commands.filter(command => command[0] === 'go' && command[1] === 'test')
+  expect(tests).toHaveLength(2)
+  expect(tests[0]).toEqual(['go', 'test', '-p=4', '-json', '-count=1', '-timeout=30m', '-covermode=atomic', '-outputdir=<root>/artifacts/child-coverage', '-coverpkg=./...', '-coverprofile=<root>/artifacts/coverage.out', './...'])
+  expect(tests[1]).toEqual(['go', 'test', '-p=4', '-race', '-json', '-count=1', '-timeout=30m', './...'])
+}, 10000)
+
+for (const fault of ['no-producer', 'unit-failure'] as const) {
+  test.skipIf(process.platform === 'win32')(`does not turn incomplete quality storage into a passing lane: ${fault}`, async () => {
+    await runLosslessQualityFixture('gzip-fifo', fault)
+  }, 10000)
+}
+
+
+describe('private Go cache retirement between unit and race', () => {
+  test.skipIf(process.platform === 'win32').each(['regular', 'gzip-fifo'] as const)('awaits the actual unit producer before retiring its cache: %s', async mode => {
+    const unitEntered = Promise.withResolvers<void>()
+    const releaseUnit = Promise.withResolvers<void>()
+    const commands: string[][] = []
+    const running = runLosslessQualityFixture(mode, undefined, {
+      command(command) { commands.push(command) },
+      async unit() {
+        unitEntered.resolve()
+        await releaseUnit.promise
+      },
+    })
+    try {
+      await unitEntered.promise
+      await nextTurn()
+      expect(commands.some(command => command[1] === 'clean' || command.includes('-race'))).toBe(false)
+    } finally {
+      releaseUnit.resolve()
+      await running
+    }
+    const stages = commands.filter(command => command[1] === 'test' || command[1] === 'clean')
+    expect(stages.map(command => command[1] === 'clean' ? 'clean' : command.includes('-race') ? 'race' : 'unit')).toEqual(['unit', 'clean', 'race'])
+    expect(stages[1]).toEqual(['go', 'clean', '-cache'])
+  }, 10000)
+
+  test.skipIf(process.platform === 'win32')('awaits real FIFO EOF after unit returns before clean or race', async () => {
+    const producerReturned = Promise.withResolvers<void>()
+    const commands: string[][] = []
+    let writer: number | undefined
+    const running = runLosslessQualityFixture('gzip-fifo', undefined, {
+      command(command) { commands.push(command) },
+      unit(path) {
+        writer = openSync(path, constants.O_WRONLY | constants.O_NONBLOCK | constants.O_NOFOLLOW)
+        producerReturned.resolve()
+      },
+    })
+    try {
+      await producerReturned.promise
+      await nextTurn()
+      expect(commands.some(command => command[1] === 'clean' || command.includes('-race'))).toBe(false)
+    } finally {
+      if (writer !== undefined) closeSync(writer)
+      await running
+    }
+    expect(commands.filter(command => command[1] === 'test' || command[1] === 'clean').map(command => command[1] === 'clean' ? 'clean' : command.includes('-race') ? 'race' : 'unit')).toEqual(['unit', 'clean', 'race'])
+  }, 10000)
+
+  test('preserves a clean failure cause and never starts race or merge', async () => {
+    let cleanCalls = 0
+    await runLosslessQualityFixture('regular', undefined, {
+      clean() {
+        cleanCalls++
+        return { exitCode: 23, stdout: '', stderr: 'owned cache retirement failed' }
+      },
+      expectedFailure: 'go clean -cache exited 23: owned cache retirement failed',
+    })
+    expect(cleanCalls).toBe(1)
+  })
+
+  test.skipIf(process.platform === 'win32').each(['different-root', 'symlink', 'replaced-inode', 'replaced-during-clean'] as const)('rejects a changed private cache without deleting a sibling: %s', async scenario => {
+    const sibling = realpathSync(tempRoot())
+    const marker = join(sibling, 'keep')
+    writeFileSync(marker, 'protected sibling')
+    let cleanCalls = 0
+    try {
+      await runLosslessQualityFixture('regular', undefined, {
+        unit(_path, env) {
+          if (scenario === 'different-root') env.GOCACHE = sibling
+          else if (scenario !== 'replaced-during-clean') {
+            renameSync(env.GOCACHE, env.GOCACHE + '.original')
+            if (scenario === 'symlink') symlinkSync(sibling, env.GOCACHE, 'dir')
+            else mkdirSync(env.GOCACHE)
+          }
+        },
+        clean(env) {
+          cleanCalls++
+          renameSync(env.GOCACHE, env.GOCACHE + '.original')
+          mkdirSync(env.GOCACHE)
+          return { exitCode: 0, stdout: '', stderr: '' }
+        },
+        expectedFailure: scenario === 'different-root' || scenario === 'symlink'
+          ? 'Go build cache retirement requires the captured private sandbox cache'
+          : scenario === 'replaced-inode' ? 'Private Go build cache identity changed before retirement' : 'Private Go build cache identity changed during retirement',
+      })
+      expect(cleanCalls).toBe(scenario === 'replaced-during-clean' ? 1 : 0)
+      expect(readFileSync(marker, 'utf8')).toBe('protected sibling')
+    } finally { rmSync(sibling, { recursive: true, force: true }) }
+  })
+
+  test('rejects a protected module cache placed inside this private Go build cache', async () => {
+    const commands: string[][] = []
+    const payload = 'protected module bytes'
+    let cleanCalls = 0
+    let sentinelWasReadBack = false
+    await runLosslessQualityFixture('regular', undefined, {
+      command(command) { commands.push(command) },
+      unit(_path, env) {
+        const moduleCache = join(realpathSync(env.GOCACHE), '00', 'protected-modules')
+        mkdirSync(moduleCache, { recursive: true })
+        const sentinel = join(moduleCache, 'keep')
+        writeFileSync(sentinel, payload)
+        expect(lstatSync(moduleCache).isSymbolicLink()).toBe(false)
+        expect(readFileSync(sentinel, 'utf8')).toBe(payload)
+        sentinelWasReadBack = true
+        env.GOMODCACHE = moduleCache
+      },
+      clean() {
+        cleanCalls++
+        return { exitCode: 0, stdout: '', stderr: '' }
+      },
+      expectedFailure: 'Go build cache retirement would remove protected inputs or evidence:',
+    })
+    expect(sentinelWasReadBack).toBe(true)
+    expect(cleanCalls).toBe(0)
+    expect(commands.some(command => command[1] === 'clean' || command.includes('-race'))).toBe(false)
+    // The rejected clean never runs. The original finally still removes its entire disposable HOME.
+  })
+
+  test('real Go clean only retires private cache entries and preserves root, modules and evidence', async () => {
+    let actuallyCleaned = false
+    const identity = (path: string) => {
+      const info = lstatSync(path)
+      return { dev: info.dev, ino: info.ino, uid: info.uid, gid: info.gid, mode: info.mode & 0o777 }
+    }
+    await runLosslessQualityFixture('regular', undefined, {
+      unit(path, env, artifact) {
+        mkdirSync(join(env.GOCACHE, '00'))
+        writeFileSync(join(env.GOCACHE, '00/item'), 'regenerable compiled bytes')
+        writeFileSync(join(env.GOMODCACHE, 'private-module-sentinel'), 'pinned modules')
+        const kept = join(artifact, 'preserved')
+        mkdirSync(kept)
+        for (const role of ['seed', 'child-bin', 'raw-counter']) writeFileSync(join(kept, role), role)
+        expect(readFileSync(path, 'utf8')).toContain('mode: atomic')
+      },
+      async clean(env, artifact) {
+        const cacheRoot = identity(env.GOCACHE)
+        const kept = join(artifact, 'preserved')
+        const paths = [join(env.GOMODCACHE, 'private-module-sentinel'), ...['seed', 'child-bin', 'raw-counter'].map(role => join(kept, role)), join(artifact, 'coverage.out'), join(artifact, 'child-coverage/manifest.json')]
+        const preserved = (path: string) => {
+          const info = lstatSync(path)
+          return { path, ...identity(path), size: info.size, nlink: info.nlink, mtimeMs: info.mtimeMs, bytes: readFileSync(path) }
+        }
+        const before = paths.map(preserved)
+        const child = Bun.spawn(['go', 'clean', '-cache'], { cwd: join(artifact, '..', 'backend'), env, stdin: 'ignore', stdout: 'pipe', stderr: 'pipe' })
+        const [exitCode, stdout, stderr] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()])
+        expect(exitCode).toBe(0)
+        expect(existsSync(join(env.GOCACHE, '00/item'))).toBe(false)
+        expect(identity(env.GOCACHE)).toEqual(cacheRoot)
+        expect(paths.map(preserved)).toEqual(before)
+        actuallyCleaned = true
+        return { exitCode, stdout, stderr }
+      },
+    })
+    expect(actuallyCleaned).toBe(true)
+  }, 30000)
+})

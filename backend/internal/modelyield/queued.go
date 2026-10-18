@@ -50,6 +50,7 @@ func (c *ResourceControl) State(scope *cooperative.Scope) (present, aborted bool
 // completion Promise. The consumer issues real Next/Return demands; it cannot
 // invoke the model producer or submit a second prepared request.
 type QueuedDependencies struct {
+	OnNativeQuota   func(*cooperative.Scope, *provider.BunHeaders, error) error
 	Activity        *sessionactivity.Tracker
 	Request         requestretry.Dependencies
 	Session         *modelaccounting.Session
@@ -200,7 +201,7 @@ func RunQueued(ctx context.Context, input requestretry.Input, deps QueuedDepende
 		return Outcome{}, err
 	}
 	life := &producerLifecycle{opened: func(stream *provider.OwnedMessageStream) { control.stream = stream }, feed: func(raw []byte) error { return attempt.Observe(scope, raw) }, finally: func(normal bool, id *string) error { return attempt.Finish(scope, normal, id) }}
-	producerDeps := Dependencies{Activity: deps.Activity, Request: deps.Request, Session: deps.Session, AgentContext: deps.AgentContext, SuccessDuration: deps.SuccessDuration, StreamClock: deps.StreamClock, StreamPolicy: deps.StreamPolicy, Emit: func(value Yield) (requestretry.NoticeAction, error) { return bridge.emit(scope, value) }}
+	producerDeps := Dependencies{OnNativeQuota: deps.OnNativeQuota, Activity: deps.Activity, Request: deps.Request, Session: deps.Session, AgentContext: deps.AgentContext, SuccessDuration: deps.SuccessDuration, StreamClock: deps.StreamClock, StreamPolicy: deps.StreamPolicy, Emit: func(value Yield) (requestretry.NoticeAction, error) { return bridge.emit(scope, value) }}
 	firstAttempt := true
 	outcome, err := runStreamAttempts(ctx, input, producerDeps, owner, scope, func() (*producerLifecycle, error) {
 		if firstAttempt {

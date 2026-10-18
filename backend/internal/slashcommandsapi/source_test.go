@@ -75,7 +75,7 @@ func TestSlashMenuListsActualFilesRootsLegacyAndCompiledAgainstSource(t *testing
 	}
 	env := map[string]string{"HOME": home, "USERPROFILE": home, "CLAUDE_CONFIG_DIR": filepath.Join(home, ".claude"), "TMPDIR": tmp, "CC_HAHA_FIXTURE_TEMP_ROOT": filepath.Dir(home), "CC_HAHA_SLASH_COMMANDS_FIXTURE": "1", "NODE_ENV": "production", "BUN_OPTIONS": "--no-env-file", "DISABLE_TELEMETRY": "1", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1", "ANTHROPIC_BASE_URL": "http://127.0.0.1:9", "ANTHROPIC_API_KEY": "fake-offline-only", "PATH": "/usr/bin:/bin", "TZ": "UTC"}
 	env["CLAUDE_CODE_USE_NATIVE_FILE_SEARCH"] = "1"
-	native, e := clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: cwd, Platform: "darwin", ManagedRoot: managed, ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+	native, e := newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: cwd, Platform: "darwin", ManagedRoot: managed, ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 	if e != nil {
 		t.Fatal(e)
 	}

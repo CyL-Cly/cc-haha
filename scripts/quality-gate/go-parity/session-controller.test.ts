@@ -49,34 +49,46 @@ async function run(row: ControllerCase, go: boolean) {
       string
     ]>
   }> = []
+  await mkdir(artifact, { recursive: true })
+  // Repeated profiles still expose the latest result at the original path,
+  // while every physical attempt keeps its own immutable failure evidence.
+  const attempt = await mkdtemp(join(artifact, row.name + (go ? '-go-' : '-source-')))
+  const saveEvidence = async (name: string, content: string | Uint8Array) => {
+    await writeFile(join(attempt, name), content, { flag: 'wx' })
+    await writeFile(join(artifact, name), content)
+  }
   const server = Bun.serve({ hostname: '127.0.0.1', port: 0, async fetch(request) {
       socket.push({ path: new URL(request.url).pathname, body: await request.text(), headers: [...request.headers] })
       return new Response(requestContextWire, { headers: { 'content-type': 'text/event-stream', 'request-id': 'controller-response' } })
     } })
   let child: ReturnType<typeof Bun.spawn> | undefined
   try {
-    child = Bun.spawn(go ? [executable] : [process.execPath, '--no-env-file', '--feature=TRANSCRIPT_CLASSIFIER', join(root, 'scripts/quality-gate/go-parity/session-controller.fixture.ts')], { cwd: home, env: createSandboxedTestEnvironment(home, { CC_HAHA_SESSION_CONTROLLER_FIXTURE: '1', CC_HAHA_FIXTURE_TEMP_ROOT: allocationRoot, NODE_ENV: 'production', TZ: 'UTC', ANTHROPIC_API_KEY: 'offline-fixture-key', ANTHROPIC_BASE_URL: server.url.origin, ANTHROPIC_CUSTOM_HEADERS: 'x-client-request-id: original-fixture-trace', CLAUDE_CODE_DISABLE_AUTO_MEMORY: '1', CLAUDE_CODE_DISABLE_FAST_MODE: '1', CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1', CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK: '1', CLAUDE_CODE_MAX_RETRIES: '0', CLAUDE_STREAM_TRANSIENT_RETRY_MAX: '0', USE_BUILTIN_RIPGREP: 'false', PATH: join(home, 'bin') }), stdin: new Blob([JSON.stringify({ ...row.input, origin: server.url.origin, stat: stats, runtime: { platform: process.platform, arch: process.arch, version: process.version } })]), stdout: 'pipe', stderr: 'pipe' })
+    child = Bun.spawn(go ? [executable] : [process.execPath, '--no-env-file', '--feature=TRANSCRIPT_CLASSIFIER', join(root, 'scripts/quality-gate/go-parity/session-controller.fixture.ts')], { cwd: home, env: createSandboxedTestEnvironment(home, { CC_HAHA_SESSION_CONTROLLER_FIXTURE: '1', CC_HAHA_FIXTURE_TEMP_ROOT: allocationRoot, ...(row.name === 'multiple-sdk-original-priority-batch-and-last-uuid' ? { CLAUDE_CODE_ENTRYPOINT: 'sdk-cli' } : {}), NODE_ENV: 'production', TZ: 'UTC', ANTHROPIC_API_KEY: 'offline-fixture-key', ANTHROPIC_BASE_URL: server.url.origin, ANTHROPIC_CUSTOM_HEADERS: 'x-client-request-id: original-fixture-trace', CLAUDE_CODE_DISABLE_AUTO_MEMORY: '1', CLAUDE_CODE_DISABLE_FAST_MODE: '1', CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1', CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK: '1', CLAUDE_CODE_MAX_RETRIES: '0', CLAUDE_STREAM_TRANSIENT_RETRY_MAX: '0', USE_BUILTIN_RIPGREP: 'false', PATH: join(home, 'bin') }), stdin: new Blob([JSON.stringify({ ...row.input, origin: server.url.origin, stat: stats, runtime: { platform: process.platform, arch: process.arch, version: process.version } })]), stdout: 'pipe', stderr: 'pipe' })
     const timer = setTimeout(() => child?.kill('SIGKILL'), 35000)
     try {
       const [code, stdout, stderr] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()])
-      await mkdir(artifact, { recursive: true })
-      await writeFile(join(artifact, row.name + (go ? '-go' : '-source') + '-stderr.txt'), stderr)
+      await saveEvidence(row.name + (go ? '-go' : '-source') + '-stderr.txt', stderr)
+      await saveEvidence(row.name + (go ? '-go' : '-source') + '-process.json', JSON.stringify({ original: row, code, stdout, stderr, socket }, null, 2))
       if (go && row.pending) {
         expect(code).not.toBe(0)
         expect(stderr).toContain('dynamic SDK cancellation/admission')
         expect(socket).toHaveLength(0)
         return { pending: true }
       }
+      if (go && code !== 0) {
+        try { await saveEvidence(row.name + '-go-native-failure.json', await readFile(join(home, 'native-failed-controller.json'))) }
+        catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error }
+      }
       expect(code, stderr || stdout).toBe(0)
       expect(stderr).toBe('')
       const result = JSON.parse(await readFile(join(home, 'controller-result.json'), 'utf8'))
-      await writeFile(join(artifact, row.name + (go ? '-go' : '-source') + '-raw.json'), JSON.stringify({ original: row, result, stdout, socket }, null, 2))
+      await saveEvidence(row.name + (go ? '-go' : '-source') + '-raw.json', JSON.stringify({ original: row, result, stdout, socket }, null, 2))
       if (!go) {
         expect(result.sourceOnly.capabilities.blocked).toEqual([])
         expect(result.sourceOnly.capabilities.secureReads).toEqual(['read'])
         expect(result.sourceOnly.exactAbsentPaths).toHaveLength(result.sourceOnly.capabilities.absentReads.length)
       }
-      expect(socket).toHaveLength((row.input.sdk as unknown[]).length ? 1 : 0)
+      expect(socket).toHaveLength((row.input.sdk as unknown[]).length ? row.input.sdkPrelude ? 2 : 1 : 0)
       expect(result.observation.requests).toEqual(socket.map(item => item.body))
       return result.observation
     }
@@ -136,6 +148,185 @@ for (const name of controllerCases('/placeholder').map(row => row.name))
       await rm(home, { recursive: true, force: true })
     }
   }, 120000)
+test('actual original priority batch: five fresh native file/promise order observations', async () => {
+  const home = await realpath(await mkdtemp(join(allocationRoot, 'session-controller-case-')))
+  try {
+    const row = controllerCases(home).find(row => row.name === 'multiple-sdk-original-priority-batch-and-last-uuid')!
+    let baseline: unknown
+    for (let index = 0; index < 5; index++) {
+      const observation = await run(row, false)
+      await writeFile(join(artifact, `multiple-sdk-fresh-source-${index}-raw.json`), await readFile(join(artifact, row.name + '-source-raw.json')))
+      if (index === 0) baseline = observation
+      else expect(observation).toEqual(baseline)
+    }
+  }
+  finally { await rm(home, { recursive: true, force: true }) }
+}, 120000)
+
+test('actual Source native main cold/warm cleanup: original raw diagnostic observations', async () => {
+  const home = await realpath(await mkdtemp(join(allocationRoot, 'session-controller-case-')))
+  try {
+    const original = controllerCases(home).find(row => row.name === 'multiple-sdk-original-priority-batch-and-last-uuid')!
+    for (const warmCleanup of [false, true]) {
+      const row = { ...original, input: { ...original.input, warmCleanup } }
+      for (let index = 0; index < 5; index++) {
+        await run(row, false)
+        await writeFile(join(artifact, `multiple-sdk-original-${warmCleanup ? 'warm' : 'cold'}-cleanup-${index}-raw.json`), await readFile(join(artifact, row.name + '-source-raw.json')))
+      }
+    }
+  }
+  finally { await rm(home, { recursive: true, force: true }) }
+}, 120000)
+
+test('actual native main priority batch: own persisted resume and next human HTTP consumer', async () => {
+  const home = await realpath(await mkdtemp(join(allocationRoot, 'session-controller-case-')))
+  const original = controllerCases(home).find(row => row.name === 'multiple-sdk-original-priority-batch-and-last-uuid')!
+  try {
+    for (const timeline of ['original-clock', 'increasing-clock']) {
+      const row = { ...original, input: { ...original.input, ...(timeline === 'increasing-clock' ? { nowMillis: 1767225600000 } : {}) } }
+      const outcomes: any[] = []
+      for (const profile of ['source-cold', 'source-warm', 'go']) {
+        const go = profile === 'go'
+        const first = { ...row, input: { ...row.input, ...(profile === 'source-warm' ? { warmCleanup: true } : {}) } }
+        const accepted = await run(first, go)
+        const followupSocket: any[] = []
+        const followupWire = requestContextWire.replace('event: message_delta', 'event: content_block_start\ndata: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}}\n\nevent: content_block_delta\ndata: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"FOLLOWUP_NATIVE_OK"}}\n\nevent: content_block_stop\ndata: {"type":"content_block_stop","index":0}\n\nevent: message_delta')
+        const server = Bun.serve({ hostname: '127.0.0.1', port: 0, async fetch(request) {
+          followupSocket.push({ path: new URL(request.url).pathname, body: await request.text(), headers: [...request.headers] })
+          return new Response(followupWire, { headers: { 'content-type': 'text/event-stream', 'request-id': 'followup-native-response' } })
+        } })
+        try {
+          // Preserve this implementation's own initial output file. No Source
+          // prepared transcript is copied into the Go continuation's private home.
+          const input = { ...row.input, ...(timeline === 'increasing-clock' ? { nowMillis: 1767225601000 } : {}), nativeMain: true, sdk: [{ type: 'user', uuid: 'followup-native-id', message: { role: 'user', content: 'FOLLOWUP_NATIVE_HUMAN' } }], origin: server.url.origin, stat: {}, runtime: { platform: process.platform, arch: process.arch, version: process.version } }
+          const child = Bun.spawn(go ? [executable] : [process.execPath, '--no-env-file', '--feature=TRANSCRIPT_CLASSIFIER', join(root, 'scripts/quality-gate/go-parity/session-controller.fixture.ts')], { cwd: home, env: createSandboxedTestEnvironment(home, { CC_HAHA_SESSION_CONTROLLER_FIXTURE: '1', CC_HAHA_FIXTURE_TEMP_ROOT: allocationRoot, CLAUDE_CODE_ENTRYPOINT: 'sdk-cli', NODE_ENV: 'production', TZ: 'UTC', ANTHROPIC_API_KEY: 'offline-fixture-key', ANTHROPIC_BASE_URL: server.url.origin, ANTHROPIC_CUSTOM_HEADERS: 'x-client-request-id: original-fixture-trace', CLAUDE_CODE_DISABLE_AUTO_MEMORY: '1', CLAUDE_CODE_DISABLE_FAST_MODE: '1', CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1', CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK: '1', CLAUDE_CODE_MAX_RETRIES: '0', CLAUDE_STREAM_TRANSIENT_RETRY_MAX: '0', USE_BUILTIN_RIPGREP: 'false', PATH: join(home, 'bin') }), stdin: new Blob([JSON.stringify(input)]), stdout: 'pipe', stderr: 'pipe' })
+          const timeout = setTimeout(() => child.kill('SIGKILL'), 35000)
+          try {
+            const [code, stdout, stderr] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()])
+            const result = JSON.parse(await readFile(join(home, 'controller-result.json'), 'utf8'))
+            await writeFile(join(artifact, `multiple-sdk-${timeline}-${profile}-own-resume-next-human-raw.json`), JSON.stringify({ original: input, accepted, result, stdout, stderr, code, socket: followupSocket }, null, 2))
+            expect(code, stderr || stdout).toBe(0)
+            expect(stderr).toBe('')
+            expect(followupSocket).toHaveLength(1)
+            expect(result.observation.requests).toEqual(followupSocket.map(value => value.body))
+            const frames = (go ? result.nativeOnly.stream.output : stdout.trim().split('\n')).map((line: string) => JSON.parse(line))
+            expect(frames.some((frame: any) => frame.type === 'result' && frame.subtype === 'success' && frame.result === 'FOLLOWUP_NATIVE_OK')).toBe(true)
+            const body = JSON.parse(followupSocket[0].body)
+            // The legacy timeline has a 2025 parent and a 2023 real clock;
+            // the increasing timeline advances the actual clock to 2026.
+            // Preserve accepted files and compare each real resume branch.
+            expect(JSON.stringify(accepted.transcripts)).toContain('later original')
+            expect(JSON.stringify(accepted.transcripts)).toContain('now original')
+            expect(JSON.stringify(accepted.transcripts)).toContain('next original')
+            expect(JSON.stringify(body.messages)).toContain('original user')
+            expect(JSON.stringify(body.messages)).toContain('old answer')
+            expect(JSON.stringify(body.messages)).toContain('FOLLOWUP_NATIVE_HUMAN')
+            if (timeline === 'increasing-clock') {
+              // Actual Source findLatestMessage uses a strict greater-than
+              // comparison. The two accepted ASK leaves share a millisecond
+              // in this legacy constant-clock profile, so resume keeps the
+              // first user leaf. The advancing ASK test below covers normal
+              // chronological acceptance without replacing this tie case.
+              expect(JSON.stringify(body.messages)).toContain('later original')
+              expect(JSON.stringify(body.messages)).not.toContain('now original')
+              expect(JSON.stringify(body.messages)).not.toContain('next original')
+            }
+            const picker = go ? result.nativeOnly.stream.resumePicker : result.sourceOnly.resumePicker
+            expect(picker).toHaveLength(1)
+            expect(picker[0].sessionId).toBe(row.input.sid)
+            expect(['later original', 'now original next original']).toContain(picker[0].firstPrompt)
+            outcomes.push({ profile, body, activationHistory: result.observation.activationHistory, historySource: result.observation.historySource, transcripts: result.observation.transcripts, resumeFirstPrompt: picker[0].firstPrompt })
+          }
+          finally { clearTimeout(timeout); child.kill(); await child.exited }
+        }
+        finally { server.stop(true) }
+      }
+      // Physical byte order remains raw above. These are the next real request
+      // and restored conversation consumers, not a sorted transcript projection.
+      expect(outcomes[1].body).toEqual(outcomes[0].body)
+      expect(outcomes[2].body).toEqual(outcomes[0].body)
+      expect(outcomes[1].activationHistory).toEqual(outcomes[0].activationHistory)
+      expect(outcomes[2].activationHistory).toEqual(outcomes[0].activationHistory)
+      expect(outcomes[1].historySource).toEqual(outcomes[0].historySource)
+      expect(outcomes[2].historySource).toEqual(outcomes[0].historySource)
+      await writeFile(join(artifact, `multiple-sdk-${timeline}-own-resume-next-human-consumers.json`), JSON.stringify(outcomes, null, 2))
+    }
+  }
+  finally { await rm(home, { recursive: true, force: true }) }
+}, 120000)
+
+test('actual native main advancing ASK clock: own persisted resume and next human HTTP consumer', async () => {
+  const home = await realpath(await mkdtemp(join(allocationRoot, 'session-controller-case-')))
+  const original = controllerCases(home).find(row => row.name === 'multiple-sdk-original-priority-batch-and-last-uuid')!
+  try {
+    for (const timeline of ['advancing-ask-clock']) {
+      const row = { ...original, input: { ...original.input, nowMillis: 1767225600000, clockStepMillis: 1000 } }
+      const outcomes: any[] = []
+      for (const profile of ['source-cold', 'source-warm', 'go']) {
+        const go = profile === 'go'
+        const first = { ...row, input: { ...row.input, ...(profile === 'source-warm' ? { warmCleanup: true } : {}) } }
+        const accepted = await run(first, go)
+        const followupSocket: any[] = []
+        const followupWire = requestContextWire.replace('event: message_delta', 'event: content_block_start\ndata: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}}\n\nevent: content_block_delta\ndata: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"FOLLOWUP_NATIVE_OK"}}\n\nevent: content_block_stop\ndata: {"type":"content_block_stop","index":0}\n\nevent: message_delta')
+        const server = Bun.serve({ hostname: '127.0.0.1', port: 0, async fetch(request) {
+          followupSocket.push({ path: new URL(request.url).pathname, body: await request.text(), headers: [...request.headers] })
+          return new Response(followupWire, { headers: { 'content-type': 'text/event-stream', 'request-id': 'followup-native-response' } })
+        } })
+        try {
+          // Preserve this implementation's own initial output file. No Source
+          // prepared transcript is copied into the Go continuation's private home.
+          const input = { ...row.input, nowMillis: 1767225603000, nativeMain: true, sdk: [{ type: 'user', uuid: 'followup-native-id', message: { role: 'user', content: 'FOLLOWUP_NATIVE_HUMAN' } }], origin: server.url.origin, stat: {}, runtime: { platform: process.platform, arch: process.arch, version: process.version } }
+          const child = Bun.spawn(go ? [executable] : [process.execPath, '--no-env-file', '--feature=TRANSCRIPT_CLASSIFIER', join(root, 'scripts/quality-gate/go-parity/session-controller.fixture.ts')], { cwd: home, env: createSandboxedTestEnvironment(home, { CC_HAHA_SESSION_CONTROLLER_FIXTURE: '1', CC_HAHA_FIXTURE_TEMP_ROOT: allocationRoot, CLAUDE_CODE_ENTRYPOINT: 'sdk-cli', NODE_ENV: 'production', TZ: 'UTC', ANTHROPIC_API_KEY: 'offline-fixture-key', ANTHROPIC_BASE_URL: server.url.origin, ANTHROPIC_CUSTOM_HEADERS: 'x-client-request-id: original-fixture-trace', CLAUDE_CODE_DISABLE_AUTO_MEMORY: '1', CLAUDE_CODE_DISABLE_FAST_MODE: '1', CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1', CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK: '1', CLAUDE_CODE_MAX_RETRIES: '0', CLAUDE_STREAM_TRANSIENT_RETRY_MAX: '0', USE_BUILTIN_RIPGREP: 'false', PATH: join(home, 'bin') }), stdin: new Blob([JSON.stringify(input)]), stdout: 'pipe', stderr: 'pipe' })
+          const timeout = setTimeout(() => child.kill('SIGKILL'), 35000)
+          try {
+            const [code, stdout, stderr] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()])
+            const result = JSON.parse(await readFile(join(home, 'controller-result.json'), 'utf8'))
+            await writeFile(join(artifact, `multiple-sdk-${timeline}-${profile}-own-resume-next-human-raw.json`), JSON.stringify({ original: input, accepted, result, stdout, stderr, code, socket: followupSocket }, null, 2))
+            expect(code, stderr || stdout).toBe(0)
+            expect(stderr).toBe('')
+            expect(followupSocket).toHaveLength(1)
+            expect(result.observation.requests).toEqual(followupSocket.map(value => value.body))
+            const frames = (go ? result.nativeOnly.stream.output : stdout.trim().split('\n')).map((line: string) => JSON.parse(line))
+            expect(frames.some((frame: any) => frame.type === 'result' && frame.subtype === 'success' && frame.result === 'FOLLOWUP_NATIVE_OK')).toBe(true)
+            const body = JSON.parse(followupSocket[0].body)
+            // This additional profile advances the external clock at actual
+            // ASK starts in 2026, after the immutable 2025 parent.
+            // Preserve accepted files and compare each real resume branch.
+            expect(JSON.stringify(accepted.transcripts)).toContain('later original')
+            expect(JSON.stringify(accepted.transcripts)).toContain('now original')
+            expect(JSON.stringify(accepted.transcripts)).toContain('next original')
+            expect(JSON.stringify(body.messages)).toContain('original user')
+            expect(JSON.stringify(body.messages)).toContain('old answer')
+            expect(JSON.stringify(body.messages)).toContain('FOLLOWUP_NATIVE_HUMAN')
+            if (timeline === 'advancing-ask-clock') {
+              expect(JSON.stringify(body.messages)).toContain('later original')
+              expect(JSON.stringify(body.messages)).toContain('now original')
+              expect(JSON.stringify(body.messages)).toContain('next original')
+            }
+            const picker = go ? result.nativeOnly.stream.resumePicker : result.sourceOnly.resumePicker
+            expect(picker).toHaveLength(1)
+            expect(picker[0].sessionId).toBe(row.input.sid)
+            expect(['later original', 'now original next original']).toContain(picker[0].firstPrompt)
+            outcomes.push({ profile, body, activationHistory: result.observation.activationHistory, historySource: result.observation.historySource, transcripts: result.observation.transcripts, resumeFirstPrompt: picker[0].firstPrompt })
+          }
+          finally { clearTimeout(timeout); child.kill(); await child.exited }
+        }
+        finally { server.stop(true) }
+      }
+      // Physical byte order remains raw above. These are the next real request
+      // and restored conversation consumers, not a sorted transcript projection.
+      expect(outcomes[1].body).toEqual(outcomes[0].body)
+      expect(outcomes[2].body).toEqual(outcomes[0].body)
+      expect(outcomes[1].activationHistory).toEqual(outcomes[0].activationHistory)
+      expect(outcomes[2].activationHistory).toEqual(outcomes[0].activationHistory)
+      expect(outcomes[1].historySource).toEqual(outcomes[0].historySource)
+      expect(outcomes[2].historySource).toEqual(outcomes[0].historySource)
+      await writeFile(join(artifact, `multiple-sdk-${timeline}-own-resume-next-human-consumers.json`), JSON.stringify(outcomes, null, 2))
+    }
+  }
+  finally { await rm(home, { recursive: true, force: true }) }
+}, 120000)
+
 function environment(home: string, origin: string) {
   return createSandboxedTestEnvironment(home, {
     CC_HAHA_SESSION_CONTROLLER_FIXTURE: '1',

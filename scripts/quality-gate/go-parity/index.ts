@@ -5,6 +5,13 @@ import { runCorpusWithManifest } from './manifest'
 // proves cases that actually execute; it is not a full Harness Benchmark score.
 const corpus = [
   './source-exports.test.ts',
+  './native-command-sinks-preaction-source.test.ts',
+  './native-command-sinks-auth-source.test.ts',
+  './native-command-migrations-source.test.ts',
+  './native-sdk-run-mcp-order.test.ts',
+  './native-user-instructions-sdk-environment.test.ts',
+  './native-sdk-analytics-environment.test.ts',
+  './native-ant-datadog-sink.test.ts',
   './trace.test.ts',
   './recovery.test.ts',
   './protocol.test.ts',

@@ -39,6 +39,7 @@ func TestPublicCLIAuthLoginRefreshMustReachOriginalInstallation(t *testing.T) {
 	var logs bytes.Buffer
 	build.Stdout = &logs
 	build.Stderr = &logs
+	capturePublicGoCoverage(t, build)
 	if e = build.Run(); e != nil {
 		t.Fatal(e, logs.String())
 	}
@@ -48,6 +49,7 @@ func TestPublicCLIAuthLoginRefreshMustReachOriginalInstallation(t *testing.T) {
 	var out, stderr bytes.Buffer
 	command.Stdout = &out
 	command.Stderr = &stderr
+	capturePublicGoCoverage(t, command)
 	e = command.Run()
 	expected := "CLAUDE_CODE_OAUTH_SCOPES is required when using CLAUDE_CODE_OAUTH_REFRESH_TOKEN.\nSet it to the space-separated scopes the refresh token was issued with\n(e.g. \"user:inference\" or \"user:profile user:inference user:sessions:claude_code user:mcp_servers\").\n"
 	if e == nil || out.Len() != 0 || stderr.String() != expected {
@@ -89,6 +91,7 @@ func TestPublicCLIAuthLoginRefreshMustReachOriginalInstallation(t *testing.T) {
 	var actualOut, actualError bytes.Buffer
 	actual.Stdout = &actualOut
 	actual.Stderr = &actualError
+	capturePublicGoCoverage(t, actual)
 	if e = actual.Run(); e != nil || actualOut.String() != "Login successful.\n" || actualError.Len() != 0 {
 		t.Fatal("actual public CLI physical OAuth installation", e, actualOut.String(), actualError.String())
 	}
@@ -130,6 +133,7 @@ func TestPublicCLIAuthLoginRefreshMustReachOriginalInstallation(t *testing.T) {
 			var output, diagnostics bytes.Buffer
 			process.Stdout = &output
 			process.Stderr = &diagnostics
+			capturePublicGoCoverage(t, process)
 			if e = process.Run(); e != nil || diagnostics.Len() != 0 {
 				t.Fatal("ordinary public browser login", e, output.String(), diagnostics.String())
 			}
@@ -183,6 +187,7 @@ func TestPublicCLIAuthLoginRefreshMustReachOriginalInstallation(t *testing.T) {
 			}
 			var cancelError bytes.Buffer
 			cancelled.Stderr = &cancelError
+			capturePublicGoCoverage(t, cancelled)
 			if e = cancelled.Start(); e != nil {
 				t.Fatal(e)
 			}

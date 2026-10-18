@@ -16,7 +16,7 @@ import (
 func (p *NativeProcessSettings) PluginMCP(options *pluginoptions.Service, secure *securestorage.Store) (*pluginmcp.Service, *mcpb.Service, error) {
 	n := p.n
 	var plugins *pluginmcp.Service
-	environment := func(key string) (string, bool) { value, ok := n.Environment[key]; return value, ok }
+	environment := n.nativeEnvironmentValue
 	settings := func(ctx context.Context) (protocol.JSONObject, error) {
 		if err := ctx.Err(); err != nil {
 			return protocol.JSONObject{}, err
@@ -35,7 +35,7 @@ func (p *NativeProcessSettings) PluginMCP(options *pluginoptions.Service, secure
 	if err != nil {
 		return nil, nil, err
 	}
-	plugins, err = pluginmcp.New(pluginmcp.Options{Home: n.Home, ConfigDir: n.Environment["CLAUDE_CONFIG_DIR"], CWD: n.CWD, Platform: p.platform, Environment: environment, PluginOptions: options, Secure: secure, Settings: settings, WriteSettings: p.WriteUserSettings, LoadMCPB: func(ctx context.Context, source, path, id string, progress func(string)) (pluginmcp.MCPBResult, error) {
+	plugins, err = pluginmcp.New(pluginmcp.Options{Home: n.Home, ConfigDir: n.ConfigHomeDirectory(), CWD: n.CWD, Platform: p.platform, Environment: environment, PluginOptions: options, Secure: secure, Settings: settings, WriteSettings: p.WriteUserSettings, LoadMCPB: func(ctx context.Context, source, path, id string, progress func(string)) (pluginmcp.MCPBResult, error) {
 		r, err := loader.Load(ctx, source, path, id, progress, nil, false)
 		return pluginmcp.MCPBResult{NeedsConfig: r.NeedsConfig, Manifest: r.Manifest, Config: r.Config, ExtractedPath: r.ExtractedPath, ContentHash: r.ContentHash}, err
 	}})

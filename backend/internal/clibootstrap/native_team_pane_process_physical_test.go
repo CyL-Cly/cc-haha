@@ -6,6 +6,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/queryloop"
+	"github.com/NanmiCoder/cc-haha/backend/testdata/gochildcoverage"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -30,7 +31,8 @@ func TestActualPaneProducerStartsGoCLIBinaryFromPrivateTmuxInitialInboxWritesAnd
 	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
 	defer cancel()
 	binary := filepath.Join(t.TempDir(), "claude-haha-go")
-	build := exec.CommandContext(ctx, "go", "build", "-p=4", "-o", binary, "../../cmd/claude-haha")
+	build := exec.CommandContext(ctx, "go", "build", "-tags", "native_process_fixture", "-p=4", "-o", binary, "../../cmd/claude-haha")
+	capturePublicGoCoverage(t, build)
 	if out, err := build.CombinedOutput(); err != nil {
 		t.Fatal("isolated actual CLI build", err, string(out))
 	}
@@ -42,8 +44,17 @@ func TestActualPaneProducerStartsGoCLIBinaryFromPrivateTmuxInitialInboxWritesAnd
 	socketDir := filepath.Join(private, "tmux")
 	_ = os.Mkdir(socketDir, 0700)
 	var posts atomic.Int32
+	var heads atomic.Int32
 	artifact := ""
 	provider := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodHead {
+			if r.Header.Get("Authorization") != "" || r.Header.Get("X-Api-Key") != "" || r.Header.Get("User-Agent") != "Bun/1.3.14" {
+				t.Error("actual preconnect identity/auth changed", r.Header)
+			}
+			heads.Add(1)
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
 		body, _ := io.ReadAll(r.Body)
 		switch posts.Add(1) {
 		case 1:
@@ -60,6 +71,9 @@ func TestActualPaneProducerStartsGoCLIBinaryFromPrivateTmuxInitialInboxWritesAnd
 	}))
 	defer provider.Close()
 	m := backgroundAgentMainWithOptions(t, "http://127.0.0.1:1", func(n *NativeBoundary) {
+		if directory := gochildcoverage.IndirectEnvironment(t, binary); directory != "" {
+			n.Environment["GOCOVERDIR"] = directory
+		}
 		n.Environment["PATH"] = filepath.Dir(tmux) + ":/usr/bin:/bin"
 		n.Environment["TMUX_TMPDIR"] = socketDir
 		n.Environment["TERM"] = "xterm-256color"
@@ -68,6 +82,11 @@ func TestActualPaneProducerStartsGoCLIBinaryFromPrivateTmuxInitialInboxWritesAnd
 		delete(n.Environment, "TERM_PROGRAM")
 		n.Environment["ANTHROPIC_BASE_URL"] = provider.URL
 		n.Environment["CLAUDE_CODE_TEAMMATE_COMMAND"] = binary
+		n.Environment["CC_HAHA_NATIVE_FIXTURE_ROOT"] = n.Home
+		n.Environment["TMPDIR"] = filepath.Join(n.Home, "tmp")
+		if err := os.MkdirAll(n.Environment["TMPDIR"], 0700); err != nil {
+			t.Fatal(err)
+		}
 		n.Environment["CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS"] = "1"
 		n.Environment["CC_HAHA_AGENT_TEAMS_ENABLED"] = "1"
 	}, func(o *MainPrintOptions) {
@@ -111,6 +130,7 @@ func TestActualPaneProducerStartsGoCLIBinaryFromPrivateTmuxInitialInboxWritesAnd
 		args := []string{"-L", fmt.Sprintf("claude-swarm-%d", m.options.PID), "capture-pane", "-t", result.String("tmux_pane_id"), "-p", "-S", "-200"}
 		command := exec.CommandContext(ctx, tmux, args...)
 		command.Env = nativeAgentProcessEnvironment(m.options.Native)
+		capturePublicGoCoverage(t, command)
 		out, _ := command.CombinedOutput()
 		t.Fatal("real Go CLI pane did not write artifact", string(data), err, string(out))
 	}
@@ -119,8 +139,12 @@ func TestActualPaneProducerStartsGoCLIBinaryFromPrivateTmuxInitialInboxWritesAnd
 	}
 	list := exec.CommandContext(ctx, tmux, "-L", fmt.Sprintf("claude-swarm-%d", m.options.PID), "list-panes", "-a", "-F", "#{pane_id}")
 	list.Env = nativeAgentProcessEnvironment(m.options.Native)
+	capturePublicGoCoverage(t, list)
 	out, _ := list.CombinedOutput()
 	if strings.Contains(string(out), result.String("tmux_pane_id")) {
 		t.Fatal("parent Close left physical pane alive", string(out))
+	}
+	if heads.Load() != 1 {
+		t.Fatalf("actual child preconnect requests heads=%d", heads.Load())
 	}
 }

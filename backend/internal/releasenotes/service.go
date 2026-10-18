@@ -67,6 +67,19 @@ func (s *Service) Memory() string {
 	}
 	return *s.memory
 }
+
+// Preload is setup's awaited cached read followed by its independent refresh.
+// Logo renderers read Memory; they do not reread a file changed after startup.
+func (s *Service) Preload(nonInteractive, essentialOnly, versionChanged bool) string {
+	content := s.Stored()
+	s.mu.Lock()
+	if !s.closed && !nonInteractive && !essentialOnly && (versionChanged || content == "") {
+		s.wg.Add(1)
+		go func() { defer s.wg.Done(); _ = s.fetch() }()
+	}
+	s.mu.Unlock()
+	return content
+}
 func (s *Service) fetch() error {
 	response, err := s.o.Fetch(s.ctx)
 	if err != nil {

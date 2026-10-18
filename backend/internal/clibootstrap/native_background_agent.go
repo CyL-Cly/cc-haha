@@ -120,6 +120,11 @@ func (m *MainPrint) startNativeBackgroundAgent(ctx context.Context, scope *coope
 	if e != nil {
 		return fail(e)
 	}
+	// This factory is the original ordinary async Agent branch. Expose that
+	// committed mode before the child assembles its first actual tool catalog,
+	// using the same Source background filter as a promoted foreground child.
+	o.DetachedAgent.agentSummary = request.AgentToolInvocation && m.nativeSDKAgentSummaryEnabled.Load()
+	o.DetachedAgent.isBackgrounded = func() bool { return true }
 	snapshot := m.state.Snapshot()
 	progress := m.nativeAgentProgress(request, worktreeRun.CWD)
 	streamed := []queryloop.Message{}
@@ -179,6 +184,9 @@ func (m *MainPrint) startNativeBackgroundAgent(ctx context.Context, scope *coope
 		}
 		var path string
 		if e = child.Owner.Run(context.Background(), func(scope *cooperative.Scope) error {
+			if e := child.installNativeIndependentAgentSkills(ctx, scope); e != nil {
+				return e
+			}
 			if request.ResumeHistory != nil {
 				if e := child.Controller.InstallAgentResumeHistory(scope, request.ResumeHistory); e != nil {
 					return e
@@ -214,23 +222,34 @@ func (m *MainPrint) startNativeBackgroundAgent(ctx context.Context, scope *coope
 	}
 	agentContext, cancel := context.WithCancelCause(base)
 	finished := make(chan struct{})
-	if e = m.beginNativeAgentTask(scope, agentID, path, request, cancel, finished, true); e != nil {
+	// Until transfer, no goroutine owns this Join signal. All startup failures
+	// settle it without fabricating a completed task or notification.
+	defer func() {
+		if !transferred {
+			close(finished)
+		}
+	}()
+	registration, e := m.prepareNativeAgentTask(scope, agentID, path, request, cancel, finished, true)
+	abort := func(e error) (*ownerasync.OwnerFuture[builtintools.AgentRunResult], error) {
 		cancel(e)
+		if registration != nil {
+			e = errors.Join(e, registration.Rollback(scope))
+		}
 		_ = child.ShutdownSession(context.Background())
 		return fail(e)
+	}
+	if e != nil {
+		return abort(e)
 	}
 	binding, e := m.Controller.BorrowNativeCopyBinding(m.Owner)
 	if e != nil {
-		cancel(e)
-		_ = child.ShutdownSession(context.Background())
-		return fail(e)
+		return abort(e)
 	}
 	ref, e := binding.Acquire(scope)
 	if e != nil {
-		cancel(e)
-		_ = child.ShutdownSession(context.Background())
-		return fail(e)
+		return abort(e)
 	}
+	registration.Commit()
 	transferred = true
 	go func() {
 		defer releaseSlot()
@@ -245,6 +264,9 @@ func (m *MainPrint) startNativeBackgroundAgent(ctx context.Context, scope *coope
 			}
 			return nil
 		})
+		if e := child.Host.CloseAgentSummaries(context.Background()); failure == nil {
+			failure = e
+		}
 		run = builtintools.AgentRunResult{AgentID: agentID, Messages: streamed, DurationMillis: child.options.Native.NowMillis() - start}
 		// Source completes and notifies before optional worktree cleanup. The
 		// original child lifetime lease continues to own and join that cleanup.

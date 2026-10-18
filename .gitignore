@@ -59,6 +59,8 @@ bug_attachments/
 
 # Private keys & credentials
 *.pem
+!scripts/quality-gate/go-parity/testdata/private-loopback-certificate.pem
+!scripts/quality-gate/go-parity/testdata/private-loopback-key.pem
 *.key
 *.p12
 credentials*.json

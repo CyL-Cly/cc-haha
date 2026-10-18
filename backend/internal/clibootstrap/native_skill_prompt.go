@@ -15,18 +15,14 @@ import (
 )
 
 func (m *MainPrint) nativeProcessSkillPrompt(ctx context.Context, scope *cooperative.Scope, name, args string, history []queryloop.Message, uuid json.RawMessage) (*sessioncontroller.ProcessedInput, error) {
-	commands, e := m.nativeSkillCommands(scope)
-	if e != nil {
-		return nil, e
+	if scope == nil || !scope.BelongsTo(m.Owner) || m.Registry == nil {
+		return nil, cooperative.ErrRestricted
 	}
 	if m.options.Arguments.DisableSlashCommands {
 		return m.nativeDisabledSlashInput(scope, name, args, uuid)
 	}
-	for _, command := range commands {
-		if command.Definition == nil {
-			continue
-		}
-		metadata := command.Metadata
+	for _, command := range m.Registry.NativePromptDefinitions() {
+		metadata := command.Metadata()
 		found := metadata.String("name") == name || metadata.Get("userFacingName") != nil && metadata.String("userFacingName") == name
 		var aliases []string
 		_ = json.Unmarshal(metadata.Get("aliases"), &aliases)
@@ -48,7 +44,7 @@ func (m *MainPrint) nativeProcessSkillPrompt(ctx context.Context, scope *coopera
 		if e := m.recordNativeSkillUsage(scope, name); e != nil {
 			return nil, e
 		}
-		processed, err := m.nativeSkillPrompt(ctx, scope, *command.Definition, args, history, uuid)
+		processed, err := m.nativeSkillPrompt(ctx, scope, command, args, history, uuid)
 		var malformed *skillcommands.MalformedCommandError
 		if errors.As(err, &malformed) {
 			// Source allocates the usage input before the outer local caveat.
@@ -66,16 +62,33 @@ func (m *MainPrint) nativeProcessSkillPrompt(ctx context.Context, scope *coopera
 func (m *MainPrint) nativeSkillPrompt(ctx context.Context, scope *cooperative.Scope, command skillcommands.Definition, args string, history []queryloop.Message, uuid json.RawMessage) (*sessioncontroller.ProcessedInput, error) {
 	meta := command.Metadata()
 	if meta.String("context") == "fork" {
-		return nil, mainCap("actual forked Skill agent executor")
+		run, err := m.nativeRunForkedSkill(ctx, scope, command, args)
+		if err != nil {
+			return m.nativeForkSkillSlashFailure(command, args, err)
+		}
+		name := command.UserFacingName()
+		if name == "" {
+			name = command.Name()
+		}
+		input := "/" + name
+		if args != "" {
+			input += " " + args
+		}
+		input = protocol.TrimJavaScriptString(input)
+		first := messages.OrderedUser(m.factory.CreateUser(storage.Object{"content": quoteMain(input)}))
+		text := nativeForkSkillResultText(run.Messages, "Command completed")
+		second := messages.OrderedUser(m.factory.CreateUser(storage.Object{"content": quoteMain("<local-command-stdout>\n" + text + "\n</local-command-stdout>")}))
+		return &sessioncontroller.ProcessedInput{Messages: []protocol.JSONObject{first, second}, NoQuery: true, NoQueryResultText: text, AttachmentsHandled: true, StartMillis: m.options.Native.NowMillis()}, nil
 	}
 	inv, e := m.nativeSkillInvocation(scope)
 	if e != nil {
 		return nil, e
 	}
-	text, e := command.Prompt(ctx, &args, inv)
+	blocks, e := command.PromptBlocks(ctx, &args, inv)
 	if e != nil {
 		return nil, e
 	}
+	text := skillcommands.PromptText(blocks)
 	if e = m.nativeSkillHooks(scope, meta); e != nil {
 		return nil, e
 	}
@@ -114,7 +127,7 @@ func (m *MainPrint) nativeSkillPrompt(ctx context.Context, scope *cooperative.Sc
 		return nil, e
 	}
 	first := messages.OrderedUser(m.factory.CreateUser(storage.Object{"content": loading, "uuid": uuid}))
-	second := messages.OrderedUser(m.factory.CreateUser(storage.Object{"content": rawMain([]protocol.JSONObject{protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoteMain("text")}, protocol.JSONField{Name: "text", Value: quoteMain(text)})}), "isMeta": json.RawMessage("true")}))
+	second := messages.OrderedUser(m.factory.CreateUser(storage.Object{"content": rawMain(blocks), "isMeta": json.RawMessage("true")}))
 	result := []protocol.JSONObject{first, second}
 	for _, attachment := range attached {
 		result = append(result, attachment.Record)
@@ -155,18 +168,8 @@ func (m *MainPrint) nativeSkillHooks(scope *cooperative.Scope, meta protocol.JSO
 	if e := object.UnmarshalJSON(hooks); e != nil {
 		return e
 	}
-	for _, event := range object.OwnProperties() {
-		var matchers []protocol.JSONObject
-		if e := json.Unmarshal(event.Value, &matchers); e != nil {
-			return e
-		}
-		for _, matcher := range matchers {
-			var registered []json.RawMessage
-			_ = json.Unmarshal(matcher.Get("hooks"), &registered)
-			if len(registered) > 0 {
-				return mainCap("actual Skill frontmatter session hook registration/execution")
-			}
-		}
+	if m.hook == nil {
+		return cooperative.ErrRestricted
 	}
-	return nil
+	return m.hook.RegisterNativeSkillHooks(scope, m.Controller.SessionID(), object, meta.String("skillRoot"))
 }

@@ -16,7 +16,9 @@ const functions = source.statements.filter(node => ts.isFunctionDeclaration(node
 if (functions.length !== names.length) throw new Error('Source forwarding function identity changed')
 const syncCases: any[] = []
 const permissionSnapshotCalls: any[] = []
+const openMethods: any[] = []
 const visit = (node: any) => {
+  if (ts.isMethodDeclaration(node) && node.name.getText(source) === 'open') openMethods.push(node)
   if (ts.isCaseClause(node) && ts.isStringLiteral(node.expression) && node.expression.text === 'sync_state') syncCases.push(node)
   if (ts.isCallExpression(node) && node.expression.getText(source) === 'sendMessage' && node.arguments.length === 2 && ts.isObjectLiteralExpression(node.arguments[1])) {
     const type = node.arguments[1].properties.find((property: any) => ts.isPropertyAssignment(property) && property.name.getText(source) === 'type')
@@ -27,6 +29,7 @@ const visit = (node: any) => {
 visit(source)
 if (permissionSnapshotCalls.length !== 1) throw new Error('Source reconnect permission snapshot producer changed')
 if (syncCases.length !== 1 || (text.match(/type: 'session_state'/g) ?? []).length !== 1) throw new Error('Source snapshot production boundary changed')
+if (openMethods.length !== 1) throw new Error('Source connection producer identity changed')
 const capabilities = await installClientFixtureCapabilities(input.home, { absentPaths: absentManagedSettingsFixturePaths() })
 ;(globalThis as any).MACRO = { VERSION: '2.1.288', BUILD_TIME: '', PACKAGE_URL: 'https://fixture.invalid/package' }
 await import('../../../preload')
@@ -38,6 +41,14 @@ const sendMessage = (_ws: unknown, frame: unknown) => { frames.push(frame) }
 const activeSessions = new Map([[input.sessionId, new Set([ws])]])
 const body = functions.map(node => node.getText(source)).join('\n')
 const original = new Function('translateCliMessage', 'conversationService', 'sendMessage', 'activeSessions', new Bun.Transpiler({ loader: 'ts' }).transformSync(body + '\nreturn { forwardCliMessageToClient, forwardCliMessageToSessionClients, replayPendingPermissionRequests }'))(translateCliMessage, conversationService, sendMessage, activeSessions)
+// Execute the exact tail of the original open producer, including permission
+// replay. A connection never manufactures an authoritative session_state.
+const openStatements = openMethods[0]!.body.statements
+const connectedIndex = openStatements.findIndex((node: any) => ts.isVariableStatement(node) && node.declarationList.declarations.some((declaration: any) => declaration.name.getText(source) === 'msg'))
+if (connectedIndex < 0) throw new Error('Source connected frame boundary changed')
+const openBody = openStatements.slice(connectedIndex).map((node: any) => node.getText(source)).join('\n')
+new Function('ws', 'sessionId', 'sendMessage', 'sessionService', 'activeSessions', 'replayPendingPermissionRequests', 'replayPendingComputerUsePermissionRequests', 'hasLiveUserTurnForClient', 'replayAgentStopFailures', 'activeNonAgentTasks', 'emitAuthoritativeNonAgentStopped', new Bun.Transpiler({ loader: 'ts' }).transformSync(openBody))(ws, input.sessionId, sendMessage, { getCustomTitle: async () => null }, activeSessions, original.replayPendingPermissionRequests, () => [], () => false, () => {}, new Map(), () => {})
+const connected = frames.splice(0)
 original.forwardCliMessageToClient(input.sessionId, ws, input.result)
 const direct = frames.splice(0)
 original.forwardCliMessageToSessionClients(input.sessionId, input.result)
@@ -79,4 +90,24 @@ __registerPendingUserTurnForTests(input.sessionId)
 await handleWebSocket.message(socket as any, JSON.stringify({ type: 'sync_state' }))
 const pendingStartupSnapshot = frames.splice(0)
 __settleActiveTurnForTests(input.sessionId, input.result)
-process.stdout.write(JSON.stringify({ direct, broadcast, requestedSnapshot, registeredSnapshot, settledSnapshot, sdkRunState, sdkCliRunning: activeCliRuns.has(input.sessionId), sdkOnlySnapshot, sdkOnlyPermissionsSnapshot, pendingStartupSnapshot, capabilities }))
+const stopNames = ['handleStopGeneration', 'clearActiveUserTurn', 'releaseUserTurnWithoutResult']
+const stopFunctions = source.statements.filter(node => ts.isFunctionDeclaration(node) && node.name && stopNames.includes(node.name.text))
+if (stopFunctions.length !== stopNames.length) throw new Error('Source Stop admission fence identity changed')
+const pendingAdmission = { messageSent: false, replacementAfterStop: true, cancelled: false }
+const stopTurns = new Map([[input.sessionId, pendingAdmission]])
+const legacyQueue = new Map([[input.sessionId, ['queued-before-stop']]])
+const stopDependencies = {
+  activeUserTurns: stopTurns, activeAgentTasks: new Map(), activeNonAgentTasks: new Map(),
+  emitSessionTurnEvent: () => {}, sessionStopRequested: new Set(),
+  computerUseApprovalService: { getPendingRequests: () => [], cancelSession: () => {} },
+  agentStopRequestedSessions: new Set(), legacyQueuedSessionChats: legacyQueue,
+  terminalSessionChatStates: new Map(), interruptedSessionChats: new Set(),
+  nonAgentStopRequestedSessions: new Set(), conversationService: { hasSession: () => false },
+  refreshBackgroundTaskDisconnectCeiling: () => {}, scheduleDisconnectedSessionCleanupIfIdle: () => {},
+  sendToSession: (_sessionId: string, frame: unknown) => frames.push(frame),
+  console: { log: () => {} },
+}
+const stopBody = stopFunctions.map(node => node.getText(source)).join('\n') + '\nreturn handleStopGeneration'
+new Function(...Object.keys(stopDependencies), new Bun.Transpiler({ loader: 'ts' }).transformSync(stopBody))(...Object.values(stopDependencies))(ws, { reapBackgroundTasks: true })
+const stoppedPendingAdmission = { ...pendingAdmission, stillRegistered: stopTurns.has(input.sessionId), stillQueued: legacyQueue.has(input.sessionId) }
+process.stdout.write(JSON.stringify({ connected, direct, broadcast, requestedSnapshot, registeredSnapshot, settledSnapshot, sdkRunState, sdkCliRunning: activeCliRuns.has(input.sessionId), sdkOnlySnapshot, sdkOnlyPermissionsSnapshot, pendingStartupSnapshot, stoppedPendingAdmission, capabilities }))

@@ -20,6 +20,7 @@ type ModelResolver func(context.Context, string) (string, error)
 type ShellRequest struct {
 	Text, SlashCommand, Shell string
 	AllowedTools              []string
+	TextJSON                  json.RawMessage
 }
 
 // ExecuteShell must use the current turn's actual permission context/tool and
@@ -28,10 +29,13 @@ type Invocation struct {
 	NativeScope         *cooperative.Scope
 	SessionID, Platform string
 	ExecuteShell        func(context.Context, ShellRequest) (string, error)
+	ExecuteShellJSON    func(context.Context, ShellRequest) (json.RawMessage, error)
 	PluginDataDirectory func(context.Context, string) (string, error)
 	PluginOptions       func(context.Context, string) (protocol.JSONObject, error)
 }
 type Definition struct {
+	nativeEnabled                                                    func(*cooperative.Scope) (bool, error)
+	nativeContent                                                    func(context.Context, *string, Invocation) ([]protocol.JSONObject, error)
 	nativePrompt                                                     func(context.Context, *string, Invocation) (string, error)
 	bundledPrompt                                                    func(context.Context, *string) (string, error)
 	metadata                                                         protocol.JSONObject
@@ -39,6 +43,21 @@ type Definition struct {
 	arguments, allowedTools                                          []string
 	pluginUserConfig                                                 protocol.JSONObject
 	pluginSkillMode                                                  bool
+}
+
+// WithNativeEnablement retains an original isEnabled predicate beside the
+// immutable command. Catalog projection consumes it; the memoized loader does
+// not freeze its result or turn it into persisted metadata.
+func (d Definition) WithNativeEnablement(enabled func(*cooperative.Scope) (bool, error)) Definition {
+	d.nativeEnabled = enabled
+	return d
+}
+
+func (d Definition) IsEnabled(scope *cooperative.Scope) (bool, error) {
+	if d.nativeEnabled == nil {
+		return true, nil
+	}
+	return d.nativeEnabled(scope)
 }
 
 func (d Definition) Metadata() protocol.JSONObject { return d.metadata.Clone() }
@@ -51,11 +70,33 @@ func (d Definition) Paths() []string {
 	return out
 }
 func (d Definition) Prompt(ctx context.Context, args *string, inv Invocation) (string, error) {
+	value, err := d.PromptJSON(ctx, args, inv)
+	var text string
+	if err == nil {
+		err = json.Unmarshal(value, &text)
+	}
+	return text, err
+}
+
+// PromptJSON keeps JavaScript string code units through option substitution
+// and the permission-aware shell producer until the model's JSON boundary.
+func (d Definition) PromptJSON(ctx context.Context, args *string, inv Invocation) (json.RawMessage, error) {
+	if d.nativeContent != nil {
+		blocks, err := d.nativeContent(ctx, args, inv)
+		if err != nil {
+			return nil, err
+		}
+		return PromptTextJSON(blocks)
+	}
 	if d.nativePrompt != nil {
-		return d.nativePrompt(ctx, args, inv)
+		text, err := d.nativePrompt(ctx, args, inv)
+		value, _ := json.Marshal(text)
+		return value, err
 	}
 	if d.bundledPrompt != nil {
-		return d.bundledPrompt(ctx, args)
+		text, err := d.bundledPrompt(ctx, args)
+		value, _ := json.Marshal(text)
+		return value, err
 	}
 	text := d.body
 	if d.baseDir != "" && (d.pluginPath == "" || d.pluginSkillMode) {
@@ -64,8 +105,9 @@ func (d Definition) Prompt(ctx context.Context, args *string, inv Invocation) (s
 	var err error
 	text, err = SubstituteArguments(text, args, d.arguments)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
+	value, _ := json.Marshal(text)
 	normalize := func(s string) string {
 		if inv.Platform == "win32" {
 			return strings.ReplaceAll(s, "\\", "/")
@@ -73,39 +115,108 @@ func (d Definition) Prompt(ctx context.Context, args *string, inv Invocation) (s
 		return s
 	}
 	if d.pluginPath != "" {
-		text = strings.ReplaceAll(text, "${CLAUDE_PLUGIN_ROOT}", normalize(d.pluginPath))
-		if strings.Contains(text, "${CLAUDE_PLUGIN_DATA}") && d.pluginSource != "" {
-			if inv.PluginDataDirectory == nil {
-				return "", errors.New("plugin prompt requires actual data-directory producer")
+		value, err = protocol.ReplaceJavaScriptLiteralJSON(value, "${CLAUDE_PLUGIN_ROOT}", func() (json.RawMessage, error) { return json.Marshal(normalize(d.pluginPath)) })
+		if err != nil {
+			return nil, err
+		}
+		if d.pluginSource != "" {
+			value, err = protocol.ReplaceJavaScriptLiteralJSON(value, "${CLAUDE_PLUGIN_DATA}", func() (json.RawMessage, error) {
+				if inv.PluginDataDirectory == nil {
+					return nil, errors.New("plugin prompt requires actual data-directory producer")
+				}
+				path, err := inv.PluginDataDirectory(ctx, d.pluginSource)
+				if err != nil {
+					return nil, err
+				}
+				return json.Marshal(normalize(path))
+			})
+			if err != nil {
+				return nil, err
 			}
-			path, e := inv.PluginDataDirectory(ctx, d.pluginSource)
-			if e != nil {
-				return "", e
-			}
-			text = strings.ReplaceAll(text, "${CLAUDE_PLUGIN_DATA}", normalize(path))
 		}
 		if d.pluginUserConfig.IsObject() {
 			if inv.PluginOptions == nil {
-				return "", errors.New("plugin prompt requires actual saved option producer")
+				return nil, errors.New("plugin prompt requires actual saved option producer")
 			}
 			values, e := inv.PluginOptions(ctx, d.pluginSource)
 			if e != nil {
-				return "", e
+				return nil, e
 			}
-			text = substituteUserConfig(text, values, d.pluginUserConfig)
+			value, err = substituteUserConfigJSON(value, values, d.pluginUserConfig)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 	if d.baseDir != "" && (d.pluginPath == "" || d.pluginSkillMode) {
-		text = strings.ReplaceAll(text, "${CLAUDE_SKILL_DIR}", normalize(d.baseDir))
+		directory, _ := json.Marshal(normalize(d.baseDir))
+		value, err = protocol.ReplaceJavaScriptStringJSON(value, "${CLAUDE_SKILL_DIR}", directory)
+		if err != nil {
+			return nil, err
+		}
 	}
-	text = strings.ReplaceAll(text, "${CLAUDE_SESSION_ID}", inv.SessionID)
+	session, _ := json.Marshal(inv.SessionID)
+	value, err = protocol.ReplaceJavaScriptStringJSON(value, "${CLAUDE_SESSION_ID}", session)
+	if err != nil {
+		return nil, err
+	}
 	if d.loadedFrom == "mcp" {
-		return text, nil
+		return value, nil
+	}
+	_ = json.Unmarshal(value, &text)
+	request := ShellRequest{Text: text, TextJSON: value, SlashCommand: "/" + d.name, Shell: d.shell, AllowedTools: append([]string{}, d.allowedTools...)}
+	if inv.ExecuteShellJSON != nil {
+		return inv.ExecuteShellJSON(ctx, request)
 	}
 	if inv.ExecuteShell == nil {
-		return "", errors.New("skill prompt requires actual permission-aware shell producer")
+		return nil, errors.New("skill prompt requires actual permission-aware shell producer")
 	}
-	return inv.ExecuteShell(ctx, ShellRequest{text, "/" + d.name, d.shell, append([]string{}, d.allowedTools...)})
+	text, err = inv.ExecuteShell(ctx, request)
+	value, _ = json.Marshal(text)
+	return value, err
+}
+
+// PromptBlocks preserves actual MCP images/resources alongside text while old
+// disk/bundled prompt producers keep their existing text contract.
+func (d Definition) PromptBlocks(ctx context.Context, args *string, inv Invocation) ([]protocol.JSONObject, error) {
+	if d.nativeContent != nil {
+		return d.nativeContent(ctx, args, inv)
+	}
+	value, err := d.PromptJSON(ctx, args, inv)
+	if err != nil {
+		return nil, err
+	}
+	return []protocol.JSONObject{protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: json.RawMessage(`"text"`)}, protocol.JSONField{Name: "text", Value: value})}, nil
+}
+
+func PromptTextJSON(blocks []protocol.JSONObject) (json.RawMessage, error) {
+	units := []uint16{}
+	count := 0
+	for _, block := range blocks {
+		if block.String("type") != "text" {
+			continue
+		}
+		text, err := protocol.DecodeJavaScriptJSONString(block.Get("text"))
+		if err != nil {
+			return nil, err
+		}
+		if count > 0 {
+			units = append(units, '\n', '\n')
+		}
+		count++
+		units = append(units, text...)
+	}
+	return protocol.QuoteJavaScriptUTF16(units), nil
+}
+
+func PromptText(blocks []protocol.JSONObject) string {
+	texts := []string{}
+	for _, block := range blocks {
+		if block.String("type") == "text" {
+			texts = append(texts, block.String("text"))
+		}
+	}
+	return strings.Join(texts, "\n\n")
 }
 
 func Parse(ctx context.Context, markdown, name, source, baseDir, loadedFrom string, model ModelResolver) (Definition, error) {

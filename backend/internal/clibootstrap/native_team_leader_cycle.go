@@ -22,7 +22,11 @@ func (m *MainPrint) RunLeaderInboxCycle(ctx context.Context) (bool, error) {
 			}
 			pending = len(rows) > 0
 			if !pending {
-				return m.Controller.FinishTeamInboxOnOwner(scope, nil)
+				if err = m.Controller.FinishTeamInboxOnOwner(scope, nil); err != nil {
+					return err
+				}
+				pending, err = m.Controller.HasQueuedTaskNotificationsOnOwner(scope)
+				return err
 			}
 			return nil
 		})
@@ -44,6 +48,9 @@ func (m *MainPrint) RunLeaderInboxCycle(ctx context.Context) (bool, error) {
 		var err error
 		if m.options.Interactive {
 			active, err = m.enqueueInteractiveLeaderInbox(scope)
+			if err == nil && !active {
+				active, err = m.Controller.HasQueuedTaskNotificationsOnOwner(scope)
+			}
 		} else {
 			active, err = m.nativeLeaderInboxOnOwner(ctx, scope, false)
 		}

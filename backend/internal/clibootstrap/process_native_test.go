@@ -90,7 +90,7 @@ func TestProcessPolicyActualFileDropInPrecedenceAndUnknownFields(t *testing.T) {
 }
 func TestProcessPolicyPreservesMDMFailureAndDoesNotReadFirstPartyCacheForDeepSeek(t *testing.T) {
 	n := processNativeForTest(t)
-	config := n.Environment["CLAUDE_CONFIG_DIR"]
+	config := n.ConfigHomeDirectory()
 	if err := os.MkdirAll(config, 0700); err != nil {
 		t.Fatal(err)
 	}

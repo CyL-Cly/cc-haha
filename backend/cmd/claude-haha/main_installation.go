@@ -22,12 +22,16 @@ func runInstallationCommand(ctx context.Context, args []string, parsed *cliargs.
 }
 
 func runNativeInstallationCommand(ctx context.Context, args []string, parsed *cliargs.Parsed, native *clibootstrap.NativeBoundary, out, diagnostics io.Writer) int {
-	m, err := clibootstrap.NewMainCommand(clibootstrap.MainCommandOptions{Arguments: args, Native: native, Platform: runtime.GOOS, Version: version, PID: os.Getpid(), NonInteractive: true, Output: out, Error: diagnostics})
+	m, err := clibootstrap.NewMainCommand(clibootstrap.MainCommandOptions{Context: ctx, Arguments: args, Native: native, Platform: runtime.GOOS, Version: version, PID: os.Getpid(), NonInteractive: true, Output: out, Error: diagnostics})
 	if err != nil {
 		fmt.Fprintln(diagnostics, err)
 		return 1
 	}
 	defer m.Close()
+	if err := m.BeginNativeAPIPreconnect(ctx); err != nil {
+		fmt.Fprintln(diagnostics, err)
+		return 1
+	}
 	if parsed.Path == "claude doctor" {
 		if err := runNativeDoctorCommand(ctx, m, out); err != nil {
 			fmt.Fprintln(diagnostics, err)

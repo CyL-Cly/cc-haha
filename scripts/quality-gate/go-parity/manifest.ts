@@ -72,7 +72,7 @@ export async function runCorpusWithManifest(options: {
   const outputRelative = relative(join(root, 'artifacts'), artifactDir)
   if (outputRelative === '..' || outputRelative.startsWith(`..${sep}`) || isAbsolute(outputRelative)) throw new Error('Corpus manifest output must be inside repository artifacts/')
   const home = mkdtempSync(join(tmpdir(), 'go-corpus-manifest-'))
-  const environment = createHermeticGoEnvironment(home, options.sourceEnvironment)
+  const environment = createHermeticGoEnvironment(home, options.sourceEnvironment, false, root)
   // Explicit seed selection is the only dependency input carried from outside
   // the repository; hydration revalidates its lock and every cached file.
   const seed = (options.sourceEnvironment ?? process.env).CC_HAHA_GO_DEPENDENCY_SEED

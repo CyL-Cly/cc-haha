@@ -32,7 +32,7 @@ func (d *SubagentConcurrency) reserveCurrent(currentLimit func() *int64) (func()
 	return func() { once.Do(func() { d.mu.Lock(); defer d.mu.Unlock(); d.active-- }) }, nil
 }
 func (m *MainPrint) reserveOrdinarySubagent() (func(), error) {
-	config := m.options.Native.Environment["CLAUDE_CONFIG_DIR"]
+	config := m.options.Native.ConfigHomeDirectory()
 	if config == "" {
 		config = filepath.Join(m.options.Native.Home, ".claude")
 	}

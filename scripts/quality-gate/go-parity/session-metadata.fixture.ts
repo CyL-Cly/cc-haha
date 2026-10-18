@@ -46,7 +46,8 @@ assertFile(path)
 assertFile(output)
 const capabilities = await installClientFixtureCapabilities(home)
 const { streamSessionMetadata, isSessionMetadataTextTruncated } = await import('../../../src/server/services/sessionMetadataReader')
-const originalOpen = fs.open
+const originalOpen = (fs.open as any).getMockImplementation?.() as typeof fs.open
+if (typeof originalOpen !== 'function') throw new Error('Guarded session metadata open implementation missing')
 const trace: Array<{
   operation: string
   offset?: number

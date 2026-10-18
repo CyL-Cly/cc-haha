@@ -293,6 +293,18 @@ async function installChildGuard() {
   }
 }
 
+export function assertDisposableCliOracleHome(home: string, repositoryRoot = rootDir) {
+  if (!isAbsolute(home)) throw new Error('CLI oracle requires an absolute disposable temporary HOME')
+  const canonical = fs.realpathSync(home)
+  const repository = fs.realpathSync(repositoryRoot)
+  const roots = [tmpdir(), ...(fs.existsSync('/tmp') ? ['/tmp'] : [])].map(value => fs.realpathSync(value))
+  const overlapsRepository = canonical === repository || canonical.startsWith(`${repository}${sep}`) || repository.startsWith(`${canonical}${sep}`)
+  if (fs.lstatSync(home).isSymbolicLink() || !fs.lstatSync(home).isDirectory()
+    || overlapsRepository || !roots.some(root => canonical.startsWith(`${root}${sep}`))) {
+    throw new Error('CLI oracle requires a real disposable temporary HOME')
+  }
+}
+
 export async function probeCli(args: string[], options: {
   mode?: 'tree' | 'parse' | 'bootstrap'
   env?: Record<string, string>
@@ -303,13 +315,7 @@ export async function probeCli(args: string[], options: {
   for (const name of Object.keys(options.env ?? {})) {
     if (!['CLAUDE_CODE_ENABLE_XAA', 'CC_HAHA_CLI_BOOTSTRAP_MARKER'].includes(name)) throw new Error(`Unsupported CLI inventory environment override: ${name}`)
   }
-  if (options.home) {
-    if (!isAbsolute(options.home)) throw new Error('CLI oracle requires an absolute disposable temporary HOME')
-    const canonical = fs.realpathSync(options.home)
-    const roots = [tmpdir(), ...(fs.existsSync('/tmp') ? ['/tmp'] : [])].map(value => fs.realpathSync(value))
-    if (fs.lstatSync(options.home).isSymbolicLink() || !fs.lstatSync(options.home).isDirectory()
-      || !roots.some(root => canonical.startsWith(`${root}${sep}`))) throw new Error('CLI oracle requires a real disposable temporary HOME')
-  }
+  if (options.home) assertDisposableCliOracleHome(options.home)
   const home = options.home ?? await mkdtemp(join(tmpdir(), 'cc-haha-cli-inventory-'))
   const output = join(home, 'inventory.json')
   const child = Bun.spawn([process.execPath, '--no-env-file', ...cliBuildFeatures.map(value => `--feature=${value}`), '--preload', selfPath, options.entrypoint ?? join(rootDir, 'src/entrypoints/cli.tsx'), ...args], {

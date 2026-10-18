@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { basename } from 'node:path'
 import { matchWorkspaceShortcut } from '../../src/lib/workspace/shortcuts'
@@ -40,6 +41,8 @@ type WorkspaceBrowserDebuggerLike = {
   attach(protocolVersion?: string): void
   detach(): void
   sendCommand(method: string, commandParams?: Record<string, unknown>): Promise<unknown>
+  on?(event: 'detach', listener: (event: unknown, reason: string) => void): unknown
+  removeListener?(event: 'detach', listener: (event: unknown, reason: string) => void): unknown
 }
 
 export type WorkspaceBrowserDownloadItemLike = {
@@ -131,13 +134,21 @@ export type WorkspaceBrowserWebContentsLike = {
   close?(): void
   isDestroyed?(): boolean
   isFocused?(): boolean
+  isDevToolsOpened?(): boolean
 }
 
 export type WorkspaceBrowserParentWindowLike = {
   webContents?: {
     isDestroyed?(): boolean
+    executeJavaScript?(script: string): Promise<unknown>
+    getZoomFactor?(): number
+    isDevToolsOpened?(): boolean
+    debugger?: WorkspaceBrowserDebuggerLike
   }
   isDestroyed?(): boolean
+  getContentBounds?(): { x: number, y: number, width: number, height: number }
+  on?(event: 'resize' | 'move', listener: () => void): unknown
+  removeListener?(event: 'resize' | 'move', listener: () => void): unknown
 }
 
 export type WorkspaceBrowserCreateOptions = {
@@ -173,6 +184,9 @@ type WorkspaceBrowserPage = {
   tabId: string
   storageId: string
   webContents: WorkspaceBrowserWebContentsLike
+  webContentsId: number
+  parent: WorkspaceBrowserParentWindowLike
+  captureGeneration: number
   /** Whether the renderer currently shows this page. Only it can take input. */
   presented: boolean
   /** The guest starts on a blank document whose entry must not be "Back". */
@@ -213,6 +227,331 @@ function isHostPickerMessage(payload: unknown): payload is { v: 1, type: 'enter-
     (payload.type === 'enter-picker' || payload.type === 'exit-picker')
 }
 
+type CaptureRect = { x: number, y: number, width: number, height: number }
+type FullCaptureHost = {
+  width: number, height: number, dpr: number, scrollX: number, scrollY: number
+  element: CaptureRect, connected: boolean, screen: string
+}
+type FullCaptureGuest = {
+  documentCurrent: true
+  width: number, height: number, dpr: number, scrollX: number, scrollY: number
+  clientWidth: number, clientHeight: number, scrollWidth: number, scrollHeight: number
+  bodyWidth: number, bodyHeight: number, body: CaptureRect, main: CaptureRect | null
+  screen: string
+}
+type FullCaptureMetrics = { width: number, height: number, physicalWidth: number, physicalHeight: number, viewportWidth: number }
+type FullCaptureSample = { host: FullCaptureHost, guest: FullCaptureGuest, metrics: FullCaptureMetrics }
+type FullCapturePlan = { width: number, height: number, elementWidth: number, elementHeight: number, visibleWidth: number, visibleHeight: number, clipWidth: number, clipHeight: number }
+type FullCaptureHostRequest = {
+  action: 'begin' | 'snapshot' | 'resize' | 'restore' | 'release'
+  webContentsId: number, token: string, width?: number, height?: number
+}
+type FullCaptureGuestRequest = {
+  action: 'begin' | 'snapshot' | 'restore' | 'release'
+  token: string, x?: number, y?: number
+}
+
+/** FIFO writers wait for all native readers; a writer also blocks new readers. */
+class WorkspaceBrowserCaptureGate {
+  private readers = 0
+  private writer = false
+  private readonly queue: Array<{ exclusive: boolean, resolve: (release: () => void) => void }> = []
+
+  acquire(exclusive: boolean): Promise<() => void> {
+    return new Promise(resolve => {
+      this.queue.push({ exclusive, resolve })
+      this.drain()
+    })
+  }
+
+  private drain(): void {
+    if (this.writer) return
+    while (this.queue.length > 0) {
+      const next = this.queue[0]!
+      if (next.exclusive && this.readers > 0) return
+      this.queue.shift()
+      if (next.exclusive) this.writer = true
+      else this.readers += 1
+      let released = false
+      next.resolve(() => {
+        if (released) return
+        released = true
+        if (next.exclusive) this.writer = false
+        else this.readers -= 1
+        this.drain()
+      })
+      if (next.exclusive) return
+    }
+  }
+}
+
+/** Runs in the trusted embedder. The token holds the original element, never a replacement tab. */
+function fullCaptureHostOperation(input: FullCaptureHostRequest): unknown {
+  type ElementRecord = {
+    element: HTMLElement & { getWebContentsId(): number }
+    width: string, widthPriority: string, height: string, heightPriority: string
+    originalAttribute: string | null, resizedWidth?: string, resizedHeight?: string
+  }
+  const key = Symbol.for('cc-haha.workspace-browser.capture')
+  const root = globalThis as unknown as Record<symbol, Map<string, ElementRecord> | undefined>
+  const records = root[key] ??= new Map<string, ElementRecord>()
+  if (input.action === 'release') {
+    records.delete(input.token)
+    if (records.size === 0) delete root[key]
+    return { released: true }
+  }
+  if (input.action === 'begin') {
+    if (!Number.isSafeInteger(input.webContentsId) || input.webContentsId <= 0 || records.has(input.token)) throw new Error('invalid capture owner')
+    const matches = Array.from(document.querySelectorAll('webview')).filter(candidate => {
+      const element = candidate as HTMLElement & { getWebContentsId?(): number }
+      try { return element.isConnected && element.getWebContentsId?.() === input.webContentsId } catch { return false }
+    })
+    if (matches.length !== 1) throw new Error('capture guest element is not uniquely owned')
+    const element = matches[0] as HTMLElement & { getWebContentsId(): number }
+    const { style } = element
+    records.set(input.token, {
+      element, width: style.getPropertyValue('width'), widthPriority: style.getPropertyPriority('width'),
+      height: style.getPropertyValue('height'), heightPriority: style.getPropertyPriority('height'),
+      originalAttribute: element.getAttribute('style'),
+    })
+  }
+  const record = records.get(input.token)
+  if (!record) throw new Error('capture element token was lost')
+  const element = record.element
+  if (input.action === 'resize') {
+    if (!element.isConnected || element.getWebContentsId() !== input.webContentsId) throw new Error('capture guest element was replaced')
+    if (!Number.isFinite(input.width) || !Number.isFinite(input.height) || input.width! <= 0 || input.height! <= 0) throw new Error('invalid capture element size')
+    // Validate both properties before changing either the ownership record or
+    // CSS. This also protects the gap between the two resize stages.
+    for (const property of ['width', 'height'] as const) {
+      const resized = property === 'width' ? record.resizedWidth : record.resizedHeight
+      const expected = resized ?? record[property]
+      const priority = resized === undefined
+        ? property === 'width' ? record.widthPriority : record.heightPriority
+        : 'important'
+      if (element.style.getPropertyValue(property) !== expected || element.style.getPropertyPriority(property) !== priority) {
+        throw new Error(`capture element size was changed by another owner before resize: ${property}`)
+      }
+    }
+    element.style.setProperty('width', `${input.width}px`, 'important')
+    record.resizedWidth = element.style.getPropertyValue('width')
+    element.style.setProperty('height', `${input.height}px`, 'important')
+    record.resizedHeight = element.style.getPropertyValue('height')
+  }
+  if (input.action === 'restore') {
+    // Restore only our two properties, preserving unrelated styles added meanwhile.
+    // A removed element is safe to restore; it can never name a new guest.
+    const conflicts: string[] = []
+    for (const property of ['width', 'height'] as const) {
+      const expected = property === 'width' ? record.resizedWidth : record.resizedHeight
+      // A failed precondition did not authorize any write to this property.
+      if (expected === undefined) continue
+      if (element.style.getPropertyValue(property) !== expected || element.style.getPropertyPriority(property) !== 'important') {
+        conflicts.push(property)
+        continue
+      }
+      const priority = property === 'width' ? record.widthPriority : record.heightPriority
+      if (record[property]) element.style.setProperty(property, record[property], priority)
+      else element.style.removeProperty(property)
+    }
+    if (record.originalAttribute === null && element.style.length === 0) element.removeAttribute('style')
+    if (conflicts.length > 0) throw new Error(`capture element size was changed by another owner: ${conflicts.join(', ')}`)
+  }
+  const rect = element.getBoundingClientRect()
+  return {
+    width: innerWidth, height: innerHeight, dpr: devicePixelRatio, scrollX, scrollY,
+    element: { x: rect.x, y: rect.y, width: rect.width, height: rect.height }, connected: element.isConnected,
+    screen: JSON.stringify([screen.width, screen.height, screen.availWidth, screen.availHeight, screen.colorDepth, screen.pixelDepth]),
+  }
+}
+
+function scriptForFullCaptureHost(input: FullCaptureHostRequest): string {
+  return `(${fullCaptureHostOperation.toString()})(${JSON.stringify(input)})`
+}
+
+/** Runs in the guest; rectangles use document coordinates so scroll is independent. */
+function fullCaptureGuestGeometry(input: FullCaptureGuestRequest): unknown {
+  type DocumentRecord = { document: Document }
+  const key = Symbol.for('cc-haha.workspace-browser.capture-document')
+  const root = globalThis as unknown as Record<symbol, Map<string, DocumentRecord> | undefined>
+  if (input.action === 'release') {
+    // A queued release may run in a replacement realm. Never initialize state
+    // there, or delete a token belonging to any other capture.
+    const records = root[key]
+    if (records?.has(input.token)) {
+      records.delete(input.token)
+      if (records.size === 0) delete root[key]
+    }
+    return { released: true }
+  }
+  if (input.action === 'begin') {
+    if (typeof input.token !== 'string' || !input.token || root[key]?.has(input.token)) throw new Error('invalid capture document token')
+    const records = root[key] ??= new Map<string, DocumentRecord>()
+    records.set(input.token, { document })
+  }
+  if (root[key]?.get(input.token)?.document !== document) {
+    if (input.action === 'restore') return { documentCurrent: false }
+    throw new Error('full browser capture document changed')
+  }
+  if (input.action === 'restore') window.scrollTo({ left: input.x, top: input.y, behavior: 'instant' })
+  const rect = (element: Element | null) => {
+    if (!element) return null
+    const value = element.getBoundingClientRect()
+    return { x: value.x + scrollX, y: value.y + scrollY, width: value.width, height: value.height }
+  }
+  const html = document.documentElement
+  const body = document.body
+  if (!body) throw new Error('capture document has no body')
+  return {
+    documentCurrent: true,
+    width: innerWidth, height: innerHeight, dpr: devicePixelRatio, scrollX, scrollY,
+    clientWidth: html.clientWidth, clientHeight: html.clientHeight, scrollWidth: html.scrollWidth, scrollHeight: html.scrollHeight,
+    bodyWidth: body.scrollWidth, bodyHeight: body.scrollHeight, body: rect(body), main: rect(document.querySelector('main')),
+    screen: JSON.stringify([screen.width, screen.height, screen.availWidth, screen.availHeight, screen.colorDepth, screen.pixelDepth]),
+  }
+}
+
+function scriptForFullCaptureGuest(input: FullCaptureGuestRequest): string {
+  return `(${fullCaptureGuestGeometry.toString()})(${JSON.stringify(input)})`
+}
+
+function parseCaptureRect(value: unknown): CaptureRect {
+  if (!isPlainRecord(value) || !['x', 'y', 'width', 'height'].every(key => typeof value[key] === 'number' && Number.isFinite(value[key]))) {
+    throw new Error('invalid capture rectangle')
+  }
+  return value as CaptureRect
+}
+
+function parseCaptureNumbers(value: unknown, keys: string[]): asserts value is Record<string, unknown> {
+  if (!isPlainRecord(value) || !keys.every(key => typeof value[key] === 'number' && Number.isFinite(value[key]))) throw new Error('invalid capture geometry')
+}
+
+function parseFullCaptureHost(value: unknown): FullCaptureHost {
+  parseCaptureNumbers(value, ['width', 'height', 'dpr', 'scrollX', 'scrollY'])
+  parseCaptureRect(value.element)
+  if (typeof value.connected !== 'boolean' || typeof value.screen !== 'string') throw new Error('invalid capture host geometry')
+  return value as unknown as FullCaptureHost
+}
+
+function parseFullCaptureGuest(value: unknown): FullCaptureGuest {
+  parseCaptureNumbers(value, ['width', 'height', 'dpr', 'scrollX', 'scrollY', 'clientWidth', 'clientHeight', 'scrollWidth', 'scrollHeight', 'bodyWidth', 'bodyHeight'])
+  parseCaptureRect(value.body)
+  if (value.main !== null) parseCaptureRect(value.main)
+  if (value.documentCurrent !== true || typeof value.screen !== 'string') throw new Error('invalid capture guest geometry')
+  return value as unknown as FullCaptureGuest
+}
+
+function parseFullCaptureMetrics(value: unknown): FullCaptureMetrics {
+  if (!isPlainRecord(value) || !isPlainRecord(value.cssContentSize) || !isPlainRecord(value.contentSize) ||
+    !isPlainRecord(value.cssLayoutViewport) || !isPlainRecord(value.cssVisualViewport) || value.cssVisualViewport.scale !== 1) {
+    throw new Error('unsupported full capture layout metrics')
+  }
+  const layoutViewportWidth = Number(value.cssLayoutViewport.clientWidth)
+  const result = {
+    width: Number(value.cssContentSize.width), height: Number(value.cssContentSize.height),
+    physicalWidth: Number(value.contentSize.width), physicalHeight: Number(value.contentSize.height),
+    viewportWidth: Number(value.cssVisualViewport.clientWidth),
+  }
+  if (!Object.values(result).every(number => Number.isFinite(number) && number > 0) ||
+    !Number.isFinite(layoutViewportWidth) || layoutViewportWidth <= 0 ||
+    Math.abs(result.viewportWidth - layoutViewportWidth) >= 1) throw new Error('invalid full capture dimensions')
+  checkFullCaptureBudget(Math.ceil(result.width), Math.ceil(result.height))
+  return result
+}
+
+function checkFullCaptureBudget(width: number, height: number): void {
+  if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0 ||
+    width > FULL_CAPTURE_MAX_EDGE || height > FULL_CAPTURE_MAX_EDGE || width * height > FULL_CAPTURE_MAX_PIXELS) {
+    throw new Error(`full capture exceeds safety limit: ${width}x${height}`)
+  }
+}
+
+function nearlyEqual(a: number, b: number, tolerance = 0.01): boolean {
+  return Number.isFinite(a) && Number.isFinite(b) && Math.abs(a - b) <= tolerance
+}
+
+function sameCaptureBounds(a: CaptureRect, b: CaptureRect): boolean {
+  return ['x', 'y', 'width', 'height'].every(key => nearlyEqual(a[key as keyof CaptureRect], b[key as keyof CaptureRect]))
+}
+
+function sameCaptureGeometry(a: FullCaptureHost | FullCaptureGuest, b: FullCaptureHost | FullCaptureGuest): boolean {
+  return JSON.stringify(a) === JSON.stringify(b)
+}
+
+function sameCaptureMetrics(a: FullCaptureMetrics, b: FullCaptureMetrics): boolean {
+  return Object.keys(a).every(key => nearlyEqual(a[key as keyof FullCaptureMetrics], b[key as keyof FullCaptureMetrics]))
+}
+
+function planFullCapture(value: FullCaptureSample, hostZoom: number, guestZoom: number | undefined, bounds: CaptureRect): FullCapturePlan {
+  if (!Number.isFinite(hostZoom) || hostZoom <= 0 || !guestZoom || !Number.isFinite(guestZoom) || guestZoom <= 0 ||
+    !value.host.connected || value.host.dpr <= 0 || value.guest.dpr <= 0 ||
+    !nearlyEqual(value.host.dpr / hostZoom, value.guest.dpr / guestZoom) ||
+    !nearlyEqual(value.host.width * hostZoom, bounds.width, hostZoom) ||
+    !nearlyEqual(value.host.height * hostZoom, bounds.height, hostZoom)) throw new Error('unsupported browser capture zoom geometry')
+  const physicalWidth = value.metrics.physicalWidth / value.guest.dpr
+  const physicalHeight = value.metrics.physicalHeight / value.guest.dpr
+  for (const residual of [physicalWidth - value.metrics.width, physicalHeight - value.metrics.height]) {
+    if (residual < -0.01 || residual >= 1) throw new Error('unsupported browser capture CSS/device pixel conversion')
+  }
+  // Keep the original content column when its vertical scrollbar disappears.
+  // Horizontal overflow cannot be expanded without changing layout; refuse it.
+  const width = value.metrics.viewportWidth
+  const height = Math.max(value.guest.height, Math.ceil(physicalHeight))
+  if (!nearlyEqual(value.metrics.width, width, 1) || !nearlyEqual(value.guest.clientWidth, width, 1)) {
+    throw new Error('full browser capture cannot preserve horizontal overflow layout')
+  }
+  const elementWidth = width * guestZoom / hostZoom
+  const elementHeight = height * guestZoom / hostZoom
+  const visibleWidth = Math.ceil(bounds.width)
+  const visibleHeight = Math.max(Math.ceil(bounds.height), Math.ceil(value.host.element.y * hostZoom + height * guestZoom))
+  // CDP's clip dimensions are widget DIPs. Round the complete canvas outward;
+  // clip.scale also scales rendering and must not apply browser zoom again.
+  const clipWidth = Math.ceil(width * guestZoom)
+  const clipHeight = Math.ceil(height * guestZoom)
+  const guestBaseDsf = value.guest.dpr / guestZoom
+  const hostBaseDsf = value.host.dpr / hostZoom
+  checkFullCaptureBudget(Math.ceil(width), Math.ceil(height))
+  checkFullCaptureBudget(visibleWidth, visibleHeight)
+  checkFullCaptureBudget(Math.ceil(visibleWidth * hostBaseDsf), Math.ceil(visibleHeight * hostBaseDsf))
+  checkFullCaptureBudget(Math.ceil(width * value.guest.dpr), Math.ceil(height * value.guest.dpr))
+  checkFullCaptureBudget(Math.ceil(clipWidth * guestBaseDsf), Math.ceil(clipHeight * guestBaseDsf))
+  return { width, height, elementWidth, elementHeight, visibleWidth, visibleHeight, clipWidth, clipHeight }
+}
+
+function fullCaptureHeightReady(before: FullCaptureSample, current: FullCaptureSample, plan: FullCapturePlan): boolean {
+  const a = before.guest
+  const b = current.guest
+  // Remove the original vertical scrollbar before narrowing to its content
+  // column. Narrowing while that scrollbar exists can wrap text, grow the
+  // document and keep the scrollbar alive at the planned full height.
+  return current.host.connected && current.host.screen === before.host.screen && b.screen === a.screen &&
+    nearlyEqual(current.host.dpr, before.host.dpr) && nearlyEqual(current.host.width, before.host.width, 1) &&
+    nearlyEqual(current.host.height, before.host.height, 1) &&
+    nearlyEqual(current.host.scrollX, before.host.scrollX) && nearlyEqual(current.host.scrollY, before.host.scrollY) &&
+    nearlyEqual(current.host.element.x, before.host.element.x) && nearlyEqual(current.host.element.y, before.host.element.y) &&
+    nearlyEqual(current.host.element.width, before.host.element.width, 1) && nearlyEqual(current.host.element.height, plan.elementHeight, 1) &&
+    nearlyEqual(b.dpr, a.dpr) && nearlyEqual(b.width, a.width, 1) &&
+    nearlyEqual(b.height, plan.height, 1) && nearlyEqual(b.clientHeight, plan.height, 1) &&
+    nearlyEqual(b.width, b.clientWidth, 1) && nearlyEqual(current.metrics.viewportWidth, b.clientWidth, 1) &&
+    b.scrollWidth <= b.clientWidth + 1 && b.scrollHeight <= b.clientHeight + 1
+}
+
+function fullCaptureLayoutPreserved(before: FullCaptureSample, current: FullCaptureSample, plan: FullCapturePlan): boolean {
+  const a = before.guest
+  const b = current.guest
+  return current.host.connected && current.host.screen === before.host.screen && b.screen === a.screen &&
+    nearlyEqual(current.host.dpr, before.host.dpr) && nearlyEqual(current.host.width, before.host.width, 1) &&
+    nearlyEqual(current.host.scrollX, before.host.scrollX) && nearlyEqual(current.host.scrollY, before.host.scrollY) &&
+    nearlyEqual(current.host.element.x, before.host.element.x) && nearlyEqual(current.host.element.y, before.host.element.y) &&
+    nearlyEqual(current.host.element.width, plan.elementWidth, 1) && nearlyEqual(current.host.element.height, plan.elementHeight, 1) &&
+    nearlyEqual(b.dpr, a.dpr) && nearlyEqual(b.width, plan.width, 1) && nearlyEqual(b.height, plan.height, 1) &&
+    nearlyEqual(b.clientWidth, plan.width, 1) && nearlyEqual(b.clientHeight, plan.height, 1) &&
+    nearlyEqual(b.scrollWidth, a.scrollWidth) && nearlyEqual(b.scrollHeight, Math.max(a.scrollHeight, plan.height), 1) &&
+    nearlyEqual(b.bodyWidth, a.bodyWidth) && nearlyEqual(b.bodyHeight, a.bodyHeight) &&
+    JSON.stringify(b.body) === JSON.stringify(a.body) && JSON.stringify(b.main) === JSON.stringify(a.main) &&
+    nearlyEqual(current.metrics.width, before.metrics.width, 1) && nearlyEqual(current.metrics.height, Math.max(before.metrics.height, plan.height), 1)
+}
+
 export function workspaceBrowserPdfFilename(url: string, title: string): string {
   const raw = title.trim() || (() => {
     try {
@@ -249,6 +588,8 @@ export class ElectronWorkspaceBrowserService {
   private readonly captureTimeoutMs: number
   private readonly pages = new Map<string, WorkspaceBrowserPage>()
   private readonly hookedSessions = new Set<WorkspaceBrowserSessionLike>()
+  private readonly captureGates = new WeakMap<WorkspaceBrowserParentWindowLike, WorkspaceBrowserCaptureGate>()
+  private readonly unsafeCaptureParents = new WeakSet<WorkspaceBrowserParentWindowLike>()
   /**
    * Page zoom as Chromium keeps it: per host, shared by every page of the
    * partition. Electron overwrites a guest's zoom with its embedder's whenever
@@ -296,7 +637,7 @@ export class ElectronWorkspaceBrowserService {
     const owner = this.findPageByWebContents(webContents)
     if (owner) throw new Error(`workspace browser guest already belongs to ${owner.tabId}`)
 
-    const page = this.openPage(tabId, options.storageId, webContents)
+    const page = this.openPage(tabId, options.storageId, webContents, options.webContentsId, parent)
     // Resolving means "registered": the renderer may now send visibility,
     // Stop and navigation. The first load is an ordinary navigation, so its
     // failure reaches the tab as a `failed` event like any other — answering
@@ -375,6 +716,7 @@ export class ElectronWorkspaceBrowserService {
     // Only hide is an idempotent teardown; showing a missing page is still an error.
     if (!visible && !this.pages.has(tabId)) return
     const page = this.requirePage(tabId)
+    if (page.presented !== visible) page.captureGeneration += 1
     page.presented = visible
     if (!visible) {
       this.menu?.cancel(page.tabId)
@@ -387,6 +729,8 @@ export class ElectronWorkspaceBrowserService {
 
   setZoom(tabId: string, factor: unknown): void {
     const page = this.requirePage(tabId)
+    // Chromium shares page zoom by origin; every pending image may be affected.
+    for (const current of this.pages.values()) current.captureGeneration += 1
     page.zoomFactor = normalizeZoomFactor(factor)
     this.zoomByHost.set(zoomHostKey(page.webContents.getURL()), page.zoomFactor)
     page.webContents.setZoomFactor?.(page.zoomFactor)
@@ -403,6 +747,7 @@ export class ElectronWorkspaceBrowserService {
   restorePageZoom(): void {
     for (const page of this.pages.values()) {
       if (page.closed || page.webContents.isDestroyed?.()) continue
+      page.captureGeneration += 1
       page.webContents.setZoomFactor?.(page.zoomFactor)
     }
   }
@@ -423,7 +768,10 @@ export class ElectronWorkspaceBrowserService {
 
   async capture(tabId: string, kind: WorkspaceBrowserCaptureKind): Promise<void> {
     const page = this.requirePage(tabId)
+    const navigationId = page.navigationId
+    const generation = page.captureGeneration
     const dataUrl = await this.captureDataUrl(page, kind)
+    this.assertCaptureCurrent(page, navigationId, generation)
     this.emitFor(page, { type: 'screenshot', tabId: page.tabId, dataUrl, kind })
   }
 
@@ -522,11 +870,16 @@ export class ElectronWorkspaceBrowserService {
     tabId: string,
     storageId: string,
     webContents: WorkspaceBrowserWebContentsLike,
+    webContentsId: number,
+    parent: WorkspaceBrowserParentWindowLike,
   ): WorkspaceBrowserPage {
     const page: WorkspaceBrowserPage = {
       tabId,
       storageId,
       webContents,
+      webContentsId,
+      parent,
+      captureGeneration: 0,
       presented: false,
       initialEntryCleared: false,
       zoomFactor: 1,
@@ -613,7 +966,10 @@ export class ElectronWorkspaceBrowserService {
       if (isMainFrame) page.navigationUrl = url
     })
     webContents.on('zoom-changed', () => {
-      for (const current of this.pages.values()) this.emitState(current)
+      for (const current of this.pages.values()) {
+        current.captureGeneration += 1
+        this.emitState(current)
+      }
     })
 
     webContents.on('did-start-loading', () => this.emitState(page))
@@ -713,6 +1069,7 @@ export class ElectronWorkspaceBrowserService {
   private async deliverAgentMessage(page: WorkspaceBrowserPage, raw: string): Promise<void> {
     const navigationId = page.navigationId
     const pickerGeneration = page.pickerGeneration
+    const captureGeneration = page.captureGeneration
     const persistentPicker = page.persistentPicker
     const message = parsePreviewAgentMessage(raw)
     if (!message) return
@@ -745,7 +1102,7 @@ export class ElectronWorkspaceBrowserService {
     const payload = message.type === 'selection'
       ? await this.withNativeSelectionScreenshot(page, message)
       : message
-    if (navigationId !== page.navigationId) return
+    if (navigationId !== page.navigationId || captureGeneration !== page.captureGeneration) return
     this.emitFor(page, { type: 'agent', tabId: page.tabId, message: message.type === 'selection' && persistentPicker
       ? { ...payload, persistent: true } : payload })
     // A selection still consumes exactly one authorization. Continue only once
@@ -826,32 +1183,74 @@ export class ElectronWorkspaceBrowserService {
     }
   }
 
-  private async captureDataUrl(
-    page: WorkspaceBrowserPage,
-    kind: WorkspaceBrowserCaptureKind,
-  ): Promise<string> {
+  private assertCaptureCurrent(page: WorkspaceBrowserPage, navigationId: number, generation: number): void {
+    if (page.closed || this.pages.get(page.tabId) !== page || page.webContents.isDestroyed?.() ||
+      page.parent !== this.parent || page.parent.isDestroyed?.() || page.parent.webContents?.isDestroyed?.() ||
+      page.navigationId !== navigationId || page.captureGeneration !== generation) {
+      throw new Error('browser capture superseded by a page or window change')
+    }
+    if (this.unsafeCaptureParents.has(page.parent)) throw new Error('browser capture restoration was not confirmed')
+  }
+
+  private async withCaptureGeometry<T>(page: WorkspaceBrowserPage, exclusive: boolean, task: () => Promise<T>): Promise<T> {
+    let gate = this.captureGates.get(page.parent)
+    if (!gate) {
+      gate = new WorkspaceBrowserCaptureGate()
+      this.captureGates.set(page.parent, gate)
+    }
+    const release = await gate.acquire(exclusive)
+    try {
+      if (this.unsafeCaptureParents.has(page.parent)) throw new Error('browser capture restoration was not confirmed')
+      return await task()
+    } finally {
+      release()
+    }
+  }
+
+  private async withHiddenCaptureChrome(page: WorkspaceBrowserPage, task: () => Promise<string>): Promise<string> {
+    const navigationId = page.navigationId
     const webContents = page.webContents
     const hideChrome = async (hidden: boolean) => {
-      if (page.closed || webContents.isDestroyed?.()) return
+      if (page.closed || webContents.isDestroyed?.() || page.navigationId !== navigationId) return
       await webContents.executeJavaScript(`globalThis.__PREVIEW_AGENT_SET_CHROME_HIDDEN__?.(${hidden})`)
     }
     page.captureCount += 1
     try {
       await hideChrome(true)
-      if (kind === 'full') return await this.captureFullPageDataUrl(page)
-      if (!webContents.capturePage) throw new Error('native browser capture unavailable')
-      const image = await withTimeout(
-        webContents.capturePage(),
-        this.captureTimeoutMs,
-        'browser capture timed out',
-      )
-      return image.toDataURL()
+      return await task()
     } finally {
       page.captureCount -= 1
       if (page.captureCount === 0) {
-        try { await hideChrome(false) } catch { /* A navigation may replace the captured document. */ }
+        try { await hideChrome(false) } catch { /* The original document may be gone. */ }
       }
     }
+  }
+
+  private async captureDataUrl(page: WorkspaceBrowserPage, kind: WorkspaceBrowserCaptureKind): Promise<string> {
+    if (kind === 'full') return await this.captureFullPageDataUrl(page)
+    const navigationId = page.navigationId
+    const generation = page.captureGeneration
+    let expired = false
+    return await this.withHiddenCaptureChrome(page, async () => {
+      // The UI timeout is not cancellation of Electron's capturePage. Keep the
+      // read lease until that original native promise settles, so a full-page
+      // writer cannot resize its host underneath a late native capture.
+      const pending = this.withCaptureGeometry(page, false, async () => {
+        this.assertCaptureCurrent(page, navigationId, generation)
+        if (expired) throw new Error('browser capture timed out before it acquired geometry')
+        if (!page.webContents.capturePage) throw new Error('native browser capture unavailable')
+        const image = await page.webContents.capturePage()
+        this.assertCaptureCurrent(page, navigationId, generation)
+        if (expired) throw new Error('browser capture timed out')
+        return image.toDataURL()
+      })
+      try {
+        return await withTimeout(pending, this.captureTimeoutMs, 'browser capture timed out')
+      } catch (error) {
+        expired = true
+        throw error
+      }
+    })
   }
 
   private async captureFullPageDataUrl(page: WorkspaceBrowserPage): Promise<string> {
@@ -866,55 +1265,217 @@ export class ElectronWorkspaceBrowserService {
   }
 
   private async captureFullPageDataUrlOnce(page: WorkspaceBrowserPage): Promise<string> {
-    const debuggerApi = page.webContents.debugger
-    if (!debuggerApi) throw new Error('full browser capture unavailable')
-
-    let attachedHere = false
-    try {
-      if (!debuggerApi.isAttached()) {
-        debuggerApi.attach('1.3')
-        attachedHere = true
-      }
-
-      const metrics = await debuggerApi.sendCommand('Page.getLayoutMetrics')
-      if (!isPlainRecord(metrics)) throw new Error('invalid full capture layout metrics')
-      const contentSize = isPlainRecord(metrics.cssContentSize)
-        ? metrics.cssContentSize
-        : metrics.contentSize
-      if (!isPlainRecord(contentSize)) throw new Error('invalid full capture layout metrics')
-
-      const width = Math.ceil(Number(contentSize.width))
-      const height = Math.ceil(Number(contentSize.height))
-      if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
-        throw new Error('invalid full capture dimensions')
-      }
-      if (
-        width > FULL_CAPTURE_MAX_EDGE ||
-        height > FULL_CAPTURE_MAX_EDGE ||
-        width * height > FULL_CAPTURE_MAX_PIXELS
-      ) {
-        throw new Error(`full capture exceeds safety limit: ${width}x${height}`)
-      }
-
-      const screenshot = await debuggerApi.sendCommand('Page.captureScreenshot', {
-        format: 'png',
-        fromSurface: true,
-        captureBeyondViewport: true,
-        clip: { x: 0, y: 0, width, height, scale: 1 },
-      })
-      if (!isPlainRecord(screenshot) || typeof screenshot.data !== 'string' || !screenshot.data) {
-        throw new Error('invalid full capture screenshot data')
-      }
-      return `data:image/png;base64,${screenshot.data}`
-    } finally {
-      if (attachedHere) {
-        try {
-          if (debuggerApi.isAttached()) debuggerApi.detach()
-        } catch {
-          // The page may close while a full-page capture is in flight.
+    const navigationId = page.navigationId
+    const generation = page.captureGeneration
+    return await this.withCaptureGeometry(page, true, async () => {
+      this.assertCaptureCurrent(page, navigationId, generation)
+      return await this.withHiddenCaptureChrome(page, async () => {
+        const parent = page.parent
+        const host = parent.webContents
+        const guest = page.webContents
+        const parentDebugger = host?.debugger
+        const guestDebugger = guest.debugger
+        if (!host?.executeJavaScript || !host.getZoomFactor || !host.isDevToolsOpened || !guest.isDevToolsOpened ||
+          !parent.getContentBounds || !parent.on || !parent.removeListener ||
+          !parentDebugger?.on || !parentDebugger.removeListener || !guestDebugger?.on || !guestDebugger.removeListener) {
+          throw new Error('full browser capture owner unavailable')
         }
-      }
-    }
+        // Read-only guest capture used to borrow an existing debugger. This path
+        // changes the host's size and must never clear someone else's emulation.
+        if (parentDebugger.isAttached() || guestDebugger.isAttached() || host.isDevToolsOpened() || guest.isDevToolsOpened()) {
+          throw new Error('full browser capture debugger is busy')
+        }
+        const token = randomUUID()
+        let hostAttached = false
+        let guestAttached = false
+        let hostDetached = false
+        let guestDetached = false
+        let windowChanged = false
+        let styleAttempted = false
+        let hostSizeAttempted = false
+        let guestTokenAttempted = false
+        let documentChanged = false
+        let original: FullCaptureSample | undefined
+        let dataUrl: string | undefined
+        let primaryError: unknown
+        const cleanupErrors: unknown[] = []
+        const hostDetach = () => { hostDetached = true }
+        const guestDetach = () => { guestDetached = true }
+        const windowChange = () => { windowChanged = true }
+        // Promise.race is not cancellation of CDP or renderer mutation. Keep
+        // this writer until the actual commands settle, as the original full
+        // capture did; only read-only geometry sampling has a timeout.
+        const command = (api: WorkspaceBrowserDebuggerLike, method: string, params?: Record<string, unknown>) =>
+          api.sendCommand(method, params)
+        const hostOperation = async (action: FullCaptureHostRequest['action'], width?: number, height?: number) => {
+          const operation = host.executeJavaScript!(scriptForFullCaptureHost({ action, webContentsId: page.webContentsId, token, width, height }))
+          return action === 'snapshot' ? await withTimeout(operation, this.captureTimeoutMs, 'browser capture host inspection timed out') : await operation
+        }
+        const guestOperation = (action: FullCaptureGuestRequest['action'], x?: number, y?: number) =>
+          guest.executeJavaScript(scriptForFullCaptureGuest({ action, token, x, y }))
+        const zooms = { host: host.getZoomFactor(), guest: guest.getZoomFactor?.() }
+        const initialBounds = parent.getContentBounds()
+        const current = () => {
+          this.assertCaptureCurrent(page, navigationId, generation)
+          if (windowChanged || hostDetached || guestDetached || !parentDebugger.isAttached() || !guestDebugger.isAttached() ||
+            host.isDevToolsOpened!() || guest.isDevToolsOpened!() || host.getZoomFactor!() !== zooms.host ||
+            guest.getZoomFactor?.() !== zooms.guest || !sameCaptureBounds(initialBounds, parent.getContentBounds!())) {
+            throw new Error('full browser capture owner or geometry changed')
+          }
+        }
+        const sample = async (): Promise<FullCaptureSample> => {
+          const [hostValue, guestValue, metricsValue] = await Promise.all([
+            hostOperation('snapshot'),
+            withTimeout(guestOperation('snapshot'), this.captureTimeoutMs, 'browser capture guest inspection timed out'),
+            withTimeout(command(guestDebugger, 'Page.getLayoutMetrics'), this.captureTimeoutMs, 'browser capture layout metrics timed out'),
+          ])
+          return { host: parseFullCaptureHost(hostValue), guest: parseFullCaptureGuest(guestValue), metrics: parseFullCaptureMetrics(metricsValue) }
+        }
+        const stable = async (accept: (value: FullCaptureSample) => boolean, label: string): Promise<FullCaptureSample> => {
+          const deadline = Date.now() + this.captureTimeoutMs
+          let previous = ''
+          let count = 0
+          do {
+            const value = await sample()
+            if (accept(value)) {
+              const signature = JSON.stringify(value)
+              count = signature === previous ? count + 1 : 1
+              previous = signature
+              if (count === 3) return value
+            } else {
+              previous = ''
+              count = 0
+            }
+            await new Promise(resolve => setTimeout(resolve, 16))
+          } while (Date.now() < deadline)
+          throw new Error(`full browser capture layout did not stabilize: ${label}`)
+        }
+        try {
+          parentDebugger.on('detach', hostDetach)
+          guestDebugger.on('detach', guestDetach)
+          parent.on('resize', windowChange)
+          parent.on('move', windowChange)
+          parentDebugger.attach('1.3')
+          hostAttached = true
+          guestDebugger.attach('1.3')
+          guestAttached = true
+          await hostOperation('begin')
+          guestTokenAttempted = true
+          await guestOperation('begin')
+          original = await stable(() => { current(); return true }, 'original')
+          const plan = planFullCapture(original, zooms.host, zooms.guest, initialBounds)
+          styleAttempted = true // Restore even if the renderer applies CSS but its reply is lost.
+          await hostOperation('resize', original.host.element.width, plan.elementHeight)
+          await stable(value => {
+            current()
+            return fullCaptureHeightReady(original!, value, plan)
+          }, 'expanded height')
+          await hostOperation('resize', plan.elementWidth, plan.elementHeight)
+          const expanded = await stable(value => {
+            current()
+            return fullCaptureLayoutPreserved(original!, value, plan)
+          }, 'expanded guest')
+          hostSizeAttempted = true // The clear path must run even if setVisibleSize rejects after dispatch.
+          await command(parentDebugger, 'Emulation.setVisibleSize', { width: plan.visibleWidth, height: plan.visibleHeight })
+          const prepared = await stable(value => {
+            current()
+            return fullCaptureLayoutPreserved(original!, value, plan) &&
+              nearlyEqual(value.host.height, plan.visibleHeight / zooms.host, 1) &&
+              sameCaptureGeometry(expanded.guest, value.guest) && sameCaptureMetrics(expanded.metrics, value.metrics)
+          }, 'host compositor')
+          current()
+          const screenshot = await command(guestDebugger, 'Page.captureScreenshot', {
+            format: 'png', fromSurface: true, captureBeyondViewport: true,
+            clip: { x: 0, y: 0, width: plan.clipWidth, height: plan.clipHeight, scale: 1 },
+          })
+          current()
+          if (!isPlainRecord(screenshot) || typeof screenshot.data !== 'string' || !screenshot.data) {
+            throw new Error('invalid full capture screenshot data')
+          }
+          const after = await sample()
+          current()
+          if (!sameCaptureGeometry(prepared.guest, after.guest) || !sameCaptureMetrics(prepared.metrics, after.metrics) ||
+            !sameCaptureGeometry(prepared.host, after.host)) throw new Error('full browser capture layout changed while painting')
+          dataUrl = `data:image/png;base64,${screenshot.data}`
+        } catch (error) {
+          primaryError = error
+        } finally {
+          const attempt = async (operation: () => Promise<unknown> | unknown) => {
+            try { await operation() } catch (error) { cleanupErrors.push(error) }
+          }
+          if (hostSizeAttempted) {
+            // Do NOT replay the old setVisibleSize: ClearDeviceEmulationSize
+            // preserves a real intervening native resize when current != emulated.
+            // Enabling only the clear path skips a new size write entirely.
+            await attempt(async () => {
+              if (hostDetached || !parentDebugger.isAttached()) throw new Error('host debugger ownership lost before restoration')
+              await command(parentDebugger, 'Emulation.setDeviceMetricsOverride', {
+                width: 0, height: 0, deviceScaleFactor: 0, mobile: false, dontSetVisibleSize: true,
+              })
+            })
+            await attempt(async () => {
+              if (hostDetached || !parentDebugger.isAttached()) throw new Error('host debugger ownership lost before clear')
+              await command(parentDebugger, 'Emulation.clearDeviceMetricsOverride')
+            })
+          }
+          if (styleAttempted) await attempt(() => hostOperation('restore'))
+          let sameDocument = !page.closed && !guest.isDestroyed?.() && page.navigationId === navigationId
+          if (original && sameDocument) {
+            await attempt(async () => {
+              const restored = await guestOperation('restore', original!.guest.scrollX, original!.guest.scrollY)
+              if (!isPlainRecord(restored) || typeof restored.documentCurrent !== 'boolean') throw new Error('invalid capture scroll restoration result')
+              if (!restored.documentCurrent) {
+                sameDocument = false
+                documentChanged = true
+              }
+            })
+          }
+          if (styleAttempted || hostSizeAttempted) {
+            await attempt(async () => {
+              // A resize makes the image stale, but cleanup must retain the *new*
+              // native size. Check current native bounds against current CSS zoom.
+              const deadline = Date.now() + this.captureTimeoutMs
+              let stableCount = 0
+              let previous = ''
+              do {
+                const value = parseFullCaptureHost(await hostOperation('snapshot'))
+                const bounds = parent.getContentBounds!()
+                const zoom = host.getZoomFactor!()
+                let restored = nearlyEqual(value.width * zoom, bounds.width, zoom) && nearlyEqual(value.height * zoom, bounds.height, zoom)
+                if (restored && original && sameDocument && !windowChanged && !hostDetached && !guestDetached && generation === page.captureGeneration) {
+                  const complete = await sample()
+                  restored = sameCaptureGeometry(original.host, complete.host) && sameCaptureGeometry(original.guest, complete.guest) &&
+                    sameCaptureMetrics(original.metrics, complete.metrics)
+                }
+                const signature = JSON.stringify({ value, bounds, zoom })
+                stableCount = restored ? (signature === previous ? stableCount + 1 : 1) : 0
+                previous = signature
+                if (stableCount === 3) return
+                await new Promise(resolve => setTimeout(resolve, 16))
+              } while (Date.now() < deadline)
+              throw new Error('full browser capture native size restoration did not stabilize')
+            })
+          }
+          if (guestTokenAttempted && !guest.isDestroyed?.()) await attempt(() => guestOperation('release'))
+          await attempt(() => hostOperation('release'))
+          parent.removeListener('resize', windowChange)
+          parent.removeListener('move', windowChange)
+          parentDebugger.removeListener('detach', hostDetach)
+          guestDebugger.removeListener('detach', guestDetach)
+          if (guestAttached && !guestDetached) await attempt(() => { if (guestDebugger.isAttached()) guestDebugger.detach() })
+          if (hostAttached && !hostDetached) await attempt(() => { if (parentDebugger.isAttached()) parentDebugger.detach() })
+          if (cleanupErrors.length > 0 && hostSizeAttempted) this.unsafeCaptureParents.add(parent)
+        }
+        if (cleanupErrors.length > 0) throw new AggregateError(primaryError === undefined ? cleanupErrors : [primaryError, ...cleanupErrors], 'browser capture restoration failed')
+        if (primaryError !== undefined) throw primaryError
+        this.assertCaptureCurrent(page, navigationId, generation)
+        if (documentChanged || windowChanged || host.getZoomFactor() !== zooms.host || guest.getZoomFactor?.() !== zooms.guest) {
+          throw new Error('full browser capture superseded during restoration')
+        }
+        if (!dataUrl) throw new Error('full browser capture produced no image')
+        return dataUrl
+      })
+    })
   }
 
   /**

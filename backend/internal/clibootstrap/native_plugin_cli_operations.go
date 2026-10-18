@@ -141,11 +141,11 @@ func (p *NativeProcessSettings) pluginCLIOperations(options *pluginoptions.Servi
 	if err != nil {
 		return nil, err
 	}
-	client, err := webfetch.NewHTTPClient(n.Environment, tls)
+	client, err := webfetch.NewHTTPClient(n.nativeEnvironmentSnapshot(), tls)
 	if err != nil {
 		return nil, err
 	}
-	resolver, err := pluginsapi.NewMarketplaceResolver(pluginsapi.MarketplaceOptions{Home: n.Home, WorkDir: n.CWD, PluginsDir: bindings.directories.Primary, Environment: n.Environment, Store: store, Now: n.Now, Client: client})
+	resolver, err := pluginsapi.NewMarketplaceResolver(pluginsapi.MarketplaceOptions{Home: n.Home, WorkDir: n.CWD, PluginsDir: bindings.directories.Primary, Environment: n.nativeEnvironmentSnapshot(), Store: store, Now: n.Now, Client: client})
 	if err != nil {
 		return nil, err
 	}
@@ -180,15 +180,15 @@ func (p *NativeProcessSettings) pluginCLIMarketplaces(jobs *pluginCLIJobs) (*plu
 	if err != nil {
 		return nil, err
 	}
-	client, err := webfetch.NewHTTPClient(n.Environment, tls)
+	client, err := webfetch.NewHTTPClient(n.nativeEnvironmentSnapshot(), tls)
 	if err != nil {
 		return nil, err
 	}
-	resolver, err := pluginsapi.NewMarketplaceResolver(pluginsapi.MarketplaceOptions{Home: n.Home, WorkDir: n.CWD, PluginsDir: bindings.directories.Primary, Environment: n.Environment, Store: store, Now: n.Now, Client: client})
+	resolver, err := pluginsapi.NewMarketplaceResolver(pluginsapi.MarketplaceOptions{Home: n.Home, WorkDir: n.CWD, PluginsDir: bindings.directories.Primary, Environment: n.nativeEnvironmentSnapshot(), Store: store, Now: n.Now, Client: client})
 	if err != nil {
 		return nil, err
 	}
-	return pluginsapi.NewMarketplaceManager(pluginsapi.MarketplaceManagerOptions{Resolver: resolver, Seeds: bindings.directories.Seeds, ReadSettings: p.pluginCLIReadSettings, ClearCaches: p.pluginCLIClear, WriteSettings: func(ctx context.Context, scope string, object protocol.JSONObject, paths [][]string) error {
+	return pluginsapi.NewMarketplaceManager(pluginsapi.MarketplaceManagerOptions{Resolver: resolver, Flagged: bindings.flagged, Roots: bindings.roots, Seeds: bindings.directories.Seeds, ReadSettings: p.pluginCLIReadSettings, ClearCaches: p.pluginCLIClear, WriteSettings: func(ctx context.Context, scope string, object protocol.JSONObject, paths [][]string) error {
 		patch := clisettings.Patch{Object: object}
 		for _, path := range paths {
 			tokens := []json.RawMessage{}

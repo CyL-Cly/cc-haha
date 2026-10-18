@@ -33,7 +33,7 @@ func (m *MainPrint) hydrateNativeRemoteSession(scope *cooperative.Scope) error {
 		return nil
 	}
 	remote, n := m.remoteIO, m.options.Native
-	config := n.Environment["CLAUDE_CONFIG_DIR"]
+	config := n.ConfigHomeDirectory()
 	if config == "" {
 		config = filepath.Join(n.Home, ".claude")
 	}

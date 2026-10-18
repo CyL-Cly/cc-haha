@@ -163,8 +163,10 @@ func TestActualSourceJSONSchemaPublicCLIResultAndErrorBranches(t *testing.T) {
 			cmd.Stdout, cmd.Stderr = &stdout, &stderr
 			var e error
 			if profile == "sdk-three-turns" {
+				capturePublicGoCoverage(t, cmd)
 				e = runThreeSchemaInputs(cmd, &stdout, &stderr)
 			} else {
+				capturePublicGoCoverage(t, cmd)
 				e = cmd.Run()
 			}
 			var exit *exec.ExitError
@@ -237,6 +239,7 @@ func TestPublicJSONSchemaCLIActualPrivateSharedHarnessResultAndRetries(t *testin
 	defer cancel()
 	binary := filepath.Join(root, "actual-schema-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if out, e := build.CombinedOutput(); e != nil {
 		t.Fatal(e, string(out))
 	}
@@ -254,7 +257,7 @@ func TestPublicJSONSchemaCLIActualPrivateSharedHarnessResultAndRetries(t *testin
 				}
 			}
 			var calls atomic.Int32
-			peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			peer := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 				body, _ := io.ReadAll(r.Body)
 				n := calls.Add(1)
 				var request struct{ Tools []protocol.JSONObject }
@@ -362,8 +365,10 @@ func TestPublicJSONSchemaCLIActualPrivateSharedHarnessResultAndRetries(t *testin
 			code := 0
 			var runError error
 			if profile == "sdk-three-turns" {
+				capturePublicGoCoverage(t, cmd)
 				runError = runThreeSchemaInputs(cmd, &out, &stderr)
 			} else {
+				capturePublicGoCoverage(t, cmd)
 				runError = cmd.Run()
 			}
 			if e := runError; e != nil {

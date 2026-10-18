@@ -24,6 +24,11 @@ func TestNativeMCPExecutionEnablementAgainstActualSource(t *testing.T) {
 		t.Run(map[bool]string{false: "explicit", true: "default"}[defaultDirectory], func(t *testing.T) {
 			f := newNativePluginFixture(t)
 			f.n.CWD, f.n.ConfigDirExplicit = f.home, !defaultDirectory
+			if defaultDirectory {
+				// Match the Source launch's absent property. Changing a legacy
+				// annotation alone cannot remove the actual environment value.
+				delete(f.n.Environment, "CLAUDE_CONFIG_DIR")
+			}
 			if err := os.MkdirAll(f.n.Temp, 0700); err != nil {
 				t.Fatal(err)
 			}

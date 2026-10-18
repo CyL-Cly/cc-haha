@@ -57,13 +57,49 @@ func TestActualDesktopForkResumesSameCanonicalHarnessThenWritesAndReads(t *testi
 	o := nativeSessionOptions(t, provider.URL)
 	o.Arguments.Tools = nil
 	outputPath = filepath.Join(o.WorkDir, "fork-output.txt")
-	s, e := server.New(server.Options{HomeDir: o.Environment["HOME"], ConfigDir: o.Environment["CLAUDE_CONFIG_DIR"], WorkDir: o.WorkDir, Factory: DesktopFactory(o)})
+	committed := make(chan string, 128)
+	factory := DesktopFactory(o)
+	s, e := server.New(server.Options{HomeDir: o.Environment["HOME"], ConfigDir: o.Environment["CLAUDE_CONFIG_DIR"], WorkDir: o.WorkDir, Factory: func(ctx context.Context, options server.SessionOptions, emit server.Emit) (server.LiveSession, error) {
+		original := options.OnCanonicalTranscriptMutation
+		options.OnCanonicalTranscriptMutation = func(path string) error {
+			if original != nil {
+				if err := original(path); err != nil {
+					return err
+				}
+			}
+			select {
+			case committed <- path:
+			default:
+			}
+			return nil
+		}
+		return factory(ctx, options, emit)
+	}})
 	if e != nil {
 		t.Fatal(e)
 	}
 	defer s.Close(context.Background())
 	host := httptest.NewServer(s)
 	defer host.Close()
+	// Source's independent Record promise is not joined by an idle snapshot.
+	// Observe actual canonical write commits before asserting saved bytes; no
+	// flush, ordering override or fixed delay is introduced into the Harness.
+	readCommitted := func(path, marker string) []byte {
+		t.Helper()
+		deadline := time.NewTimer(15 * time.Second)
+		defer deadline.Stop()
+		for {
+			data, err := os.ReadFile(path)
+			if err == nil && bytes.Contains(data, []byte(marker)) {
+				return data
+			}
+			select {
+			case <-committed:
+			case <-deadline.C:
+				t.Fatalf("canonical write did not publish %q: %v %s", marker, err, data)
+			}
+		}
+	}
 	post := func(path string, body any, expected int) json.RawMessage {
 		t.Helper()
 		res, e := host.Client().Post(host.URL+path, "application/json", bytes.NewReader(raw(body)))
@@ -123,10 +159,7 @@ func TestActualDesktopForkResumesSameCanonicalHarnessThenWritesAndReads(t *testi
 	if e != nil || path == "" {
 		t.Fatal(e, path)
 	}
-	before, e := os.ReadFile(path)
-	if e != nil {
-		t.Fatal(e)
-	}
+	before := readCommitted(path, contextMarker)
 	target := ""
 	for _, line := range bytes.Split(before, []byte{'\n'}) {
 		v := obj(line)
@@ -149,10 +182,7 @@ func TestActualDesktopForkResumesSameCanonicalHarnessThenWritesAndReads(t *testi
 	if e != nil || !bytes.Equal(before, unchanged) {
 		t.Fatal("fork continuation changed original transcript", e)
 	}
-	data, e := os.ReadFile(filepath.Join(filepath.Dir(path), fork+".jsonl"))
-	if e != nil {
-		t.Fatal(e)
-	}
+	data := readCommitted(filepath.Join(filepath.Dir(path), fork+".jsonl"), "ACTUAL_FORK_E2E_OK")
 	for _, want := range []string{contextMarker, "call-fork-write", "call-fork-read", "ACTUAL_FORK_E2E_OK", `"forkedFrom"`} {
 		if !bytes.Contains(data, []byte(want)) {
 			t.Fatal("new canonical history lost", want, string(data))

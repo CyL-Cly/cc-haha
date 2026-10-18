@@ -1,7 +1,8 @@
 import { spyOn } from 'bun:test'
 import * as crypto from 'node:crypto'
 import { readFile, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import { existsSync, readFileSync, realpathSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 import type { QueryLoopInput, QueryLoopObservation } from './query-loop-fixtures'
 import type { Tool, ToolUseContext } from '../../../src/Tool'
 import { assertDisposableFixtureHome } from './fixture-guard'
@@ -9,14 +10,30 @@ import { absentManagedSettingsFixturePaths, installClientFixtureCapabilities } f
 
 const input = JSON.parse(await new Response(Bun.stdin.stream()).text()) as QueryLoopInput
 assertDisposableFixtureHome(input.home, 'Query loop')
-const allowed = new Set(['name', 'nonInteractive', 'backfill', 'permission', 'resultContentSource', 'wires', 'historySources', 'systemSources', 'definition', 'maxOutputTokens', 'home', 'origin', 'runtime', 'deviceID', 'sessionID', 'identityTrace', 'deprecatedCatalog'])
+const allowed = new Set(['name', 'nonInteractive', 'backfill', 'permission', 'resultContentSource', 'wires', 'historySources', 'systemSources', 'definition', 'maxOutputTokens', 'home', 'origin', 'runtime', 'deviceID', 'sessionID', 'identityTrace', 'deprecatedCatalog', 'refreshTools'])
 if (Object.keys(input).some(key => !allowed.has(key)) || process.env.CC_HAHA_QUERY_LOOP_FIXTURE !== '1' || process.env.NODE_ENV !== 'production' || typeof input.origin !== 'string' || !input.origin || input.origin !== process.env.ANTHROPIC_BASE_URL || typeof input.nonInteractive !== 'boolean' || !Array.isArray(input.wires) || input.wires.length !== 2 || !Array.isArray(input.historySources) || !Array.isArray(input.systemSources) || !['add', 'overwrite', 'none'].includes(input.backfill) || !['allow', 'replace-path', 'replace-content'].includes(input.permission) || input.maxOutputTokens !== 32000 || input.deviceID !== 'fixture-query-device' || input.sessionID !== '00000000-0000-4000-8000-000000000000') throw new Error('Query loop requires explicit offline production profile')
+if (input.refreshTools !== undefined && (input.refreshTools !== 'replace-after-tools' || input.nonInteractive)) throw new Error('Query tool refresh requires the original interactive caller')
 if (input.runtime.platform !== process.platform || input.runtime.arch !== process.arch || input.runtime.version !== process.version) throw new Error('Query loop requires pinned Source runtime identity')
 if (typeof input.resultContentSource !== 'string') throw new Error('Query loop requires original tool result mapping')
 const resultContent = JSON.parse(input.resultContentSource)
 const definition = input.definition
 if (definition?.kind !== 'registered' || !['FixtureWrite','�'].includes(definition.name) || definition.inputSchema?.kind !== 'object' || definition.inputSchema.unknownKeys !== 'strip' || definition.concurrencySafe !== false || definition.readOnly !== false || typeof definition.prompt !== 'string' || typeof definition.description !== 'string' || !Array.isArray(definition.inputSchema.fields) || definition.inputSchema.fields.length !== 2 || definition.inputSchema.fields.some((field, index) => field.name !== ['file_path', 'content'][index] || field.schema?.kind !== 'string')) throw new Error('Query loop requires an original registered string/object tool definition')
-const capabilities = await installClientFixtureCapabilities(input.home, { absentPaths: absentManagedSettingsFixturePaths(), loopbackFetchOrigin: input.origin })
+const absent = absentManagedSettingsFixturePaths()
+if (input.refreshTools) {
+  for (const path of ['/home/claude/.claude/remote/.api_key', '/home/claude/.claude/remote/.oauth_token']) {
+    if (existsSync(path)) throw new Error('Actual query refresh remote credential path is not absent')
+    absent.push(path)
+  }
+  for (const spelling of new Set([input.home, realpathSync(input.home)])) {
+    for (let directory = spelling; ; directory = dirname(directory)) {
+      const path = join(directory, '.git')
+      if (existsSync(path)) throw new Error('Actual query refresh ancestor is not absent')
+      absent.push(path)
+      if (directory === dirname(directory)) break
+    }
+  }
+}
+const capabilities = await installClientFixtureCapabilities(input.home, { absentPaths: absent, loopbackFetchOrigin: input.origin })
 ;(globalThis as typeof globalThis & { MACRO?: { BUILD_TIME: string } }).MACRO = { BUILD_TIME: '' }
 const bootstrap = await import('../../../src/bootstrap/state')
 bootstrap.setCwdState(input.home)
@@ -76,7 +93,7 @@ const tool = {
 } as unknown as Tool
 let state = getDefaultAppState()
 const context = {
-  options: { commands: [], debug: false, mainLoopModel: 'fixture-model', tools: [tool], verbose: false, thinkingConfig: { type: 'disabled' }, mcpClients: [], mcpResources: {}, isNonInteractiveSession: input.nonInteractive, agentDefinitions: { activeAgents: [], allAgents: [] } },
+  options: { ...(input.refreshTools ? { refreshTools: () => { observation.effects.push({ kind: 'refresh-tools', value: readFileSync(join(input.home, 'effect.txt'), 'utf8') }); return [{ ...tool, name: 'FixtureAfterRefresh', aliases: [] }] } } : {}), commands: [], debug: false, mainLoopModel: 'fixture-model', tools: [tool], verbose: false, thinkingConfig: { type: 'disabled' }, mcpClients: [], mcpResources: {}, isNonInteractiveSession: input.nonInteractive, agentDefinitions: { activeAgents: [], allAgents: [] } },
   abortController: new AbortController(), readFileState: new Map(),
   getAppState: () => state, setAppState: (update: (value: typeof state) => typeof state) => { state = update(state) },
   setInProgressToolUseIDs: (update: (ids: Set<string>) => Set<string>) => { inProgress = update(inProgress); observation.effects.push({ kind: 'in-progress', value: JSON.stringify([...inProgress]) }) },

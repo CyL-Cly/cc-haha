@@ -18,6 +18,13 @@ function runFixtureCommand(command: string[], options: { cwd?: string, env?: Rec
   const stderr = path.join(directory, 'stderr')
   const result = Bun.spawnSync(command, {
     ...options,
+    env: {
+      ...(options.env ?? process.env),
+      CC_HAHA_SIGN_KEYCHAIN: options.env?.CC_HAHA_SIGN_KEYCHAIN,
+      CC_HAHA_SIGN_IDENTITY: options.env?.CC_HAHA_SIGN_IDENTITY,
+      CU_HELPER_IDENTITY: options.env?.CU_HELPER_IDENTITY,
+      CU_HELPER_TIMESTAMP_MODE: options.env?.CU_HELPER_TIMESTAMP_MODE,
+    },
     stdin: 'ignore', stdout: Bun.file(stdout), stderr: Bun.file(stderr),
   })
   return { exitCode: result.exitCode, stdout: readFileSync(stdout), stderr: readFileSync(stderr) }
@@ -328,5 +335,100 @@ describe.skipIf(process.platform !== 'darwin')('cu-helper relocated resource pro
     expect(result.stderr).toContain('skipped: cursor resource execution probe (target x86_64, host arm64)')
     expect(result.stderr).not.toContain('verified: relocated cursor resources')
     expect(result.leftovers).toEqual([])
+  })
+})
+
+
+type PrivateSigningMode = 'scoped' | 'missing' | 'empty' | 'query-error' | 'relative' | 'default'
+function privateSigningProbe(mode: PrivateSigningMode) {
+  const directory = mkdtempSync(path.join(tmpdir(), 'cu-helper-private-signing-'))
+  fixtureDirectories.push(directory)
+  const log = path.join(directory, 'commands.tsv')
+  writeFileSync(log, '')
+  writeFileSync(path.join(directory, 'fixture-binary'), 'fixture executable')
+  mkdirSync(path.join(directory, resourceBundleName, 'LensSequence'), { recursive: true })
+  writeFileSync(path.join(directory, resourceBundleName, 'LensSequence', 'README.md'), 'optional fixture frames')
+  const keychain = path.join(directory, 'private signing.keychain-db')
+  const result = runFixtureCommand(['bash', '-c', `
+source "$1"
+TEST_DIRECTORY="$2"
+MODE="$3"
+COMMAND_LOG="$TEST_DIRECTORY/commands.tsv"
+security() {
+  printf 'security' >> "$COMMAND_LOG"
+  printf '\t%s' "$@" >> "$COMMAND_LOG"
+  printf '\n' >> "$COMMAND_LOG"
+  [ "$MODE" != query-error ] || return 17
+  if [ "$MODE" = empty ]; then printf '     0 valid identities found\\n'; return 0; fi
+  printf '  1) 6AB17527A9E2AEB0C596F8D9F7728D215A5C0E57 "Apple Development: Private Fixture (TEAM123456)"\n     1 valid identities found\n'
+}
+codesign() {
+  printf 'codesign' >> "$COMMAND_LOG"
+  printf '\t%s' "$@" >> "$COMMAND_LOG"
+  printf '\n' >> "$COMMAND_LOG"
+  case " $* " in
+    *" -dv "*) printf 'Identifier=%s\nAuthority=fixture\n' "$BUNDLE_ID" ;;
+  esac
+}
+BIN_PATH="$TEST_DIRECTORY/fixture-binary"
+APP_PATH="$TEST_DIRECTORY/fixture.app"
+RESOURCE_BUNDLE_PATH="$TEST_DIRECTORY/cu-helper_cc-haha-computer-use.bundle"
+SIGN_STAMP="$TEST_DIRECTORY/sign-stamp"
+resolve_identity
+sign
+verify
+wrap_app
+`, 'cu-helper-private-signing-test', buildScript, directory, mode], {
+    cwd: directory,
+    env: {
+      PATH: '/usr/bin:/bin:/usr/sbin:/sbin', HOME: directory, CFFIXED_USER_HOME: directory,
+      TMPDIR: directory, CLAUDE_CONFIG_DIR: path.join(directory, '.claude'),
+      CC_HAHA_SIGN_KEYCHAIN: mode === 'default' ? undefined : mode === 'relative' ? 'relative.keychain-db' : keychain,
+      CC_HAHA_SIGN_IDENTITY: mode === 'missing' ? 'Apple Development: Outside (OTHER12345)' : '6ab17527a9e2aeb0c596f8d9f7728d215a5c0e57',
+      CU_HELPER_TIMESTAMP_MODE: 'auto',
+    },
+  })
+  return {
+    ...result, keychain,
+    commands: readFileSync(log, 'utf8').trim().split('\n').filter(Boolean).map(line => line.split('\t')),
+  }
+}
+
+describe('cu-helper explicit private signing keychain', () => {
+  test('limits override and timestamp identity lookup plus both signatures to the same private keychain', () => {
+    const result = privateSigningProbe('scoped')
+    expect(result.exitCode).toBe(0)
+    const queries = result.commands.filter(row => row[0] === 'security')
+    expect(queries).toHaveLength(2)
+    for (const row of queries) expect(row).toEqual(['security', 'find-identity', '-v', '-p', 'codesigning', result.keychain])
+    const codesigns = result.commands.filter(row => row[0] === 'codesign')
+    expect(codesigns).toHaveLength(6)
+    for (const row of codesigns.filter(row => !row.includes('--sign'))) expect(row).not.toContain('--keychain')
+    const signatures = codesigns.filter(row => row.includes('--sign'))
+    expect(signatures).toHaveLength(2)
+    for (const row of signatures) {
+      expect(row.slice(1, 3)).toEqual(['--keychain', result.keychain])
+      expect(row[row.indexOf('--sign') + 1]).toBe('Apple Development: Private Fixture (TEAM123456)')
+      expect(row[row.indexOf('--identifier') + 1]).toBe('dev.cchaha.cu-helper')
+      expect(row).toContain('--timestamp=none')
+      expect(row[row.indexOf('--options') + 1]).toBe('runtime')
+    }
+  })
+
+  test.each(['missing', 'empty', 'query-error', 'relative'] as const)('rejects %s without real-keychain fallback or signing', mode => {
+    const result = privateSigningProbe(mode)
+    expect(result.exitCode).not.toBe(0)
+    expect(result.commands.filter(row => row[0] === 'codesign')).toEqual([])
+    if (mode === 'relative') expect(result.commands).toEqual([])
+    else expect(result.commands).toEqual([['security', 'find-identity', '-v', '-p', 'codesigning', result.keychain]])
+  })
+
+  test('keeps existing unscoped signing commands when the new option is absent', () => {
+    const result = privateSigningProbe('default')
+    expect(result.exitCode).toBe(0)
+    for (const row of result.commands) expect(row).not.toContain('--keychain')
+    for (const row of result.commands.filter(row => row[0] === 'security')) {
+      expect(row).toEqual(['security', 'find-identity', '-v', '-p', 'codesigning'])
+    }
   })
 })

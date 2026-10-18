@@ -4,10 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/sourcecollation"
 	"github.com/NanmiCoder/cc-haha/backend/internal/webfetch"
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
+	"strconv"
 	"time"
 )
 
@@ -75,6 +78,16 @@ func countsMap(counts []json.RawMessage) map[string]json.RawMessage {
 	return result
 }
 func (m *MarketplaceManager) Available(ctx context.Context, installed protocol.JSONObject) ([]protocol.JSONObject, error) {
+	return m.available(ctx, installed, false, protocol.JSONObject{})
+}
+
+// AvailableWithEntries supplies the actual discover/browse detail consumer
+// with the original catalog entry, using the same fetch/count/install path.
+func (m *MarketplaceManager) AvailableWithEntries(ctx context.Context, installed, enabled protocol.JSONObject) ([]protocol.JSONObject, error) {
+	return m.available(ctx, installed, true, enabled)
+}
+
+func (m *MarketplaceManager) available(ctx context.Context, installed protocol.JSONObject, includeEntry bool, enabled protocol.JSONObject) ([]protocol.JSONObject, error) {
 	available := []protocol.JSONObject{}
 	known, err := m.Known(ctx)
 	if err != nil {
@@ -94,7 +107,18 @@ func (m *MarketplaceManager) Available(ctx context.Context, installed protocol.J
 			plugin := obj(item)
 			id := plugin.String("name") + "@" + name
 			// Source isPluginInstalled requires a nonempty V2 installation array.
-			if len(arr(obj(installed.Get("plugins")).Get(id))) > 0 {
+			entries := arr(obj(installed.Get("plugins")).Get(id))
+			blocked := len(entries) > 0
+			if includeEntry {
+				blocked = false
+				for _, entry := range entries {
+					scope := obj(entry).String("scope")
+					if (scope == "user" || scope == "managed") && enabled.Get(id) != nil {
+						blocked = true
+					}
+				}
+			}
+			if blocked {
 				continue
 			}
 			row := rec(field("pluginId", id), field("name", plugin.String("name")))
@@ -104,6 +128,9 @@ func (m *MarketplaceManager) Available(ctx context.Context, installed protocol.J
 				}
 			}
 			row.Set("marketplaceName", raw(name))
+			if includeEntry {
+				row.Set("entry", raw(plugin.Clone()))
+			}
 			for _, key := range []string{"version", "source"} {
 				if value := plugin.Get(key); value != nil {
 					row.Set(key, value)
@@ -113,6 +140,36 @@ func (m *MarketplaceManager) Available(ctx context.Context, installed protocol.J
 				row.Set("installCount", count)
 			}
 			available = append(available, row)
+		}
+	}
+	if includeEntry {
+		comparator, err := sourcecollation.New()
+		if err != nil {
+			return nil, err
+		}
+		defer comparator.Close()
+		type entry struct {
+			row   protocol.JSONObject
+			name  []uint16
+			count float64
+		}
+		ordered := make([]entry, len(available))
+		for i, row := range available {
+			name, err := protocol.DecodeJavaScriptJSONString(row.Get("name"))
+			if err != nil {
+				return nil, err
+			}
+			count, _ := strconv.ParseFloat(string(row.Get("installCount")), 64)
+			ordered[i] = entry{row, name, count}
+		}
+		sort.SliceStable(ordered, func(i, j int) bool {
+			if ordered[i].count != ordered[j].count {
+				return ordered[i].count > ordered[j].count
+			}
+			return comparator.Compare(ordered[i].name, ordered[j].name) < 0
+		})
+		for i, row := range ordered {
+			available[i] = row.row
 		}
 	}
 	return available, nil

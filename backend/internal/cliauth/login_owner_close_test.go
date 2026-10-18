@@ -18,6 +18,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/desktopoauth"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/securestorage"
+	"github.com/NanmiCoder/cc-haha/backend/testdata/keychainprefetchfixture"
 )
 
 func TestOrdinaryCLILoginOwnerCloseJoinsPhysicalListenerAndBrowser(t *testing.T) {
@@ -31,6 +32,9 @@ func TestOrdinaryCLILoginOwnerCloseJoinsPhysicalListenerAndBrowser(t *testing.T)
 		t.Fatal(e)
 	}
 	n.RunSecurity = func(context.Context, securestorage.Command) ([]byte, error) { return nil, errors.New("owned absent") }
+	n.StartKeychainPrefetch = keychainprefetchfixture.Bind(n.Temp, n.CWD, n.Home, func(ctx context.Context, call securestorage.Command) ([]byte, error) {
+		return n.RunSecurity(ctx, call)
+	})
 	m, e := clibootstrap.NewMainCommand(clibootstrap.MainCommandOptions{Arguments: []string{"auth", "login"}, Native: n, Platform: "darwin", Version: "999.0.0-local", PID: os.Getpid(), Output: &bytes.Buffer{}, Error: &bytes.Buffer{}})
 	if e != nil {
 		t.Fatal(e)

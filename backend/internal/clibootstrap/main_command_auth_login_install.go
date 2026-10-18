@@ -84,6 +84,7 @@ func (m *MainCommand) installCLIClaudeTokens(ctx context.Context, scope *coopera
 		}
 		_, _ = m.Secure.Change(ctx, func(value protocol.JSONObject) error { value.Set("claudeAiOauth", rawMain(stored)); return nil })
 		m.Secure.Clear()
+		m.commandClaudeTokens = nil
 	}
 	roles, e := cliAuthPhysical(m, scope, func() (protocol.JSONObject, error) { return client.FetchRoles(ctx, tokens.String("accessToken")) })
 	if e == nil {
@@ -117,7 +118,7 @@ func (m *MainCommand) installCLIClaudeTokens(ctx context.Context, scope *coopera
 						}
 					}
 					if identity.APIKeySource == "/login managed key" {
-						key, _ = m.Secure.ReadLegacyManagedAPIKey(ctx)
+						key, _, _ = m.nativeCommandLegacyAPIKey(ctx, scope)
 						if key == "" {
 							key = global.String("primaryApiKey")
 						}
@@ -151,7 +152,11 @@ func (m *MainCommand) installCLIClaudeTokens(ctx context.Context, scope *coopera
 		}
 	}
 	m.Secure.Clear()
+	m.commandClaudeTokens = nil
 	m.Settings.InvalidateSettingsCache()
+	if m.remoteManaged != nil {
+		return m.remoteManaged.clear(scope)
+	}
 	return nil
 }
 func (m *MainCommand) cliLoginOpenAIStore() (*openaiauth.Service, error) {
@@ -193,6 +198,7 @@ func (m *MainCommand) installCLIOpenAITokens(ctx context.Context, scope *coopera
 	}); e != nil {
 		return "", e
 	}
+	m.clearNativeCommandLegacyAPIKey()
 	result, e := m.Secure.Change(ctx, func(value protocol.JSONObject) error { value.Delete("claudeAiOauth"); return nil })
 	if e != nil {
 		return "", errors.New("Failed to clear stored Claude OAuth tokens")
@@ -215,6 +221,7 @@ func (m *MainCommand) installCLIOpenAITokens(ctx context.Context, scope *coopera
 	}
 
 	m.Secure.Clear()
+	m.commandClaudeTokens = nil
 	m.Settings.InvalidateSettingsCache()
 	// CLI auth handlers run before Source switches STATE.isInteractive on.
 	identity, _, _, _, e := m.cliAuthIdentity(ctx, scope, true)
@@ -251,7 +258,7 @@ func (m *MainCommand) saveCLILoginAPIKey(ctx context.Context, key string) error 
 		units = units[len(units)-20:]
 	}
 	normalized := protocol.QuoteJavaScriptUTF16(units)
-	return m.Global.Save(func(current *protocol.JSONObject) (*protocol.JSONObject, error) {
+	e = m.Global.Save(func(current *protocol.JSONObject) (*protocol.JSONObject, error) {
 		next := current.Clone()
 		if !saved {
 			next.Set("primaryApiKey", quoteMain(key))
@@ -276,6 +283,10 @@ func (m *MainCommand) saveCLILoginAPIKey(ctx context.Context, key string) error 
 		next.Set("customApiKeyResponses", rawMain(responses))
 		return &next, nil
 	})
+	if e == nil {
+		m.clearNativeCommandLegacyAPIKey()
+	}
+	return e
 }
 func (m *MainCommand) validateCLILoginOrganization(ctx context.Context, scope *cooperative.Scope, client *cliauth.OAuthClient) (string, error) {
 	if !scope.BelongsTo(m.Owner) {

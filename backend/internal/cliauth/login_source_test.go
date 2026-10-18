@@ -13,6 +13,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/desktopoauth"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/securestorage"
+	"github.com/NanmiCoder/cc-haha/backend/testdata/keychainprefetchfixture"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -299,6 +300,9 @@ func actualSourceCLILogin(t *testing.T, refreshMode, consoleMode, cached bool, v
 		}
 		return nil, errors.New("owned external Keychain absent")
 	}
+	n.StartKeychainPrefetch = keychainprefetchfixture.Bind(n.Temp, n.CWD, n.Home, func(ctx context.Context, call securestorage.Command) ([]byte, error) {
+		return n.RunSecurity(ctx, call)
+	})
 	var goOut, goError bytes.Buffer
 	command, e := clibootstrap.NewMainCommand(clibootstrap.MainCommandOptions{Arguments: []string{"auth", "login"}, Native: n, Platform: "darwin", Version: "999.0.0-local", PID: os.Getpid(), NonInteractive: true, Output: &goOut, Error: &goError})
 	if e != nil {

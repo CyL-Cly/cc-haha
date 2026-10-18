@@ -6,8 +6,10 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/teamnavigation"
 	"runtime"
+	"sort"
 	"strings"
 	"time"
+	"unicode/utf16"
 )
 
 const doublePressWindow = 800 * time.Millisecond
@@ -21,6 +23,8 @@ type Key struct {
 }
 
 type Entry struct {
+	teammateUser          *terminalTeammateUserProjection
+	Subtype               string `json:"-"`
 	Redacted              bool
 	TurnID                string
 	Kind                  string
@@ -53,9 +57,13 @@ const (
 	actionTeammate
 	actionMessageSelector
 	actionMessageSelection
+	actionLocalPanel
+	actionTerminalTeams
 )
 
 type action struct {
+	localCommandToken    uint64
+	panel                LocalPanelResult
 	messageSelection     MessageSelection
 	kind                 actionKind
 	input                Input
@@ -73,8 +81,41 @@ type action struct {
 // State is changed only on the terminal event loop. Session callbacks do not
 // mutate it; the adapter sends ordered messages back through Bubble Tea.
 type State struct {
+	spinnerClock              *terminalSpinnerClock
+	buddy                     *terminalBuddyRuntime
+	pendingLocalCommands      map[uint64]struct{}
+	localCommandSequence      uint64
+	RemoteState               *TerminalRemoteState
+	vim                       *VimEditor
+	TerminalUpdate            protocol.JSONObject
+	TerminalPRStatus          protocol.JSONObject
+	TerminalStatusLine        protocol.JSONObject
+	statusLineHyperlinks      bool
+	paneTeam                  bool
+	Preferences               TerminalPreferences
+	SessionName, AgentColor   string
+	LightBackground           bool
+	turnStartedAt             time.Time
+	keybindingWarning         string
+	keybindingWarningUntil    time.Time
+	LocalPanel                *localPanelState
+	ShowTeammatePreview       bool
+	TaskItems                 []protocol.JSONObject
+	taskTeamContext           protocol.JSONObject
+	taskTeamsEnabled          bool
+	taskExpandedViewRevision  uint64
+	taskListRenderer          *terminalTaskListRenderState
+	taskListMount             string
+	taskListStreaming         bool
+	taskItemsHiddenKnown      bool
+	taskItemsHidden           bool
+	taskItemsCompleteAt       time.Time
 	dreamClock                time.Time
 	BackgroundTasks           protocol.JSONObject
+	CachedTeams               []protocol.JSONObject
+	CachedTeamsFrame          TerminalCachedTeamsFrame
+	footerSelection           string
+	footerTeammateIndex       int
 	DreamDialog               *dreamDialogState
 	pluginHintPromptActive    bool
 	pluginHintTypingUntil     time.Time
@@ -98,21 +139,28 @@ type State struct {
 	Status                    string
 	Notification              string
 	notificationUntil         time.Time
+	pluginNotices             *terminalPluginNotices
 	PastedContents            map[int]PastedContent
 	pasteSequence             int
 	pendingImageSpace         bool
 	Width                     int
 	Height                    int
+	fullscreen                bool
 	Transcript                bool
+	transcriptShowAll         bool
 	Scroll                    int
 	Closing                   bool
 	Editing                   bool
+	Pasting                   bool
+	HelpOpen                  bool
+	ShortcutHelp              TerminalShortcutHelp
 	Searching                 bool
 	Search                    string
 	Completions               []Completion
 	ArgumentHint              string
 	Selected                  int
 	PermissionSelected        int
+	permissionDebugID         string
 	sequence                  uint64
 	commands                  []Completion
 	history                   []HistoryEntry
@@ -140,13 +188,16 @@ type State struct {
 
 func NewState(commands []Completion, width, height int) *State {
 	return &State{
-		Mode: "prompt", Width: max(width, 1), Height: max(height, 1),
+		ShowTeammatePreview: false,
+		Mode:                "prompt", Width: max(width, 1), Height: max(height, 1),
 		commands: CloneCompletions(commands), lastPress: make(map[string]time.Time),
 		bindings: DefaultKeybindings(runtime.GOOS, true, KeybindingFeatures{}),
 	}
 }
 
-func (s *State) Busy() bool { return s.ActiveTurn != "" || s.TeammateTurnID != "" }
+func (s *State) Busy() bool {
+	return s.ActiveTurn != "" || s.TeammateTurnID != "" || s.terminalRemoteBusy() || len(s.pendingLocalCommands) > 0
+}
 
 func (s *State) press(name string, now time.Time) bool {
 	previous, exists := s.lastPress[name]
@@ -159,16 +210,32 @@ func (s *State) press(name string, now time.Time) bool {
 }
 
 func (s *State) Tick(now time.Time) {
+	defer s.syncTerminalSpinnerClock(now)
 	s.dreamClock = now
+	s.tickTerminalSpinnerTimers(now)
+	s.tickTerminalBuddy(now)
+	s.tickMCPDialogExit(now)
+	s.tickTerminalHelpExit(now)
+	if !now.Before(s.keybindingWarningUntil) {
+		s.keybindingWarning = ""
+	}
 	if !s.notificationUntil.IsZero() && !now.Before(s.notificationUntil) {
 		s.Notification = ""
 		s.notificationUntil = time.Time{}
+		if s.pluginNotices != nil {
+			s.pluginNotices.current = ""
+		}
 	}
+	s.advanceTerminalPluginNotice(now)
 	if s.pendingChord != nil && !now.Before(s.chordUntil) {
 		s.pendingChord = nil
 	}
 	for key, at := range s.lastPress {
-		if now.Sub(at) > doublePressWindow {
+		window := doublePressWindow
+		if key == "chat:killAgents" {
+			window = 3 * time.Second
+		}
+		if now.Sub(at) > window {
 			delete(s.lastPress, key)
 			if strings.HasPrefix(s.Status, "Press ") || s.Status == "Esc again to clear" {
 				s.Status = ""
@@ -182,6 +249,25 @@ func (s *State) Resize(width, height int) {
 }
 
 func (s *State) Paste(text string) {
+	if s.LocalPanel != nil && s.LocalPanel.props.PluginOptions && len(s.LocalPanel.editors) > 0 {
+		p := s.LocalPanel
+		p.ensurePluginOptionsValues()
+		encoded, _ := json.Marshal(text)
+		units, _ := protocol.DecodeJavaScriptJSONString(encoded)
+		p.pluginOptionValues[p.field] = append(p.pluginOptionValues[p.field], units...)
+		p.syncPluginOptionEditor()
+		return
+	}
+	if s.LocalPanel != nil && s.LocalPanel.props.Kind == "config" && s.LocalPanel.searchFocused {
+		s.LocalPanel.settingsSearch.Paste(text)
+		s.LocalPanel.selected = 0
+		s.LocalPanel.filterSettingsRows()
+		return
+	}
+	if s.LocalPanel != nil && len(s.LocalPanel.editors) > 0 {
+		s.LocalPanel.editors[s.LocalPanel.field].Paste(text)
+		return
+	}
 	defer s.syncWorkflowKeyword(time.Now())
 	if !s.Closing && !s.Editing && len(s.Permissions) > 0 && s.Permissions[0].ToolName == "AskUserQuestion" {
 		q := s.questionFor(s.Permissions[0])
@@ -193,6 +279,13 @@ func (s *State) Paste(text string) {
 	}
 	if s.Closing || s.Editing || len(s.Permissions) != 0 || s.Transcript || s.ModelPicker != nil || s.IDEPicker != nil || s.ThinkingPicker != nil {
 		return
+	}
+	if !s.Searching {
+		if s.Editor.Text() == "" && normalizedPaste(text) == "?" {
+			s.shortcutHelpInput("?")
+			return
+		}
+		defer func() { s.shortcutHelpInput(s.Editor.Text()) }()
 	}
 	if s.Searching {
 		var e Editor
@@ -230,9 +323,16 @@ func (s *State) updateCompletions() {
 			continue
 		}
 		name := "/" + strings.TrimPrefix(command.Name, "/")
-		if strings.HasPrefix(name, text) && name != text {
+		if strings.HasPrefix(name, text) {
 			s.Completions = append(s.Completions, command)
 		}
+	}
+	if len(text) > 1 {
+		// Original command suggestions retain exact names and prefer the
+		// shortest name among prefix matches before applying Enter.
+		sort.SliceStable(s.Completions, func(i, j int) bool {
+			return len(utf16.Encode([]rune(s.Completions[i].Name))) < len(utf16.Encode([]rune(s.Completions[j].Name)))
+		})
 	}
 }
 
@@ -294,6 +394,7 @@ func (s *State) submit() []action {
 	display := s.Editor.Text()
 	pastes := FilterReferencedPastes(display, s.PastedContents)
 	input := Input{TurnID: fmt.Sprintf("terminal-%d", s.sequence), Text: ExpandPastedTextRefs(display, pastes), PreExpansionText: display, PastedContents: pastes, Mode: s.Mode}
+	input.TextJSON = s.vimSubmissionTextJSON(pastes)
 	input.SuppressWorkflowKeyword = s.workflowKeywordSuppressed
 	if actions, exit := s.exitInput(input); exit {
 		return actions
@@ -319,7 +420,17 @@ func (s *State) submit() []action {
 	s.Completions = nil
 	s.Scroll = 0
 	s.ArgumentHint = ""
-	if s.Busy() {
+	if input.Mode == "prompt" {
+		if command := ParseSlashCommand(input.Text); command != nil {
+			for _, candidate := range s.commands {
+				if candidate.Name == command.CommandName && (candidate.Kind == "local-jsx" || candidate.Name == "reload-plugins" || terminalNativeLocalCommand(candidate)) && ordinaryPanelName(candidate.Name) && (!s.Busy() || candidate.Name == "btw" || candidate.Name == "mcp" || candidate.Name == "status" || candidate.Name == "fast" || candidate.Name == "hooks" || candidate.Name == "plugin" || candidate.Name == "plugins" || candidate.Name == "marketplace") {
+					name := "command:panel:" + command.CommandName + "\x00" + command.Args
+					return []action{{kind: actionInvoke, name: name, localCommandToken: s.beginTerminalLocalCommand(name)}}
+				}
+			}
+		}
+	}
+	if s.Busy() && s.RemoteState == nil {
 		s.Queue = append(s.Queue, input)
 		s.Status = fmt.Sprintf("%d queued", len(s.Queue))
 		return nil
@@ -328,9 +439,13 @@ func (s *State) submit() []action {
 }
 
 func (s *State) start(input Input) []action {
+	defer s.syncTerminalSpinnerClock(time.Now())
+	s.beginTerminalSpinnerQuery(time.Now())
+	s.turnStartedAt = time.Now()
 	s.ActiveTurn, s.cancelling, s.Status = input.TurnID, false, "Working…"
+	s.taskListStreaming = false
 	text := input.Text
-	if input.Mode == "bash" {
+	if input.Mode == "bash" && s.RemoteState == nil {
 		text = "! " + text
 	}
 	s.Entries = append(s.Entries, Entry{TurnID: input.TurnID, Kind: "user", Text: text})
@@ -343,6 +458,7 @@ func (s *State) cancel() []action {
 	}
 	s.cancelling = true
 	s.Permissions = nil
+	s.permissionDebugID = ""
 	s.Status = "Cancelling…"
 	return []action{{kind: actionCancel}}
 }
@@ -358,6 +474,16 @@ func (s *State) EOF() []action {
 }
 
 func (s *State) HandleKey(key Key, now time.Time) []action {
+	spinnerContext := s.terminalSpinnerContextKey()
+	defer func() {
+		if spinnerContext != s.terminalSpinnerContextKey() {
+			s.commitTerminalSpinnerParent()
+		}
+	}()
+	defer s.syncTerminalSpinnerClock(now)
+	if s.LocalPanel != nil && s.ModelPicker == nil {
+		return s.handleLocalPanelKey(key, now)
+	}
 	if s.Doctor != nil {
 		return s.handleDoctorKey(key, now)
 	}
@@ -365,8 +491,12 @@ func (s *State) HandleKey(key Key, now time.Time) []action {
 		return s.handleIDEPickerKey(key, now)
 	}
 	before := s.Editor.Text()
+	trackedInput := s.shortcutHelpTrackedInputKey(key)
 	defer func() {
 		if before != s.Editor.Text() {
+			if !trackedInput {
+				s.shortcutHelpInput(s.Editor.Text())
+			}
 			s.pluginHintInputChanged(now)
 		}
 	}()
@@ -394,6 +524,15 @@ func (s *State) HandleKey(key Key, now time.Time) []action {
 	// j/k. Confirmation shortcuts cannot turn typed rule content into approval.
 	if s.permissionEditableSelected() {
 		return s.handlePermissionChoiceEditorKey(key, now)
+	}
+	if handled, actions := s.handleTerminalBuddyFooterKey(key, now); handled {
+		return actions
+	}
+	if handled, actions := s.handleShortcutHelpKey(key, now); handled {
+		return actions
+	}
+	if handled, actions := s.handleVimKey(key, now); handled {
+		return actions
 	}
 	if len(s.Permissions) == 0 && s.ModelPicker == nil && s.WorktreeExit == nil && !s.Searching {
 		if handled, actions := s.handleDreamKey(key); handled {
@@ -438,6 +577,21 @@ func (s *State) HandleKey(key Key, now time.Time) []action {
 		return nil
 	case "match":
 		s.pendingChord = nil
+		if result.Action == "permission:toggleDebug" && len(s.Permissions) > 0 {
+			if s.TogglePermissionDebug() {
+				s.permissionEditor = nil
+			}
+			// Other tool dialogs register no handler for this contextual action.
+			return nil
+		}
+		if len(s.Permissions) > 0 && s.PermissionDebugVisible(s.Permissions[0]) && strings.HasPrefix(result.Action, "confirm:") {
+			// Source replaces Select with DebugInfo. Confirmation and edit
+			// consumers are unmounted while this read-only view is visible.
+			return nil
+		}
+		if handled, actions := s.handleLocalDisplayAction(result.Action, now); handled {
+			return actions
+		}
 		if result.Action == "chat:workflowKeywordToggle" {
 			s.toggleWorkflowKeyword(now)
 			return nil
@@ -499,6 +653,8 @@ func nativeActionKey(action string) (string, bool) {
 		return "down", true
 	case "chat:undo":
 		return "ctrl+_", true
+	case "chat:newline":
+		return "shift+enter", true
 	case "chat:externalEditor":
 		return "ctrl+g", true
 	case "chat:stash":
@@ -564,6 +720,12 @@ func (s *State) handleKey(key Key, now time.Time) []action {
 		if request.DisplayOnly {
 			return nil
 		}
+		if s.PermissionDebugVisible(request) {
+			if key.Name == "ctrl+c" {
+				return s.cancel()
+			}
+			return nil
+		}
 		if handled, actions := s.handlePermissionChoiceEditor(key); handled {
 			return actions
 		}
@@ -582,6 +744,7 @@ func (s *State) handleKey(key Key, now time.Time) []action {
 						return s.startPermissionChoiceEditor(request, i)
 					}
 					s.Permissions = s.Permissions[1:]
+					s.permissionDebugID = ""
 					s.PermissionSelected = 0
 					return []action{{kind: actionPermission, permission: request.ID, decision: choice.Decision}}
 				}
@@ -594,6 +757,7 @@ func (s *State) handleKey(key Key, now time.Time) []action {
 		case "y", "enter", "n", "esc":
 			request := s.Permissions[0]
 			s.Permissions = s.Permissions[1:]
+			s.permissionDebugID = ""
 			s.PermissionSelected = 0
 			return []action{{kind: actionPermission, permission: request.ID, decision: PermissionDecision{Allowed: key.Name == "y" || key.Name == "enter"}}}
 		case "ctrl+c":
@@ -752,6 +916,9 @@ func (s *State) handleKey(key Key, now time.Time) []action {
 		s.historyDraftPastes = clonePastes(s.PastedContents)
 		s.searchHistory(false)
 	case "ctrl+s":
+		if protocol.TrimJavaScriptString(s.Editor.Text()) == "" && s.stash == "" {
+			return nil
+		}
 		if s.stash == "" {
 			s.stash = s.Editor.Text()
 			s.stashMode = s.Mode
@@ -805,6 +972,79 @@ func (s *State) handleKey(key Key, now time.Time) []action {
 }
 
 func (s *State) Apply(event Event) {
+	defer s.commitTerminalSpinnerEvent(event)
+	defer s.syncTerminalSpinnerClock(time.Now())
+	defer s.syncTerminalTaskListMount()
+	if event.Kind == ConversationResumed {
+		s.applyTerminalConversationResumed(event.Result)
+		return
+	}
+	if event.Kind == TerminalImmediateNotice {
+		s.applyTerminalImmediateNotice(event.Text, time.Now())
+		return
+	}
+	if event.Kind == TerminalBuddyChanged {
+		s.applyTerminalBuddy(event.Result)
+		return
+	}
+	if event.Kind == EventKind("editor_mode_changed") {
+		s.Preferences.EditorMode = event.Text
+		return
+	}
+	if event.Kind == ConversationCleared {
+		s.applyConversationCleared(event.Result)
+		return
+	}
+	if event.Kind == ContextUsageGenerated {
+		s.Entries = append(s.Entries, Entry{Kind: "context_usage", Input: append(json.RawMessage(nil), event.Result...)})
+		return
+	}
+	if event.Kind == SessionPresentationChanged {
+		value := presentationObject(event.Result)
+		s.SessionName, s.AgentColor = value.String("name"), value.String("color")
+		return
+	}
+	if event.Kind == TerminalPreferencesChanged {
+		if event.Preferences != nil {
+			s.SetTerminalPreferences(*event.Preferences)
+		}
+		return
+	}
+	if event.Kind == WorkflowKeywordChanged {
+		s.SetWorkflowKeywordEnabled(event.Enabled, time.Now())
+		return
+	}
+	if event.Kind == TaskItemsChanged {
+		s.setTaskItems(event.Result)
+		return
+	}
+	if event.Kind == TerminalUpdateChanged {
+		s.applyTerminalUpdate(event.Result)
+		return
+	}
+	if event.Kind == TerminalPRStatusChanged {
+		s.applyTerminalPRStatus(event.Result)
+		return
+	}
+	if event.Kind == LocalPanelOpened {
+		s.openLocalPanel(event.LocalPanel)
+		s.retireFullscreenHelpProvisionalInput(event)
+		s.pendingChord = nil
+		return
+	}
+	if event.Kind == LocalPanelRefreshed {
+		if event.LocalPanel != nil && s.LocalPanel != nil && event.LocalPanel.ID == s.LocalPanel.props.ID && event.LocalPanel.Kind == s.LocalPanel.props.Kind {
+			s.openLocalPanel(event.LocalPanel)
+		}
+		return
+	}
+	if event.Kind == LocalPanelClosed {
+		if event.LocalPanel != nil && (s.LocalPanel == nil || s.LocalPanel.props.ID != event.LocalPanel.ID || s.LocalPanel.props.Kind != event.LocalPanel.Kind) {
+			return
+		}
+		s.LocalPanel = nil
+		return
+	}
 	if event.Kind == DoctorOpened {
 		s.Doctor = &DoctorPanel{Text: event.Text}
 		s.pendingChord = nil
@@ -840,21 +1080,31 @@ func (s *State) Apply(event Event) {
 		s.updateCompletions()
 		return
 	}
-	if !event.Background && event.Kind != MemorySaved && event.Kind != TeammateMessages && event.Kind != PermissionAsked && event.Kind != PermissionClosed && (event.TurnID != s.ActiveTurn || s.ActiveTurn == "") {
+	if !event.Background && event.Kind != MemorySaved && event.Kind != TeammateMessages && event.Kind != PermissionAsked && event.Kind != PermissionUpdated && event.Kind != PermissionClosed && (event.TurnID != s.ActiveTurn || s.ActiveTurn == "") {
 		return
 	}
 	switch event.Kind {
+	case TerminalSpinnerProgressChanged:
+		s.applyTerminalSpinnerProgress(event.Spinner)
 	case TeammateMessages:
+		if event.TeammateOrigin == "" && strings.Contains(event.Text, "<teammate-message") {
+			// Autonomous inbox input is the original canonical user XML. Keep
+			// it intact so the mounted teams gate can select its presentation.
+			s.Entries = append(s.Entries, Entry{TurnID: event.TurnID, Kind: "user", Text: event.Text})
+			break
+		}
 		var rows []protocol.JSONObject
 		_ = json.Unmarshal(event.Result, &rows)
 		for _, row := range rows {
 			if !teammateVisible(row) {
 				continue
 			}
-			s.Entries = append(s.Entries, Entry{TurnID: event.TurnID, Kind: "teammate", Text: teammateTranscriptText(row), Input: rawTeammatePresentation(row)})
+			s.Entries = append(s.Entries, Entry{TurnID: event.TurnID, Kind: "teammate", Subtype: string(event.TeammateOrigin), Text: teammateTranscriptText(row), Input: rawTeammatePresentation(row)})
 		}
 	case LocalCommandOutput, MemorySaved:
 		s.Entries = append(s.Entries, Entry{TurnID: event.TurnID, Kind: "local_output", Text: event.Text})
+	case MessageSelectorOpened:
+		s.applyTerminalRewind(event)
 	case LocalUserMessages:
 		if len(event.UserMessages) == 0 {
 			return
@@ -884,10 +1134,13 @@ func (s *State) Apply(event Event) {
 			}
 		}
 		for _, message := range event.LocalMessages {
-			retained = append(retained, Entry{TurnID: event.TurnID, Kind: message.Kind, Level: message.Level, Text: message.Text})
+			retained = append(retained, Entry{TurnID: event.TurnID, Kind: message.Kind, Level: message.Level, Subtype: message.Subtype, Text: message.Text})
 		}
 		s.Entries = retained
 	case TextDelta, ThinkingDelta:
+		if event.Kind == TextDelta && (s.spinnerClock == nil || s.spinnerClock.stream == nil || !s.spinnerClock.stream.observed) {
+			s.taskListStreaming = true
+		}
 		kind := "assistant"
 		if event.Kind == ThinkingDelta {
 			kind = "thinking"
@@ -899,6 +1152,7 @@ func (s *State) Apply(event Event) {
 			s.Entries = append(s.Entries, Entry{TurnID: event.TurnID, Kind: kind, Text: event.Text, TranscriptOnly: event.Kind == ThinkingDelta, Redacted: event.Redacted})
 		}
 	case ToolStarted:
+		s.taskListStreaming = false
 		s.Entries = append(s.Entries, Entry{TurnID: event.TurnID, Kind: "tool", ToolID: event.ToolID, ToolName: event.ToolName, Text: toolInputPresentation(event.ToolName, event.Input), Input: append(json.RawMessage(nil), event.Input...), Running: true})
 	case BashProgress, BashFinished:
 		found := false
@@ -946,11 +1200,26 @@ func (s *State) Apply(event Event) {
 				s.PermissionSelected = 0
 			}
 		}
+	case PermissionUpdated:
+		if event.Permission != nil {
+			for i, request := range s.Permissions {
+				if request.ID == event.Permission.ID {
+					s.Permissions[i] = *event.Permission
+					if !s.PermissionDebugVisible(*event.Permission) && s.permissionDebugID == event.Permission.ID {
+						s.permissionDebugID = ""
+					}
+					break
+				}
+			}
+		}
 	case PermissionClosed:
 		if event.Permission != nil {
 			for i, request := range s.Permissions {
 				if request.ID == event.Permission.ID {
 					s.Permissions = append(s.Permissions[:i], s.Permissions[i+1:]...)
+					if s.permissionDebugID == request.ID {
+						s.permissionDebugID = ""
+					}
 					if i == 0 {
 						s.PermissionSelected = 0
 						s.question = nil
@@ -981,7 +1250,13 @@ func (s *State) applyNotice(event Event) {
 }
 
 func (s *State) FinishTurn(id string, err error) []action {
+	defer s.syncTerminalSpinnerClock(time.Now())
 	if id != s.ActiveTurn || id == "" {
+		return nil
+	}
+	// The remote POST receipt does not finish the actual remote SDK turn.
+	// Result/disconnect permission state arrives on its independently owned WS.
+	if err == nil && s.RemoteState != nil && (s.terminalRemoteBusy() || len(s.Permissions) > 0) {
 		return nil
 	}
 	for i := range s.Entries {
@@ -997,8 +1272,11 @@ func (s *State) FinishTurn(id string, err error) []action {
 		s.Status = err.Error()
 	} else {
 		s.Status = ""
+		if s.Preferences.ShowTurnDuration && !s.turnStartedAt.IsZero() {
+			s.Entries = append(s.Entries, Entry{Kind: "turn_duration", Text: "Worked for " + time.Since(s.turnStartedAt).Round(time.Second).String()})
+		}
 	}
-	if s.Closing || s.TeammateTurnID != "" || len(s.Queue) == 0 {
+	if s.Closing || s.TeammateTurnID != "" || len(s.Queue) == 0 || len(s.pendingLocalCommands) > 0 && !s.cancelling {
 		return nil
 	}
 	if s.cancelling {

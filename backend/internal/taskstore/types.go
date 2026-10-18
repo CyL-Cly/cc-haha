@@ -14,9 +14,12 @@ import (
 
 type Options struct {
 	ConfigDir string
-	UserType  string
-	PID       int
-	Now       func() time.Time
+	// The actual native process supplies getClaudeConfigHomeDir at each
+	// original path getter. Already admitted leases retain their target path.
+	NativeConfigDirectory func() string
+	UserType              string
+	PID                   int
+	Now                   func() time.Time
 	// Source tasksUpdated fires after each physical write. The callback owns
 	// no session state; hosts may deliver it to their actual event owner.
 	OnUpdate func()
@@ -24,6 +27,7 @@ type Options struct {
 
 type Service struct {
 	options         Options
+	updates         updateSubscriptions
 	mu              sync.Mutex
 	precision       string
 	teamTransaction *heldTeamLifecycle

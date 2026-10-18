@@ -35,7 +35,7 @@ func (m *MainPrint) prepareNativeAutoDream() error {
 	life.ctx, life.cancel = context.WithCancel(context.Background())
 	service, err := autodream.New(autodream.Options{MemoryDirectory: m.memoryPaths.Directory,
 		TranscriptDirectory: func() (string, error) {
-			return filepath.Join(m.options.Native.Environment["CLAUDE_CONFIG_DIR"], "projects", projectpath.Sanitize(m.state.Snapshot().OriginalCWD)), nil
+			return filepath.Join(m.options.Native.ConfigHomeDirectory(), "projects", projectpath.Sanitize(m.state.Snapshot().OriginalCWD)), nil
 		},
 		NowMillis: m.options.Native.NowMillis, PID: os.Getpid(), IsProcessRunning: nativeAutoDreamProcessRunning})
 	if err != nil {

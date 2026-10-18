@@ -59,6 +59,11 @@ func (m *MainPrint) nativeAttachmentsForContext(scope *cooperative.Scope, histor
 	if e != nil {
 		return nil, e
 	}
+	companion, e := m.nativeBuddyAttachments(scope, history)
+	if e != nil {
+		return nil, e
+	}
+	delta = append(delta, companion...)
 	skills := []queryloop.Message{}
 	if m.skillCommands != nil {
 		var err error
@@ -109,6 +114,11 @@ func (m *MainPrint) nativeAttachmentsForContext(scope *cooperative.Scope, histor
 	for _, item := range pending {
 		plans = append(plans, queryloop.Message{Record: m.factory.CreateAttachment(rawMain(item))})
 	}
+	lsp, err := m.nativeLSPAttachments(scope, agentID)
+	if err != nil {
+		return nil, err
+	}
+	plans = append(plans, lsp...)
 	asyncHooks, err := m.nativeAsyncHookAttachments(scope, agentID)
 	if err != nil {
 		return nil, err

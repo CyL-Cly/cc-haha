@@ -54,6 +54,12 @@ func (p *sdkPermissionRootPeer) Write(data []byte) (int, error) {
 		p.request = frame.Clone()
 		if p.row["abort"] == true {
 			p.abort()
+			if p.row["abortThenEOF"] == true {
+				_ = p.input.Close()
+			} else if p.row["abortThenResponse"] == true {
+				reply, _ := json.Marshal(map[string]any{"type": "control_response", "response": map[string]any{"subtype": "success", "request_id": frame.String("request_id"), "response": p.row["response"]}})
+				go func() { _, _ = p.input.Write(append(reply, '\n')) }()
+			}
 			return len(data), nil
 		}
 		if p.row["eof"] == true {
@@ -87,6 +93,8 @@ func TestActualMainPrintSDKStdioPermissionsOriginalDecisionsRequestAbortAndEOF(t
 		{"name": "invalid-deny", "response": map[string]any{"behavior": "deny", "message": 7}},
 		{"name": "peer-error", "peerError": true, "response": map[string]any{}},
 		{"name": "abort", "abort": true, "response": map[string]any{}},
+		{"name": "abort-before-eof", "abort": true, "abortThenEOF": true, "response": map[string]any{}},
+		{"name": "abort-before-late-response", "abort": true, "abortThenResponse": true, "response": map[string]any{"behavior": "allow", "updatedInput": map[string]any{}, "updatedPermissions": []any{map[string]any{"type": "setMode", "mode": "acceptEdits", "destination": "session"}}}},
 		{"name": "EOF", "eof": true, "response": map[string]any{}},
 	}
 	fixture, _ := filepath.Abs("../../testdata/native-sdk-stdio-permission.fixture.ts")

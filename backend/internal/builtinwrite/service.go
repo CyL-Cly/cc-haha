@@ -237,6 +237,9 @@ func (s *Service) callWithParent(ctx context.Context, input protocol.JSONObject,
 	if e = s.atomicWrite(path, contentBytes(content, encoding)); e != nil {
 		return nil, e
 	}
+	if s.options.LSP != nil {
+		s.options.LSP.NotifyChange(path, contentRaw(content))
+	}
 	mtime, e := fileMtime(f, path)
 	if e != nil {
 		return nil, e

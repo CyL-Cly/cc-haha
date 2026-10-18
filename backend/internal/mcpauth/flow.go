@@ -23,6 +23,8 @@ import (
 type FlowOptions struct {
 	SkipBrowserOpen      bool
 	OnWaitingForCallback func(func(string))
+	// OnCallbackListener observes the actual listener without taking ownership.
+	OnCallbackListener func(net.Listener)
 }
 type callbackReply struct {
 	code string
@@ -139,6 +141,9 @@ func (s *Service) AuthenticateWithOptions(ctx context.Context, name string, conf
 		<-flowCtx.Done()
 	})}
 	defer func() { cancel(); _ = server.Close(); _ = listener.Close() }()
+	if options.OnCallbackListener != nil {
+		options.OnCallbackListener(listener)
+	}
 	if options.OnWaitingForCallback != nil {
 		options.OnWaitingForCallback(func(address string) {
 			u, err := parseURL(address)

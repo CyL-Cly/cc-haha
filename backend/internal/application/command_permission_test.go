@@ -20,6 +20,12 @@ func TestNativePrintReturnsUnapprovedToolToModelWithoutWaitingForUI(t *testing.T
 	var target string
 	var followup json.RawMessage
 	provider := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		if calls.Add(1) == 1 {
 			response(w, "unapproved-print", "Write", map[string]any{"file_path": target, "content": "must not be written"}, "")
 			return

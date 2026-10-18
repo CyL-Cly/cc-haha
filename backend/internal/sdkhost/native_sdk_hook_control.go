@@ -236,10 +236,11 @@ func (h *Host) sdkHookInitializeControl(scope *cooperative.Scope, event protocol
 		response.Set("error", quote("Already initialized"))
 		response.Set("pending_permission_requests", raw(h.pendingSDKPermissionRequests()))
 	} else {
-		for _, key := range []string{"promptSuggestions", "agentProgressSummaries"} {
-			if request.Get(key) != nil {
-				return cap("SDK initialize " + key + " producer")
-			}
+		// StructuredIO parses JSON and casts the control shape; it does not
+		// validate the advertised TypeScript boolean schema at runtime.
+
+		if h.sdkSuggestions != nil {
+			h.sdkSuggestions.enabled = openaiauth.AuthTruthy(request.Get("promptSuggestions"))
 		}
 		if h.options.NativeSDKInitializeOptions != nil {
 			if err := h.options.NativeSDKInitializeOptions(scope, request); err != nil {
@@ -270,6 +271,16 @@ func (h *Host) sdkHookInitializeControl(scope *cooperative.Scope, event protocol
 	}
 	if err := h.enqueueSDKControl(scope, protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quote("control_response")}, protocol.JSONField{Name: "response", Value: raw(response)})); err != nil {
 		return err
+	}
+	// print.ts applies this sticky process option after initialize dispatch,
+	// including duplicate initialize responses. Falsy never resets opt-in.
+	if openaiauth.AuthTruthy(request.Get("agentProgressSummaries")) {
+		if h.options.Print == nil || h.options.Print.NativeAgentSummaryEnabled == nil || h.options.Print.NativeAgentSummaryFeatureGate == nil {
+			return cap("SDK initialize agentProgressSummaries producer")
+		}
+		if h.options.Print.NativeAgentSummaryFeatureGate(scope) {
+			h.options.Print.NativeAgentSummaryEnabled.Store(true)
+		}
 	}
 	if firstInitialize && h.options.EnableAuthStatus {
 		return h.enqueueAuthStatus(scope, h.options.AuthStatus.Status())

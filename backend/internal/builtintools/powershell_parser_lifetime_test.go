@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -20,9 +21,7 @@ import (
 )
 
 func TestActualSourcePowerShellConfiguredASTDeadlineIsNotCappedByExecutionPrimitive(t *testing.T) {
-	if _, err := os.Stat("/opt/homebrew/bin/pwsh"); err != nil {
-		t.Skip("physical PowerShell host required")
-	}
+	interpreter := physicalPowerShell(t)
 	bun := os.Getenv("CC_HAHA_SOURCE_BUN")
 	if bun == "" {
 		t.Skip("actual Source Bun required")
@@ -31,7 +30,7 @@ func TestActualSourcePowerShellConfiguredASTDeadlineIsNotCappedByExecutionPrimit
 	executable := filepath.Join(home, "pwsh")
 	// The executable-discovery seam delays native startup. It then executes only
 	// the exact original data-only AST parser argv on the installed interpreter.
-	if err := os.WriteFile(executable, []byte("#!/bin/sh\n/bin/sleep 5.25\nexec /opt/homebrew/bin/pwsh \"$@\"\n"), 0700); err != nil {
+	if err := os.WriteFile(executable, []byte("#!/bin/sh\n/bin/sleep 5.25\nexec '"+strings.ReplaceAll(interpreter, "'", "'\"'\"'")+"' \"$@\"\n"), 0700); err != nil {
 		t.Fatal(err)
 	}
 	fixturePath, _ := filepath.Abs("../../../scripts/quality-gate/go-parity/native-powershell-policy.fixture.ts")
@@ -78,7 +77,7 @@ func TestActualSourcePowerShellConfiguredASTDeadlineIsNotCappedByExecutionPrimit
 }
 
 func TestPowerShellCanceledPermissionAwaitKeepsNativeASTJobOwnedUntilDelivery(t *testing.T) {
-	executable := "/opt/homebrew/bin/pwsh"
+	executable := physicalPowerShell(t)
 	if _, err := os.Stat(executable); err != nil {
 		t.Skip("physical PowerShell host required")
 	}
@@ -154,7 +153,7 @@ func TestPowerShellCanceledPermissionAwaitKeepsNativeASTJobOwnedUntilDelivery(t 
 }
 
 func TestActualSourcePowerShellCurrentUserTypeRefreshChangesPermissionWithoutReparsing(t *testing.T) {
-	executable := "/opt/homebrew/bin/pwsh"
+	executable := physicalPowerShell(t)
 	if _, err := os.Stat(executable); err != nil {
 		t.Skip("physical PowerShell host required")
 	}
@@ -215,7 +214,7 @@ func TestActualSourcePowerShellCurrentUserTypeRefreshChangesPermissionWithoutRep
 }
 
 func TestActualSourcePowerShellEnvironmentChangedWhileNativeParserYieldedOwner(t *testing.T) {
-	executable := "/opt/homebrew/bin/pwsh"
+	executable := physicalPowerShell(t)
 	if _, err := os.Stat(executable); err != nil {
 		t.Skip("physical PowerShell host required")
 	}

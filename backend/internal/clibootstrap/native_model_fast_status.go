@@ -138,20 +138,9 @@ func (m *MainPrint) nativeModelFastAuth(ctx context.Context, scope *cooperative.
 		return "", "", err
 	}
 	env := m.nativeOpenAIEnvironment()
-	source, err := m.openAIAuth.apiKeySource(owned, env, pickerTrue(env["CLAUDE_CODE_SIMPLE"]), !m.options.Interactive)
+	key, _, err := m.openAIAuth.apiKeyWithSource(owned, env, pickerTrue(env["CLAUDE_CODE_SIMPLE"]), !m.options.Interactive)
 	if err != nil {
 		return "", "", err
-	}
-	key := ""
-	switch source {
-	case "ANTHROPIC_API_KEY":
-		key = env["ANTHROPIC_API_KEY"]
-	case "apiKeyHelper":
-		if cached := m.apiKeyHelper.Cached(); cached != nil {
-			key = *cached
-		}
-	case "/login managed key":
-		key = m.openAIAuth.legacyAPIKey
 	}
 	tokens, err := m.openAIAuth.claudeTokensFor(owned, env, pickerTrue(env["CLAUDE_CODE_SIMPLE"]))
 	return nativeModelProfileToken(tokens), key, err

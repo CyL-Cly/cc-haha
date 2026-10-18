@@ -24,6 +24,7 @@ func (pending *PendingWriter) BeginTrackedWrite(scope *cooperative.Scope) (*Trac
 			return ErrPendingClosed
 		}
 		pending.tracked++
+		pending.observeWriter("tracked-add", nil, nil, nil)
 		token = &TrackedWrite{pending: pending, active: true}
 		return nil
 	})
@@ -42,6 +43,7 @@ func (token *TrackedWrite) Complete(scope *cooperative.Scope) error {
 		}
 		token.active = false
 		token.pending.tracked--
+		token.pending.observeWriter("tracked-remove", nil, nil, nil)
 		if token.pending.tracked == 0 {
 			waiters := token.pending.zeroWaiters
 			token.pending.zeroWaiters = nil
@@ -104,7 +106,18 @@ func (job *flushContinuation) drain(scope *cooperative.Scope) {
 		job.pending.writer.stop = nil
 	}
 	job.pending.writer.mu.Unlock()
-	drain, err := job.pending.Begin(scope)
+	// Project.flush first awaits an existing timer-owned activeDrain, then
+	// unconditionally invokes/awaits its own drainWriteQueue. Joining the old
+	// active future is not the second call, including when its queues are empty.
+	if active := job.pending.active; active != nil {
+		job.wait(active, job.drainQueue)
+		return
+	}
+	job.drainQueue(scope)
+}
+
+func (job *flushContinuation) drainQueue(scope *cooperative.Scope) {
+	drain, err := job.pending.beginExplicit(scope)
 	if err != nil {
 		job.future.settle(err)
 		return
@@ -124,6 +137,7 @@ func (job *flushContinuation) wait(waiting *WriteFuture, complete func(*cooperat
 	}, job.future.settle)
 }
 func (job *flushContinuation) afterDrain(scope *cooperative.Scope) {
+	job.pending.observeWriter("flush-after-drain", nil, nil, nil)
 	// This callback is already on owner. Use a fresh named owner callback for
 	// the next drain; a Scope is never captured by or sent to a worker.
 	if job.pending.tracked > 0 {

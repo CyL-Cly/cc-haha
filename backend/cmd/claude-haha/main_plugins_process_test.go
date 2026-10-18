@@ -24,6 +24,7 @@ func TestPublicPluginAllOriginalHandlersPrivateProcesses(t *testing.T) {
 	defer cancel()
 	binary := filepath.Join(root, "public-go-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-mod=readonly", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if output, err := build.CombinedOutput(); err != nil {
 		t.Fatal("actual public build", err, string(output))
 	}
@@ -57,6 +58,7 @@ func TestPublicPluginAllOriginalHandlersPrivateProcesses(t *testing.T) {
 		env := []string{"HOME=" + home, "USERPROFILE=" + home, "USER=owned-fixture", "CLAUDE_CONFIG_DIR=" + config, "TMPDIR=" + home, "CC_HAHA_NATIVE_FIXTURE_ROOT=" + root, "CC_HAHA_FIXTURE_TEMP_ROOT=" + root, "CC_HAHA_PLUGIN_CLI_FIXTURE=1", "PATH=/usr/bin:/bin:/opt/homebrew/bin", "BUN_OPTIONS=--no-env-file", "USER_TYPE=external", "NODE_ENV=production", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1", "DISABLE_TELEMETRY=1", "CLAUDE_CODE_LOCAL_SKIP_REMOTE_PREFETCH=1"}
 		git := exec.Command("/usr/bin/git", "init", "-q", home)
 		git.Env = env
+		capturePublicGoCoverage(t, git)
 		if output, err := git.CombinedOutput(); err != nil {
 			t.Fatal(err, string(output))
 		}
@@ -102,6 +104,7 @@ func TestPublicPluginAllOriginalHandlersPrivateProcesses(t *testing.T) {
 		var stdout, stderr bytes.Buffer
 		process.Stdout, process.Stderr = &stdout, &stderr
 		code := 0
+		capturePublicGoCoverage(t, process)
 		if err := process.Run(); err != nil {
 			var exit *exec.ExitError
 			if !errors.As(err, &exit) {

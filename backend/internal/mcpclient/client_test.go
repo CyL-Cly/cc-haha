@@ -540,6 +540,7 @@ func originalContract(t *testing.T, bun, home string, config Config, requests []
 	cmd.Stdin = bytes.NewReader(raw(map[string]any{"config": map[string]any{"type": config.Type, "url": config.URL, "command": config.Command, "args": config.Args, "env": config.Env, "headers": config.Headers}, "requests": requests, "names": []string{}}))
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
+	capturePublicGoCoverage(t, cmd)
 	expected, err := cmd.Output()
 	if err != nil {
 		t.Fatalf("actual Source failed: %v %s", err, bounded(stderr.String()))
@@ -644,6 +645,7 @@ func TestRequestsAndResultsMatchActualOriginalClient(t *testing.T) {
 			cmd.Stdin = bytes.NewReader(raw(map[string]any{"config": map[string]any{"type": sourceConfig.Type, "url": sourceConfig.URL, "command": sourceConfig.Command, "args": sourceConfig.Args, "env": sourceConfig.Env, "headers": sourceConfig.Headers}, "requests": requests, "names": names}))
 			var stderr bytes.Buffer
 			cmd.Stderr = &stderr
+			capturePublicGoCoverage(t, cmd)
 			expected, err := cmd.Output()
 			if err != nil {
 				t.Fatalf("actual Source failed: %v; %s", err, bounded(stderr.String()))

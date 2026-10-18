@@ -154,7 +154,7 @@ func TestPublicCLIClaudeAICatalogActualSecureFilesHTTPProxyAndSourceList(t *test
 		t.Fatal(e)
 	}
 	modelCalls := 0
-	model := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	model := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 		data, err := io.ReadAll(r.Body)
 		if err != nil {
 			t.Error(err)

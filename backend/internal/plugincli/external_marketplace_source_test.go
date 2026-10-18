@@ -160,7 +160,7 @@ func pairedExternalMarketplace(t *testing.T, mode string) {
 	if e != nil {
 		t.Fatal("actual original external consumer", e, sourceErr.String())
 	}
-	native, e := clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: goEnv, CWD: goHome, Platform: "darwin", ManagedRoot: filepath.Join(root, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+	native, e := newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: goEnv, CWD: goHome, Platform: "darwin", ManagedRoot: filepath.Join(root, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 	if e != nil {
 		t.Fatal(e)
 	}

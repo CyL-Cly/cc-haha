@@ -5,6 +5,7 @@
 # Usage: ./build.sh
 #
 # Env overrides:
+#   CC_HAHA_SIGN_KEYCHAIN (optional absolute private keychain; no default fallback)
 #   CU_HELPER_IDENTITY   (default: auto -> 'Apple Development: ...' if found, else 'cu-helper-dev')
 #   CU_HELPER_BUNDLE_ID  (default: dev.cchaha.cu-helper)  # constant => stable TCC row
 #   CU_HELPER_ARCH       (default: current machine arch; arm64 or x86_64)
@@ -111,17 +112,62 @@ SIGN_IDENTITY=""
 # Self-signed fallback cert name (a Code Signing cert the user creates ONCE).
 SELF_SIGNED_NAME="cu-helper-dev"
 
+# Do not change the user's search list. Empty/unset keeps the original commands.
+SIGN_KEYCHAIN=""
+resolve_signing_keychain() {
+  SIGN_KEYCHAIN="${CC_HAHA_SIGN_KEYCHAIN:-}"
+  if [ -n "$SIGN_KEYCHAIN" ]; then
+    case "$SIGN_KEYCHAIN" in
+      /*) ;;
+      *) die "CC_HAHA_SIGN_KEYCHAIN must be an absolute path" ;;
+    esac
+  fi
+}
+scoped_signing_identities() {
+  resolve_signing_keychain
+  if [ -n "$SIGN_KEYCHAIN" ]; then
+    security find-identity -v -p codesigning "$SIGN_KEYCHAIN"
+  else
+    security find-identity -v -p codesigning
+  fi
+}
+scoped_codesign() {
+  resolve_signing_keychain
+  if [ -n "$SIGN_KEYCHAIN" ]; then
+    codesign --keychain "$SIGN_KEYCHAIN" "$@"
+  else
+    codesign "$@"
+  fi
+}
+
+# Exact quoted name or SHA-1, from this query only. Unknown overrides never
+# fall back to another keychain or an ad-hoc identity.
+private_signing_identity() {
+  local requested="$1"
+  awk -v requested="$requested" '
+    $1 ~ /^[0-9]+\)$/ && length($2) == 40 && $2 ~ /^[[:xdigit:]]+$/ && $0 ~ /"[[:space:]]*$/ {
+      name=$0; sub(/^[^"]*"/, "", name); sub(/"[[:space:]]*$/, "", name)
+      if (requested != "" && (name == requested || tolower($2) == tolower(requested))) { print name; found=1; exit }
+      if (requested == "") {
+        if (developer == "" && index(name, "Developer ID Application:") == 1) developer=name
+        if (apple == "" && index(name, "Apple Development:") == 1) apple=name
+      }
+    }
+    END { if (!found && requested == "") { if (developer != "") print developer; else if (apple != "") print apple } }
+  '
+}
+
 # Returns 0 if a codesigning identity whose name contains $1 exists.
 identity_exists() {
   local needle="$1"
-  security find-identity -v -p codesigning 2>/dev/null | grep -F "$needle" >/dev/null 2>&1
+  scoped_signing_identities 2>/dev/null | grep -F "$needle" >/dev/null 2>&1
 }
 
 # Echoes the first 'Apple Development: ...' identity's full common name, or "".
 first_apple_development_identity() {
   # Lines look like:  1) <40-hex-sha> "Apple Development: name (TEAMID)"
   # Extract the quoted common name of the first Apple Development row.
-  security find-identity -v -p codesigning 2>/dev/null \
+  scoped_signing_identities 2>/dev/null \
     | grep 'Apple Development:' \
     | head -1 \
     | sed -E 's/^[^"]*"([^"]+)".*$/\1/'
@@ -129,7 +175,7 @@ first_apple_development_identity() {
 
 # Echoes the first Developer ID Application identity's full common name, or "".
 first_developer_id_application_identity() {
-  security find-identity -v -p codesigning 2>/dev/null \
+  scoped_signing_identities 2>/dev/null \
     | grep 'Developer ID Application:' \
     | head -1 \
     | sed -E 's/^[^"]*"([^"]+)".*$/\1/'
@@ -177,6 +223,17 @@ EOF
 }
 
 resolve_identity() {
+  resolve_signing_keychain
+  if [ -n "$SIGN_KEYCHAIN" ]; then
+    local identities requested
+    identities="$(scoped_signing_identities)" || die "explicit signing keychain identity query failed"
+    requested="${CC_HAHA_SIGN_IDENTITY:-${CU_HELPER_IDENTITY:-}}"
+    [ "$requested" != "-" ] || die "ad-hoc signing is refused"
+    SIGN_IDENTITY="$(printf '%s\n' "$identities" | private_signing_identity "$requested")"
+    [ -n "$SIGN_IDENTITY" ] || die "no matching signing identity in the explicitly selected keychain"
+    log "identity: $SIGN_IDENTITY (from explicit signing keychain)"
+    return 0
+  fi
   # a) shared build-wide override. The helper, the sidecar and the Electron host
   #     must end up on ONE certificate or the helper's client attestation rejects
   #     every call (see desktop/scripts/sign-identity.ts). It deliberately wins
@@ -272,7 +329,7 @@ resolve_timestamp_mode() {
           # matching common name when possible so auto mode still recognizes a
           # Developer ID certificate.
           local identity_row
-          identity_row="$(security find-identity -v -p codesigning 2>/dev/null | grep -F "$SIGN_IDENTITY" | head -1 || true)"
+          identity_row="$(scoped_signing_identities 2>/dev/null | grep -F "$SIGN_IDENTITY" | head -1 || true)"
           if [ -n "$identity_row" ]; then
             identity_name="$(printf '%s\n' "$identity_row" | sed -E 's/^[^"]*"([^"]+)".*$/\1/')"
           fi
@@ -363,7 +420,7 @@ sign() {
   log ""
   log "==> codesign (identity='$SIGN_IDENTITY', identifier='$BUNDLE_ID', options=runtime, timestamp=$RESOLVED_TIMESTAMP_MODE)"
 
-  codesign \
+  scoped_codesign \
     --force \
     --options runtime \
     "$CODESIGN_TIMESTAMP_ARG" \
@@ -457,7 +514,7 @@ wrap_app() {
   copy_cursor_resources "$res_bundle" "$APP_PATH"
 
   # Sign the WHOLE bundle with the SAME stable identity + hardened runtime.
-  codesign \
+  scoped_codesign \
     --force \
     --options runtime \
     "$CODESIGN_TIMESTAMP_ARG" \

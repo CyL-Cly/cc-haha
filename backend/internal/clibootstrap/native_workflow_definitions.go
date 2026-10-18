@@ -18,10 +18,14 @@ import (
 
 type nativeWorkflowFiles struct{ n *NativeBoundary }
 
-func (f nativeWorkflowFiles) Stat(path string) (fs.FileInfo, error) { return f.n.stat(path) }
-func (f nativeWorkflowFiles) ReadFile(path string) ([]byte, error)  { return f.n.readFile(path) }
+func (f nativeWorkflowFiles) Stat(path string) (fs.FileInfo, error) {
+	return f.n.stat(f.n.nativePhysicalPath(path))
+}
+func (f nativeWorkflowFiles) ReadFile(path string) ([]byte, error) {
+	return f.n.readFile(f.n.nativePhysicalPath(path))
+}
 func (f nativeWorkflowFiles) ReadDir(path string) ([]workflowcommands.Entry, error) {
-	entries, err := f.n.readDir(path)
+	entries, err := f.n.readDir(f.n.nativePhysicalPath(path))
 	if err != nil {
 		return nil, err
 	}
@@ -139,7 +143,7 @@ func (p *NativeProcessSettings) workflowDefinitions(owner *cooperative.Owner, st
 			}
 			_, err := workflow.CompileBody(body)
 			return err
-		}, ConfigDir: config, OriginalCWD: cwd, ProcessCWD: cwd, Files: files, History: history})
+		}, ConfigDir: n.nativePhysicalPath(config), OriginalCWD: cwd, ProcessCWD: cwd, Files: files, History: history})
 		return err
 	})
 	return service, err

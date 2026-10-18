@@ -255,7 +255,7 @@ func pairedMarketplace(t *testing.T, action string) {
 		}
 		code = exit.ExitCode()
 	}
-	native, err := clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: goEnv, CWD: goHome, Platform: "darwin", ManagedRoot: filepath.Join(goHome, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) {
+	native, err := newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: goEnv, CWD: goHome, Platform: "darwin", ManagedRoot: filepath.Join(goHome, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) {
 		if policy := goEnv["CC_HAHA_PLUGIN_CLI_POLICY"]; policy != "" {
 			var value protocol.JSONObject
 			_ = value.UnmarshalJSON([]byte(policy))

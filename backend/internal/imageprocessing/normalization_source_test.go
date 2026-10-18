@@ -33,11 +33,12 @@ func TestNativeImageNormalizationAndVisionBudgetAgainstActualSource(t *testing.T
 		t.Fatal(err)
 	}
 	rows := []map[string]any{}
-	for _, size := range [][2]int{{12, 8}, {9001, 3}, {137, 9001}, {1500, 1200}} {
-		source := image.NewNRGBA(image.Rect(0, 0, size[0], size[1]))
+	fixturePNG := func(width, height int) []byte {
+		t.Helper()
+		source := image.NewNRGBA(image.Rect(0, 0, width, height))
 		var random uint32 = 0x98f74162
-		for y := 0; y < size[1]; y++ {
-			for x := 0; x < size[0]; x++ {
+		for y := 0; y < height; y++ {
+			for x := 0; x < width; x++ {
 				random ^= random << 13
 				random ^= random >> 17
 				random ^= random << 5
@@ -48,10 +49,14 @@ func TestNativeImageNormalizationAndVisionBudgetAgainstActualSource(t *testing.T
 		if err = png.Encode(&data, source); err != nil {
 			t.Fatal(err)
 		}
-		rows = append(rows, map[string]any{"data": base64.StdEncoding.EncodeToString(data.Bytes()), "ext": "png", "path": "/private/human image.png"})
+		return data.Bytes()
+	}
+	for _, size := range [][2]int{{12, 8}, {9001, 3}, {137, 9001}, {1500, 1200}} {
+		data := fixturePNG(size[0], size[1])
+		rows = append(rows, map[string]any{"data": base64.StdEncoding.EncodeToString(data), "ext": "png", "path": "/private/human image.png"})
 		if size[0] == 1500 {
 			for _, format := range []string{"png", "jpeg", "webp"} {
-				encoded := data.Bytes()
+				encoded := data
 				if format != "png" {
 					encoded, err = processor.Encode(encoded, 0, 0, format, 90)
 					if err != nil {
@@ -60,6 +65,13 @@ func TestNativeImageNormalizationAndVisionBudgetAgainstActualSource(t *testing.T
 				}
 				for _, tokens := range []float64{1000, 32} {
 					rows = append(rows, map[string]any{"data": base64.StdEncoding.EncodeToString(encoded), "ext": format, "tokens": tokens, "path": "/private/human image"})
+				}
+				if format == "png" {
+					// Keep the large vision/dimension cases above. PNG palette
+					// compression uses a separate high-entropy raster, still
+					// larger than all 800/600/400 fallback resize bounds, so all
+					// limits and encoding branches fit the same 40-second oracle.
+					encoded = fixturePNG(900, 700)
 				}
 				for _, limit := range []int{200000, 5000, 1} {
 					rows = append(rows, map[string]any{"data": base64.StdEncoding.EncodeToString(encoded), "ext": format, "maxBytes": limit})
@@ -85,6 +97,7 @@ func TestNativeImageNormalizationAndVisionBudgetAgainstActualSource(t *testing.T
 	if err != nil {
 		t.Fatal(err, stderr.String())
 	}
+	t.Log(stderr.String())
 	var expected []json.RawMessage
 	if err = json.Unmarshal(raw, &expected); err != nil || len(expected) != len(rows) {
 		t.Fatal(err, string(raw))

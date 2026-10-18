@@ -9,6 +9,23 @@ type JSONProperty struct {
 	Value    json.RawMessage
 }
 
+// GetPropertyJSON looks up the original decoded UTF-16 key without a lossy
+// Go-string conversion. The returned value is an independent raw snapshot.
+func (object JSONObject) GetPropertyJSON(name json.RawMessage) (json.RawMessage, error) {
+	units, err := DecodeJavaScriptJSONString(name)
+	if err != nil {
+		return nil, err
+	}
+	if object.state == nil {
+		return nil, nil
+	}
+	value := object.state.fields[quoteUTF16(units)]
+	if value == nil {
+		return nil, nil
+	}
+	return value.snapshot(), nil
+}
+
 // OwnProperties returns independent raw snapshots in JavaScript own-key order,
 // including undefined slots. It does not invoke accessors or model prototypes.
 func (object JSONObject) OwnProperties() []JSONProperty {

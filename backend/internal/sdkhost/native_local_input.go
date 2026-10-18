@@ -21,17 +21,27 @@ func (h *Host) processNativeLocalInput(scope *cooperative.Scope, name, args stri
 	if err := scope.AwaitFulfilled(); err != nil {
 		return nil, err
 	}
-	text, err := h.options.Print.NativeLocalCommand(context.Background(), scope, name, args)
+	ctx := context.Background()
+	if name == "keybindings" && h.inputModelContext != nil {
+		ctx = h.inputModelContext
+	}
+	text, err := h.options.Print.NativeLocalCommand(ctx, scope, name, args)
+	resultText := text
+	tag := "stdout"
 	if err != nil {
-		return nil, err
+		if name != "keybindings" {
+			return nil, err
+		}
+		text, tag = storage.JavaScriptErrorText(err), "stderr"
+		resultText = ""
 	}
 	if err = scope.AwaitFulfilled(); err != nil {
 		return nil, err
 	}
-	system := h.options.Factory.CreateLocalCommandInput("<local-command-stdout>" + text + "</local-command-stdout>")
+	system := h.options.Factory.CreateLocalCommandInput("<local-command-" + tag + ">" + text + "</local-command-" + tag + ">")
 	if err = scope.AwaitFulfilled(); err != nil {
 		return nil, err
 	}
 	caveat := h.options.Factory.CreateLocalCaveat()
-	return &sessioncontroller.ProcessedInput{Messages: []protocol.JSONObject{caveat, user, system}, LocalResult: &sessioncontroller.LocalInputResult{Text: text, StartMillis: start}}, nil
+	return &sessioncontroller.ProcessedInput{Messages: []protocol.JSONObject{caveat, user, system}, LocalResult: &sessioncontroller.LocalInputResult{Text: text, ResultText: &resultText, StartMillis: start}}, nil
 }

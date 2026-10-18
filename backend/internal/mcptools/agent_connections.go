@@ -12,19 +12,42 @@ import (
 // mcpResources into agentOptions; initializing an Agent does not list resources
 // again, including on newly connected inline peers.
 type AgentResourceSnapshot struct {
-	producer *Service
-	rows     map[string]skillResourceCatalogue
+	producer       *Service
+	rows           map[string]skillResourceCatalogue
+	prompts        map[string]promptCatalogue
+	authentication map[string]authenticationToolView
 }
 
 func (s *Service) AgentResources(scope *cooperative.Scope) (*AgentResourceSnapshot, error) {
 	if !scope.BelongsTo(s.options.Owner) {
 		return nil, cooperative.ErrRestricted
 	}
-	out := &AgentResourceSnapshot{producer: s, rows: map[string]skillResourceCatalogue{}}
+	out := &AgentResourceSnapshot{producer: s, rows: map[string]skillResourceCatalogue{}, prompts: map[string]promptCatalogue{}, authentication: map[string]authenticationToolView{}}
+	current := map[string]mcpruntime.Connection{}
+	for _, peer := range s.connections {
+		if peer.Status == "connected" && peer.Client != nil {
+			current[peer.Name] = peer
+		}
+	}
 	for name, catalogue := range s.skillResources {
+		if current[name].Client != catalogue.client {
+			continue
+		}
 		catalogue.rows = cloneResourceRows(catalogue.rows)
 		catalogue.unsubscribe = nil
 		out.rows[name] = catalogue
+	}
+	for name, catalogue := range s.promptCommands {
+		if current[name].Client != catalogue.peer.Client {
+			continue
+		}
+		catalogue.rows = cloneResourceRows(catalogue.rows)
+		catalogue.unsubscribe = nil
+		out.prompts[name] = catalogue
+	}
+	for name, view := range s.authenticationTools {
+		view.config = view.config.Clone()
+		out.authentication[name] = view
 	}
 	return out, nil
 }
@@ -76,5 +99,20 @@ func (s *Service) InstallAgentConnections(scope *cooperative.Scope, inherited, a
 		s.skillResources[name] = catalogue
 	}
 	s.agentResourceSnapshot = true
+	s.agentResources = resources
+	s.authenticationTools = map[string]authenticationToolView{}
+	for name, view := range resources.authentication {
+		for _, peer := range inherited {
+			if peer.Name == name && peer.Status == "needs-auth" && sameConnection(peer, mcpruntime.Connection{Name: name, Config: view.config}) {
+				view.config = view.config.Clone()
+				s.authenticationTools[name] = view
+			}
+		}
+	}
+	s.promptCommands = map[string]promptCatalogue{}
+	for name, catalogue := range resources.prompts {
+		catalogue.rows = cloneResourceRows(catalogue.rows)
+		s.promptCommands[name] = catalogue
+	}
 	return nil
 }

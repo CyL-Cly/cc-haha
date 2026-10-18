@@ -28,6 +28,12 @@ type Response struct {
 	Headers http.Header
 	Body    []byte
 }
+
+// RecordEnrichment is the continuation after getEventMetadata's asynchronous
+// environment/repository work. It receives the current owner scope; callers
+// must not retain the scope that sampled the synchronous model/betas prefix.
+type RecordEnrichment func(*cooperative.Scope) (protocol.JSONObject, error)
+
 type Options struct {
 	Owner       *cooperative.Owner
 	Binding     *ownerasync.NativeBinding
@@ -38,6 +44,7 @@ type Options struct {
 	SessionID   func(*cooperative.Scope) string
 	Random      func() float64
 	Record      func(*cooperative.Scope, Event) (protocol.JSONObject, error)
+	BeginRecord func(*cooperative.Scope, Event) (RecordEnrichment, error)
 	Prepare     func(*cooperative.Scope, string, []byte, bool) (Request, error)
 	HTTP        func(context.Context, Request) (Response, error)
 	Files       Files
@@ -110,11 +117,27 @@ func (s *Service) Log(scope *cooperative.Scope, event Event) error {
 	if selected != nil {
 		event.Metadata.Set("sample_rate", scalar(*selected))
 	}
+	var enrichment RecordEnrichment
+	if s.o.BeginRecord != nil {
+		var err error
+		enrichment, err = s.o.BeginRecord(scope, event)
+		if err != nil || enrichment == nil {
+			// The original async logger catches metadata failures, including
+			// failures in its synchronous prefix before the first await.
+			return nil
+		}
+	}
 	_, e := s.o.Owner.Microtask(cooperative.Read, func(next *cooperative.Scope) error {
 		if s.closed {
 			return nil
 		}
-		record, e := s.o.Record(next, event)
+		var record protocol.JSONObject
+		var e error
+		if enrichment != nil {
+			record, e = enrichment(next)
+		} else {
+			record, e = s.o.Record(next, event)
+		}
 		if e != nil {
 			return nil
 		} // Original async metadata enrichment catches errors.

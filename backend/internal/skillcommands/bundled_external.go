@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/markdownfrontmatter"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/yuin/goldmark"
@@ -22,10 +23,11 @@ import (
 var externalBundledTemplates embed.FS
 
 type BundledOptions struct {
-	Environment        map[string]string
-	SettingsJSONSchema func(context.Context) (string, error)
-	IsGit              func(context.Context) (bool, error)
-	DebugPrompt        func(context.Context, string) (string, error)
+	Environment         map[string]string
+	EnvironmentSnapshot func() map[string]string
+	SettingsJSONSchema  func(context.Context) (string, error)
+	IsGit               func(context.Context) (bool, error)
+	DebugPrompt         func(context.Context, string) (string, error)
 }
 
 type BundledCapabilityError struct{ Boundary string }
@@ -72,6 +74,26 @@ func argumentString(args *string) string {
 }
 
 func NativeExternalBundled(o BundledOptions) ([]Definition, error) {
+	definitions, err := NativeExternalBundledCatalog(o)
+	if err != nil {
+		return nil, err
+	}
+	visible := []Definition{}
+	for _, definition := range definitions {
+		enabled, err := definition.IsEnabled(nil)
+		if err != nil {
+			return nil, err
+		}
+		if enabled {
+			visible = append(visible, definition)
+		}
+	}
+	return visible, nil
+}
+
+// NativeExternalBundledCatalog is the registered, unfiltered Source base.
+// Existing API consumers retain NativeExternalBundled's visible projection.
+func NativeExternalBundledCatalog(o BundledOptions) ([]Definition, error) {
 	if o.Environment == nil {
 		return nil, fmt.Errorf("bundled Skill requires actual process environment")
 	}
@@ -116,7 +138,7 @@ func NativeExternalBundled(o BundledOptions) ([]Definition, error) {
 	}
 	// This fork has no GrowthBook client key; its keybinding release getter
 	// returns the false default. No cached value bypasses that Source gate.
-	if nativeImagegenAvailable(o.Environment) {
+	{
 		// Original Bun's .md loader renders HTML before imagegenContent parses
 		// frontmatter. Preserve that actual compiled-asset boundary.
 		var rendered bytes.Buffer
@@ -142,6 +164,13 @@ func NativeExternalBundled(o BundledOptions) ([]Definition, error) {
 		}); e != nil {
 			return nil, e
 		}
+		out[len(out)-1] = out[len(out)-1].WithNativeEnablement(func(*cooperative.Scope) (bool, error) {
+			environment := o.Environment
+			if o.EnvironmentSnapshot != nil {
+				environment = o.EnvironmentSnapshot()
+			}
+			return nativeImagegenAvailable(environment), nil
+		})
 	}
 	if e = add(bundledDeclaration("debug", "Enable debug logging for this session and help diagnose issues", []string{"Read", "Grep", "Glob"}, true, bundledField("argumentHint", "[issue description]")), func(ctx context.Context, args *string) (string, error) {
 		if o.DebugPrompt == nil {

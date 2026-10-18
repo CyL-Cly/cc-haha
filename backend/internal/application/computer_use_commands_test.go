@@ -64,6 +64,9 @@ func liveCommandOptions(t *testing.T) (Options, *computeruse.Service, *atomic.In
 }
 func TestActualIdleSessionFileSignalUpdatesRunningTerminalMenu(t *testing.T) {
 	o, service, now := liveCommandOptions(t)
+	// Construct the real mounted REPL profile before binding terminal consumers.
+	// Desktop callers below retain their separate noninteractive session profile.
+	o.Interactive = true
 	s, e := NewSession(context.Background(), o)
 	if e != nil {
 		t.Fatal(e)
@@ -79,7 +82,21 @@ func TestActualIdleSessionFileSignalUpdatesRunningTerminalMenu(t *testing.T) {
 	go func() {
 		done <- tui.Run(ctx, s, tui.Options{Input: reader, Output: &output, Environment: []string{"TERM=dumb", "TERM_PROGRAM=Apple_Terminal"}, Width: 120, Height: 24})
 	}()
-	_, _ = writer.Write([]byte("/computer"))
+	inputWritten := make(chan error, 1)
+	go func() {
+		_, err := writer.Write([]byte("/computer"))
+		inputWritten <- err
+	}()
+	select {
+	case err := <-inputWritten:
+		if err != nil {
+			t.Fatal("actual terminal input failed", err)
+		}
+	case err := <-done:
+		t.Fatal("actual terminal exited before reading command input", err)
+	case <-time.After(3 * time.Second):
+		t.Fatal("actual terminal did not read command input")
+	}
 	now.Add(4000)
 	if e := service.UpdateConfig(context.Background(), json.RawMessage(`{"enabled":true}`)); e != nil {
 		t.Fatal(e)

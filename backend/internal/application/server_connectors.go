@@ -43,7 +43,7 @@ func (r *desktopConnectorRuntime) get(ctx context.Context) (*connectors.Service,
 		return r.service, nil
 	}
 	n := r.native
-	secure, err := securestorage.New(securestorage.Options{Home: n.Home, ConfigDir: n.Environment["CLAUDE_CONFIG_DIR"], ConfigDirExplicit: n.ConfigDirExplicit, Platform: r.platform, Environment: n.Environment, RunSecurity: r.security})
+	secure, err := securestorage.New(securestorage.Options{Home: n.Home, ConfigDir: n.ConfigHomeDirectory(), ConfigDirExplicit: n.ConfigDirExplicit, Platform: r.platform, Environment: n.Environment, RunSecurity: r.security})
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (r *desktopConnectorRuntime) get(ctx context.Context) (*connectors.Service,
 	if err != nil {
 		return nil, err
 	}
-	auth, err := mcpauth.New(mcpauth.Options{Secure: secure, Home: n.Home, ConfigDir: n.Environment["CLAUDE_CONFIG_DIR"], CWD: n.CWD, Platform: r.platform, Environment: n.Environment, Settings: func(ctx context.Context) (protocol.JSONObject, error) {
+	auth, err := mcpauth.New(mcpauth.Options{Secure: secure, Home: n.Home, ConfigDir: n.ConfigHomeDirectory(), CWD: n.CWD, Platform: r.platform, Environment: n.Environment, Settings: func(ctx context.Context) (protocol.JSONObject, error) {
 		value, err := r.settings.InitialSettings()
 		if value == nil {
 			return protocol.NewJSONObject(), err

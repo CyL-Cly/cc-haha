@@ -18,12 +18,14 @@ type TeammateSession interface {
 }
 
 func (s *State) SetTeammateTasks(tasks protocol.JSONObject) {
+	defer s.commitTerminalSpinnerParent()
 	s.BackgroundTasks = tasks.Clone()
 	if s.Teammates == nil {
 		state := teamnavigation.New()
 		s.Teammates = &state
 	}
 	s.Teammates.Refresh(tasks)
+	s.selectedTerminalFooter()
 }
 func (s *State) handleTeammateKey(key Key) (bool, []action) {
 	if s.Teammates == nil {

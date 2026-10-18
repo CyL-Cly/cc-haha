@@ -1,7 +1,6 @@
 package clibootstrap
 
 import (
-	"context"
 	"encoding/json"
 	"path/filepath"
 	"strings"
@@ -25,7 +24,7 @@ func nativeAgentMemoryPrompt(owner *cooperative.Owner, n *NativeBoundary, startu
 	name = strings.ReplaceAll(name, ":", "-")
 	base := n.Environment["CLAUDE_CODE_REMOTE_MEMORY_DIR"]
 	if base == "" {
-		base = n.Environment["CLAUDE_CONFIG_DIR"]
+		base = n.nativeConfigHomePath()
 	}
 	directory, note := "", ""
 	switch memory {
@@ -63,17 +62,14 @@ func nativeAgentMemoryPrompt(owner *cooperative.Owner, n *NativeBoundary, startu
 	if err != nil {
 		return "", err
 	}
-	settings, err := startup.GetInitialSettings()
-	if err != nil || settings == nil {
-		return "", err
-	}
-	builder := systemprompt.AutoMemory{Directory: func() (string, error) { return directory, nil }, Mkdir: func(path string) error { return (mainSettingsFiles{n: n}).MkdirAll(path) }}
-	behavior, err := builder.Load(context.Background(), env, *settings)
+	_ = (mainSettingsFiles{n: n}).MkdirAll(n.nativePhysicalPath(directory))
+	builder := systemprompt.AutoMemory{}
+	behavior, err := builder.Instructions(env, directory)
 	if err != nil || behavior == nil {
 		return "", err
 	}
 	text := strings.Replace(*behavior, "# auto memory\n", "# Persistent Agent Memory\n", 1)
-	data, err := n.readFile(filepath.Join(directory, "MEMORY.md"))
+	data, err := n.readFile(n.nativePhysicalPath(filepath.Join(directory, "MEMORY.md")))
 	if err != nil || nativeAgentJSTrim(string(protocol.DecodeJavaScriptUTF8(data))) == "" {
 		return text + "\n## MEMORY.md\n\nYour MEMORY.md is currently empty. When you save new memories, they will appear here.", nil
 	}
@@ -83,4 +79,12 @@ func nativeAgentMemoryPrompt(owner *cooperative.Owner, n *NativeBoundary, startu
 		return "", err
 	}
 	return decodeNativeModel(joined)
+}
+
+func nativeAgentDefinedFalsy(value string) bool {
+	switch strings.ToLower(nativeAgentJSTrim(value)) {
+	case "0", "false", "no", "off":
+		return true
+	}
+	return false
 }

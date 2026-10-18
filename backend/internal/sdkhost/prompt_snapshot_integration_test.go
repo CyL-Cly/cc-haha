@@ -44,7 +44,7 @@ func TestActualDesktopHarnessRequestProducesReadableSystemToolsAndContextSnapsho
 		}
 	}
 	env := map[string]string{"HOME": home, "CLAUDE_CONFIG_DIR": config, "ANTHROPIC_BASE_URL": peer.URL, "ANTHROPIC_API_KEY": "fake-snapshot-key", "CLAUDE_CODE_ENTRYPOINT": "claude-desktop", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1", "CLAUDE_CODE_MAX_RETRIES": "0", "CLAUDE_CODE_DISABLE_FAST_MODE": "1", "CLAUDE_CODE_DISABLE_NONSTREAMING_FALLBACK": "1", "PATH": "/usr/bin:/bin", "TZ": "UTC", "ANTHROPIC_DEFAULT_SONNET_MODEL": "fixture-model"}
-	native, e := clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: work, Platform: "darwin", ManagedRoot: filepath.Join(root, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+	native, e := newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: work, Platform: "darwin", ManagedRoot: filepath.Join(root, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 	if e != nil {
 		t.Fatal(e)
 	}

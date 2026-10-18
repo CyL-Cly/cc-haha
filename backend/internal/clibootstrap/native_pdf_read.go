@@ -93,7 +93,7 @@ func (m *MainPrint) nativePDFMetadataMessage(scope *cooperative.Scope, data json
 	return &queryloop.Message{Record: record}, nil
 }
 func (m *NativeMCPToolContext) nativeMCPPDFDirectory() string {
-	config := m.command.Native.Environment["CLAUDE_CONFIG_DIR"]
+	config := m.command.Native.ConfigHomeDirectory()
 	if config == "" {
 		config = filepath.Join(m.command.Native.Home, ".claude")
 	}

@@ -14,6 +14,7 @@ import (
 type SessionOptions struct {
 	CanContinueRuntime            func() bool
 	OnRuntimeClosed               func(context.Context, LiveSession) error
+	OnBackgroundTaskStopped       func(string, bool) func() `json:"-"`
 	SideChat                      *SideChatLaunch
 	TeamWorker                    *teamworker.Start
 	ID, WorkDir, PermissionMode   string

@@ -91,6 +91,8 @@ describe('feature quality contract', () => {
     expect(packageJson.scripts?.['check:provider-contract']).toBe('bun run scripts/pr/run-provider-contract-tests.ts')
     expect(packageJson.scripts?.['check:chat-contract']).toBe('bun run scripts/pr/run-chat-contract-tests.ts')
     expect(packageJson.scripts?.['check:policy']).toContain('bun test ./scripts/')
+    const policyFiles = (packageJson.scripts?.['check:policy'] ?? '').split(/\s+/)
+    expect(policyFiles.filter(file => file === './scripts/pr/go-coverage-storage.test.ts')).toHaveLength(1)
     // CLI integration tests execute the native launcher. Rebuild its ignored
     // artifact first so previous generated binaries cannot hide regressions.
     expect(packageJson.scripts?.['check:server']).toBe('bun run build:cli && bun run scripts/pr/run-server-tests.ts')

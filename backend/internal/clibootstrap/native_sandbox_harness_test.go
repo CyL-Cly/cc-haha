@@ -31,6 +31,7 @@ func TestNativeSandboxActualMainPrintTerminalWrapPolicyAndShutdown(t *testing.T)
 	f.n.Environment["SHELL"] = "/bin/bash"
 	f.write(t, filepath.Join(f.config, "settings.json"), `{"sandbox":{"enabled":true,"failIfUnavailable":true,"allowUnsandboxedCommands":false,"network":{"allowedDomains":[]}},"future":{"keep":true}}`)
 	disabled := false
+	seedNativeReleaseWarmFixture(t, f, "fixture")
 	m, e := NewMainPrint(MainPrintOptions{Arguments: PrintArguments{ComputerUse: &disabled, Model: "fixture-model", MaxTurns: 100, Tools: []string{"Bash", "Read"}, Thinking: requestcontext.Thinking{Type: "disabled"}, Sources: DefaultState()}, Native: f.n, PID: os.Getpid(), Version: "fixture", Platform: "darwin", Interactive: true, Input: strings.NewReader(""), Output: io.Discard, Error: io.Discard})
 	if e != nil {
 		t.Fatal(e)
@@ -110,6 +111,7 @@ func TestNativeSandboxActualMainPrintNetworkPermissionUsesExistingOwnerFuture(t 
 	}
 	disabled := false
 	var e error
+	seedNativeReleaseWarmFixture(t, f, "fixture")
 	m, e = NewMainPrint(MainPrintOptions{Arguments: PrintArguments{ComputerUse: &disabled, Model: "fixture-model", MaxTurns: 100, Tools: []string{"Bash"}, Thinking: requestcontext.Thinking{Type: "disabled"}, Sources: DefaultState()}, Native: f.n, PID: os.Getpid(), Version: "fixture", Platform: "darwin", Interactive: true, StartSandboxNetworkPermission: resolve, Input: strings.NewReader(""), Output: io.Discard, Error: io.Discard})
 	if e != nil {
 		t.Fatal(e)

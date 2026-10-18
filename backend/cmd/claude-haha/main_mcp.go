@@ -40,11 +40,14 @@ func runNativeMCPCommand(ctx context.Context, arguments []string, parsed cliargs
 	if file, ok := output.(*os.File); ok {
 		stdoutTTY = term.IsTerminal(file.Fd())
 	}
-	command, err := clibootstrap.NewMainCommand(clibootstrap.MainCommandOptions{Arguments: arguments, Native: native, Platform: platform, Version: version, PID: os.Getpid(), NonInteractive: !stdoutTTY, Output: output, Error: diagnostics})
+	command, err := clibootstrap.NewMainCommand(clibootstrap.MainCommandOptions{Input: input, Context: ctx, Arguments: arguments, Native: native, Platform: platform, Version: version, PID: os.Getpid(), NonInteractive: !stdoutTTY, Output: output, Error: diagnostics})
 	if err != nil {
 		return 1, err
 	}
 	defer command.Close()
+	if err := command.BeginNativeAPIPreconnect(ctx); err != nil {
+		return 1, err
+	}
 	claudeAI, err := command.NewCLIClaudeAIMCP(ctx, nil)
 	if err != nil {
 		return 1, err

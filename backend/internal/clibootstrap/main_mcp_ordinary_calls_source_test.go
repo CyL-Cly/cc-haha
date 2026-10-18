@@ -22,7 +22,10 @@ func TestNativeMCPOrdinaryCallsFreshContextAndPhysicalEffectsActualSource(t *tes
 	if bun == "" {
 		t.Fatal("actual Source Bun required")
 	}
-	home := t.TempDir()
+	home, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
 	config := filepath.Join(home, ".claude")
 	if err := os.Mkdir(config, 0700); err != nil {
 		t.Fatal(err)
@@ -31,6 +34,7 @@ func TestNativeMCPOrdinaryCallsFreshContextAndPhysicalEffectsActualSource(t *tes
 		t.Fatal(err)
 	}
 	env := map[string]string{"HOME": home, "USERPROFILE": home, "CLAUDE_CONFIG_DIR": config, "TMPDIR": home, "CLAUDE_CODE_TMPDIR": home, "PATH": "/usr/bin:/bin", "DISABLE_TELEMETRY": "1", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1", "USER_TYPE": "external", "NODE_ENV": "production", "ANTHROPIC_API_KEY": "fixture-not-a-secret", "ANTHROPIC_BASE_URL": "http://127.0.0.1:1", "CLAUDE_CODE_DISABLE_FAST_MODE": "1", "ENABLE_TOOL_SEARCH": "true"}
+	env["USER"] = "owned-mcp-fixture"
 	sourcePath, _ := filepath.Abs("../../testdata/native-mcp-ordinary.fixture.ts")
 	profile, _ := filepath.Abs("../../testdata/mcp-loopback-only.sb")
 	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
@@ -162,18 +166,21 @@ func TestNativeMCPOrdinaryCallsFreshContextAndPhysicalEffectsActualSource(t *tes
 	_ = os.Remove(filepath.Join(home, "write.txt"))
 	_ = os.Remove(backgroundMarker)
 	_ = os.Remove(filepath.Join(subdir, "cwd-proof.txt"))
+	startupSource := ordinaryStartupSource(t, ctx, home, env)
 	n, err := NewProcessNativeBoundary(NativeProcessOptions{Environment: env, CWD: home, Platform: "darwin", ManagedRoot: filepath.Join(home, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 	if err != nil {
 		t.Fatal(err)
 	}
-	goSecureReads := 0
+	var goSecureReads []securestorage.Command
 	n.RunSecurity = func(_ context.Context, command securestorage.Command) ([]byte, error) {
 		if len(command.Args) == 0 || command.Args[0] != "find-generic-password" || command.Input != "" {
 			t.Error("non-readonly external store primitive attempted")
 		}
-		goSecureReads++
+		command.Args = append([]string(nil), command.Args...)
+		goSecureReads = append(goSecureReads, command)
 		return nil, os.ErrNotExist
 	}
+	bindCommandPrefetchFixture(t, n)
 	command, err := NewMainCommand(MainCommandOptions{Arguments: []string{"mcp", "serve"}, Native: n, Platform: "darwin", Version: "fixture", PID: os.Getpid(), NonInteractive: true, Output: &bytes.Buffer{}, Error: &bytes.Buffer{}})
 	if err != nil {
 		t.Fatal(err)
@@ -183,7 +190,8 @@ func TestNativeMCPOrdinaryCallsFreshContextAndPhysicalEffectsActualSource(t *tes
 	if err != nil {
 		t.Fatal(err)
 	}
-	checkOrdinarySecureReadReceipt(t, stderr.String(), goSecureReads)
+	checkOrdinaryLogicalSecureReadReceipt(t, stderr.String())
+	checkOrdinaryPhysicalSecureReadReceipt(t, startupSource, goSecureReads)
 	defer host.Close(context.Background())
 	goTaskID := ""
 	for _, row := range list {

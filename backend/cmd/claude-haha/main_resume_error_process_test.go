@@ -103,6 +103,7 @@ func resumeErrorRun(t *testing.T, cmd *exec.Cmd, holdInput bool) (int, []byte, [
 		}
 		defer input.Close()
 	}
+	capturePublicGoCoverage(t, cmd)
 	e = cmd.Run()
 	code := 0
 	if e != nil {
@@ -182,11 +183,12 @@ func TestActualSourceAndPublicCLIResumeInitializationFailures(t *testing.T) {
 	defer cancel()
 	binary := filepath.Join(root, "actual-resume-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if out, e := build.CombinedOutput(); e != nil {
 		t.Fatal(e, string(out))
 	}
 	var calls atomic.Int32
-	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	peer := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		http.Error(w, "initialization must not call a model", 500)
 	}))
@@ -276,6 +278,7 @@ func TestActualSourceAndPublicCLIResumeInitializationNormalSuccess(t *testing.T)
 	defer cancel()
 	binary := filepath.Join(root, "actual-success-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if out, e := build.CombinedOutput(); e != nil {
 		t.Fatal(e, string(out))
 	}
@@ -301,7 +304,7 @@ func TestActualSourceAndPublicCLIResumeInitializationNormalSuccess(t *testing.T)
 				return append(a, "Actual normal user instruction")
 			}
 			var calls atomic.Int32
-			peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			peer := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 				body, _ := io.ReadAll(r.Body)
 				calls.Add(1)
 				if !bytes.Contains(body, []byte("Actual normal user instruction")) || resume && (!bytes.Contains(body, []byte("old answer")) || !bytes.Contains(body, []byte(`"old"`))) {

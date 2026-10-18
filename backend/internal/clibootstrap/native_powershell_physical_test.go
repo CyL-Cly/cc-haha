@@ -28,7 +28,7 @@ func TestActualSourceAndNativeMainPrintPowerShellPhysicalCommandsAndCwd(t *testi
 	if bun == "" {
 		t.Skip("pinned Source Bun not configured")
 	}
-	const executable = "/opt/homebrew/bin/pwsh"
+	executable := physicalPowerShell(t)
 	if _, err := os.Stat(executable); err != nil {
 		t.Skip("actual PowerShell is unavailable")
 	}
@@ -50,7 +50,12 @@ func TestActualSourceAndNativeMainPrintPowerShellPhysicalCommandsAndCwd(t *testi
 	}
 	for _, kind := range []string{"interrupt", "stop", "explicit-background"} {
 		started := filepath.Join(root, "ps-"+kind+"-started")
-		command := "Write-Output 'PS_LIFECYCLE_BEFORE'; Set-Content -LiteralPath '" + started + "' -NoNewline -Value 'STARTED'; Start-Sleep -Seconds 3; Add-Content -LiteralPath '" + started + "' -NoNewline -Value '_FINISHED'; Write-Output 'PS_LIFECYCLE_AFTER'"
+		// Creating Set-Content's destination precedes its actual write. Publish
+		// the completed ready file atomically, so cancellation cannot race that
+		// write. Foreground stdout has separate rows above; a pipe read before
+		// cancellation is not a shared Source/Go delivery checkpoint.
+		staged := started + ".pending"
+		command := "Set-Content -LiteralPath '" + staged + "' -NoNewline -Value 'STARTED'; Move-Item -LiteralPath '" + staged + "' -Destination '" + started + "'; Start-Sleep -Seconds 3; Add-Content -LiteralPath '" + started + "' -NoNewline -Value '_FINISHED'; Write-Output 'PS_LIFECYCLE_AFTER'"
 		row := map[string]any{"input": map[string]any{"command": command}, "id": "ps-physical-" + kind, "joinBackground": kind != "stop"}
 		if kind == "explicit-background" {
 			row["input"].(map[string]any)["run_in_background"] = true

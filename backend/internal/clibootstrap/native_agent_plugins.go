@@ -3,28 +3,29 @@ package clibootstrap
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io/fs"
 	"path/filepath"
-	"regexp"
-	"runtime"
 	"strings"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/agentcatalog"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
+	"github.com/NanmiCoder/cc-haha/backend/internal/pluginoptions"
 	"github.com/NanmiCoder/cc-haha/backend/internal/pluginregistry"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/systemprompt"
 )
 
-var agentConfigVariable = regexp.MustCompile(`\$\{user_config\.([^}]+)\}`)
-
-func (p *NativeProcessSettings) nativePluginAgentDefinitions(owner *cooperative.Owner, scope *cooperative.Scope, n *NativeBoundary) ([]agentcatalog.Definition, error) {
+func (p *NativeProcessSettings) nativePluginAgentDefinitions(owner *cooperative.Owner, scope *cooperative.Scope, n *NativeBoundary, options *pluginoptions.Service) ([]agentcatalog.Definition, error) {
 	if !scope.BelongsTo(owner) {
 		return nil, cooperative.ErrRestricted
 	}
 	plugins, err := p.LoadPlugins(context.Background(), "", false)
 	if err != nil {
 		return nil, err
+	}
+	if len(plugins.Enabled) == 0 {
+		return []agentcatalog.Definition{}, nil
 	}
 	settings, err := p.startup.GetInitialSettings()
 	if err != nil || settings == nil {
@@ -59,10 +60,14 @@ func (p *NativeProcessSettings) nativePluginAgentDefinitions(owner *cooperative.
 				if err != nil {
 					return nil
 				}
-				definition, err := agentcatalog.PluginDefinition(path, plugin.Name, plugin.Source, namespace, data, memory, func(body string) (string, error) {
-					return nativeAgentPluginSubstitute(n, plugin, *settings, body)
+				definition, err := agentcatalog.PluginDefinitionJSON(path, plugin.Name, plugin.Source, namespace, data, memory, func(body json.RawMessage) (json.RawMessage, error) {
+					return nativeAgentPluginSubstituteJSON(n, plugin, options, p.platform, body)
 				})
 				if err != nil {
+					var unavailable *MainCapabilityError
+					if errors.As(err, &unavailable) {
+						return err
+					}
 					return nil // Source logs and skips a malformed individual plugin Agent.
 				}
 				out = append(out, *definition)
@@ -102,46 +107,37 @@ func (p *NativeProcessSettings) nativePluginAgentDefinitions(owner *cooperative.
 	return out, nil
 }
 
-func nativeAgentPluginSubstitute(n *NativeBoundary, plugin pluginregistry.Loaded, settings protocol.JSONObject, body string) (string, error) {
+func nativeAgentPluginSubstituteJSON(n *NativeBoundary, plugin pluginregistry.Loaded, options *pluginoptions.Service, platform string, body json.RawMessage) (json.RawMessage, error) {
 	normalize := func(path string) string {
-		if runtime.GOOS == "windows" {
+		if platform == "windows" || platform == "win32" {
 			return strings.ReplaceAll(path, "\\", "/")
 		}
 		return path
 	}
-	body = strings.ReplaceAll(body, "${CLAUDE_PLUGIN_ROOT}", normalize(plugin.Path))
-	if strings.Contains(body, "${CLAUDE_PLUGIN_DATA}") && plugin.Source != "" {
-		path, err := nativePluginDataDirectory(n, context.Background(), plugin.Source)
-		if err != nil {
-			return "", err
-		}
-		body = strings.ReplaceAll(body, "${CLAUDE_PLUGIN_DATA}", normalize(path))
+	body, err := protocol.ReplaceJavaScriptLiteralJSON(body, "${CLAUDE_PLUGIN_ROOT}", func() (json.RawMessage, error) { return quoteMain(normalize(plugin.Path)), nil })
+	if err != nil {
+		return nil, err
 	}
-	var schema, configured, config, values protocol.JSONObject
-	_ = schema.UnmarshalJSON(plugin.Manifest.Get("userConfig"))
-	_ = configured.UnmarshalJSON(settings.Get("pluginConfigs"))
-	_ = config.UnmarshalJSON(configured.Get(plugin.Source))
-	_ = values.UnmarshalJSON(config.Get("options"))
-	if schema.IsObject() {
-		body = agentConfigVariable.ReplaceAllStringFunc(body, func(match string) string {
-			key := agentConfigVariable.FindStringSubmatch(match)[1]
-			var declaration protocol.JSONObject
-			_ = declaration.UnmarshalJSON(schema.Get(key))
-			if string(declaration.Get("sensitive")) == "true" {
-				return "[sensitive option '" + key + "' not available in skill content]"
-			}
-			value := values.Get(key)
-			if value == nil {
-				return match
-			}
-			text, err := protocol.JavaScriptStringJSON(value)
-			if err != nil {
-				return match
-			}
-			var decoded string
-			_ = json.Unmarshal(text, &decoded)
-			return decoded
+	if plugin.Source != "" {
+		body, err = protocol.ReplaceJavaScriptLiteralJSON(body, "${CLAUDE_PLUGIN_DATA}", func() (json.RawMessage, error) {
+			path, err := nativePluginDataDirectory(n, context.Background(), plugin.Source)
+			return quoteMain(normalize(path)), err
 		})
+		if err != nil {
+			return nil, err
+		}
+	}
+	var schema protocol.JSONObject
+	_ = schema.UnmarshalJSON(plugin.Manifest.Get("userConfig"))
+	if schema.IsObject() {
+		if options == nil {
+			return nil, mainCap("plugin Agent shared saved options producer")
+		}
+		values, err := options.Load(context.Background(), plugin.Source)
+		if err != nil {
+			return nil, err
+		}
+		return pluginoptions.SubstituteUserConfigInContentJSON(body, values, schema)
 	}
 	return body, nil
 }

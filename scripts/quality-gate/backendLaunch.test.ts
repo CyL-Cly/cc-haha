@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test } from 'bun:test'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:net'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, isAbsolute, join } from 'node:path'
 import { createQualityGateSandbox, type QualityGateSandbox } from './sandbox'
 import { BACKEND_TARGET_ENV, resolveBackendLaunchTarget, spawnBackendServer, type BackendLaunchTarget, type BackendServer } from './backendLaunch'
 
@@ -71,6 +71,13 @@ writeFileSync(process.env.FIXTURE_CAPTURE, JSON.stringify({
   cli: process.env.CLAUDE_CLI_PATH, shell: process.env.CC_HAHA_DISABLE_TERMINAL_SHELL_ENV,
   ambientSecret: process.env.ANTHROPIC_API_KEY, port: process.env.SERVER_PORT,
   custom: process.env.FIXTURE_CUSTOM,
+  credentialScope: process.env.FIXTURE_CAPTURE_CREDENTIAL_SCOPE ? {
+    root: process.env.CC_HAHA_ELECTRON_SMOKE_STATE_ROOT,
+    log: process.env.CC_HAHA_ELECTRON_WINDOW_SMOKE_LOG,
+    keys: Object.keys(process.env).filter(name => [
+      'CC_HAHA_ELECTRON_SMOKE_STATE_ROOT', 'CC_HAHA_ELECTRON_WINDOW_SMOKE_LOG',
+    ].includes(name.toUpperCase())).sort(),
+  } : undefined,
   workerPid,
 }))
 console.log('fixture stdout')
@@ -148,7 +155,7 @@ describe('backend target selection and sandbox boundary', () => {
 
   test('does not let a target replace guarded paths, shell isolation, or the mock SDK CLI', () => {
     const { rootDir, sandbox } = setup()
-    for (const name of ['HOME', 'home', 'CLAUDE_CONFIG_DIR', 'APPDATA', 'XDG_CONFIG_HOME', 'CODEX_HOME', 'TMPDIR', 'BUN_OPTIONS', 'CLAUDE_CLI_PATH', 'CC_HAHA_DISABLE_TERMINAL_SHELL_ENV', 'MOCK_SDK_TEAM_WORKER_AUDIT', 'SERVER_PORT']) {
+    for (const name of ['HOME', 'home', 'CLAUDE_CONFIG_DIR', 'APPDATA', 'XDG_CONFIG_HOME', 'CODEX_HOME', 'TMPDIR', 'BUN_OPTIONS', 'CLAUDE_CLI_PATH', 'CC_HAHA_DISABLE_TERMINAL_SHELL_ENV', 'MOCK_SDK_TEAM_WORKER_AUDIT', 'SERVER_PORT', 'CC_HAHA_ELECTRON_SMOKE_STATE_ROOT', 'cc_haha_electron_smoke_state_root', 'CC_HAHA_ELECTRON_WINDOW_SMOKE_LOG']) {
       const target = fixtureTarget(rootDir, sandbox, { [name]: '/outside-the-sandbox' })
       expect(() => resolveBackendLaunchTarget(rootDir, target)).toThrow('cannot override sandbox')
     }
@@ -170,6 +177,69 @@ describe('backend target selection and sandbox boundary', () => {
 })
 
 describe('actual backend process lifecycle', () => {
+  test('binds a Go child to its actual private credential scope without relying on provider credentials', async () => {
+    const { rootDir, sandbox } = setup()
+    const target = fixtureTarget(rootDir, sandbox, { FIXTURE_CAPTURE_CREDENTIAL_SCOPE: '1' })
+    const server = launch({ rootDir, port: await freePort(), sandbox, target })
+    await server.waitUntilHealthy(5_000)
+    const { credentialScope } = JSON.parse(readFileSync(join(sandbox.home, 'capture.json'), 'utf8'))
+    expect(credentialScope.root).toBe(realpathSync(sandbox.home))
+    expect(isAbsolute(credentialScope.log)).toBe(true)
+    expect(dirname(credentialScope.log)).toBe(realpathSync(sandbox.home))
+    expect(credentialScope.keys).toEqual([
+      'CC_HAHA_ELECTRON_SMOKE_STATE_ROOT', 'CC_HAHA_ELECTRON_WINDOW_SMOKE_LOG',
+    ])
+    expect(sandbox.env.CC_HAHA_ELECTRON_SMOKE_STATE_ROOT).toBeUndefined()
+    expect(sandbox.env.CC_HAHA_ELECTRON_WINDOW_SMOKE_LOG).toBeUndefined()
+    await server.stop(1_000)
+    expect(sandbox.detectUserStateMutations()).toEqual([])
+  })
+
+  test('rejects supplied credential redirects and derives Go scope even when sandbox overrides contain them', async () => {
+    const { rootDir, sandbox } = setup()
+    const rootKey = 'CC_HAHA_ELECTRON_SMOKE_STATE_ROOT'
+    const logKey = 'CC_HAHA_ELECTRON_WINDOW_SMOKE_LOG'
+    const previous = { [rootKey]: process.env[rootKey], [logKey]: process.env[logKey] }
+    const target = fixtureTarget(rootDir, sandbox, { FIXTURE_CAPTURE_CREDENTIAL_SCOPE: '1' })
+    const port = await freePort()
+    const rejected = { ...sandbox.env, [rootKey]: join(rootDir, 'supplied-root'), [logKey]: join(rootDir, 'supplied-log') }
+    expect(() => launch({ rootDir, port, sandbox, env: rejected, target })).toThrow('cannot change sandbox variable')
+    expect(existsSync(join(sandbox.home, 'capture.json'))).toBe(false)
+    // A caller can construct sandbox.env through envOverrides. Matching those
+    // values is not authority to select a different OS credential root.
+    Object.assign(sandbox.env, {
+      [rootKey]: join(rootDir, 'sandbox-override-root'),
+      [logKey]: join(rootDir, 'sandbox-override-log'),
+      [rootKey.toLowerCase()]: join(rootDir, 'lowercase-sandbox-root'),
+      [logKey.toLowerCase()]: join(rootDir, 'lowercase-sandbox-log'),
+    })
+    const supplied = { ...sandbox.env }
+    const targetBefore = { ...target.env }
+    const suppliedBefore = { ...supplied }
+    try {
+      process.env[rootKey] = join(rootDir, 'ambient-root')
+      process.env[logKey] = join(rootDir, 'ambient-log')
+      const server = launch({ rootDir, port, sandbox, env: supplied, target })
+      await server.waitUntilHealthy(5_000)
+      const { credentialScope } = JSON.parse(readFileSync(join(sandbox.home, 'capture.json'), 'utf8'))
+      expect(credentialScope.root).toBe(realpathSync(sandbox.home))
+      expect(isAbsolute(credentialScope.log)).toBe(true)
+      expect(dirname(credentialScope.log)).toBe(realpathSync(sandbox.home))
+      expect(credentialScope.keys).toEqual([rootKey, logKey])
+      expect(supplied).toEqual(suppliedBefore)
+      expect(target.env).toEqual(targetBefore)
+      expect(process.env[rootKey]).toBe(join(rootDir, 'ambient-root'))
+      expect(process.env[logKey]).toBe(join(rootDir, 'ambient-log'))
+      await server.stop(1_000)
+    } finally {
+      for (const [name, value] of Object.entries(previous)) {
+        if (value === undefined) delete process.env[name]
+        else process.env[name] = value
+      }
+    }
+    expect(sandbox.detectUserStateMutations()).toEqual([])
+  })
+
   test('passes the selected args/cwd and sandbox environment, polls health, captures both logs, and shuts down', async () => {
     const { rootDir, sandbox } = setup()
     const target = fixtureTarget(rootDir, sandbox, { FIXTURE_CUSTOM: 'selected', FIXTURE_HEALTH_DELAY_MS: '150' })
@@ -204,11 +274,13 @@ describe('actual backend process lifecycle', () => {
     writeFileSync(entry, FIXTURE)
     sandbox.env.FIXTURE_CAPTURE = join(sandbox.home, 'default.json')
     sandbox.env.FIXTURE_SHUTDOWN = join(sandbox.home, 'shutdown.txt')
+    sandbox.env.FIXTURE_CAPTURE_CREDENTIAL_SCOPE = '1'
     const target = resolveBackendLaunchTarget(rootDir, undefined, {})
     const server = launch({ rootDir, port: await freePort(), sandbox, target })
     await server.waitUntilHealthy(5_000)
     expect(server.target.kind).toBe('typescript')
     expect(existsSync(join(sandbox.home, 'default.json'))).toBe(true)
+    expect(JSON.parse(readFileSync(join(sandbox.home, 'default.json'), 'utf8')).credentialScope).toEqual({ keys: [] })
   })
 
   test('fails promptly on a selected backend exit and never launches the default backend', async () => {

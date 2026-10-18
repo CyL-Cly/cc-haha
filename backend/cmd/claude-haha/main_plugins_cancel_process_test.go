@@ -31,6 +31,7 @@ func TestPublicPluginProgressSIGTERMClosesOwnedHTTPAndRestarts(t *testing.T) {
 	defer cancel()
 	binary := filepath.Join(root, "public-go-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-mod=readonly", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if data, err := build.CombinedOutput(); err != nil {
 		t.Fatal(err, string(data))
 	}
@@ -57,6 +58,7 @@ func TestPublicPluginProgressSIGTERMClosesOwnedHTTPAndRestarts(t *testing.T) {
 	}
 	var originalDiagnostics bytes.Buffer
 	original.Stderr = &originalDiagnostics
+	capturePublicGoCoverage(t, original)
 	if e = original.Start(); e != nil {
 		t.Fatal(e)
 	}
@@ -114,6 +116,7 @@ func TestPublicPluginProgressSIGTERMClosesOwnedHTTPAndRestarts(t *testing.T) {
 	}
 	var diagnostics bytes.Buffer
 	process.Stderr = &diagnostics
+	capturePublicGoCoverage(t, process)
 	if err = process.Start(); err != nil {
 		t.Fatal(err)
 	}
@@ -185,6 +188,7 @@ func TestPublicPluginProgressSIGTERMClosesOwnedHTTPAndRestarts(t *testing.T) {
 	restart := exec.CommandContext(ctx, binary, "plugin", "marketplace", "list", "--json")
 	restart.Dir = home
 	restart.Env = env
+	capturePublicGoCoverage(t, restart)
 	data, err := restart.Output()
 	if err != nil || string(data) != "[]\n" {
 		t.Fatal("fresh CLI restart", err, string(data))

@@ -121,6 +121,9 @@ func TestActualSourceInteractiveMainPrintTaskTodoAndNotebookCheckpointProfile(t 
 			defer peer.Close()
 			f.n.Environment["ANTHROPIC_BASE_URL"] = peer.URL
 			disabled := false
+			if row.Interactive {
+				seedNativeReleaseWarmFixture(t, f, "fixture")
+			}
 			m, e := NewMainPrint(MainPrintOptions{Interactive: row.Interactive, Arguments: PrintArguments{ComputerUse: &disabled, Model: "fixture-model", SystemPrompt: "private interactive profile", Tools: []string{"Read", "TaskCreate", "TodoWrite", "NotebookEdit"}, MaxTurns: 8, PermissionMode: "bypassPermissions", Thinking: requestcontext.Thinking{Type: "disabled"}, Sources: DefaultState()}, Native: f.n, PID: os.Getpid(), Version: "fixture", Platform: runtime.GOOS, Input: bytes.NewReader(nil), Output: io.Discard, Error: io.Discard})
 			if e != nil {
 				t.Fatal(e)

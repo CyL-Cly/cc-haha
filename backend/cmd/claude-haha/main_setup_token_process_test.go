@@ -36,6 +36,7 @@ func TestPublicSetupTokenInferenceSecretRemainsOnTerminalWithoutStoredLogin(t *t
 	defer cancel()
 	binary := filepath.Join(root, "go-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if raw, e := build.CombinedOutput(); e != nil {
 		t.Fatal(e, string(raw))
 	}
@@ -72,6 +73,7 @@ func TestPublicSetupTokenInferenceSecretRemainsOnTerminalWithoutStoredLogin(t *t
 	var out, stderr bytes.Buffer
 	cmd.Stdout = &out
 	cmd.Stderr = &stderr
+	capturePublicGoCoverage(t, cmd)
 	if e = cmd.Run(); e != nil {
 		t.Fatal("public setup-token", e, stderr.String(), out.String())
 	}

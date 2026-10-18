@@ -41,6 +41,7 @@ func TestPublicMCPCLIActualPrivateStdioHandshakeAndImportPTY(t *testing.T) {
 	defer cancel()
 	binary := filepath.Join(root, "go-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	log, err := build.CombinedOutput()
 	if err != nil {
 		t.Fatal(err, string(log))
@@ -55,6 +56,7 @@ func TestPublicMCPCLIActualPrivateStdioHandshakeAndImportPTY(t *testing.T) {
 		cmd.Stdout = &out
 		cmd.Stderr = &diagnostics
 		code := 0
+		capturePublicGoCoverage(t, cmd)
 		if err := cmd.Run(); err != nil {
 			var exit *exec.ExitError
 			if !errors.As(err, &exit) {
@@ -144,6 +146,7 @@ os.close(journal);os.close(wake_read);os.close(wake_write)
 	sourceTTY, _ := filepath.Abs("../../../scripts/quality-gate/go-parity/native-cli-mcp-secret-tty.fixture.ts")
 	driver := exec.CommandContext(ctx, python, "testdata/mcp_import_pty.py", binary, root, work, bun, sourceTTY)
 	driver.Env = env
+	capturePublicGoCoverage(t, driver)
 	log, err = driver.CombinedOutput()
 	if err != nil {
 		t.Fatal("actual public MCP import PTY", err, string(log))

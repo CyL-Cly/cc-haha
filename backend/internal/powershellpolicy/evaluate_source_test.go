@@ -9,11 +9,16 @@ import (
 )
 
 func TestActualSourcePowerShellCompoundApprovalPrecedenceAndPathDecisions(t *testing.T) {
-	executable := "/opt/homebrew/bin/pwsh"
+	executable := physicalPowerShell(t)
 	if _, err := os.Stat(executable); err != nil {
 		t.Skip("real native PowerShell AST host required")
 	}
-	home := t.TempDir()
+	// Both actual processes must observe the same canonical cwd namespace on
+	// macOS, where /var aliases /private/var. Keep path containment unchanged.
+	home, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
 	work := filepath.Join(home, "work")
 	if err := os.MkdirAll(filepath.Join(work, ".git"), 0700); err != nil {
 		t.Fatal(err)

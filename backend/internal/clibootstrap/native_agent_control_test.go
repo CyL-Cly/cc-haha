@@ -48,8 +48,9 @@ func TestActualCLIStreamsAgentMessageControlWhileIndependentAgentIsRunning(t *te
 		emitPlanFixture(w, int(n), "", "REAL_STDIN_AGENT_DELIVERED_C7A2")
 	}))
 	defer peer.Close()
-	m := backgroundAgentMain(t, peer.URL)
-	m.options.Native.Environment["CLAUDE_CODE_DISABLE_ATTACHMENTS"] = "0"
+	m := backgroundAgentMainWithSetup(t, peer.URL, func(n *NativeBoundary) {
+		n.Environment["CLAUDE_CODE_DISABLE_ATTACHMENTS"] = "0"
+	})
 	input, write := io.Pipe()
 	m.options.Input = input
 	t.Cleanup(func() { _ = input.Close(); _ = write.Close() })

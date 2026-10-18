@@ -21,8 +21,13 @@ func normalize(units []uint16) ([]uint16, error) {
 	}
 	out := []uint16{}
 	segment := []uint16{}
+	var normalizationError error
 	flush := func() {
-		text := table.nfkc(utf16.Decode(segment))
+		text, err := platformNFKC(segment, table)
+		if err != nil {
+			normalizationError = err
+			return
+		}
 		segment = nil
 		for _, r := range text {
 			if table.allowed[r] {
@@ -45,6 +50,9 @@ func normalize(units []uint16) ([]uint16, error) {
 		segment = append(segment, c)
 	}
 	flush()
+	if normalizationError != nil {
+		return nil, normalizationError
+	}
 	return out, nil
 }
 func PartiallySanitize(value json.RawMessage) (json.RawMessage, error) {

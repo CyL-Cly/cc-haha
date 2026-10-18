@@ -86,7 +86,9 @@ func TestNativeModelFastStatusActualSourceAxiosAuthConcurrentMemoCacheAndLateClo
 			}))
 			defer peer.Close()
 			cert := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: peer.Certificate().Raw})
-			global := map[string]any{"future": true}
+			// This comparison starts at the fast-status consumer, after main's
+			// sync migrations. Select that same persisted branch on both sides.
+			global := map[string]any{"future": true, "migrationVersion": 11}
 			if name == "same-enabled" || name == "http-failure-positive-cache" || name == "disable" {
 				global["penguinModeOrgEnabled"] = true
 			}
@@ -154,6 +156,7 @@ func TestNativeModelFastStatusActualSourceAxiosAuthConcurrentMemoCacheAndLateClo
 			config, _ := desktopoauth.ResolveConfig(env)
 			config.BaseAPIURL = peer.URL
 			config.TokenURL = peer.URL + "/v1/oauth/token"
+			seedNativeReleaseWarmFixture(t, f, "999.0.0-fixture")
 			m, e := NewMainPrint(MainPrintOptions{Arguments: PrintArguments{Sources: DefaultState(), Model: "opus", Tools: []string{"Read"}, MaxTurns: 8, PermissionMode: "default", SessionID: "6d3e6d33-73fb-4715-a6fc-17452e0cff4d", SystemPrompt: "owned fast Source consumer"}, Native: f.n, NativeModelFastConfig: &config, PID: os.Getpid(), Interactive: true, Platform: "darwin", Version: "999.0.0-fixture", Input: strings.NewReader(""), Output: io.Discard, Error: io.Discard, OnNativeFastModeNotification: func(value protocol.JSONObject) error { notices = append(notices, value.Clone()); return nil }})
 			if e != nil {
 				t.Fatal(e)

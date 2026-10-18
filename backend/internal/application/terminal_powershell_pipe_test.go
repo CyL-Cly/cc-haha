@@ -52,7 +52,7 @@ func (s *powerShellPipeSession) Submit(ctx context.Context, input tui.Input, emi
 }
 
 func TestActualInteractiveTUIKeysPowerShellRememberPersistenceAndSecondTurn(t *testing.T) {
-	executable := "/opt/homebrew/bin/pwsh"
+	executable := physicalPowerShell(t)
 	if _, err := os.Stat(executable); err != nil {
 		t.Skip("physical native PowerShell required")
 	}

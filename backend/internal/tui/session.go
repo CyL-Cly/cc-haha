@@ -11,8 +11,11 @@ import (
 // Input is a terminal submission. TurnID is a host correlation token only; it
 // must never replace an Agent message UUID or be added to model-visible input.
 type Input struct {
-	TurnID string
-	Text   string
+	// TextJSON preserves original UTF-16 code units from native Vim editing.
+	// It is optional presentation input and must be a JSON string.
+	TextJSON json.RawMessage
+	TurnID   string
+	Text     string
 	// PreExpansionText is the original editable display, including paste pills.
 	// Text is the Source handlePromptSubmit finalInput, expanded exactly once.
 	PreExpansionText        string
@@ -40,6 +43,7 @@ type PermissionDecision struct {
 // PermissionRequest retains the original payload so host-specific approval
 // choices can be rendered without constructing a second permission policy.
 type PermissionRequest struct {
+	IDEName        string
 	Title          string
 	DisplayOnly    bool
 	ID             string
@@ -47,6 +51,7 @@ type PermissionRequest struct {
 	Description    string
 	Input          json.RawMessage
 	Payload        json.RawMessage
+	Debug          *PermissionDebugData `json:"-"`
 	Choices        []PermissionChoice
 	PermissionMode string
 }
@@ -64,64 +69,94 @@ type PermissionChoice struct {
 type EventKind string
 
 const (
-	TextDelta              EventKind = "text_delta"
-	ThinkingDelta          EventKind = "thinking_delta"
-	ToolStarted            EventKind = "tool_started"
-	ToolProgress           EventKind = "tool_progress"
-	ToolFinished           EventKind = "tool_finished"
-	BashProgress           EventKind = "bash_progress"
-	BashFinished           EventKind = "bash_finished"
-	PermissionAsked        EventKind = "permission_asked"
-	PermissionClosed       EventKind = "permission_closed"
-	Notice                 EventKind = "notice"
-	PermissionModeChanged  EventKind = "permission_mode_changed"
-	TurnFinished           EventKind = "turn_finished"
-	TurnFailed             EventKind = "turn_failed"
-	ModelPickerOpened      EventKind = "model_picker_opened"
-	ModelPickerClosed      EventKind = "model_picker_closed"
-	DoctorOpened           EventKind = "doctor_opened"
-	IDEPickerOpened        EventKind = "ide_picker_opened"
-	CommandsChanged        EventKind = "commands_changed"
-	ThinkingPickerOpened   EventKind = "thinking_picker_opened"
-	ThinkingPickerClosed   EventKind = "thinking_picker_closed"
-	LocalUserMessages      EventKind = "local_user_messages"
-	LocalProcessedMessages EventKind = "local_processed_messages"
-	LocalCommandOutput     EventKind = "local_command_output"
-	MemorySaved            EventKind = "memory_saved"
-	TeammateInboxChanged   EventKind = "teammate_inbox_changed"
-	TeammateMessages       EventKind = "teammate_messages"
-	TeammateTurnStarted    EventKind = "teammate_turn_started"
-	TeammateTurnFinished   EventKind = "teammate_turn_finished"
+	PermissionUpdated              EventKind = "permission_updated"
+	TextDelta                      EventKind = "text_delta"
+	ThinkingDelta                  EventKind = "thinking_delta"
+	ToolStarted                    EventKind = "tool_started"
+	ToolProgress                   EventKind = "tool_progress"
+	ToolFinished                   EventKind = "tool_finished"
+	BashProgress                   EventKind = "bash_progress"
+	BashFinished                   EventKind = "bash_finished"
+	PermissionAsked                EventKind = "permission_asked"
+	PermissionClosed               EventKind = "permission_closed"
+	Notice                         EventKind = "notice"
+	PermissionModeChanged          EventKind = "permission_mode_changed"
+	TurnFinished                   EventKind = "turn_finished"
+	TurnFailed                     EventKind = "turn_failed"
+	ModelPickerOpened              EventKind = "model_picker_opened"
+	ModelPickerClosed              EventKind = "model_picker_closed"
+	DoctorOpened                   EventKind = "doctor_opened"
+	IDEPickerOpened                EventKind = "ide_picker_opened"
+	CommandsChanged                EventKind = "commands_changed"
+	ThinkingPickerOpened           EventKind = "thinking_picker_opened"
+	ThinkingPickerClosed           EventKind = "thinking_picker_closed"
+	LocalUserMessages              EventKind = "local_user_messages"
+	LocalProcessedMessages         EventKind = "local_processed_messages"
+	LocalCommandOutput             EventKind = "local_command_output"
+	MemorySaved                    EventKind = "memory_saved"
+	TeammateInboxChanged           EventKind = "teammate_inbox_changed"
+	TeammateMessages               EventKind = "teammate_messages"
+	TeammateTurnStarted            EventKind = "teammate_turn_started"
+	TeammateTurnFinished           EventKind = "teammate_turn_finished"
+	ContextUsageGenerated          EventKind = "context_usage_generated"
+	LocalPanelOpened               EventKind = "local_panel_opened"
+	LocalPanelRefreshed            EventKind = "local_panel_refreshed"
+	LocalPanelClosed               EventKind = "local_panel_closed"
+	TerminalUpdateChanged          EventKind = "terminal_update_changed"
+	TerminalPRStatusChanged        EventKind = "terminal_pr_status_changed"
+	TaskItemsChanged               EventKind = "task_items_changed"
+	TerminalPreferencesChanged     EventKind = "terminal_preferences_changed"
+	WorkflowKeywordChanged         EventKind = "workflow_keyword_changed"
+	ClipboardTextRequested         EventKind = "clipboard_text_requested"
+	FileEditorRequested            EventKind = "file_editor_requested"
+	MessageSelectorOpened          EventKind = "message_selector_opened"
+	SessionPresentationChanged     EventKind = "session_presentation_changed"
+	ConversationCleared            EventKind = "conversation_cleared"
+	ConversationResumed            EventKind = "conversation_resumed"
+	TerminalImmediateNotice        EventKind = "terminal_immediate_notice"
+	TerminalBuddyChanged           EventKind = "terminal_buddy_changed"
+	TerminalRemoteStateChanged     EventKind = "terminal_remote_state_changed"
+	TerminalSpinnerProgressChanged EventKind = "terminal_spinner_progress_changed"
 )
 
 type Event struct {
-	Redacted       bool
-	Background     bool
-	TurnID         string
-	Kind           EventKind
-	Text           string
-	ToolID         string
-	ToolName       string
-	Input          json.RawMessage
-	Result         json.RawMessage
-	IsError        bool
-	Output         json.RawMessage
-	Permission     *PermissionRequest
-	Cancelled      bool
-	Err            error
-	ModelPicker    *ModelPicker
-	IDEPicker      *IDEPicker
-	Commands       []Completion
-	ThinkingPicker *ThinkingPicker
-	NoticeTimeout  time.Duration
-	PermissionMode string
-	UserMessages   []string
-	LocalMessages  []LocalProcessedMessage
+	TeammateOrigin     TeammateMessageOrigin    `json:"-"`
+	Spinner            *TerminalSpinnerProgress `json:"-"`
+	MessageSelector    *MessageSelectorSnapshot `json:"-"`
+	FileEditor         *FileEditorRequest       `json:"-"`
+	RemoteState        *TerminalRemoteState
+	ClipboardTextReply chan error `json:"-"`
+	Preferences        *TerminalPreferences
+	Enabled            bool
+	LocalPanel         *LocalPanel
+	Redacted           bool
+	Background         bool
+	TurnID             string
+	Kind               EventKind
+	Text               string
+	ToolID             string
+	ToolName           string
+	Input              json.RawMessage
+	Result             json.RawMessage
+	IsError            bool
+	Output             json.RawMessage
+	Permission         *PermissionRequest
+	Cancelled          bool
+	Err                error
+	ModelPicker        *ModelPicker
+	IDEPicker          *IDEPicker
+	Commands           []Completion
+	ThinkingPicker     *ThinkingPicker
+	NoticeTimeout      time.Duration
+	PermissionMode     string
+	UserMessages       []string
+	LocalMessages      []LocalProcessedMessage
 }
 
 // These are internal presentation values from the shared processUserInput
 // consumer. They are never a second SDK/API message or model result.
 type LocalProcessedMessage struct {
+	Subtype           string `json:"-"`
 	Kind, Text, Level string
 }
 
@@ -149,6 +184,20 @@ type ActionSession interface {
 type CommandSource interface {
 	SubscribeCommands(func([]Completion)) ([]Completion, func())
 }
+
+// KeybindingSource resolves the trusted customization gate and owns the actual
+// configuration watcher. The terminal only consumes immutable binding sets.
+type KeybindingSource interface {
+	SubscribeKeybindings(context.Context, func([]Keybinding)) ([]Keybinding, func(), error)
+}
+
+type TerminalPresentationSource interface {
+	TerminalPresentation(context.Context) (json.RawMessage, error)
+}
+
+// The actual terminal actor publishes whether a local JSX dialog owns input.
+// Native idle queue jobs consume this detached state instead of reading UI state.
+type LocalUIStateSession interface{ SetTerminalLocalUIActive(bool) }
 
 type Completion struct {
 	Hidden            bool

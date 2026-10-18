@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import { currentPackageSmokeArch, currentPackageSmokePlatform, currentReleaseArtifactsDir, lanesForMode } from './modes'
 import { renderJUnitReport, renderMarkdownReport } from './reporter'
 import { runQualityGate, runQualityGateLanes } from './runner'
+import { readScopeExclusions, scopeEnvironment, validateScopeExclusions } from './scope-exclusions'
 import type { LaneDefinition, QualityGateReport } from './types'
 
 describe('quality gate modes', () => {
@@ -693,5 +694,47 @@ describe('renderMarkdownReport', () => {
     expect(junit).toContain('failures="1"')
     expect(junit).toContain('API &lt;error&gt;')
     expect(junit).toContain('/tmp/provider.log')
+  })
+})
+
+
+describe('explicit Computer Use scope exclusion', () => {
+  test('accepts only the exact opt-in and leaves default child environments unchanged', () => {
+    expect(readScopeExclusions({})).toEqual([])
+    expect(readScopeExclusions({ CC_HAHA_SCOPE_EXCLUSIONS: 'computer-use' })).toEqual(['computer-use'])
+    for (const value of ['', 'native', 'computer-use,go', ' computer-use', '["computer-use"]']) {
+      expect(() => readScopeExclusions({ CC_HAHA_SCOPE_EXCLUSIONS: value })).toThrow('must be exactly')
+    }
+    expect(() => validateScopeExclusions(['computer-use', 'computer-use'])).toThrow('Only the exact')
+    expect(() => validateScopeExclusions(['go'] as never)).toThrow('Only the exact')
+    expect(scopeEnvironment({ HOME: '/fixture/home', CC_HAHA_SCOPE_EXCLUSIONS: 'computer-use' }, []))
+      .toEqual({ HOME: '/fixture/home' })
+    expect(scopeEnvironment({ HOME: '/fixture/home' }, ['computer-use']))
+      .toEqual({ HOME: '/fixture/home', CC_HAHA_SCOPE_EXCLUSIONS: 'computer-use' })
+  })
+
+  test('keeps every lane and exact command while recording only the native exclusion', async () => {
+    const artifactsDir = mkdtempSync(join(tmpdir(), 'quality-gate-scope-test-'))
+    const lanes = lanesForMode('pr')
+    const observed: string[] = []
+    try {
+      const { report } = await runQualityGateLanes({
+        mode: 'pr', dryRun: false, allowLive: false, baselineTargets: [], rootDir: process.cwd(),
+        artifactsDir, runId: 'explicit-scope', scopeExclusions: ['computer-use'],
+      }, lanes, async (lane, options) => {
+        observed.push(lane.id)
+        expect(options.scopeExclusions).toEqual(['computer-use'])
+        return { id: lane.id, title: lane.title, command: lane.command, status: 'passed', exitCode: 0, durationMs: 1 }
+      })
+      expect(observed).toEqual(lanes.map(lane => lane.id))
+      expect(report.results.map(lane => lane.command)).toEqual(lanes.map(lane => lane.command))
+      expect(report.scopeExclusions).toEqual(['computer-use'])
+      expect(report.results.find(lane => lane.id === 'native-checks')?.scopeExclusions).toEqual(['computer-use'])
+      expect(report.results.filter(lane => lane.id !== 'native-checks').every(lane => lane.scopeExclusions === undefined)).toBe(true)
+      expect(report.summary).toEqual({ passed: lanes.length, failed: 0, skipped: 0 })
+      expect(renderMarkdownReport(report)).toContain('User-requested scope exclusions: computer-use')
+    } finally {
+      rmSync(artifactsDir, { recursive: true, force: true })
+    }
   })
 })

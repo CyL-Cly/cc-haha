@@ -196,6 +196,10 @@ func NewNative(configDir, cwd, platform string, environment map[string]string, p
 
 // exec.Cmd's LookPath reads the host process's PATH before Cmd.Env is set.
 // Resolve from the same immutable environment used by the actual child.
+func ResolveNativeExecutable(name, cwd string, env map[string]string) (string, error) {
+	return nativeExecutable(name, cwd, env)
+}
+
 func nativeExecutable(name, cwd string, env map[string]string) (string, error) {
 	if filepath.IsAbs(name) || strings.ContainsAny(name, `/\`) {
 		if !filepath.IsAbs(name) {

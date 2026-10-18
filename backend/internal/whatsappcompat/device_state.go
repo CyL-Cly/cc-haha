@@ -231,7 +231,7 @@ func (n *NodeDeviceStore) PutPushName(ctx context.Context, jid types.JID, value 
 func (n *NodeDeviceStore) PutBusinessName(ctx context.Context, jid types.JID, value string) (bool, string, error) {
 	return n.contactName(ctx, jid, value, true)
 }
-func (n *NodeDeviceStore) PutContactName(ctx context.Context, jid types.JID, full, first string) error {
+func (n *NodeDeviceStore) PutContactName(ctx context.Context, jid types.JID, firstName, fullName string) error {
 	n.mu.Lock()
 	defer n.mu.Unlock()
 	if e := ctx.Err(); e != nil {
@@ -241,14 +241,14 @@ func (n *NodeDeviceStore) PutContactName(ctx context.Context, jid types.JID, ful
 	var v types.ContactInfo
 	_ = json.Unmarshal(n.aux[key], &v)
 	v.Found = true
-	v.FullName = full
-	v.FirstName = first
+	v.FullName = fullName
+	v.FirstName = firstName
 	n.aux[key] = nodeJSON(v)
 	return nil
 }
 func (n *NodeDeviceStore) PutAllContactNames(ctx context.Context, contacts []store.ContactEntry) error {
 	for _, v := range contacts {
-		if e := n.PutContactName(ctx, v.JID, v.FullName, v.FirstName); e != nil {
+		if e := n.PutContactName(ctx, v.JID, v.FirstName, v.FullName); e != nil {
 			return e
 		}
 	}

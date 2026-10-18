@@ -2,7 +2,6 @@ package clibootstrap
 
 import (
 	"context"
-	"errors"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cliauth"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/openaiauth"
@@ -35,14 +34,9 @@ func (m *MainCommand) cliAuthIdentity(ctx context.Context, scope *cooperative.Sc
 	bare := envTruthyNative(env["CLAUDE_CODE_SIMPLE"])
 	managed := envTruthyNative(env["CLAUDE_CODE_REMOTE"]) || env["CLAUDE_CODE_ENTRYPOINT"] == "claude-desktop"
 	homespace := env["USER_TYPE"] == "ant" && envTruthyNative(env["COO_RUNNING_ON_HOMESPACE"])
-	apiKeyEnv := env["ANTHROPIC_API_KEY"]
-	if !bare && homespace {
-		apiKeyEnv = ""
-	}
 	readOAuthFD := func() string {
 		return m.credentialFromDescriptor("CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR", ".oauth_token")
 	}
-	readAPIFD := func() string { return m.credentialFromDescriptor("CLAUDE_CODE_API_KEY_FILE_DESCRIPTOR", ".api_key") }
 	helper := settings.Get("apiKeyHelper")
 	if bare {
 		flag, e := m.Startup.GetSettingsForSource("flagSettings")
@@ -80,16 +74,9 @@ func (m *MainCommand) cliAuthIdentity(ctx context.Context, scope *cooperative.Sc
 	}
 	var tokens *openaiauth.Value
 	if !bare {
-		if env["CLAUDE_CODE_OAUTH_TOKEN"] != "" {
-			tokens = openaiauth.ClaudeEnvironmentToken(env["CLAUDE_CODE_OAUTH_TOKEN"])
-		} else if value := readOAuthFD(); value != "" {
-			tokens = openaiauth.ClaudeEnvironmentToken(value)
-		} else {
-			raw, e := m.Secure.ReadSourceJSON(ctx)
-			if e != nil {
-				return cliauth.GeneralStatusInput{}, nil, false, false, e
-			}
-			tokens = openaiauth.ClaudeTokensFromSecure(raw)
+		tokens, err = m.nativeCommandClaudeTokens(ctx, scope)
+		if err != nil {
+			return cliauth.GeneralStatusInput{}, nil, false, false, err
 		}
 		if input.AuthTokenSource == "none" {
 			subscriber, e := openaiauth.ClaudeSubscriber(true, tokens)
@@ -102,45 +89,11 @@ func (m *MainCommand) cliAuthIdentity(ctx context.Context, scope *cooperative.Sc
 		}
 	}
 	input.HasToken = input.AuthTokenSource != "none"
-	keyPresent := false
-	if apiKeyEnv != "" && (bare || preferThirdParty) {
-		input.APIKeySource = "ANTHROPIC_API_KEY"
-		keyPresent = true
-	} else if bare {
-		if openaiauth.AuthTruthy(helper) {
-			input.APIKeySource = "apiKeyHelper"
-		}
-	} else if envTruthyNative(env["CI"]) || env["NODE_ENV"] == "test" {
-		if readAPIFD() != "" || apiKeyEnv != "" {
-			input.APIKeySource = "ANTHROPIC_API_KEY"
-			keyPresent = true
-		} else if env["CLAUDE_CODE_OAUTH_TOKEN"] == "" && env["CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR"] == "" {
-			return cliauth.GeneralStatusInput{}, nil, false, false, errors.New("ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN env var is required")
-		}
-	} else {
-		approved := false
-		if apiKeyEnv != "" {
-			approved, err = openaiauth.IsCustomAPIKeyApproved(*global, quoteMain(apiKeyEnv))
-			if err != nil {
-				return cliauth.GeneralStatusInput{}, nil, false, false, err
-			}
-		}
-		if approved || readAPIFD() != "" {
-			input.APIKeySource = "ANTHROPIC_API_KEY"
-			keyPresent = true
-		} else if openaiauth.AuthTruthy(helper) {
-			input.APIKeySource = "apiKeyHelper"
-		} else if !bare {
-			key, e := m.Secure.ReadLegacyManagedAPIKey(ctx)
-			if e != nil && ctx.Err() != nil {
-				return cliauth.GeneralStatusInput{}, nil, false, false, e
-			}
-			if key != "" || openaiauth.AuthTruthy(global.Get("primaryApiKey")) {
-				input.APIKeySource = "/login managed key"
-				keyPresent = true
-			}
-		}
+	source, keyPresent, err := m.nativeCommandAPIKeySource(ctx, scope, helper, preferThirdParty)
+	if err != nil {
+		return cliauth.GeneralStatusInput{}, nil, false, false, err
 	}
+	input.APIKeySource = source
 	enabled := openaiauth.AnthropicAuthEnabled(openaiauth.AnthropicAuthInput{Bare: bare, Environment: env, APIKeySource: input.APIKeySource, APIKeyHelper: helper})
 	if enabled {
 		input.OAuthAccount = global.Get("oauthAccount")

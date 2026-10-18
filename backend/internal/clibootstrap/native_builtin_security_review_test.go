@@ -26,7 +26,7 @@ func TestActualSecurityReviewRunsRealGitPromptCommandsThenReadAndModelReport(t *
 }
 
 func testActualSecurityReviewShell(t *testing.T, shell string) {
-	const executable = "/opt/homebrew/bin/pwsh"
+	executable := physicalPowerShell(t)
 	if shell == "powershell" {
 		if _, err := os.Stat(executable); err != nil {
 			t.Skip("actual PowerShell required")

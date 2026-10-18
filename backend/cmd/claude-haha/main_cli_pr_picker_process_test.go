@@ -32,6 +32,7 @@ func TestActualPublicGoCLIFromPRPickerResumesSameSIDToolsAndCancelsBeforeModel(t
 	defer cancel()
 	binary := filepath.Join(root, "actual-pr-picker-go-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-mod=readonly", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if out, e := build.CombinedOutput(); e != nil {
 		t.Fatal(e, string(out))
 	}
@@ -58,7 +59,7 @@ func TestActualPublicGoCLIFromPRPickerResumesSameSIDToolsAndCancelsBeforeModel(t
 			}
 			var mu sync.Mutex
 			requests := [][]byte{}
-			peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			peer := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 				data, _ := io.ReadAll(r.Body)
 				mu.Lock()
 				requests = append(requests, append([]byte(nil), data...))
@@ -107,6 +108,7 @@ func TestActualPublicGoCLIFromPRPickerResumesSameSIDToolsAndCancelsBeforeModel(t
 			encoded, _ := json.Marshal(flags)
 			python := exec.CommandContext(ctx, "/usr/bin/python3", "testdata/pr-picker.py", binary, home, row.name, string(encoded))
 			python.Env = append(resumeErrorEnv(home, root, peer.URL), "TERM=xterm-256color")
+			capturePublicGoCoverage(t, python)
 			out, e := python.CombinedOutput()
 			if e != nil {
 				t.Fatal(e, string(out))

@@ -41,7 +41,7 @@ func (s *Service) ExecuteOutside(ctx context.Context, in OutsideInput) ([]Outsid
 		s.mu.Unlock()
 		return []OutsideResult{}, nil
 	}
-	rows, err := s.configuredNativeCommands(in.Event, in.SessionID)
+	rows, err := s.configuredNativeMatchedCommands(in.Event, in.SessionID, !in.Call.WorktreeWrapper && (in.Event == "SessionEnd" || in.Event == "StopFailure" && in.Call.ToolUseContext != nil))
 	skip := s.resolver.disabled || in.Call.Interactive && !in.Call.TrustAccepted || ctx.Err() != nil
 	callbacks := s.activeCallbacks(in.Event, in.SessionID)
 	s.mu.Unlock()
@@ -55,28 +55,29 @@ func (s *Service) ExecuteOutside(ctx context.Context, in OutsideInput) ([]Outsid
 		return nil, unsupported("outside-REPL callback/function producer")
 	}
 	sdkMatchers := s.sdkCallbackMatchers(in.Event)
-	selected := []protocol.JSONObject{}
+	selected := []nativeMatchedHook{}
 	keys := map[string]int{}
 	for _, row := range rows {
 		if in.MatchQuery != "" && !nativeCommandMatch(in.MatchQuery, row.matcher) {
 			continue
 		}
-		key, e := nativeEventHookKey(row.hook)
+		key, e := row.key()
 		if e != nil {
 			return nil, e
 		}
 		if i, ok := keys[key]; ok {
-			selected[i] = row.hook.Clone()
+			selected[i] = row.clone()
 		} else {
 			keys[key] = len(selected)
-			selected = append(selected, row.hook.Clone())
+			selected = append(selected, row.clone())
 		}
 	}
-	ordered := []protocol.JSONObject{}
+	ordered := []nativeMatchedHook{}
 	for _, kind := range []string{"command", "prompt", "agent", "http"} {
-		for _, hook := range selected {
+		for _, matched := range selected {
+			hook := matched.hook
 			if hook.String("type") == kind && !hookTruthy(hook.Get("if")) {
-				ordered = append(ordered, hook)
+				ordered = append(ordered, matched)
 			}
 		}
 	}
@@ -85,7 +86,9 @@ func (s *Service) ExecuteOutside(ctx context.Context, in OutsideInput) ([]Outsid
 		if e := json.Unmarshal(matcher.Get("hooks"), &hooks); e != nil {
 			return nil, e
 		}
-		ordered = append(ordered, hooks...)
+		for _, hook := range hooks {
+			ordered = append(ordered, nativeMatchedHook{commandMatcher: commandMatcher{hook: hook}})
+		}
 	}
 	if len(ordered) == 0 {
 		return []OutsideResult{}, nil
@@ -105,7 +108,8 @@ func (s *Service) ExecuteOutside(ctx context.Context, in OutsideInput) ([]Outsid
 		input.Delete("permission_mode")
 	}
 	futures := []*ownerasync.OwnerFuture[OutsideResult]{}
-	for index, hook := range ordered {
+	for index, matched := range ordered {
+		hook := matched.hook
 		future, e := ownerasync.NewOwnerFuture[OutsideResult](b.Owner)
 		if e != nil {
 			return nil, e
@@ -113,6 +117,7 @@ func (s *Service) ExecuteOutside(ctx context.Context, in OutsideInput) ([]Outsid
 		futures = append(futures, future)
 		_, e = b.Owner.SubmitIndependent(context.Background(), cooperative.Read, func(scope *cooperative.Scope) error {
 			current := call
+			current.SkillRoot = matched.skillRoot
 			current.Scope = scope
 			current.HookIndex = &index
 			current.HookID = s.options.UUID()

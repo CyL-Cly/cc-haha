@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/teamstore"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -113,6 +114,10 @@ func TestActualGoalAuxiliaryHookEndsLeadTurnWhileRealTeammateWorksAndRechecksRep
 	if !found {
 		t.Fatal("actual SDK output missed goal waiting status")
 	}
+	mailbox, err := teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: parent.options.Native.ConfigHomeDirectory(), TaskStore: parent.taskStore})
+	if err != nil {
+		t.Fatal(err)
+	}
 	once.Do(func() { close(release) })
 	for ctx.Err() == nil {
 		idle, err := inProcessParentCall(ctx, parent, func(scope *cooperative.Scope) (bool, error) {
@@ -131,7 +136,30 @@ func TestActualGoalAuxiliaryHookEndsLeadTurnWhileRealTeammateWorksAndRechecksRep
 		if err != nil {
 			t.Fatal(err)
 		}
-		if idle {
+		// Source marks the real task idle before awaiting its durable report write.
+		// A single leader cycle may legitimately observe an empty mailbox and only
+		// request another poll, so wait for the actual unread report as well.
+		rows, err := mailbox.Unread("team-lead", "actual-goal-wait")
+		if err != nil {
+			t.Fatal(err)
+		}
+		reportReady := false
+		for _, raw := range rows {
+			var message, report protocol.JSONObject
+			if err := message.UnmarshalJSON(raw); err != nil {
+				t.Fatal(err)
+			}
+			if message.String("from") != "worker" {
+				continue
+			}
+			if err := report.UnmarshalJSON([]byte(message.String("text"))); err != nil {
+				t.Fatal(err)
+			}
+			if report.String("type") == "idle_notification" && report.String("from") == "worker" && report.String("idleReason") == "available" && report.String("result") == "ACTUAL_TEAMMATE_GOAL_REPORT" {
+				reportReady = true
+			}
+		}
+		if idle && reportReady {
 			break
 		}
 		time.Sleep(5 * time.Millisecond)

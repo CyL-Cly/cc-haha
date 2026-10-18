@@ -47,9 +47,10 @@ func (c *Controller) AppendRuntimeMetadata(scope *cooperative.Scope, metadata pr
 	if err = future.Await(scope); err != nil {
 		return err
 	}
-	// Source awaits appendJsonlEntry before acknowledging a runtime change.
-	// Observe the physical write rather than only enqueueWrite's receipt.
-	flush, err := pending.Begin(scope)
+	// Source SessionService.appendJsonlEntry owns its open/write/finally-close
+	// Promise, not another Project drain. A metadata ACK requires its own physical
+	// result after enqueue, even when a different manual drain remains in flight.
+	flush, err := pending.beginExplicit(scope)
 	if err != nil {
 		return err
 	}

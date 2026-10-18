@@ -82,6 +82,9 @@ const { call } = await import('../../src/commands/model/model')
 const { default: modelCommand } = await import('../../src/commands/model')
 const { processSlashCommand } = await import('../../src/utils/processUserInput/processSlashCommand')
 const { normalizeMessagesForAPI } = await import('../../src/utils/messages')
+const { Message } = await import('../../src/components/Message')
+const { Box } = await import('../../src/ink')
+const { renderToAnsiString } = await import('../../src/utils/staticRender')
 const internals = (React as any).__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE
 const previous = internals.H
 const rows = []
@@ -105,6 +108,12 @@ try {
     bootstrap.resetModelStringsForTestingOnly()
     if (!row.continueStore) bootstrap.setMainLoopModelOverride(row.state.mainLoopModel)
     if (row.global) config.saveGlobalConfig(current => ({ ...current, ...row.global }))
+    if (row.opus1mStartup) {
+      // This profile compares the command after the actual CLI startup
+      // migration with NewSession, which runs that same migration first.
+      const { migrateOpusToOpus1m } = await import('../../src/migrations/migrateOpusToOpus1m')
+      migrateOpusToOpus1m()
+    }
     if (row.initializeFast) fastMode.resolveFastModeStatusFromCache()
     // Match the real startup model producer's allowlist filtering before the
     // original JSX consumer sees AppState. Later state transitions stay raw.
@@ -145,7 +154,24 @@ try {
       const current = store.getState()
       await queryWithModel({ userPrompt: 'actual fast model stream', signal: new AbortController().signal, options: { model: model.parseUserSpecifiedModel(current.mainLoopModelForSession ?? current.mainLoopModel ?? model.getDefaultMainLoopModelSetting()), fastMode: current.fastMode, maxOutputTokensOverride: 1, querySource: 'repl_main_thread', isNonInteractiveSession: false, agents: [], mcpTools: [], hasAppendSystemPrompt: false, enablePromptCaching: false } })
     }
-    rows.push({ name: row.name, ...observed, transportErrors: transportErrors.slice(transportStart), api: normalizeMessagesForAPI(result.messages).map((message: any) => message.message), shouldQuery: result.shouldQuery, messages: result.messages.map((message: any) => ({ type: message.type, ...(message.subtype ? { subtype: message.subtype } : {}), ...(message.message ? { message: message.message } : { content: message.content }), ...(message.isMeta !== undefined ? { isMeta: message.isMeta } : {}) })), state: {
+    let rendered: string | undefined
+    if (row.renderFinalMessages) {
+      internals.H = previous
+      try {
+        // REPL appends these actual processSlashCommand messages. Its Message
+        // consumer routes local_command systems through UserTextMessage.
+        rendered = await renderToAnsiString(React.createElement(AppStoreContext.Provider, { value: store }, React.createElement(Box, { flexDirection: 'column' }, ...result.messages.map((message: any) => React.createElement(Message, { key: message.uuid, message, tools: [], commands: [], lookups: {}, inProgressToolUseIDs: new Set(), progressMessagesForMessage: [], addMargin: false, verbose: false })))), 120)
+      } finally {
+        internals.H = {
+          useMemoCache: (n: number) => Array(n).fill(Symbol.for('react.memo_cache_sentinel')),
+          useContext: (context: unknown) => context === AppStoreContext ? store : null,
+          useSyncExternalStore: (_subscribe: unknown, snapshot: () => unknown) => snapshot(),
+          useEffect: (effect: () => void) => effects.push(effect),
+          useCallback: (callback: unknown) => callback,
+        }
+      }
+    }
+    rows.push({ name: row.name, ...observed, rendered, transportErrors: transportErrors.slice(transportStart), api: normalizeMessagesForAPI(result.messages).map((message: any) => message.message), shouldQuery: result.shouldQuery, messages: result.messages.map((message: any) => ({ type: message.type, ...(message.subtype ? { subtype: message.subtype } : {}), ...(message.message ? { message: message.message } : { content: message.content }), ...(message.isMeta !== undefined ? { isMeta: message.isMeta } : {}) })), state: {
       mainLoopModel: store.getState().mainLoopModel,
       mainLoopModelForSession: store.getState().mainLoopModelForSession,
       fastMode: store.getState().fastMode,

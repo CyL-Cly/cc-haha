@@ -29,6 +29,7 @@ func TestActualPublicGoCLIDoctorDismissAndFollowingPhysicalReadPTY(t *testing.T)
 	defer cancel()
 	binary := filepath.Join(root, "actual-doctor-go-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-mod=readonly", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if out, e := build.CombinedOutput(); e != nil {
 		t.Fatal(e, string(out))
 	}
@@ -45,7 +46,7 @@ func TestActualPublicGoCLIDoctorDismissAndFollowingPhysicalReadPTY(t *testing.T)
 				fmt.Fprint(w, `[{"tag_name":"v3.0.1","assets":[{"name":"claude-haha-cli-manifest.json"}]}]`)
 			}))
 			defer release.Close()
-			provider := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			provider := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 				body, _ := io.ReadAll(r.Body)
 				n := model.Add(1)
 				if n == 1 && !bytes.Contains(body, []byte("Read proof.txt with the actual Read")) {
@@ -78,6 +79,7 @@ func TestActualPublicGoCLIDoctorDismissAndFollowingPhysicalReadPTY(t *testing.T)
 			flags := ideCLIJSON([]string{"--bare", "--model", "fixture-model", "--thinking", "disabled", "--no-computer-use", "--tools", "Read", "--allowedTools", "Read", "--max-turns", "4"})
 			python := exec.CommandContext(ctx, "/usr/bin/python3", "testdata/doctor.py", binary, home, dismiss, string(flags))
 			python.Env = append(resumeErrorEnv(home, root, provider.URL), "CC_HAHA_CLI_RELEASE_API="+release.URL, "TERM=xterm-256color")
+			capturePublicGoCoverage(t, python)
 			out, e := python.CombinedOutput()
 			if e != nil || !bytes.Contains(out, []byte(`"restored": true`)) {
 				t.Fatal("production CLI Doctor PTY", e, string(out))

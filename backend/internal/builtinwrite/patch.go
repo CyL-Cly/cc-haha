@@ -102,7 +102,17 @@ func StructuredPatchUnbounded(oldText, newText string) []PatchHunk {
 	return structuredPatch(oldText, newText, 0)
 }
 
-func structuredPatch(oldText, newText string, timeout time.Duration) []PatchHunk {
+// StructuredPatchSingle uses the existing diff path with Source's single-edit
+// IDE context budget; normal write/checkpoint hunks keep their existing budget.
+func StructuredPatchSingle(oldText, newText string) []PatchHunk {
+	return structuredPatch(oldText, newText, 5*time.Second, 100_000)
+}
+
+func structuredPatch(oldText, newText string, timeout time.Duration, contexts ...int) []PatchHunk {
+	contextSize := 3
+	if len(contexts) > 0 {
+		contextSize = contexts[0]
+	}
 	old, new := lineTokens(oldText), lineTokens(newText)
 	first := &diffPath{oldPos: -1}
 	p := commonDiff(first, old, new, 0)
@@ -172,8 +182,8 @@ func structuredPatch(oldText, newText string, timeout time.Duration) []PatchHunk
 				oldStart, newStart = oldLine, newLine
 				if i > 0 {
 					prev := changes[i-1].lines
-					if len(prev) > 3 {
-						prev = prev[len(prev)-3:]
+					if len(prev) > contextSize {
+						prev = prev[len(prev)-contextSize:]
 					}
 					current = contextLines(prev)
 					oldStart -= len(prev)
@@ -194,12 +204,12 @@ func structuredPatch(oldText, newText string, timeout time.Duration) []PatchHunk
 			}
 		} else {
 			if oldStart != 0 {
-				if len(c.lines) <= 6 && i < len(changes)-2 {
+				if len(c.lines) <= contextSize*2 && i < len(changes)-2 {
 					current = append(current, contextLines(c.lines)...)
 				} else {
 					n := len(c.lines)
-					if n > 3 {
-						n = 3
+					if n > contextSize {
+						n = contextSize
 					}
 					current = append(current, contextLines(c.lines[:n])...)
 					hunks = append(hunks, PatchHunk{oldStart, oldLine - oldStart + n, newStart, newLine - newStart + n, current})

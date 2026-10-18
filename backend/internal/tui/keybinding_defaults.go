@@ -14,6 +14,11 @@ func DefaultKeybindings(platform string, terminalVT bool, features KeybindingFea
 			bindings = append(bindings, Keybinding{Context: context, Chord: ParseChord(entries[i]), Action: &action})
 		}
 	}
+	defaultKeybindingEntries(platform, terminalVT, features, add)
+	return bindings
+}
+
+func defaultKeybindingEntries(platform string, terminalVT bool, features KeybindingFeatures, add func(string, ...string)) {
 	imagePaste := "ctrl+v"
 	if platform == "windows" {
 		imagePaste = "alt+v"
@@ -60,5 +65,4 @@ func DefaultKeybindings(platform string, terminalVT bool, features KeybindingFea
 	add("ModelPicker", "left", "modelPicker:decreaseEffort", "right", "modelPicker:increaseEffort")
 	add("Select", "up", "select:previous", "down", "select:next", "j", "select:next", "k", "select:previous", "ctrl+n", "select:next", "ctrl+p", "select:previous", "enter", "select:accept", "escape", "select:cancel")
 	add("Plugin", "space", "plugin:toggle", "i", "plugin:install")
-	return bindings
 }

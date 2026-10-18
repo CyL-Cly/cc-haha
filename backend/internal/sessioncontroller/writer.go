@@ -42,6 +42,7 @@ type queuedEntry struct {
 	identity identity
 }
 type Writer struct {
+	nativeParentSession    *nativeParentSessionSnapshot
 	remote                 *remoteio.Service
 	ingress                *remoteio.Ingress
 	ingressURL             string
@@ -53,6 +54,9 @@ type Writer struct {
 	path                   string
 	pending                []*protocol.JSONObject
 	queues                 map[string][]queuedEntry
+	queueGenerations       map[string]*transcriptQueueGeneration
+	queueFirst             *transcriptQueueGeneration
+	queueLast              *transcriptQueueGeneration
 	identities             map[string]identity
 	members                map[string]bool
 	excluded               map[string]bool
@@ -95,6 +99,9 @@ func (writer *Writer) skipped() bool {
 	return env["NODE_ENV"] == "test" && !envTruthy(env["TEST_ENABLE_SESSION_PERSISTENCE"]) || cleanupDisabled || writer.options.SessionPersistenceDisabled || envTruthy(env["CLAUDE_CODE_SKIP_PROMPT_HISTORY"])
 }
 func (writer *Writer) currentSessionID() string {
+	if writer.nativeParentSession != nil {
+		return writer.nativeParentSession.parent.SessionID()
+	}
 	if writer.options.Bootstrap != nil {
 		return writer.options.Bootstrap.SessionID()
 	}
@@ -105,6 +112,9 @@ func (writer *Writer) target() string {
 	cwd := writer.options.CWD
 	if writer.options.Bootstrap != nil {
 		snapshot := writer.options.Bootstrap.Snapshot()
+		if writer.nativeParentSession != nil {
+			snapshot = writer.nativeParentSession.parent.Snapshot()
+		}
 		cwd = snapshot.OriginalCWD
 		if project := snapshot.SessionProjectDir; project != nil {
 			return writer.transcriptIn(*project, writer.currentSessionID())
@@ -320,7 +330,7 @@ func (writer *Writer) enqueue(entry *protocol.JSONObject) error {
 			return err
 		}
 	}
-	writer.queues[path] = append(writer.queues[path], queuedEntry{entry, id})
+	writer.appendQueuedLocked(path, queuedEntry{entry, id})
 	if writer.stop == nil {
 		// Capture the immutable adapter on owner; timer callbacks read no Writer state.
 		pending := writer.async
@@ -378,6 +388,7 @@ func (writer *Writer) Flush() error {
 	if writer.async != nil {
 		return capability("independent transcript drain requires owner Begin/Await")
 	}
+	defer writer.compactQueueGenerationsLocked()
 
 	if writer.stop != nil {
 		writer.stop()
@@ -450,7 +461,7 @@ func (writer *Writer) Flush() error {
 		if err != nil {
 			return err
 		}
-		delete(writer.queues, path)
+		writer.deleteQueueLocked(path)
 	}
 	return nil
 }

@@ -22,6 +22,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/queryloop"
+	"github.com/NanmiCoder/cc-haha/backend/internal/remoteio"
 	"github.com/NanmiCoder/cc-haha/backend/internal/sdkhost"
 	"github.com/NanmiCoder/cc-haha/backend/internal/server/providerconfig"
 	"github.com/NanmiCoder/cc-haha/backend/internal/storage"
@@ -33,40 +34,43 @@ import (
 )
 
 type Options struct {
-	publicPrintLoadErrors         bool
-	AnalyticsHTTP                 func(context.Context, analytics.Request) (analytics.Response, error)
-	Interactive                   bool
-	desktopTeamLaunch             *desktopTeamLaunch
-	desktopManagedClaudeOAuth     bool
-	DesktopTeamsEnabled           func(context.Context) (bool, error)
-	HookEvents                    bool
-	TeamWorker                    *teamworker.Start
-	PaneTeammate                  *teamspawn.PaneIdentity
-	RequestTeammateShutdown       func(context.Context) error
-	Trace                         *tracecapture.Service
-	Arguments                     clibootstrap.PrintArguments
-	Environment                   map[string]string
-	WorkDir, Version, Platform    string
-	Stderr                        io.Writer
-	Native                        *clibootstrap.NativeBoundary
-	NativeShells                  *windowshell.Resolver
-	OnSDK                         func(json.RawMessage) error
-	OnCanonicalTranscriptMutation func(string) error
-	OnCommandsChanged             func([]sdkhost.ControlCommand) error
-	OnPermissionModeChanged       func(string) error
-	Store                         *storage.Store
-	RuntimeSelection              *providerconfig.Selection
-	NativeFactory                 NativeFactory
-	ProviderOptions               *providerconfig.Options
-	ComputerUse                   *clibootstrap.NativeComputerUseOptions
-	NonInteractivePermissions     bool
-	ForegroundShellProgress       bool
-	SDKRecoverOfficialOAuth       func(context.Context, string) (*string, error)
-	DesktopOAuthToken             func(context.Context) (*string, error)
-	DesktopOAuthAccountUUID       func(context.Context, string) (*string, error)
-	AutoQuestion                  *autoquestion.Service
-	AutoQuestionContext           func(context.Context, string, string) (json.RawMessage, error)
-	AutoQuestionProvider          func(context.Context, string) (json.RawMessage, error)
+	publicPrintLoadErrors          bool
+	AnalyticsHTTP                  func(context.Context, analytics.Request) (analytics.Response, error)
+	Interactive                    bool
+	KeybindingCustomizationEnabled func() bool
+	desktopTeamLaunch              *desktopTeamLaunch
+	desktopManagedClaudeOAuth      bool
+	DesktopTeamsEnabled            func(context.Context) (bool, error)
+	HookEvents                     bool
+	TeamWorker                     *teamworker.Start
+	PaneTeammate                   *teamspawn.PaneIdentity
+	RequestTeammateShutdown        func(context.Context) error
+	Trace                          *tracecapture.Service
+	ObserveModelFailure            func(error)
+	Arguments                      clibootstrap.PrintArguments
+	SessionIngressAuth             *remoteio.IngressAuth
+	Environment                    map[string]string
+	WorkDir, Version, Platform     string
+	Stderr                         io.Writer
+	Native                         *clibootstrap.NativeBoundary
+	NativeShells                   *windowshell.Resolver
+	OnSDK                          func(json.RawMessage) error
+	OnCanonicalTranscriptMutation  func(string) error
+	OnCommandsChanged              func([]sdkhost.ControlCommand) error
+	OnPermissionModeChanged        func(string) error
+	Store                          *storage.Store
+	RuntimeSelection               *providerconfig.Selection
+	NativeFactory                  NativeFactory
+	ProviderOptions                *providerconfig.Options
+	ComputerUse                    *clibootstrap.NativeComputerUseOptions
+	NonInteractivePermissions      bool
+	ForegroundShellProgress        bool
+	SDKRecoverOfficialOAuth        func(context.Context, string) (*string, error)
+	DesktopOAuthToken              func(context.Context) (*string, error)
+	DesktopOAuthAccountUUID        func(context.Context, string) (*string, error)
+	AutoQuestion                   *autoquestion.Service
+	AutoQuestionContext            func(context.Context, string, string) (json.RawMessage, error)
+	AutoQuestionProvider           func(context.Context, string) (json.RawMessage, error)
 }
 
 // NativeFactory replaces external primitives in an isolated build; it cannot
@@ -80,47 +84,57 @@ type pendingPermission struct {
 }
 
 type Session struct {
-	autoConsentUI                *terminalAutoConsentUI
-	terminalInteractive          bool
-	terminalPlatform             string
-	desktopNetwork               *desktopNetworkState
-	desktopOAuthToken            func(context.Context) (*string, error)
-	desktopOfficialToken         string
-	desktopOAuthError            io.Writer
-	initialTUIRecords            []protocol.JSONObject
-	initialTUIEnvironment        map[string]string
-	leaderInbox                  *sessionLeaderInbox
-	leaderInboxError             io.Writer
-	teammateEventSink            *teammateEventSink
-	closeDone                    chan struct{}
-	closeError                   error
-	worktreeExit                 *clibootstrap.WorktreeExitSnapshot
-	processPermissionModeChanged func(string) error
-	process                      *clibootstrap.MainPrint
-	teammateShutdownDone         chan struct{}
-	teammateShutdownError        error
-	mu                           sync.Mutex
-	turnMu                       sync.Mutex
-	cancel                       context.CancelFunc
-	interrupt                    context.CancelCauseFunc
-	closed                       bool
-	turnID                       string
-	emit                         tui.Emit
-	pending                      map[string]*pendingPermission
-	teamPaneSetupDisplay         *tui.PermissionRequest
-	onSDK                        func(json.RawMessage) error
-	projection                   *Projection
-	permissionOrdinal            uint64
-	native                       *clibootstrap.NativeBoundary
-	modelPicker                  *pendingModelPicker
-	thinkingPicker               string
-	terminalPermission           *terminalPermissionState
-	commandSnapshot              []tui.Completion
-	commandListeners             map[uint64]func([]tui.Completion)
-	commandListenerID            uint64
-	environmentNoticeID          uint64
-	environmentNotices           map[uint64]func(tui.Event)
-	onCommandsChanged            func([]sdkhost.ControlCommand) error
+	terminalStatusLine             *terminalStatusLineRuntime
+	terminalBtw                    *terminalBtwRuntime
+	autoConsentUI                  *terminalAutoConsentUI
+	terminalInteractive            bool
+	terminalPlatform               string
+	desktopNetwork                 *desktopNetworkState
+	desktopOAuthToken              func(context.Context) (*string, error)
+	desktopOfficialToken           string
+	desktopOAuthError              io.Writer
+	initialTUIRecords              []protocol.JSONObject
+	initialTUIEnvironment          map[string]string
+	leaderInbox                    *sessionLeaderInbox
+	leaderInboxError               io.Writer
+	teammateEventSink              *teammateEventSink
+	closeDone                      chan struct{}
+	closeError                     error
+	worktreeExit                   *clibootstrap.WorktreeExitSnapshot
+	processPermissionModeChanged   func(string) error
+	process                        *clibootstrap.MainPrint
+	teammateShutdownDone           chan struct{}
+	teammateShutdownError          error
+	mu                             sync.Mutex
+	turnMu                         sync.Mutex
+	cancel                         context.CancelFunc
+	interrupt                      context.CancelCauseFunc
+	closed                         bool
+	turnID                         string
+	emit                           tui.Emit
+	pending                        map[string]*pendingPermission
+	teamPaneSetupDisplay           *tui.PermissionRequest
+	onSDK                          func(json.RawMessage) error
+	projection                     *Projection
+	permissionOrdinal              uint64
+	native                         *clibootstrap.NativeBoundary
+	modelPicker                    *pendingModelPicker
+	thinkingPicker                 string
+	terminalPermission             *terminalPermissionState
+	terminalUsage                  *terminalUsageRuntime
+	terminalDiff                   *terminalDiffRuntime
+	terminalTeams                  *terminalTeamsRuntime
+	terminalMCPAuth                *terminalMCPAuthRuntime
+	terminalPanel                  *terminalLocalPanelState
+	terminalLocalUIActive          bool
+	keybindingCustomizationEnabled func() bool
+	terminalKeybindings            *terminalKeybindingsState
+	commandSnapshot                []tui.Completion
+	commandListeners               map[uint64]func([]tui.Completion)
+	commandListenerID              uint64
+	environmentNoticeID            uint64
+	environmentNotices             map[uint64]func(tui.Event)
+	onCommandsChanged              func([]sdkhost.ControlCommand) error
 }
 
 func NewSession(ctx context.Context, o Options) (*Session, error) {
@@ -197,9 +211,10 @@ func NewSession(ctx context.Context, o Options) (*Session, error) {
 	if err != nil {
 		return nil, err
 	}
-	s := &Session{desktopNetwork: networkState, pending: make(map[string]*pendingPermission), onSDK: o.OnSDK, native: native, processPermissionModeChanged: o.OnPermissionModeChanged, onCommandsChanged: o.OnCommandsChanged}
+	s := &Session{terminalTeams: newTerminalTeamsRuntime(), terminalBtw: &terminalBtwRuntime{jobs: map[*terminalBtwJob]struct{}{}}, terminalDiff: &terminalDiffRuntime{jobs: map[string]*terminalDiffJob{}}, terminalUsage: &terminalUsageRuntime{jobs: map[*terminalUsageJob]struct{}{}}, terminalMCPAuth: &terminalMCPAuthRuntime{jobs: map[*terminalMCPAuthJob]struct{}{}}, desktopNetwork: networkState, pending: make(map[string]*pendingPermission), onSDK: o.OnSDK, native: native, processPermissionModeChanged: o.OnPermissionModeChanged, onCommandsChanged: o.OnCommandsChanged}
 	s.terminalInteractive = o.Interactive
 	s.terminalPlatform = o.Platform
+	s.keybindingCustomizationEnabled = o.KeybindingCustomizationEnabled
 	s.leaderInboxError = o.Stderr
 	if o.DesktopOAuthToken != nil && o.desktopTeamLaunch != nil && native.Environment["CLAUDE_CODE_ENTRYPOINT"] == "claude-desktop" {
 		s.desktopOAuthToken, s.desktopOfficialToken, s.desktopOAuthError = o.DesktopOAuthToken, native.Environment["CLAUDE_CODE_OAUTH_TOKEN"], o.Stderr
@@ -222,7 +237,7 @@ func NewSession(ctx context.Context, o Options) (*Session, error) {
 	if (o.TeamWorker != nil || o.PaneTeammate != nil) && shutdown == nil {
 		shutdown = s.requestTeammateShutdown
 	}
-	s.process, err = clibootstrap.NewMainPrint(clibootstrap.MainPrintOptions{NativeShells: o.NativeShells, NativeDesktopNetworkBound: networkState != nil, PublicPrintLoadErrors: o.publicPrintLoadErrors, AnalyticsHTTP: o.AnalyticsHTTP, TeamPaneSetup: paneSetup, Interactive: o.Interactive, OnInteractiveTeamTurn: s.interactiveTeamTurn, OnLeaderInboxReady: leaderReady, OnEnvironmentHookMessage: s.environmentHookNotice, OnLocalInputMessages: s.localInputMessages, OnNativeFastModeNotification: s.nativeFastModeNotification, HookEvents: o.HookEvents, TeamWorker: o.TeamWorker, PaneTeammate: o.PaneTeammate, RequestTeammateShutdown: shutdown, ForegroundShellProgress: o.ForegroundShellProgress, Trace: o.Trace, OnCanonicalTranscriptMutation: o.OnCanonicalTranscriptMutation, OnQueryYield: s.nativeQueryYield, OnPermissionModeChanged: func(_ context.Context, mode string) error {
+	s.process, err = clibootstrap.NewMainPrint(clibootstrap.MainPrintOptions{ObserveModelFailure: o.ObserveModelFailure, EditTerminalFile: s.editTerminalFile, SessionIngressAuth: o.SessionIngressAuth, NativeShells: o.NativeShells, NativeDesktopNetworkBound: networkState != nil, PublicPrintLoadErrors: o.publicPrintLoadErrors, AnalyticsHTTP: o.AnalyticsHTTP, TeamPaneSetup: paneSetup, Interactive: o.Interactive, KeybindingCustomizationEnabled: o.KeybindingCustomizationEnabled, OnTerminalEditorModeChanged: s.nativeEditorModeChanged, OnInteractiveTeamTurn: s.interactiveTeamTurn, OnLeaderInboxReady: leaderReady, OnEnvironmentHookMessage: s.environmentHookNotice, OnLocalInputMessages: s.localInputMessages, OpenTerminalMessageSelector: s.openTerminalMessageSelector, OnNativeFastModeNotification: s.nativeFastModeNotification, HookEvents: o.HookEvents, TeamWorker: o.TeamWorker, PaneTeammate: o.PaneTeammate, RequestTeammateShutdown: shutdown, ForegroundShellProgress: o.ForegroundShellProgress, Trace: o.Trace, OnCanonicalTranscriptMutation: o.OnCanonicalTranscriptMutation, OnQueryYield: s.nativeQueryYield, OnTerminalSpinner: s.nativeTerminalSpinner, OnPermissionModeChanged: func(_ context.Context, mode string) error {
 		return s.permissionModeChanged(mode)
 	}, OnCommandsChanged: s.commandsChanged, ComputerUse: o.ComputerUse, Arguments: o.Arguments, Native: native, PID: os.Getpid(), Version: o.Version, Platform: o.Platform, Input: strings.NewReader(""), Output: io.Discard, Error: o.Stderr, OnOutput: s.output, StartSandboxNetworkPermission: startSandboxNetworkPermission, ResolvePermission: resolvePermission})
 	if err != nil {
@@ -288,16 +303,6 @@ func (s *Session) submitContent(ctx context.Context, in tui.Input, emit tui.Emit
 		s.mu.Unlock()
 		return cooperative.ErrClosed
 	}
-	if len(in.Attachments) > 0 {
-		s.mu.Unlock()
-		return &clibootstrap.MainCapabilityError{Boundary: "interactive attachment producer"}
-	}
-	for _, pasted := range in.PastedContents {
-		if pasted.Type != "text" {
-			s.mu.Unlock()
-			return &clibootstrap.MainCapabilityError{Boundary: "interactive pasted attachment producer " + pasted.Type}
-		}
-	}
 	modelContext, interrupt := context.WithCancelCause(ctx)
 	cancel := func() { interrupt(context.Canceled) }
 	s.cancel, s.turnID, s.emit = cancel, in.TurnID, emit
@@ -311,13 +316,36 @@ func (s *Session) submitContent(ctx context.Context, in tui.Input, emit tui.Emit
 		s.emit = nil
 		s.mu.Unlock()
 	}()
+	text, err := terminalInputText(in)
+	if err != nil {
+		return err
+	}
+	if in.TextJSON != nil {
+		// Commands and Bash consume the same display conversion as JS's UTF-8
+		// OS boundary; the Agent envelope below retains the original code units.
+		if err := json.Unmarshal(text, &in.Text); err != nil {
+			return err
+		}
+	}
 	if in.Mode == "bash" {
 		return s.submitTerminalBash(modelContext, in)
 	}
 	if in.Mode != "" && in.Mode != "prompt" {
 		return &clibootstrap.MainCapabilityError{Boundary: "interactive input mode " + in.Mode}
 	}
+	if content == nil {
+		var err error
+		modelContext, content, err = s.prepareTerminalMedia(modelContext, in)
+		if err != nil {
+			return err
+		}
+	}
 	if in.Mode == "prompt" && emit != nil && !s.process.SlashCommandsDisabled() {
+		if command := tui.ParseSlashCommand(in.Text); command != nil {
+			if handled, err := s.InvokeTerminalCommand(modelContext, command.CommandName, command.Args, emit); handled {
+				return err
+			}
+		}
 		if command := tui.ParseSlashCommand(in.Text); command != nil && command.CommandName == "doctor" {
 			return s.InvokeDoctor(modelContext, emit)
 		}
@@ -335,7 +363,7 @@ func (s *Session) submitContent(ctx context.Context, in tui.Input, emit tui.Emit
 			return s.InvokeModelPicker(modelContext, true, emit)
 		}
 	}
-	var messageContent any = in.Text
+	var messageContent any = text
 	if err := s.process.SetNativeWorkflowKeywordSuppression(modelContext, in.SuppressWorkflowKeyword); err != nil {
 		return err
 	}
@@ -452,14 +480,30 @@ func (s *Session) closeWithReason(ctx context.Context, reason string) (err error
 	cancel := s.cancel
 	leader := s.leaderInbox
 	s.mu.Unlock()
+	s.closeTerminalKeybindings()
+	s.closeTerminalDiff()
+	s.closeTerminalUsage()
+	s.closeTerminalTeams()
+	s.closeTerminalHelp()
+	s.closeTerminalMCPAuth()
+	s.closeTerminalBtw()
 	s.process.BeginNativePDFRuntimeClose()
 	s.process.BeginNativeRemoteRuntimeClose()
+	s.process.BeginNativeRemoteAgentTasksClose()
+	s.process.BeginNativeTerminalIDEDiffClose()
+	s.process.BeginNativeComputerUseCleanupClose()
+	s.process.BeginNativeLSPClose()
+	s.process.BeginNativePromptClose()
+	s.process.BeginNativeTerminalStatusLineClose()
+	s.closeTerminalStatusLine()
 	if leader != nil {
 		leader.cancel()
 	}
 	if cancel != nil {
 		cancel()
 	}
+	s.process.BeginNativeTerminalMCPAuthClose()
+	s.process.BeginNativeAPIPreconnectClose()
 	if err = s.cancelSessionPermissions(ctx); err != nil {
 		return err
 	}
@@ -506,6 +550,9 @@ func (s *Session) requestPermission(ctx context.Context, scope *cooperative.Scop
 	if err = s.prepareTerminalPermissionChoices(scope, &request); err != nil {
 		return queryloop.ToolPermission{}, err
 	}
+	if err = s.prepareTerminalPermissionDebug(scope, &request, call.PermDecision); err != nil {
+		return queryloop.ToolPermission{}, err
+	}
 	s.mu.Lock()
 	s.permissionOrdinal++
 	s.pending[id] = &pendingPermission{request: request, future: future, ordinal: s.permissionOrdinal}
@@ -524,6 +571,8 @@ func (s *Session) requestPermission(ctx context.Context, scope *cooperative.Scop
 	if err = s.emitEvent(tui.Event{Kind: tui.PermissionAsked, Permission: &request, ToolName: tool.Name}); err != nil {
 		return queryloop.ToolPermission{}, err
 	}
+	stopIDEDiff := s.mountTerminalIDEDiff(ctx, scope, request, *input, future)
+	defer stopIDEDiff()
 	settled := make(chan struct{})
 	defer close(settled)
 	go func() {
@@ -583,6 +632,9 @@ func (s *Session) requestPermission(ctx context.Context, scope *cooperative.Scop
 }
 
 func (s *Session) RespondPermission(ctx context.Context, id string, decision tui.PermissionDecision) error {
+	if handled, err := s.respondManagedPolicyConsent(ctx, id, decision); handled {
+		return err
+	}
 	if handled, err := s.respondTerminalAutoConsent(ctx, id, decision); handled {
 		return err
 	}
@@ -617,7 +669,7 @@ func (s *Session) emitEvent(event tui.Event) error {
 	s.mu.Unlock()
 	event.TurnID = turn
 	event.Background = strings.HasPrefix(turn, "teammate-inbox-")
-	if event.Kind == tui.PermissionAsked || event.Kind == tui.PermissionClosed {
+	if event.Kind == tui.PermissionAsked || event.Kind == tui.PermissionUpdated || event.Kind == tui.PermissionClosed {
 		event.TurnID = ""
 	}
 	if emit != nil {

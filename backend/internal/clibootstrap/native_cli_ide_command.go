@@ -44,7 +44,7 @@ func (m *MainPrint) NativeIDECommand(ctx context.Context, args string) (tui.IDEP
 		}
 		env := m.nativeOpenAIEnvironment()
 		cwd := m.state.Snapshot().CWD
-		service := ideintegration.NewNative(env["CLAUDE_CONFIG_DIR"], cwd, m.options.Platform, env, os.Getppid())
+		service := ideintegration.NewNative(m.options.Native.ConfigHomeDirectory(), cwd, m.options.Platform, env, os.Getppid())
 		future, e := nativeSkillWork(m, scope, func() ([]ideintegration.IDE, error) { return service.Detect(ctx, true) })
 		if e != nil {
 			return e

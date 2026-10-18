@@ -26,6 +26,9 @@ func openAIAuthMainFixture(t *testing.T) *MainPrint {
 	return openAIAuthMainFixtureWithEnv(t, nil)
 }
 func openAIAuthMainFixtureWithEnv(t *testing.T, extra map[string]string) *MainPrint {
+	return openAIAuthMainFixtureWithOptions(t, extra, nil, nil)
+}
+func openAIAuthMainFixtureWithOptions(t *testing.T, extra map[string]string, setup func(*NativeBoundary), configure func(*MainPrintOptions)) *MainPrint {
 	t.Helper()
 	f := newNativePluginFixture(t)
 	f.write(t, filepath.Join(f.config, "settings.json"), `{"enabledPlugins":{"sample@mkt":false}}`)
@@ -39,8 +42,15 @@ func openAIAuthMainFixtureWithEnv(t *testing.T, extra map[string]string) *MainPr
 	f.n.RunSecurity = func(context.Context, securestorage.Command) ([]byte, error) {
 		return nil, errors.New("isolated Keychain unavailable")
 	}
+	if setup != nil {
+		setup(f.n)
+	}
 	disabled := false
-	m, err := NewMainPrint(MainPrintOptions{Arguments: PrintArguments{ComputerUse: &disabled, Model: "fixture-model", SystemPrompt: "No inference in OAuth lifecycle proof", Tools: []string{"Read"}, MaxTurns: 1, Thinking: requestcontext.Thinking{Type: "disabled"}, Sources: DefaultState()}, Native: f.n, PID: os.Getpid(), Version: "fixture", Platform: "darwin", Input: strings.NewReader(""), Output: io.Discard, Error: io.Discard})
+	options := MainPrintOptions{Arguments: PrintArguments{ComputerUse: &disabled, Model: "fixture-model", SystemPrompt: "No inference in OAuth lifecycle proof", Tools: []string{"Read"}, MaxTurns: 1, Thinking: requestcontext.Thinking{Type: "disabled"}, Sources: DefaultState()}, Native: f.n, PID: os.Getpid(), Version: "fixture", Platform: "darwin", Input: strings.NewReader(""), Output: io.Discard, Error: io.Discard}
+	if configure != nil {
+		configure(&options)
+	}
+	m, err := NewMainPrint(options)
 	if err != nil {
 		t.Fatal(err)
 	}

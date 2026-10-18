@@ -5,7 +5,6 @@ import (
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/builtinwrite"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
-	"github.com/NanmiCoder/cc-haha/backend/internal/mcpauth"
 	"github.com/NanmiCoder/cc-haha/backend/internal/mcpclient"
 	"github.com/NanmiCoder/cc-haha/backend/internal/mcpruntime"
 	"github.com/NanmiCoder/cc-haha/backend/internal/mcptools"
@@ -33,6 +32,9 @@ func (m *MainPrint) newNativeMCP() error {
 	if err = m.initializeNativeCLIMCP(); err != nil {
 		return err
 	}
+	if err = m.initializeNativeChrome(); err != nil {
+		return err
+	}
 	var parent *MainPrint
 	if d := m.options.DetachedAgent; d != nil {
 		parent = d.authParent
@@ -48,20 +50,15 @@ func (m *MainPrint) newNativeMCP() error {
 			return err
 		}
 	}
-	auth, err := mcpauth.New(mcpauth.Options{Secure: m.secure, Home: n.Home, ConfigDir: n.Environment["CLAUDE_CONFIG_DIR"], CWD: n.CWD, Platform: platform, Environment: n.Environment, Now: n.Now, Settings: func(ctx context.Context) (protocol.JSONObject, error) {
-		if err := ctx.Err(); err != nil {
-			return protocol.JSONObject{}, err
-		}
-		value, err := m.nativeSettings.InitialSettings()
-		if value == nil {
-			return protocol.NewJSONObject(), err
-		}
-		return value.Clone(), err
-	}})
+	auth, err := m.newNativeMCPAuth(platform)
 	if err != nil {
 		return err
 	}
-	m.mcpRuntime, err = mcpruntime.New(mcpruntime.Options{HeadersPolicy: m.nativeMCPHeadersPolicy, SessionIngressToken: m.nativeMCPIngressToken, PID: m.options.PID, SDK: m.nativeSDKMCPBindings, PrepareHTTP: m.claudeAIMCP.PrepareHTTP, CWD: n.CWD, Version: m.options.Version, Environment: n.Environment, Enabled: m.nativeSettings.MCPExecutionEnabled, Authenticate: auth.Authenticate, ClearOAuth: auth.Clear, Auth: func(ctx context.Context, name string, config protocol.JSONObject) (mcpclient.AuthProvider, error) {
+	cache, err := newNativeMCPAuthenticationCache(n)
+	if err != nil {
+		return err
+	}
+	m.mcpRuntime, err = mcpruntime.New(mcpruntime.Options{AuthenticationCache: cache, HasDiscoveryWithoutToken: auth.HasDiscoveryWithoutToken, ClearDiscoveryWithoutToken: auth.ClearDiscoveryWithoutToken, EnvironmentValue: m.nativeMCPEnvironmentValue, HeadersPolicy: m.nativeMCPHeadersPolicy, SessionIngressToken: m.nativeMCPIngressToken, PID: m.options.PID, SDK: m.nativeSDKMCPBindings, PrepareHTTP: m.claudeAIMCP.PrepareHTTP, CWD: n.CWD, Version: m.options.Version, Environment: n.Environment, Enabled: m.nativeSettings.MCPExecutionEnabled, Authenticate: auth.Authenticate, AuthenticateFlow: auth.AuthenticateWithOptions, HasOAuthTokens: auth.HasTokens, RevokeOAuth: auth.Revoke, ClearOAuth: auth.Clear, Auth: func(ctx context.Context, name string, config protocol.JSONObject) (mcpclient.AuthProvider, error) {
 		if config.String("type") != "http" && config.String("type") != "sse" {
 			return nil, nil
 		}
@@ -87,7 +84,15 @@ func (m *MainPrint) initializeMCPTools(scope *cooperative.Scope, binding *ownera
 	if m.mcpRuntime == nil {
 		return nil
 	}
-	service, err := mcptools.New(mcptools.Options{ResultOptions: m.nativeMCPResultOptions, ComputerUseEnabled: func(ctx context.Context) (bool, error) {
+	var changed func(*cooperative.Scope) error
+	if m.options.Interactive {
+		changed = m.publishNativeMCPCatalog
+	}
+	service, err := mcptools.New(mcptools.Options{OnMCPDebug: func(scope *cooperative.Scope, name, message string) error {
+		return m.logNativeMCPOnOwner(scope, name, message, false)
+	}, OnMCPError: func(scope *cooperative.Scope, name, message string) error {
+		return m.logNativeMCPOnOwner(scope, name, message, true)
+	}, OnAuthenticationChanged: m.publishNativeMCPCatalog, OnCatalogChanged: changed, ResultOptions: m.nativeMCPResultOptions, ComputerUseEnabled: func(ctx context.Context) (bool, error) {
 		return m.nativeSettings.MCPExecutionEnabled(ctx, "computer-use", protocol.NewJSONObject())
 	}, All: m.nativeAllMCPConfigurations, SDKConfigurations: m.nativeSDKMCPConfigurations, Owner: m.Owner, NativeBinding: binding, Runtime: m.mcpRuntime, Configurations: m.mcpConfigurations, Environment: m.options.Native.Environment, PermissionContext: func(s *cooperative.Scope) (protocol.JSONObject, error) {
 		_, permissions, err := m.Controller.SDKSettingsOnOwner(s)
@@ -124,6 +129,8 @@ func (m *MainPrint) initializeMCPTools(scope *cooperative.Scope, binding *ownera
 			return e
 		}
 		err = service.InstallAgentConnections(scope, snapshot.peers, nil, snapshot.resources)
+	} else if m.options.Interactive {
+		_, err = service.BeginInteractiveDiscovery(scope, m.publishNativeMCPCatalog)
 	} else {
 		err = service.Discover(scope)
 	}
@@ -131,5 +138,36 @@ func (m *MainPrint) initializeMCPTools(scope *cooperative.Scope, binding *ownera
 		return err
 	}
 	m.mcpTools = service
+	// runHeadless awaits its initial MCP discovery before constructing the
+	// query host. Publish that completed prompt array here: interactive
+	// callbacks run later, while this startup still has no Host to refresh.
+	if !m.options.Interactive && m.Registry != nil {
+		prompts, err := service.PromptCommands(scope)
+		if err != nil {
+			return err
+		}
+		m.Registry.ReplaceNativeMCPPrompts(prompts, true)
+	}
+	return m.bindNativeAgentAuthentication(scope, binding)
+}
+
+func (m *MainPrint) publishNativeMCPCatalog(scope *cooperative.Scope) error {
+	if !scope.BelongsTo(m.Owner) {
+		return cooperative.ErrRestricted
+	}
+	if m.Host == nil || m.shuttingDown {
+		return nil
+	}
+	definitions, err := m.mcpTools.PromptCommands(scope)
+	if err != nil {
+		return err
+	}
+	m.Registry.ReplaceNativeMCPPrompts(definitions, !m.options.Interactive)
+	if err := m.Host.RefreshNativeToolCatalog(scope); err != nil {
+		return err
+	}
+	if m.options.OnCommandsChanged != nil {
+		return m.options.OnCommandsChanged(m.Registry.ControlCommands())
+	}
 	return nil
 }

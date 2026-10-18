@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/NanmiCoder/cc-haha/backend/internal/analytics"
+	"github.com/NanmiCoder/cc-haha/backend/internal/errorlog"
 	"io"
 	"os"
 	"path/filepath"
@@ -15,43 +17,77 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/diagnostics"
 	"github.com/NanmiCoder/cc-haha/backend/internal/installationdiagnostics"
+	"github.com/NanmiCoder/cc-haha/backend/internal/nativemodule"
+	"github.com/NanmiCoder/cc-haha/backend/internal/ownerasync"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/securestorage"
 	"github.com/NanmiCoder/cc-haha/backend/internal/storage"
+	"github.com/NanmiCoder/cc-haha/backend/internal/tlsconfig"
 )
 
 // MainCommand binds non-model CLI actions to the existing native settings,
 // global writer and credential services. It does not construct an ASK session.
 type MainCommand struct {
-	doctorPackages      *installationdiagnostics.Packages
-	version             string
-	pid                 int
-	Owner               *cooperative.Owner
-	Native              *NativeBoundary
-	Settings            *NativeProcessSettings
-	Startup             *clistartupenv.Service
-	Global              *cliglobalconfig.Service
-	Secure              *securestorage.Store
-	Output, Error       io.Writer
-	NonInteractive      bool
-	credentialPlatform  string
-	credentialDirectory string
-	credentialCache     map[string]string
-	providerProxy       mainCommandProviderProxy
-	claudeAIMCP         []*CLIClaudeAIMCP
-	mcpClaudeAuth       *NativeOpenAIAuth
+	managedPolicyInput         io.Reader
+	remoteManaged              *nativeRemoteManagedPolicy
+	doctorPackages             *installationdiagnostics.Packages
+	version                    string
+	pid                        int
+	Owner                      *cooperative.Owner
+	Native                     *NativeBoundary
+	Settings                   *NativeProcessSettings
+	Startup                    *clistartupenv.Service
+	Global                     *cliglobalconfig.Service
+	Secure                     *securestorage.Store
+	Output, Error              io.Writer
+	NonInteractive             bool
+	credentialPlatform         string
+	credentialDirectory        string
+	credentialCache            map[string]string
+	commandLegacyAPIKey        *nativeCommandLegacyAPIKeyMemo
+	commandClaudeTokens        *nativeCommandClaudeTokenMemo
+	commandAdvisorConfigurable bool
+	nativeKeychainPrefetch     *nativeCommandKeychainPrefetch
+	providerProxy              mainCommandProviderProxy
+	claudeAIMCP                []*CLIClaudeAIMCP
+	mcpClaudeAuth              *NativeOpenAIAuth
+	nativeCommandInit          *nativeCommandInitBinding
+	nativeAPIPreconnect        nativeAPIPreconnectState
+	nativeInitRefs             ownerasync.NativeReferences
+	nativeInitTLS              *tlsconfig.State
+	nativePluginModule         *nativemodule.Entry[string, *nativePluginNamespace]
+	nativeSinksModule          *nativemodule.Entry[string, *nativeCommandSinksNamespace]
+	commandSessionID           string
+	commandArguments           []string
+	commandErrors              *errorlog.Service
+	commandErrorSink           *errorlog.NativeSink
+	commandEvents              *analytics.PublicFacade
+	commandAnalytics           *analytics.Service
+	commandAnalyticsSink       *analytics.PublicSink
+	commandAnalyticsHTTP       func(context.Context, analytics.Request) (analytics.Response, error)
+	nativeMigrations           *nativeMigrationRuntime
 }
 
 type MainCommandOptions struct {
+	Input             io.Reader       // explicit native terminal input, used only by managed-policy confirmation
+	Context           context.Context // actual startup caller lifetime; nil preserves existing construction callers
 	Arguments         []string
 	Native            *NativeBoundary
 	Platform, Version string
 	PID               int
 	NonInteractive    bool
 	Output, Error     io.Writer
+	AnalyticsHTTP     func(context.Context, analytics.Request) (analytics.Response, error) // actual external HTTP primitive for deterministic maintainer evidence
 }
 
 func NewMainCommand(o MainCommandOptions) (*MainCommand, error) {
+	ctx := o.Context
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	if err := context.Cause(ctx); err != nil {
+		return nil, err
+	}
 	n := o.Native
 	if n == nil || !n.NativeProcess || n.ResolvePolicy == nil || o.PID <= 0 || o.Output == nil || o.Error == nil {
 		return nil, mainCap("non-model native command process bindings")
@@ -89,24 +125,21 @@ func NewMainCommand(o MainCommandOptions) (*MainCommand, error) {
 	if parsed.Parsed.Globals["bare"] == true {
 		n.Environment["CLAUDE_CODE_SIMPLE"] = "1"
 	}
-	if n.Environment["CLAUDE_CODE_ENTRYPOINT"] == "" {
-		n.Environment["CLAUDE_CODE_ENTRYPOINT"] = "cli"
-		if o.NonInteractive {
-			n.Environment["CLAUDE_CODE_ENTRYPOINT"] = "sdk-cli"
-		}
-		// Original initializeEntrypoint identifies mcp serve before the TTY
-		// fallback. Its auxiliary requests carry the MCP billing entrypoint.
-		for i := 0; i+1 < len(o.Arguments); i++ {
-			if o.Arguments[i] == "mcp" && o.Arguments[i+1] == "serve" {
-				n.Environment["CLAUDE_CODE_ENTRYPOINT"] = "mcp"
-				break
-			}
-		}
-	}
 	n.Environment["COREPACK_ENABLE_AUTO_PIN"] = "0"
-	n.Environment["NoDefaultCurrentDirectoryInExePath"] = "1"
-	m := &MainCommand{version: o.Version, pid: o.PID, Owner: cooperative.New(), Native: n, Output: o.Output, Error: o.Error, NonInteractive: o.NonInteractive, credentialPlatform: o.Platform, credentialDirectory: "/home/claude/.claude/remote", credentialCache: map[string]string{}}
+	m := &MainCommand{managedPolicyInput: o.Input, version: o.Version, pid: o.PID, Owner: cooperative.New(), Native: n, Output: o.Output, Error: o.Error, NonInteractive: o.NonInteractive, credentialPlatform: o.Platform, credentialDirectory: "/home/claude/.claude/remote", credentialCache: map[string]string{}}
 	m.providerProxy.ready = make(chan struct{})
+	var err error
+	m.commandSessionID, m.commandArguments, m.commandAnalyticsHTTP = uuidMain(), append([]string(nil), o.Arguments...), o.AnalyticsHTTP
+	m.commandErrors, err = errorlog.New(errorlog.Options{Environment: m.nativeCommandEnvironment, Now: n.Now})
+	if err != nil {
+		m.Close()
+		return nil, err
+	}
+	m.commandEvents, err = analytics.NewPublicFacade(m.Owner, func(*cooperative.Scope) map[string]string { return m.nativeCommandEnvironment() })
+	if err != nil {
+		m.Close()
+		return nil, err
+	}
 	if n.CCRCredentialDirectory != "" {
 		if !filepath.IsAbs(n.CCRCredentialDirectory) {
 			m.Close()
@@ -115,7 +148,7 @@ func NewMainCommand(o MainCommandOptions) (*MainCommand, error) {
 		m.credentialDirectory = n.CCRCredentialDirectory
 	}
 	fail := func(err error) (*MainCommand, error) { m.Close(); return nil, err }
-	config := n.Environment["CLAUDE_CONFIG_DIR"]
+	config := n.ConfigHomeDirectory()
 	diag, err := diagnostics.NewProcess(diagnostics.Options{Environment: func(k string) string { return n.Environment[k] }, Now: n.Now, NowMillis: func() int64 { return int64(n.NowMillis()) }, PID: o.PID, Platform: o.Platform, Files: mainDiagnosticFiles{n: n}})
 	if err != nil {
 		return fail(err)
@@ -152,13 +185,60 @@ func NewMainCommand(o MainCommandOptions) (*MainCommand, error) {
 			}
 		}
 	}
+	platform := o.Platform
+	if platform == "windows" {
+		platform = "win32"
+	}
+	if err = n.check("command secure configuration", config); err != nil {
+		return fail(err)
+	}
+	m.Secure, err = securestorage.New(securestorage.Options{Home: n.Home, ConfigDir: config, ConfigDirExplicit: n.ConfigDirExplicit, Platform: platform, Environment: n.Environment, RunSecurity: n.RunSecurity, StartSecurity: n.StartKeychainPrefetch,
+		NativePlaintextLocation: m.nativeCommandPlaintextLocation, NativeKeychainServiceName: m.nativeCommandKeychainServiceName, NativeKeychainUser: m.nativeCommandKeychainUser, NativeSecurityContext: m.nativeCommandSecurityContext})
+	if err != nil {
+		return fail(err)
+	}
+	// main's two detached reads start before Commander registers the advisor
+	// option. Only preAction then awaits their shared publication, before init
+	// enables configs and applies Safe settings. No model/leaf Run initializes it.
+	if err = m.Owner.Run(ctx, func(scope *cooperative.Scope) error {
+		if err := m.startNativeCommandKeychainPrefetch(ctx, scope); err != nil {
+			return err
+		}
+		entrypoint := n.Environment["CLAUDE_CODE_ENTRYPOINT"]
+		if entrypoint == "" {
+			entrypoint = "cli"
+			if o.NonInteractive {
+				entrypoint = "sdk-cli"
+			}
+			// Original initializeEntrypoint identifies mcp serve before the TTY
+			// fallback. Its auxiliary requests carry the MCP billing entrypoint.
+			for i := 0; i+1 < len(o.Arguments); i++ {
+				if o.Arguments[i] == "mcp" && o.Arguments[i+1] == "serve" {
+					entrypoint = "mcp"
+					break
+				}
+			}
+		}
+		for name, value := range map[string]string{"CLAUDE_CODE_ENTRYPOINT": entrypoint, "NoDefaultCurrentDirectoryInExePath": "1"} {
+			if err := environment.SetProperty(quoteMain(name), quoteMain(value)); err != nil {
+				return err
+			}
+		}
+		if err := m.initializeNativeCommandAdvisor(ctx, scope); err != nil {
+			return err
+		}
+		return m.awaitNativeCommandKeychainPrefetch(scope)
+	}); err != nil {
+		return fail(err)
+	}
+	if err = m.attachRemoteManagedPolicy(); err != nil {
+		return fail(err)
+	}
+	m.Settings.prepareNativePolicy = m.prepareRemoteManagedPolicy
 	if err = m.Settings.ensureSettings(); err != nil {
 		return fail(err)
 	}
 	m.Startup = m.Settings.startup
-	if _, err = m.Settings.InitialSettings(); err != nil {
-		return fail(err)
-	}
 	if err = global.Enable(); err != nil {
 		return fail(err)
 	}
@@ -168,24 +248,17 @@ func NewMainCommand(o MainCommandOptions) (*MainCommand, error) {
 	if err = m.Startup.ApplyExtraCACertsFromConfig(); err != nil {
 		return fail(err)
 	}
+	if _, err = m.Settings.InitialSettings(); err != nil {
+		return fail(err)
+	}
 	for _, property := range environment.Snapshot().OwnProperties() {
 		var key, value string
 		if json.Unmarshal(property.NameJSON, &key) == nil && json.Unmarshal(property.Value, &value) == nil {
 			n.Environment[key] = value
 		}
 	}
-	platform := o.Platform
-	if platform == "windows" {
-		platform = "win32"
-	}
-	if err = n.check("command secure configuration", config); err != nil {
-		return fail(err)
-	}
-	m.Secure, err = securestorage.New(securestorage.Options{Home: n.Home, ConfigDir: config, ConfigDirExplicit: n.ConfigDirExplicit, Platform: platform, Environment: n.Environment, RunSecurity: n.RunSecurity})
-	if err != nil {
-		return fail(err)
-	}
 	close(m.providerProxy.ready)
+	m.nativeCommandInit = &nativeCommandInitBinding{m.Owner, n, m.Settings, environment}
 	return m, nil
 }
 
@@ -199,6 +272,18 @@ func (m *MainCommand) Run(ctx context.Context, work func(*cooperative.Scope) err
 	if m == nil || m.Owner == nil || work == nil {
 		return cooperative.ErrRestricted
 	}
+	if m.remoteManaged != nil {
+		bound, release := m.remoteManaged.bindProcessContext(ctx)
+		defer release()
+		err := m.Owner.Run(bound, work)
+		// Source's rejected security result is a synchronous process-exit
+		// decision. Do not let a completed loading promise outrun the
+		// AfterFunc that propagates that decision to this command context.
+		if errors.Is(context.Cause(m.remoteManaged.failureContext), ErrManagedPolicyRejected) {
+			return ErrManagedPolicyRejected
+		}
+		return err
+	}
 	return m.Owner.Run(ctx, work)
 }
 
@@ -206,6 +291,13 @@ func (m *MainCommand) Close() {
 	if m == nil {
 		return
 	}
+	if m.remoteManaged != nil && m.remoteManaged.owner == m.Owner {
+		m.remoteManaged.close()
+	}
+	m.closeNativeCommandKeychainPrefetch()
+	m.nativeMigrations.close()
+	m.closeNativeCommandSinks()
+	m.closeNativeAPIPreconnect()
 	m.closeCLIProviderProxy()
 	for _, binding := range m.claudeAIMCP {
 		binding.Close()

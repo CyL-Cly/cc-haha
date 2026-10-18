@@ -297,6 +297,17 @@ func (s *Service) Uninstall(ctx context.Context, plugin, scope, cwd string, keep
 	return success("Successfully uninstalled plugin: " + pluginName + " (scope: " + scope + ")" + dependencySuffix(reverseDependents(id, all))), nil
 }
 func (s *Service) Update(ctx context.Context, plugin, scope, cwd string) (protocol.JSONObject, error) {
+	return s.update(ctx, plugin, scope, cwd, false)
+}
+
+// UpdateInteractive is the installed-details caller of the same disk-only
+// update. Its Source result distinguishes an unchanged version before the
+// caller decides whether to clear caches or request configuration.
+func (s *Service) UpdateInteractive(ctx context.Context, plugin, scope, cwd string) (protocol.JSONObject, error) {
+	return s.update(ctx, plugin, scope, cwd, true)
+}
+
+func (s *Service) update(ctx context.Context, plugin, scope, cwd string, interactive bool) (protocol.JSONObject, error) {
 	name, market := splitID(plugin)
 	id := plugin
 	if market != "" {
@@ -380,8 +391,21 @@ func (s *Service) Update(ctx context.Context, plugin, scope, cwd string) (protoc
 		}()
 	}
 	oldVersion := installation.String("version")
+	result := func(message string, already bool) protocol.JSONObject {
+		if !interactive {
+			return success(message)
+		}
+		value := rec(field("success", true), field("message", message), field("pluginId", id), field("newVersion", newVersion), field("scope", scope))
+		if previous := installation.Get("version"); previous != nil {
+			value.Set("oldVersion", previous)
+		}
+		if already {
+			value.Set("alreadyUpToDate", []byte("true"))
+		}
+		return value
+	}
 	if oldVersion == newVersion || installation.String("installPath") == versioned || installation.String("installPath") == versioned+".zip" {
-		return success(name + " is already at the latest version (" + newVersion + ")."), nil
+		return result(name+" is already at the latest version ("+newVersion+").", true), nil
 	}
 	versioned, err = s.options.Materializer.CopyToVersioned(ctx, sourcePath, id, newVersion, entry, "")
 	if err != nil {
@@ -415,5 +439,5 @@ func (s *Service) Update(ctx context.Context, plugin, scope, cwd string) (protoc
 	if oldVersion == "" {
 		oldVersion = "unknown"
 	}
-	return success(fmt.Sprintf("Plugin \"%s\" updated from %s to %s for scope %s. Restart to apply changes.", name, oldVersion, newVersion, scopeDesc)), nil
+	return result(fmt.Sprintf("Plugin \"%s\" updated from %s to %s for scope %s. Restart to apply changes.", name, oldVersion, newVersion, scopeDesc), false), nil
 }

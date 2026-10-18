@@ -56,13 +56,21 @@ try:
    time.sleep(.01)
   lower(['send-keys','-t','private-anchor',' '.join(shlex.quote(v) for v in [binary,'cli','--app-root',str(root),'--worktree=physical','--tmux','--version'])+"; printf 'OWNED_NESTED_OUTER_DONE=%s' \"$?\"",'Enter'])
 
- deadline=time.monotonic()+20;detached=False
+ deadline=time.monotonic()+20;detached=False;observed_prefix=None
  while process.poll() is None:
   if time.monotonic()>deadline:raise AssertionError('actual public tmux PTY deadline '+repr(captured[-2500:]))
   if select.select([master],[],[],.05)[0]:
    try:captured.extend(os.read(master,65536))
    except OSError:pass
-  if (mode in ('existing','nested-existing') and b'EXISTING_PHYSICAL_TMUX_MARKER' in captured or mode=='nested' and b'(Claude Code)' in captured) and not detached:os.write(master,b'\x01d');detached=True
+  if (mode in ('existing','nested-existing') and b'EXISTING_PHYSICAL_TMUX_MARKER' in captured or mode=='nested' and b'(Claude Code)' in captured) and not detached:
+   # A ready screen does not imply the attached session inherited the global
+   # prefix. Consume its actual effective option, as a human using that session
+   # does; never change an existing server/session keybinding for this test.
+   observed_prefix=lower(['show-options','-Av','-t','repo_name_worktree-physical','prefix']).stdout.decode().strip()
+   assert observed_prefix.startswith('C-') and len(observed_prefix)==3,observed_prefix
+   binding=lower(['list-keys','-T','prefix','d']).stdout.decode()
+   assert 'detach-client' in binding,binding
+   os.write(master,bytes([ord(observed_prefix[-1].upper())-64])+b'd');detached=True
   # Real tmux -CC with an exiting inner process emits %exit and terminates.
  while select.select([master],[],[],.05)[0]:
   try:
@@ -102,7 +110,7 @@ try:
   except ProcessLookupError:pass
  assert not (config/'projects').exists(),'pre-CLI fastpath created ASK/canonical history'
  (root/'terminal.raw').write_bytes(captured)
- (root/'receipt.json').write_text(json.dumps({'mode':mode,'exitCode':process.returncode,'terminalRestored':True,'actualTmuxArguments':actual,'physicalTrackedBytes':True,'modelRequests':0,'preCLIHistoryWrites':0},indent=2))
+ (root/'receipt.json').write_text(json.dumps({'mode':mode,'exitCode':process.returncode,'terminalRestored':True,'actualTmuxArguments':actual,'observedSessionPrefix':observed_prefix,'physicalTrackedBytes':True,'modelRequests':0,'preCLIHistoryWrites':0},indent=2))
  print(json.dumps({'mode':mode,'exitCode':process.returncode,'terminalRestored':True,'physicalTrackedBytes':True,'modelRequests':0,'preCLIHistoryWrites':0}))
 finally:
  if process is not None and process.poll() is None:process.kill();process.wait()

@@ -37,6 +37,13 @@ func (s *Service) emitCommandAttachment(emit queryloop.Emit, kind, event, id str
 }
 
 func (s *Service) executeNativeCommandStop(ctx context.Context, call Context, event, id string, matchers []commandMatcher, emit queryloop.Emit) (queryloop.StopDecision, error) {
+	matched := make([]nativeMatchedHook, len(matchers))
+	for i, row := range matchers {
+		matched[i] = nativeMatchedHook{commandMatcher: row}
+	}
+	return s.executeNativeMatchedCommandStop(ctx, call, event, id, matched, emit)
+}
+func (s *Service) executeNativeMatchedCommandStop(ctx context.Context, call Context, event, id string, matchers []nativeMatchedHook, emit queryloop.Emit) (queryloop.StopDecision, error) {
 	b := s.options.Commands
 	decision := queryloop.StopDecision{BlockingMessages: []queryloop.Message{}, AllowBlockingContinuation: true}
 	if b == nil || call.Scope == nil || !call.Scope.BelongsTo(b.Owner) {
@@ -46,14 +53,15 @@ func (s *Service) executeNativeCommandStop(ctx context.Context, call Context, ev
 	if e != nil {
 		return decision, e
 	}
-	selected, e := selectNativeStopCommands(event, input, matchers, s.HasNativePromptBindings(b.Owner), s.HasNativeHTTPBindings(b.Owner), s.HasNativeAgentBindings(b.Owner), b.Async != nil, s.HasNativeCallbackBindings(b.Owner))
+	selected, e := selectNativeStopMatchedCommands(event, input, matchers, s.HasNativePromptBindings(b.Owner), s.HasNativeHTTPBindings(b.Owner), s.HasNativeAgentBindings(b.Owner), b.Async != nil, s.HasNativeCallbackBindings(b.Owner))
 	if e != nil {
 		return decision, e
 	}
 	if len(selected) == 0 {
 		return decision, nil
 	}
-	for _, hook := range selected {
+	for _, matched := range selected {
+		hook := matched.hook
 		command := nativeEventHookDisplay(hook)
 		data := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: commandJSON("hook_progress")}, protocol.JSONField{Name: "hookEvent", Value: commandJSON(event)}, protocol.JSONField{Name: "hookName", Value: commandJSON(event)}, protocol.JSONField{Name: "command", Value: commandJSON(command)})
 		if hook.String("type") == "prompt" {
@@ -81,9 +89,11 @@ func (s *Service) executeNativeCommandStop(ctx context.Context, call Context, ev
 	ready := []result{}
 	remaining := len(selected)
 	var wake *ownerasync.OwnerFuture[struct{}]
-	for hookIndex, hook := range selected {
+	for hookIndex, matched := range selected {
+		hook := matched.hook
 		job := func(scope *cooperative.Scope) error {
 			current := call
+			current.SkillRoot = matched.skillRoot
 			index := hookIndex
 			current.HookIndex = &index
 			current.Scope = scope
@@ -187,6 +197,7 @@ func (s *Service) executeNativeCommandStop(ctx context.Context, call Context, ev
 		ready = ready[1:]
 		hook, out := current.hook, current.output
 		if out.Backgrounded {
+			s.nativeSessionHookSucceeded(call.Scope, event, "", hook)
 			continue
 		}
 		if current.http != nil || current.callback != nil {
@@ -270,6 +281,9 @@ func (s *Service) executeNativeCommandStop(ctx context.Context, call Context, ev
 				decision.BlockingMessages = []queryloop.Message{}
 				return decision, nil
 			}
+			if value.Outcome == "success" {
+				s.nativeSessionHookSucceeded(call.Scope, event, "", hook)
+			}
 			continue
 		}
 		if current.prompt != nil {
@@ -294,7 +308,7 @@ func (s *Service) executeNativeCommandStop(ctx context.Context, call Context, ev
 				if call.AgentID != "" {
 					sid = call.AgentID
 				}
-				if hook.String("type") == "prompt" {
+				if hook.String("type") == "prompt" && !s.nativeFrontmatterTracked(sid, event) {
 					if e = s.promptHookSucceeded(call.Scope, sid, event, hook); e != nil {
 						return decision, e
 					}
@@ -360,6 +374,9 @@ func (s *Service) executeNativeCommandStop(ctx context.Context, call Context, ev
 				return decision, nil
 			}
 			infos = append(infos, info)
+			if value.Outcome == "success" {
+				s.nativeSessionHookSucceeded(call.Scope, event, "", hook)
+			}
 			continue
 		}
 		command := hook.String("statusMessage")
@@ -397,6 +414,7 @@ func (s *Service) executeNativeCommandStop(ctx context.Context, call Context, ev
 		}
 		parsed, failure := CommandStopDecision(command, event, out)
 		if failure == nil && parsed.Async {
+			s.nativeSessionHookSucceeded(call.Scope, event, "", hook)
 			continue
 		}
 		if failure != nil {
@@ -491,6 +509,9 @@ func (s *Service) executeNativeCommandStop(ctx context.Context, call Context, ev
 			}
 		}
 		infos = append(infos, info)
+		if current.failure == nil && failure == nil && parsed.ValidationError == "" && (parsed.JSON || out.Code == 0) {
+			s.nativeSessionHookSucceeded(call.Scope, event, "", hook)
+		}
 	}
 	if hasPending {
 		if e = stopped(pendingReason); e != nil {
@@ -501,7 +522,8 @@ func (s *Service) executeNativeCommandStop(ctx context.Context, call Context, ev
 	// first unassigned command as handleStopHooks does for parallel callbacks.
 	ordered := []protocol.JSONObject{}
 	used := make([]bool, len(infos))
-	for _, hook := range selected {
+	for _, matched := range selected {
+		hook := matched.hook
 		name := nativeEventHookDisplay(hook)
 		for i, info := range infos {
 			if !used[i] && info.String("command") == name {

@@ -65,9 +65,12 @@ func TestOwnedSDKGitBranchUsesOneServiceAndOriginalContext(t *testing.T) {
 			if e != nil {
 				return e
 			}
-			original, ok := result.(*gitbranch.BranchFuture)
+			// Record calls utils/git.ts getBranch, whose async return adopts the
+			// same process service's cached-branch Promise. It is a distinct
+			// Promise even though the underlying Git service is unchanged.
+			original, ok := result.(*ownedRecordBranchReturn)
 			if !ok {
-				return errors.New("not original Git future")
+				return errors.New("not original getBranch return Promise")
 			}
 			value, e := original.Await(s)
 			if e != nil {

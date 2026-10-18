@@ -15,13 +15,13 @@ func NewNativeFastModeRequest(owner *Owner, scope *Scope, resolve func(string, *
 	if err := scope.check(); err != nil {
 		return nil, err
 	}
-	if scope.sideContinuation != nil && !scope.IsNativeSideQuestion(owner) && !scope.IsNativeAutoDream(owner) && !scope.isNativePermissionRequestHook(owner) {
+	if scope.sideContinuation != nil && !scope.IsNativeSideQuestion(owner) && !scope.IsNativeAutoDream(owner) && !scope.isNativePermissionRequestHook(owner) && !scope.isNativeAwaitingAuxiliary(owner) {
 		return nil, ErrRestricted
 	}
 	return &NativeFastModeRequest{owner, scope, resolve}, nil
 }
 func (p *NativeFastModeRequest) Current() bool {
-	return p != nil && p.scope.BelongsTo(p.owner) && p.owner.life.Err() == nil && (p.scope.sideContinuation == nil || p.scope.IsNativeSideQuestion(p.owner) || p.scope.IsNativeAutoDream(p.owner) || p.scope.isNativePermissionRequestHook(p.owner))
+	return p != nil && p.scope.BelongsTo(p.owner) && p.owner.life.Err() == nil && (p.scope.sideContinuation == nil || p.scope.IsNativeSideQuestion(p.owner) || p.scope.IsNativeAutoDream(p.owner) || p.scope.isNativePermissionRequestHook(p.owner) || p.scope.isNativeAwaitingAuxiliary(p.owner))
 }
 func (p *NativeFastModeRequest) Owns(owner *Owner) bool {
 	return p != nil && p.owner == owner && p.Current()

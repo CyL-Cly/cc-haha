@@ -22,6 +22,7 @@ type Options struct {
 	Owner                                           *cooperative.Owner
 	Files                                           Files
 	Home, CWD, ProjectRoot, ConfigHome, ManagedRoot string
+	NativeConfigHome                                func() string
 	EnabledSources                                  []string
 	Environment                                     func(string) string
 	Settings                                        func(string) (*protocol.JSONObject, error)

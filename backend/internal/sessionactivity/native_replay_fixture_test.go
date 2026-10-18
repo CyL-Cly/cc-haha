@@ -30,6 +30,7 @@ func buildNativeReplay(t *testing.T) string {
 		nativeReplayBuild.binary = filepath.Join(directory, "native-helper")
 		goTool := filepath.Join(runtime.GOROOT(), "bin", "go")
 		command := exec.Command(goTool, "build", "-mod=readonly", "-o", nativeReplayBuild.binary, "./testdata/replay-fixture")
+		capturePublicGoCoverage(t, command)
 		nativeReplayBuild.raw, nativeReplayBuild.error = command.CombinedOutput()
 	})
 	if nativeReplayBuild.error != nil {
@@ -38,6 +39,7 @@ func buildNativeReplay(t *testing.T) string {
 	return nativeReplayBuild.binary
 }
 func TestMain(m *testing.M) {
+	alignPublicGoCoverage()
 	exit := m.Run()
 	if nativeReplayBuild.binary != "" {
 		_ = os.RemoveAll(filepath.Dir(nativeReplayBuild.binary))
@@ -100,6 +102,7 @@ func runNativeOriginal(t *testing.T, id, guard string) (map[string]any, []byte, 
 	command.Dir = home
 	command.Env = []string{"HOME=" + home, "USERPROFILE=" + home, "CLAUDE_CONFIG_DIR=" + filepath.Join(home, ".claude"), "TMPDIR=" + filepath.Join(home, "tmp"), "CC_HAHA_FIXTURE_TEMP_ROOT=" + allocation, "TZ=UTC", "PATH=/usr/bin:/bin"}
 	command.Stdin = strings.NewReader(input.ExternalControlUTF8)
+	capturePublicGoCoverage(t, command)
 	out, e := command.CombinedOutput()
 	exit := 0
 	if e != nil {

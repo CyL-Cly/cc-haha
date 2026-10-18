@@ -42,6 +42,7 @@ func compiledPrintCommandDeclarations() []printCommandDefinition {
 	prComments := skillcommands.PRCommentsCommandMetadata()
 	init := skillcommands.InitCommandMetadata(false)
 	securityReview := skillcommands.SecurityReviewCommandMetadata()
+	statusline := skillcommands.StatuslineCommandMetadata()
 	return []printCommandDefinition{
 		{name: agent.String("name"), description: agent.String("description"), hint: agent.String("argumentHint"), kind: agent.String("type"), source: agent.String("source")},
 		{name: "clear", description: "Clear conversation history and free up context", kind: "local", aliases: []string{"reset", "new"}, migratedExecutor: true},
@@ -53,10 +54,16 @@ func compiledPrintCommandDeclarations() []printCommandDefinition {
 		{name: init.String("name"), description: init.String("description"), kind: init.String("type"), source: init.String("source")},
 		{name: prComments.String("name"), description: prComments.String("description"), kind: prComments.String("type"), source: prComments.String("source")},
 		{name: "release-notes", description: "View release notes", kind: "local", supportsNonInteractive: true, migratedExecutor: true},
+		{name: "vim", description: "Toggle between Vim and Normal editing modes", kind: "local", migratedExecutor: true},
+		{name: "stickers", description: "Order Claude Code stickers", kind: "local", migratedExecutor: true},
 		{name: "goal", description: "Set a completion goal", hint: "[<condition> | clear]", kind: "local-jsx", supportsNonInteractive: true, migratedExecutor: true},
+		{name: "plan", description: "Enable plan mode or view the current session plan", hint: "[open|<description>]", kind: "local-jsx", migratedExecutor: true},
+		{name: "btw", description: "Ask a quick side question without interrupting the main conversation", hint: "<question>", kind: "local-jsx", migratedExecutor: true},
+		{name: "buddy", description: "Meet your companion", hint: "[hatch|pet|mute|unmute|info]", kind: "local-jsx", migratedExecutor: true},
 		{name: "review", description: "Review a pull request", kind: "prompt", source: "builtin", migratedExecutor: true},
 		{name: securityReview.String("name"), description: securityReview.String("description"), kind: securityReview.String("type"), source: securityReview.String("source")},
 		{name: "insights", description: "Generate a report analyzing your Claude Code sessions", kind: "prompt", source: "builtin", migratedExecutor: true},
+		{name: statusline.String("name"), description: statusline.String("description"), kind: statusline.String("type"), source: statusline.String("source"), disableNonInteractive: true},
 	}
 }
 func filterHeadlessCommands(all []printCommandDefinition) []printCommandDefinition {
@@ -170,7 +177,27 @@ func controlCommandDescriptionJSON(c printCommandDefinition) json.RawMessage {
 // headless filter. Executors are independently capability guarded.
 func (s *PrintRegistry) RefreshMigratedCommands() {
 	s.commands = filterEnabledPrintCommands(migratedPrintCommands(), s.environment)
+	if s.remoteSafe {
+		s.commands = filterRemoteSafePrintCommands(s.commands)
+	}
 	s.catalog.Commands = projectSystemCommands(s.commands)
+}
+
+func IsRemoteSafeCommand(name string) bool {
+	switch name {
+	case "session", "exit", "clear", "help", "theme", "color", "vim", "cost", "usage", "copy", "btw", "feedback", "plan", "keybindings", "statusline", "stickers", "mobile":
+		return true
+	}
+	return false
+}
+func filterRemoteSafePrintCommands(commands []printCommandDefinition) []printCommandDefinition {
+	result := []printCommandDefinition{}
+	for _, command := range commands {
+		if IsRemoteSafeCommand(command.name) {
+			result = append(result, command)
+		}
+	}
+	return result
 }
 func (s *PrintRegistry) ControlCommands() []ControlCommand {
 	if s.slashCommandsDisabled {

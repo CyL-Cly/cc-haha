@@ -39,7 +39,6 @@ func (m *MainPrint) nativeShellResolverOnOwner(scope *cooperative.Scope) (*windo
 	if windowshell.IsWindows(m.options.Platform) {
 		view, warmed := resolver.Snapshot()
 		if warmed && view.GitBash != "" {
-			m.options.Native.Environment["SHELL"] = view.GitBash
 			if err := m.environment.SetProperty(quoteMain("SHELL"), quoteMain(view.GitBash)); err != nil {
 				return nil, err
 			}

@@ -94,8 +94,15 @@ func TestPetPhysicalHTTPProjectionMembershipAndIndependentCredentials(t *testing
 	call("OPTIONS", "/api/sessions", "", "pet-secret", 204)
 }
 
+type petTransportSession struct{ transportSession }
+
+func (s *petTransportSession) Snapshot(ctx context.Context) ([]json.RawMessage, error) {
+	frames, err := s.transportSession.Snapshot(ctx)
+	return append(frames, json.RawMessage(`{"type":"permission_requests_snapshot","toolRequestIds":["pending"],"computerUseRequestIds":[],"turnActive":false}`)), err
+}
+
 func TestPetPhysicalWebSocketFiltersAndSwitchesWithoutStoppingFullClient(t *testing.T) {
-	fake := &transportSession{received: make(chan json.RawMessage, 8)}
+	fake := &petTransportSession{transportSession: transportSession{received: make(chan json.RawMessage, 8)}}
 	o := testOptions(t, func(_ context.Context, _ SessionOptions, emit Emit) (LiveSession, error) {
 		fake.emit = emit
 		return fake, nil
@@ -114,7 +121,7 @@ func TestPetPhysicalWebSocketFiltersAndSwitchesWithoutStoppingFullClient(t *test
 		t.Cleanup(func() { _ = c.Close() })
 		_ = c.SetDeadline(time.Now().Add(3 * time.Second))
 		receiveType(t, c, "connected")
-		receiveType(t, c, "session_state")
+		receiveType(t, c, "permission_requests_snapshot")
 		return c
 	}
 	full := connect("desktop-secret")

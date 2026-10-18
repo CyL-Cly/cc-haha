@@ -18,6 +18,7 @@ func (p *PaneRuntime) NeedsITermSetup() bool { p.mu.Lock(); defer p.mu.Unlock();
 func (p *PaneRuntime) ResetBackendDetection() {
 	p.mu.Lock()
 	p.backend = ""
+	p.inProcessFallback = false
 	p.needsSetup = false
 	p.mu.Unlock()
 }

@@ -107,6 +107,15 @@ func TestActualDesktopAttachmentWebSocketStagesFileAndSharedHarnessReadsIt(t *te
 	if calls.Load() != 2 || stagedPath == "" || !strings.HasPrefix(stagedPath, filepath.Join(o.Environment["CLAUDE_CONFIG_DIR"], "uploads", id)+string(filepath.Separator)) {
 		t.Fatal("attachment escaped session staging or started another model loop", calls.Load(), stagedPath)
 	}
+	// message_complete settles the foreground UI turn, before the independent
+	// transcript writer has drained. Exercise the actual shutdown boundary
+	// before checking durable bytes; an idle snapshot is not a disk barrier.
+	_ = ws.Close()
+	closeContext, cancelClose := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancelClose()
+	if err := s.Close(closeContext); err != nil {
+		t.Fatal("actual desktop session shutdown did not drain persistence", err)
+	}
 	var transcript []byte
 	if err = filepath.WalkDir(filepath.Join(o.Environment["CLAUDE_CONFIG_DIR"], "projects"), func(path string, entry os.DirEntry, e error) error {
 		if e != nil {

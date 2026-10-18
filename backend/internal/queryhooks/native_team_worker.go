@@ -57,6 +57,7 @@ func (s *Service) RegisterNativeMainHooks(sid string, hooks protocol.JSONObject)
 			copy(rows[insert+1:], rows[insert:])
 			rows[insert] = command
 			store.events[sid][event] = rows
+			store.appendLegacyFrontmatterIfTrackedLocked(sid, event, command)
 		}
 	}
 	return nil

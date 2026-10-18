@@ -118,7 +118,7 @@ func (m *MainPrint) nativeCompactExcludedFiles(scope *cooperative.Scope) ([]stri
 		return nil, cooperative.ErrRestricted
 	}
 	n := m.options.Native
-	config := n.Environment["CLAUDE_CONFIG_DIR"]
+	config := n.ConfigHomeDirectory()
 	if config == "" {
 		config = filepath.Join(n.Home, ".claude")
 	}

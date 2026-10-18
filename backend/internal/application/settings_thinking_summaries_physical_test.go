@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 
@@ -81,8 +82,13 @@ func TestNativeThinkingSummariesActualTUIRequestStreamTranscriptAndColdResume(t 
 					}
 					state := tui.NewState(nil, 100, 30)
 					state.ActiveTurn = "actual-thinking-turn"
+					var stateMu sync.Mutex
 					events := 0
 					err = s.Submit(context.Background(), tui.Input{Text: "Complete private thinking-summary task", TurnID: state.ActiveTurn}, func(event tui.Event) error {
+						// The terminal's normal event loop serializes these consumers;
+						// this direct callback also receives background inbox events.
+						stateMu.Lock()
+						defer stateMu.Unlock()
 						if event.Kind == tui.ThinkingDelta {
 							events++
 						}

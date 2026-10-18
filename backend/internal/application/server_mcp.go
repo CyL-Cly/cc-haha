@@ -94,7 +94,7 @@ func (r *desktopMCPRuntime) get(ctx context.Context, cwd string) (*mcpapi.Servic
 		platform = "win32"
 	}
 	if r.secure == nil {
-		r.secure, err = securestorage.New(securestorage.Options{Home: n.Home, ConfigDir: n.Environment["CLAUDE_CONFIG_DIR"], ConfigDirExplicit: n.ConfigDirExplicit, Platform: platform, Environment: n.Environment, RunSecurity: n.RunSecurity})
+		r.secure, err = securestorage.New(securestorage.Options{Home: n.Home, ConfigDir: n.ConfigHomeDirectory(), ConfigDirExplicit: n.ConfigDirExplicit, Platform: platform, Environment: n.Environment, RunSecurity: n.RunSecurity})
 		if err != nil {
 			return nil, err
 		}
@@ -129,7 +129,7 @@ func (r *desktopMCPRuntime) get(ctx context.Context, cwd string) (*mcpapi.Servic
 	if err != nil {
 		return nil, err
 	}
-	auth, err := mcpauth.New(mcpauth.Options{Secure: secure, Home: n.Home, ConfigDir: n.Environment["CLAUDE_CONFIG_DIR"], CWD: cwd, Platform: platform, Environment: n.Environment, Settings: func(context.Context) (protocol.JSONObject, error) {
+	auth, err := mcpauth.New(mcpauth.Options{Secure: secure, Home: n.Home, ConfigDir: n.ConfigHomeDirectory(), CWD: cwd, Platform: platform, Environment: n.Environment, Settings: func(context.Context) (protocol.JSONObject, error) {
 		v, err := settings.InitialSettings()
 		if v == nil {
 			return protocol.NewJSONObject(), err

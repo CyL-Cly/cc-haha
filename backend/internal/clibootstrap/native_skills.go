@@ -22,12 +22,17 @@ type NativeSkillOptions struct {
 // SkillCommands binds discovery to the same settings, policy and installed
 // plugin lifetime as the process. Invocation remains owned by its Harness.
 func (p *NativeProcessSettings) SkillCommands(o NativeSkillOptions) (*skillcommands.Service, error) {
+	return p.skillCommandsWithFiles(o, nativeSkillFiles{n: p.n})
+}
+
+func (p *NativeProcessSettings) skillCommandsWithFiles(o NativeSkillOptions, files skillregistry.FileSystem) (*skillcommands.Service, error) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	if err := p.ensureSettings(); err != nil {
 		return nil, err
 	}
 	n := p.n
+	environment := func(key string) string { value, _ := n.nativeEnvironmentValue(key); return value }
 	sources := append([]string{}, enabledSources(p.sources.AllowedSettingSources)...)
 	settings := func(ctx context.Context) (protocol.JSONObject, error) {
 		if err := ctx.Err(); err != nil {
@@ -39,17 +44,44 @@ func (p *NativeProcessSettings) SkillCommands(o NativeSkillOptions) (*skillcomma
 		}
 		return value.Clone(), err
 	}
+	rootSettings := func(ctx context.Context) (protocol.JSONObject, error) {
+		if err := ctx.Err(); err != nil {
+			return protocol.JSONObject{}, err
+		}
+		// Source getSettings_DEPRECATED returns its session cache before any
+		// file/path lookup. A root query must retain that warmed setting after
+		// the scalar directory changes; ordinary startup admission stays guarded.
+		p.mu.Lock()
+		if p.closed {
+			p.mu.Unlock()
+			return protocol.JSONObject{}, mainCap("closed server settings context")
+		}
+		cached := p.settingsState.GetSessionSettingsCache()
+		if cached != nil {
+			value := protocol.NewJSONObject()
+			if cached.Settings != nil {
+				value = cached.Settings.Clone()
+			}
+			p.mu.Unlock()
+			return value, nil
+		}
+		p.mu.Unlock()
+		return settings(ctx)
+	}
 	roots, err := skillregistry.New(skillregistry.Options{
-		Home: n.Home, ConfigDir: n.Environment["CLAUDE_CONFIG_DIR"], CWD: n.CWD, ProjectRoot: n.CWD,
-		FS: skillcommands.NativeFiles{}, Environment: func(key string) string { return n.Environment[key] }, Settings: settings, Plugins: p,
+		Home: n.Home, ConfigDir: n.ConfigHomeDirectory(), CWD: n.CWD, ProjectRoot: n.CWD,
+		NativeConfigDirectory: n.nativeConfigHomePath,
+		NativeHomeDirectory:   n.nativeSkillHomeDirectory,
+		FS:                    files, Environment: environment, Settings: rootSettings, Plugins: p,
 	})
 	if err != nil {
 		return nil, err
 	}
 	directories := append([]string{}, o.AdditionalDirectories...)
 	service, err := skillcommands.New(skillcommands.Options{
-		Home: n.Home, ConfigDir: n.Environment["CLAUDE_CONFIG_DIR"], CWD: n.CWD, ManagedDir: n.ManagedRoot,
-		Roots: roots, Files: skillcommands.NativeFiles{}, Environment: func(key string) string { return n.Environment[key] },
+		Home: n.Home, ConfigDir: n.ConfigHomeDirectory(), CWD: n.CWD, ManagedDir: n.ManagedRoot,
+		NativeConfigDirectory: n.nativeConfigHomePath,
+		Roots:                 roots, Files: files, Environment: environment,
 		EnabledSource: func(ctx context.Context, source string) (bool, error) {
 			return slices.Contains(sources, source), ctx.Err()
 		},

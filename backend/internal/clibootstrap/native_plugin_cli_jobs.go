@@ -15,7 +15,7 @@ type pluginCLIJobs struct {
 }
 
 func newPluginCLIJobs(ctx context.Context, n *NativeBoundary) (*pluginCLIJobs, error) {
-	ignore, err := settings.NewGitIgnore(settings.GitIgnoreOptions{HomeDir: n.Home, Environment: func() map[string]string { return n.Environment }, Executable: "git"})
+	ignore, err := settings.NewGitIgnore(settings.GitIgnoreOptions{HomeDir: n.Home, Environment: n.nativeEnvironmentSnapshot, Executable: "git"})
 	if err != nil {
 		return nil, err
 	}

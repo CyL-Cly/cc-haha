@@ -108,13 +108,13 @@ func domainFromOriginalEnv(env map[string]string, fast *bool, native, boundFast 
 			}
 		}
 		switch name {
-		case "ANTHROPIC_BASE_URL", "ANTHROPIC_API_KEY", "API_TIMEOUT_MS", "CLAUDE_CODE_EXTRA_METADATA", "CLAUDE_CODE_MAX_RETRIES", "CLAUDE_CODE_DISABLE_FAST_MODE", "NODE_EXTRA_CA_CERTS", "NODE_OPTIONS":
+		case "ANTHROPIC_BASE_URL", "ANTHROPIC_API_KEY", "ANTHROPIC_CUSTOM_HEADERS", "API_TIMEOUT_MS", "CLAUDE_CODE_EXTRA_METADATA", "CLAUDE_CODE_MAX_RETRIES", "CLAUDE_CODE_DISABLE_FAST_MODE", "NODE_EXTRA_CA_CERTS", "NODE_OPTIONS":
 		case "CLAUDE_CODE_ENTRYPOINT":
 			if env[name] != "sdk" && env[name] != "sdk-cli" {
 				return Domain{}, unsupported("original runtime entrypoint value")
 			}
 		case "CLAUDE_CODE_SIMPLE":
-			if env[name] != "1" {
+			if env[name] != "1" && !(native && env[name] == "0") {
 				return Domain{}, unsupported("original bare environment value")
 			}
 		default:

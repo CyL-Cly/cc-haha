@@ -55,7 +55,7 @@ func TestDesktopColdResumeOrdinaryCLIWorktreeDefaultCatalog(t *testing.T) {
 	o.WorkDir, _ = filepath.EvalSymlinks(o.WorkDir)
 	o.Native = nil
 	o.NativeFactory = func(env map[string]string, cwd, platform string) (*clibootstrap.NativeBoundary, error) {
-		return clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: cwd, Platform: platform, ManagedRoot: filepath.Join(filepath.Dir(o.WorkDir), "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+		return newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: cwd, Platform: platform, ManagedRoot: filepath.Join(filepath.Dir(o.WorkDir), "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 	}
 	o.Arguments.Tools = nil
 	o.Arguments.SystemPrompt = ""

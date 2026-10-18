@@ -72,7 +72,7 @@ func TestActualColdResumeDirectWriteUsesRestoredReadCacheWithoutExtraRead(t *tes
 			if mode == "resume-at-before-read" {
 				o.Arguments.ResumeAt = history[0].String("uuid")
 			}
-			o.Native, err = clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: o.Environment, CWD: o.WorkDir, Platform: o.Platform, ManagedRoot: o.Native.ManagedRoot, ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+			o.Native, err = newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: o.Environment, CWD: o.WorkDir, Platform: o.Platform, ManagedRoot: o.Native.ManagedRoot, ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 			if err != nil {
 				t.Fatal(err)
 			}

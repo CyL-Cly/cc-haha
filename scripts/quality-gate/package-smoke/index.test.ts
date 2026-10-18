@@ -936,3 +936,70 @@ describe('packaged artifact inspection', () => {
     expect(report.missingChecks.some((check) => check.label.includes('linux-unpacked'))).toBe(true)
   })
 })
+
+
+describe('explicit non-CU package inspection', () => {
+  function ordinaryMacPackage() {
+    const rootDir = createRepoRoot()
+    tempDirs.push(rootDir)
+    const app = 'desktop/build-artifacts/electron/mac-arm64/Claude Code Haha.app/Contents'
+    const unpacked = `${app}/Resources/app.asar.unpacked`
+    const sidecars = `${unpacked}/src-tauri/binaries`
+    for (const name of ['Info.plist', 'MacOS/Claude Code Haha']) writeFile(rootDir, `${app}/${name}`, thinMachO('arm64'))
+    writeFile(rootDir, `${app}/Resources/app.asar`)
+    writeFile(rootDir, `${unpacked}/dist/index.html`)
+    writeFile(rootDir, `${unpacked}/node_modules/node-pty/package.json`)
+    for (const name of ['pty.node', 'spawn-helper']) writeFile(rootDir, `${unpacked}/node_modules/node-pty/prebuilds/darwin-arm64/${name}`, thinMachO('arm64'))
+    writeFile(rootDir, `${sidecars}/claude-sidecar-go-aarch64-apple-darwin`, thinMachO('arm64'))
+    rmSync(join(rootDir, sidecars, 'cc-haha-computer-use.app'), { recursive: true })
+    return { rootDir, sidecars, app }
+  }
+
+  test('requires the missing helper by default but excludes only CU checks when explicitly requested', async () => {
+    const { rootDir } = ordinaryMacPackage()
+    const original = await inspectPackagedArtifacts(rootDir, { platform: 'macos', arch: 'arm64', packageKind: 'dir' })
+    expect(original.passed).toBe(false)
+    expect(original.scopeExclusions).toBeUndefined()
+    expect(original.missingChecks.some(check => check.label === 'macOS cu-helper app bundle')).toBe(true)
+    let commands = 0
+    const scoped = await inspectPackagedArtifacts(rootDir, {
+      platform: 'macos', arch: 'arm64', packageKind: 'dir', hostPlatform: 'macos',
+      scopeExclusions: ['computer-use'], commandRunner: () => { commands += 1; throw new Error('CU probe must not run') },
+    })
+    expect(scoped.passed).toBe(true)
+    expect(commands).toBe(0)
+    expect(scoped.scopeExclusions).toEqual(['computer-use'])
+    expect(scoped.excludedChecks).toHaveLength(1)
+    expect(scoped.excludedChecks?.[0].label).toContain('CU helper')
+    expect(scoped.passedChecks.some(check => check.label === 'macOS arm64 sidecar Mach-O architecture')).toBe(true)
+    expect(scoped.passedChecks.some(check => check.label === 'macOS arm64 node-pty native module Mach-O architecture')).toBe(true)
+  })
+
+  test('still rejects missing ordinary ripgrep and mismatched ordinary sidecar architecture', async () => {
+    const { rootDir, sidecars } = ordinaryMacPackage()
+    rmSync(join(rootDir, sidecars, 'rg'))
+    writeFile(rootDir, `${sidecars}/claude-sidecar-go-aarch64-apple-darwin`, thinMachO('x64'))
+    // writeFile creates its standard ripgrep fixture alongside sidecars, so remove it after the overwrite.
+    rmSync(join(rootDir, sidecars, 'rg'))
+    const report = await inspectPackagedArtifacts(rootDir, {
+      platform: 'macos', arch: 'arm64', packageKind: 'dir', scopeExclusions: ['computer-use'],
+    })
+    expect(report.passed).toBe(false)
+    expect(report.missingChecks.some(check => check.label === 'macOS bundled ripgrep binary')).toBe(true)
+    expect(report.missingChecks.some(check => check.label === 'macOS arm64 sidecar Mach-O architecture')).toBe(true)
+  })
+
+  test('does not bypass the ordinary app Gatekeeper assessment', async () => {
+    const { rootDir } = ordinaryMacPackage()
+    const commands: string[][] = []
+    const report = await inspectPackagedArtifacts(rootDir, {
+      platform: 'macos', arch: 'arm64', packageKind: 'dir', hostPlatform: 'macos',
+      scopeExclusions: ['computer-use'], requireMacosGatekeeper: true,
+      commandRunner: (command, args) => { commands.push([command, ...args]); return { status: 1, stderr: 'not approved' } },
+    })
+    expect(report.passed).toBe(false)
+    expect(commands.some(command => command[0] === '/usr/sbin/spctl')).toBe(true)
+    expect(commands.some(command => command.join(' ').includes('cc-haha-computer-use'))).toBe(false)
+    expect(report.missingChecks.some(check => check.label.toLowerCase().includes('gatekeeper'))).toBe(true)
+  })
+})

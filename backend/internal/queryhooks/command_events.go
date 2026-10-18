@@ -31,7 +31,7 @@ func (s *Service) NativeEventPresent(event, sid string) (bool, error) {
 	if s.simple() {
 		return false, nil
 	}
-	rows, err := s.configuredNativeCommands(event, sid)
+	rows, err := s.configuredNativeMatchedCommands(event, sid, nativeFrontmatterEventHasToolContext(event))
 	if err != nil {
 		return false, err
 	}
@@ -49,7 +49,7 @@ func (s *Service) ExecuteCommandEvent(ctx context.Context, event CommandEvent, c
 		return errors.New("native Hook event requires original event/session/tool identity")
 	}
 	s.mu.Lock()
-	rows, e := s.configuredNativeCommands(event.Event, event.SessionID)
+	rows, e := s.configuredNativeMatchedCommands(event.Event, event.SessionID, nativeFrontmatterEventHasToolContext(event.Event) && event.Call.ToolUseContext != nil)
 	if e == nil && ctx.Err() == nil && s.activeCallbacks(event.Event, event.SessionID) {
 		e = unsupported("native event callback/function execution")
 	}
@@ -63,6 +63,16 @@ func (s *Service) ExecuteCommandEvent(ctx context.Context, event CommandEvent, c
 	if skip || len(rows) == 0 {
 		return nil
 	}
+	originalConsume := consume
+	consume = func(value EventResult) error {
+		if err := originalConsume(value); err != nil {
+			return err
+		}
+		if value.Outcome == "success" {
+			s.nativeSessionHookSucceeded(event.Call.Scope, event.Event, event.MatchQuery, value.Hook)
+		}
+		return nil
+	}
 	call := event.Call
 	call.HookEvent = event.Event
 	call.HookName = event.Event
@@ -74,7 +84,7 @@ func (s *Service) ExecuteCommandEvent(ctx context.Context, event CommandEvent, c
 	if e != nil {
 		return e
 	}
-	selected := []protocol.JSONObject{}
+	selected := []nativeMatchedHook{}
 	indices := map[string]int{}
 	for _, row := range rows {
 		if event.MatchQuery != "" && !nativeCommandMatch(event.MatchQuery, row.matcher) {
@@ -82,25 +92,26 @@ func (s *Service) ExecuteCommandEvent(ctx context.Context, event CommandEvent, c
 		}
 		hook := row.hook
 		if hook.String("type") == "callback" {
-			selected = append(selected, hook.Clone())
+			selected = append(selected, row.clone())
 			continue
 		}
-		key, e := nativeEventHookKey(hook)
+		key, e := row.key()
 		if e != nil {
 			return e
 		}
 		if i, ok := indices[key]; ok {
-			selected[i] = hook.Clone()
+			selected[i] = row.clone()
 		} else {
 			indices[key] = len(selected)
-			selected = append(selected, hook.Clone())
+			selected = append(selected, row.clone())
 		}
 	}
 	// Original matching first deduplicates each kind, preserving the first key
 	// position and the last declaration, then evaluates its condition.
-	ordered := make([]protocol.JSONObject, 0, len(selected))
+	ordered := make([]nativeMatchedHook, 0, len(selected))
 	for _, kind := range []string{"command", "prompt", "agent", "http", "callback"} {
-		for _, hook := range selected {
+		for _, matched := range selected {
+			hook := matched.hook
 			if hook.String("type") != kind {
 				continue
 			}
@@ -130,11 +141,12 @@ func (s *Service) ExecuteCommandEvent(ctx context.Context, event CommandEvent, c
 			if kind == "command" && (string(hook.Get("async")) == "true" || string(hook.Get("asyncRewake")) == "true") && b.Async == nil {
 				return unsupported("actual event asynchronous hook lifecycle")
 			}
-			ordered = append(ordered, hook)
+			ordered = append(ordered, matched)
 		}
 	}
 	selected = ordered
-	for _, hook := range selected {
+	for _, matched := range selected {
+		hook := matched.hook
 		display := nativeEventHookDisplay(hook)
 		data := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: commandJSON("hook_progress")}, protocol.JSONField{Name: "hookEvent", Value: commandJSON(event.Event)}, protocol.JSONField{Name: "hookName", Value: commandJSON(call.HookName)}, protocol.JSONField{Name: "command", Value: commandJSON(display)})
 		if hook.String("type") == "prompt" {
@@ -149,6 +161,7 @@ func (s *Service) ExecuteCommandEvent(ctx context.Context, event CommandEvent, c
 		}
 	}
 	type completed struct {
+		source   string
 		hook     protocol.JSONObject
 		id       string
 		output   CommandOutput
@@ -161,9 +174,11 @@ func (s *Service) ExecuteCommandEvent(ctx context.Context, event CommandEvent, c
 	ready := []completed{}
 	remaining := len(selected)
 	var wake *ownerasync.OwnerFuture[struct{}]
-	for hookIndex, hook := range selected {
+	for hookIndex, matched := range selected {
+		hook := matched.hook
 		job := func(scope *cooperative.Scope) error {
 			current := call
+			current.SkillRoot = matched.skillRoot
 			index := hookIndex
 			current.HookIndex = &index
 			current.Scope = scope
@@ -171,7 +186,7 @@ func (s *Service) ExecuteCommandEvent(ctx context.Context, event CommandEvent, c
 			if b.Event != nil && hook.String("type") != "prompt" && hook.String("type") != "agent" && hook.String("type") != "callback" {
 				_ = b.Event(current, "started", current.HookID, event.Event, CommandOutput{}, "")
 			}
-			completion := completed{hook: hook, id: current.HookID}
+			completion := completed{hook: hook, id: current.HookID, source: matched.source()}
 			if hook.String("type") == "callback" {
 				value, failure := s.runNativeSDKEvent(ctx, current, hook, input, event.ToolUseID)
 				completion.callback, completion.failure = &value, failure
@@ -238,7 +253,7 @@ func (s *Service) ExecuteCommandEvent(ctx context.Context, event CommandEvent, c
 				return r.failure
 			}
 			value := *r.callback
-			mergeNativeEventPermission(&value.Fields, &permissionBehavior)
+			mergeNativeEventPermission(&value.Fields, &permissionBehavior, r.source)
 			if err := consume(value); err != nil {
 				return err
 			}
@@ -252,7 +267,7 @@ func (s *Service) ExecuteCommandEvent(ctx context.Context, event CommandEvent, c
 				_ = b.Event(call, r.http.ResponseOutcome, r.id, event.Event, r.http.Response, "")
 			}
 			value := r.http.Event
-			mergeNativeEventPermission(&value.Fields, &permissionBehavior)
+			mergeNativeEventPermission(&value.Fields, &permissionBehavior, r.source)
 			if e := consume(value); e != nil {
 				return e
 			}
@@ -363,7 +378,7 @@ func (s *Service) ExecuteCommandEvent(ctx context.Context, event CommandEvent, c
 			record := queryloop.Message{Record: b.Factory.CreateAttachment(commandJSON(attachment))}
 			message = &record
 		}
-		mergeNativeEventPermission(&fields, &permissionBehavior)
+		mergeNativeEventPermission(&fields, &permissionBehavior, r.source)
 		if e = consume(EventResult{Fields: fields, Message: message, Outcome: outcome, Hook: r.hook}); e != nil {
 			return e
 		}
@@ -371,7 +386,7 @@ func (s *Service) ExecuteCommandEvent(ctx context.Context, event CommandEvent, c
 	return nil
 }
 
-func mergeNativeEventPermission(fields *protocol.JSONObject, permissionBehavior *string) {
+func mergeNativeEventPermission(fields *protocol.JSONObject, permissionBehavior *string, sources ...string) {
 	ownBehavior := fields.String("permissionBehavior")
 	switch ownBehavior {
 	case "deny":
@@ -390,7 +405,11 @@ func mergeNativeEventPermission(fields *protocol.JSONObject, permissionBehavior 
 	}
 	if *permissionBehavior != "" {
 		fields.Set("permissionBehavior", commandJSON(*permissionBehavior))
-		fields.Set("hookSource", commandJSON("settings"))
+		source := "settings"
+		if len(sources) > 0 {
+			source = sources[0]
+		}
+		fields.Set("hookSource", commandJSON(source))
 		if ownBehavior != "allow" && ownBehavior != "ask" {
 			fields.Delete("updatedInput")
 		}

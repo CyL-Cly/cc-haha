@@ -22,6 +22,12 @@ func TestPublicCLIProducesDeniedCatalogAndRawCustomAgentThenColdResume(t *testin
 			var calls atomic.Int32
 			var forbidden string
 			peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				// The original CLI init HEAD is distinct from model POSTs.
+				if r.Method == http.MethodHead {
+					w.WriteHeader(http.StatusNoContent)
+					return
+				}
+
 				data, _ := io.ReadAll(r.Body)
 				round := calls.Add(1)
 				var request protocol.JSONObject

@@ -72,7 +72,14 @@ func (h *Host) processNativeInputWithPromptHooks(scope *cooperative.Scope, conte
 		}
 		mode = append(json.RawMessage(nil), permission.Get("mode")...)
 	}
-	result, err := h.processQueuedPrintInputBase(scope, content, uuid, skipSlash, meta, origin)
+	result, err := h.processQueuedPrintInputBase(scope, content, uuid, skipSlash, meta, origin, skipAttachments)
+	// Source processUserInput awaits processUserInputBase's Promise, including
+	// its fulfilled ordinary-text branch, before inspecting shouldQuery/hooks.
+	if h.options.Print != nil && h.options.Print.NativeProcess {
+		if failure := scope.AwaitFulfilled(); failure != nil {
+			return nil, failure
+		}
+	}
 	if err != nil || result == nil || result.LocalResult != nil || result.NoQuery || h.options.Print == nil || !h.options.Print.NativeProcess {
 		return result, err
 	}
@@ -82,6 +89,25 @@ func (h *Host) processNativeInputWithPromptHooks(scope *cooperative.Scope, conte
 	}
 	present, err := h.hooks.NativeEventPresent("UserPromptSubmit", sid)
 	if err != nil || !present {
+		if err == nil {
+			// Source for-await calls executeUserPromptSubmitHooks.next() even
+			// when hasHookForEvent returns false and the async generator ends.
+			iterator, failure := NewOwnerIterator(h.options.Owner, func(next *cooperative.Scope, iterator *OwnerIterator[queryhooks.EventResult], request IteratorRequest[queryhooks.EventResult]) error {
+				if request.Returning {
+					return iterator.CompleteReturn(next)
+				}
+				// The Source no-hook branch explicitly returns undefined.
+				return iterator.CompleteDefined(next, queryhooks.EventResult{}, false)
+			})
+			if failure == nil {
+				var terminal *OwnerFuture[IteratorResult[queryhooks.EventResult]]
+				terminal, failure = iterator.Next(scope)
+				if failure == nil {
+					_, failure = terminal.Await(scope)
+				}
+			}
+			err = failure
+		}
 		return result, err
 	}
 	if h.inputModelContext == nil {

@@ -241,6 +241,7 @@ func (m *MainPrint) spawnNativeInProcessTeamAgentFromCheckpoint(ctx context.Cont
 	teammates.Set(id, rawMain(protocol.NewJSONObject(protocol.JSONField{Name: "name", Value: quoteMain(name)}, protocol.JSONField{Name: "agentType", Value: input.Get("subagent_type")}, protocol.JSONField{Name: "color", Value: quoteMain(color)}, protocol.JSONField{Name: "tmuxSessionName", Value: quoteMain("in-process")}, protocol.JSONField{Name: "tmuxPaneId", Value: quoteMain("in-process")}, protocol.JSONField{Name: "cwd", Value: quoteMain(m.workingDirectory())}, protocol.JSONField{Name: "spawnedAt", Value: rawMain(m.options.Native.NowMillis())})))
 	snapshot.Set("teammates", rawMain(teammates))
 	m.teamState = &nativeTeamState{snapshot: snapshot}
+	m.publishTerminalTeamFooter(scope)
 	if err = m.Controller.SetLeaderTeamOnOwner(scope, team); err != nil {
 		return nil, err
 	}

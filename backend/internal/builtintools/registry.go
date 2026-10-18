@@ -452,6 +452,11 @@ func (s *Service) Catalog(scope *cooperative.Scope) ([]toolschema.Definition, []
 		defs = append(defs, definition)
 		tools = append(tools, tool)
 	}
+	if s.lspAvailable() && !wholeDenied(permissionContext, "LSP") {
+		definition, tool := s.lspCatalog()
+		defs = append(defs, definition)
+		tools = append(tools, tool)
+	}
 	return defs, tools, nil
 }
 

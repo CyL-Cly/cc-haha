@@ -40,8 +40,9 @@ func TestActualRunningAgentMessageIsConsumedAtNextToolRound(t *testing.T) {
 		emitPlanFixture(w, int(n), "", "PENDING_DELIVERED_C7A2")
 	}))
 	defer peer.Close()
-	m := backgroundAgentMain(t, peer.URL)
-	m.options.Native.Environment["CLAUDE_CODE_DISABLE_ATTACHMENTS"] = "0"
+	m := backgroundAgentMainWithSetup(t, peer.URL, func(n *NativeBoundary) {
+		n.Environment["CLAUDE_CODE_DISABLE_ATTACHMENTS"] = "0"
+	})
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	var id string

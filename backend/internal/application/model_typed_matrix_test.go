@@ -32,6 +32,7 @@ type typedModelSourceRow struct {
 	ContinueStore  bool              `json:"continueStore,omitempty"`
 	SelectModel    *string           `json:"selectModel,omitempty"`
 	Notifications  bool              `json:"notifications,omitempty"`
+	Opus1mStartup  bool              `json:"opus1mStartup,omitempty"`
 }
 
 type typedModelSourceResult struct {

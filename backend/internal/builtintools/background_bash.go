@@ -434,6 +434,14 @@ func (s *Service) StartBackgroundCleanup(scope *cooperative.Scope) (*ownerasync.
 		if task == nil {
 			continue
 		}
+		// Source process cleanup terminates its local observers/processes. A
+		// remote task's explicit TaskStop kill owns cloud archive and sidecar
+		// deletion; exiting the REPL leaves that resumable cloud task alive.
+		if data.String("type") == "remote_agent" && task.Stop != nil {
+			task.Cancel(context.Canceled)
+			joiners = append(joiners, task.Join)
+			continue
+		}
 		if data.String("status") == "running" {
 			if _, e = s.stopBackgroundTask(scope, data.String("id")); e != nil {
 				return nil, e

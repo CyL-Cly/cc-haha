@@ -196,6 +196,11 @@ func (s *Service) find(dir string) ([]string, error) {
 	return files, nil
 }
 func (s *Service) markdown() ([]Definition, []Failure, error) {
+	configHome := s.options.ConfigHome
+	if s.options.NativeConfigHome != nil {
+		configHome = s.options.NativeConfigHome()
+	}
+	// Source captures userDir at loader entry, before project filesystem work.
 	dirs, e := s.projectDirs()
 	if e != nil {
 		return nil, nil, e
@@ -207,7 +212,7 @@ func (s *Service) markdown() ([]Definition, []Failure, error) {
 	type root struct{ path, source string }
 	roots := []root{{filepath.Join(s.options.ManagedRoot, ".claude/agents"), "policySettings"}}
 	if s.enabled("userSettings") && !locked {
-		roots = append(roots, root{filepath.Join(s.options.ConfigHome, "agents"), "userSettings"})
+		roots = append(roots, root{filepath.Join(configHome, "agents"), "userSettings"})
 	}
 	if s.enabled("projectSettings") && !locked {
 		for _, p := range dirs {

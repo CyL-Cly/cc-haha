@@ -24,6 +24,7 @@ func cap(b string) error             { return &CapabilityError{b} }
 func quote(s string) json.RawMessage { b, _ := json.Marshal(s); return b }
 
 type Input struct {
+	NativeStatusLineBindings                                 bool
 	NativeAutoDreamBindings                                  bool
 	NativeThinkingSummaryBindings                            bool
 	NativeSpinnerBindings                                    bool
@@ -44,6 +45,7 @@ type Input struct {
 	NativeSessionCollaborationBindings                       bool
 	NativeWorkflowBindings                                   bool
 	NativeTeamToolBindings                                   bool
+	NativeLSPBindings                                        bool
 	NativeImageBindings                                      bool
 	NativeImageEnabled                                       bool
 	NativeTeamExecutionBindings                              bool
@@ -100,6 +102,7 @@ func (rules RuleSet) nativeRulesJSON(key string, normalizeEmpty bool) json.RawMe
 }
 
 type State struct {
+	nativeStatusLineBindings      bool
 	nativeAutoDreamBindings       bool
 	nativeThinkingSummaryBindings bool
 	nativePlanBindings            bool
@@ -222,7 +225,7 @@ func Initialize(scope *cooperative.Scope, owner *cooperative.Owner, settings *pr
 	validate := ValidateNeutral
 	if input.NativeProcess {
 		validate = func(settings *protocol.JSONObject) error {
-			return ValidateNativeWithBindings(settings, input.NativePluginBindings, input.NativeMCPBindings, input.NativeWebFetchBindings, input.NativeWebSearchBindings, input.NativeStartup.Owns(owner), input.NativeWorktreeBindings, input.NativeHookBindings, input.NativeSystemContextBindings, input.NativeTeamExecutionBindings, input.NativeAuthHelperBindings, input.NativeCloudSettingsBindings, input.NativeWorkflowKeywordBindings, input.NativeInternalReadBindings, input.NativeSandboxBindings, input.NativeModelCommandBindings, input.NativeMainAgentBindings, input.NativePlanBindings, input.NativeSpinnerBindings, input.NativeThinkingSummaryBindings, input.NativeAutoDreamBindings)
+			return ValidateNativeWithBindings(settings, input.NativePluginBindings, input.NativeMCPBindings, input.NativeWebFetchBindings, input.NativeWebSearchBindings, input.NativeStartup.Owns(owner), input.NativeWorktreeBindings, input.NativeHookBindings, input.NativeSystemContextBindings, input.NativeTeamExecutionBindings, input.NativeAuthHelperBindings, input.NativeCloudSettingsBindings, input.NativeWorkflowKeywordBindings, input.NativeInternalReadBindings, input.NativeSandboxBindings, input.NativeModelCommandBindings, input.NativeMainAgentBindings, input.NativePlanBindings, input.NativeSpinnerBindings, input.NativeThinkingSummaryBindings, input.NativeAutoDreamBindings, input.NativeStatusLineBindings)
 		}
 	}
 	if err := validate(settings); err != nil {
@@ -269,7 +272,7 @@ func (s *State) Read(scope *cooperative.Scope) (*protocol.JSONObject, protocol.J
 	validate := ValidateNeutral
 	if s.nativeProcess {
 		validate = func(settings *protocol.JSONObject) error {
-			return ValidateNativeWithBindings(settings, s.nativePluginBindings, s.nativeMCPBindings, s.nativeWebFetchBindings, s.nativeWebSearchBindings, s.nativeStartup.Owns(s.owner), s.nativeWorktreeBindings, s.nativeHookBindings, s.nativeSystemContextBindings, s.nativeTeamExecutionBindings, s.nativeAuthHelperBindings, s.nativeCloudSettingsBindings, s.nativeWorkflowKeywordBindings, s.nativeInternalReadBindings, s.nativeSandboxBindings, s.nativeModelCommandBindings, s.nativeMainAgentBindings, s.nativePlanBindings, s.nativeSpinnerBindings, s.nativeThinkingSummaryBindings, s.nativeAutoDreamBindings)
+			return ValidateNativeWithBindings(settings, s.nativePluginBindings, s.nativeMCPBindings, s.nativeWebFetchBindings, s.nativeWebSearchBindings, s.nativeStartup.Owns(s.owner), s.nativeWorktreeBindings, s.nativeHookBindings, s.nativeSystemContextBindings, s.nativeTeamExecutionBindings, s.nativeAuthHelperBindings, s.nativeCloudSettingsBindings, s.nativeWorkflowKeywordBindings, s.nativeInternalReadBindings, s.nativeSandboxBindings, s.nativeModelCommandBindings, s.nativeMainAgentBindings, s.nativePlanBindings, s.nativeSpinnerBindings, s.nativeThinkingSummaryBindings, s.nativeAutoDreamBindings, s.nativeStatusLineBindings)
 		}
 	}
 	if err := validate(s.settings); err != nil {
@@ -306,6 +309,7 @@ func ValidateNativeWithBindings(settings *protocol.JSONObject, pluginsBound, mcp
 	spinnerBound := len(webBindings) > 15 && webBindings[15]
 	thinkingSummaryBound := len(webBindings) > 16 && webBindings[16]
 	autoDreamBound := len(webBindings) > 17 && webBindings[17]
+	statusLineBound := len(webBindings) > 18 && webBindings[18]
 	if settings == nil || !settings.IsObject() {
 		return cap("original native settings object")
 	}
@@ -531,6 +535,47 @@ func ValidateNativeWithBindings(settings *protocol.JSONObject, pluginsBound, mcp
 			}
 			if string(property.Value) != "true" && string(property.Value) != "false" {
 				return cap("workflow keyword boolean schema")
+			}
+		case "spinnerTipsEnabled", "prefersReducedMotion", "syntaxHighlightingDisabled":
+			// Presentation preferences are consumed by the shared native
+			// startup snapshot and terminal renderer, outside permission policy.
+			// Headless operation retains the same files without rendering tips.
+			if !startupBound || !spinnerBound {
+				return cap("native terminal preferences require actual startup/spinner bindings")
+			}
+			if string(property.Value) != "true" && string(property.Value) != "false" {
+				return cap("native terminal preference boolean schema")
+			}
+		case "statusLine":
+			if !startupBound || !statusLineBound || !hookBound {
+				return cap("statusLine requires actual native settings/shell/component bindings")
+			}
+			var value protocol.JSONObject
+			if value.UnmarshalJSON(property.Value) != nil || value.String("type") != "command" {
+				return cap("statusLine original command schema")
+			}
+			if _, err := protocol.DecodeJavaScriptJSONString(value.Get("command")); err != nil {
+				return cap("statusLine original command schema")
+			}
+		case "companyAnnouncements":
+			if !startupBound {
+				return cap("companyAnnouncements requires actual startup/export bindings")
+			}
+			var entries []json.RawMessage
+			if len(property.Value) == 0 || property.Value[0] != '[' || json.Unmarshal(property.Value, &entries) != nil {
+				return cap("companyAnnouncements original string array schema")
+			}
+			for _, entry := range entries {
+				if _, err := protocol.DecodeJavaScriptJSONString(entry); err != nil {
+					return cap("companyAnnouncements original string array schema")
+				}
+			}
+		case "autoUpdatesChannel", "minimumVersion":
+			// These settings belong to the native installer. The ordinary TUI
+			// updater and explicit CLI install/update consume the same parsed
+			// startup store; permission policy adds no installation semantics.
+			if !startupBound || !clisettings.IsNativeInstallationSetting(key, property.Value) {
+				return cap("native installation settings require actual startup/updater bindings and schema")
 			}
 		case "sandbox":
 			if !sandboxBound {

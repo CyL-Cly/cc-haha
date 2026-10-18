@@ -33,6 +33,7 @@ type Yield struct {
 }
 
 type Dependencies struct {
+	OnNativeQuota   func(*cooperative.Scope, *provider.BunHeaders, error) error
 	Activity        *sessionactivity.Tracker
 	Request         requestretry.Dependencies
 	Session         *modelaccounting.Session
@@ -371,6 +372,11 @@ func runOwnedLifecycle(ctx context.Context, input requestretry.Input, deps Depen
 				return outcome, failure
 			}
 		}
+		if deps.OnNativeQuota != nil {
+			if e := deps.OnNativeQuota(scope, nil, err); e != nil {
+				return Outcome{}, e
+			}
+		}
 		var terminal *streamhistory.Envelope
 		var failure error
 		matched := false
@@ -562,6 +568,20 @@ func runOwnedLifecycle(ctx context.Context, input requestretry.Input, deps Depen
 					return Outcome{}, e
 				}
 				if kind != "" {
+					// Source claude.ts disables the next client's keepalive before
+					// flushing this failed attempt, only if no message_start arrived
+					// and the original fault is a socket transport failure.
+					if !state.PartialMessage {
+						transport, e := retrypolicy.IsRetryableStreamTransportError(failure)
+						if e != nil {
+							return Outcome{}, e
+						}
+						if disable := deps.Request.NativeKeepAliveDisable(); transport && disable != nil {
+							if e := disable(); e != nil {
+								return Outcome{}, e
+							}
+						}
+					}
 					buffered := []streamhistory.Update{}
 					if e := scope.Frame(cooperative.FrameFinish, func() error {
 						return controller.FlushProducerErrorWithoutToolUse(func(update streamhistory.Update) error {
@@ -615,6 +635,11 @@ func runOwnedLifecycle(ctx context.Context, input requestretry.Input, deps Depen
 				}
 				return Outcome{}, e
 			}
+			if deps.OnNativeQuota != nil {
+				if e := deps.OnNativeQuota(scope, nil, failure); e != nil {
+					return Outcome{}, e
+				}
+			}
 			var terminal *streamhistory.Envelope
 			var e error
 			if nativePolicy {
@@ -633,6 +658,11 @@ func runOwnedLifecycle(ctx context.Context, input requestretry.Input, deps Depen
 				return Outcome{}, e
 			}
 			return Outcome{Reason: "returned", Terminal: true}, nil
+		}
+		if deps.OnNativeQuota != nil {
+			if e := deps.OnNativeQuota(scope, stream.OriginalHeaders, nil); e != nil {
+				return Outcome{}, e
+			}
 		}
 		finishing = true
 		if failure = scope.Frame(cooperative.FrameFinish, func() error { return controller.Finish(nil, emit) }); failure != nil {

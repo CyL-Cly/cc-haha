@@ -38,9 +38,26 @@ func ParseJSONDefinition(name string, data json.RawMessage, source, userType str
 	if !ok {
 		return nil, nil
 	}
-	prompt, ok := getString("prompt", true, true)
-	if !ok {
+	// Zod trims JavaScript code units. A JSON prompt can contain unpaired
+	// surrogates even though a filesystem/listing string cannot; preserve the
+	// captured getSystemPrompt value independently of its display projection.
+	promptUnits, promptErr := protocol.DecodeJavaScriptJSONString(input.Get("prompt"))
+	if promptErr != nil {
 		return nil, nil
+	}
+	for len(promptUnits) > 0 && protocol.IsJavaScriptWhitespace(rune(promptUnits[0])) {
+		promptUnits = promptUnits[1:]
+	}
+	for len(promptUnits) > 0 && protocol.IsJavaScriptWhitespace(rune(promptUnits[len(promptUnits)-1])) {
+		promptUnits = promptUnits[:len(promptUnits)-1]
+	}
+	if len(promptUnits) == 0 {
+		return nil, nil
+	}
+	promptJSON := protocol.QuoteJavaScriptUTF16(promptUnits)
+	var prompt string
+	if err := json.Unmarshal(promptJSON, &prompt); err != nil {
+		return nil, err
 	}
 	for _, field := range []string{"tools", "disallowedTools", "skills"} {
 		if data := input.Get(field); data != nil {
@@ -161,7 +178,7 @@ func ParseJSONDefinition(name string, data json.RawMessage, source, userType str
 	fields := protocol.NewJSONObject()
 	fields.Set("agentType", encodeField(name))
 	fields.Set("whenToUse", encodeField(description))
-	fields.Set("rawSystemPrompt", encodeField(prompt))
+	fields.Set("rawSystemPrompt", promptJSON)
 	if tools != nil {
 		fields.Set("tools", encodeField(tools))
 	}
@@ -203,5 +220,5 @@ func ParseJSONDefinition(name string, data json.RawMessage, source, userType str
 			fields.Set(field, input.Get(field))
 		}
 	}
-	return &Definition{Name: name, Description: description, Model: model, Memory: input.String("memory"), Source: source, Body: prompt, SystemPrompt: prompt, Fields: fields, PromptArity: 0, Effort: input.Get("effort")}, nil
+	return &Definition{Name: name, Description: description, Model: model, Memory: input.String("memory"), Source: source, Body: prompt, SystemPrompt: prompt, promptJSON: append(json.RawMessage(nil), promptJSON...), Fields: fields, PromptArity: 0, Effort: input.Get("effort")}, nil
 }

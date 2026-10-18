@@ -28,6 +28,7 @@ func TestActualPublicTUIResumeInitialHistoryAndOrdinaryExitScrollback(t *testing
 	binary := filepath.Join(t.TempDir(), "claude-haha-history")
 	build := exec.CommandContext(ctx, goTool, "build", "-tags", "native_process_fixture", "-o", binary, "../../cmd/claude-haha")
 	build.Env = os.Environ()
+	capturePublicGoCoverage(t, build)
 	if out, err := build.CombinedOutput(); err != nil {
 		t.Fatalf("actual public CLI build %v %.4000s", err, out)
 	}
@@ -44,6 +45,7 @@ func TestActualPublicTUIResumeInitialHistoryAndOrdinaryExitScrollback(t *testing
 			defer stop()
 			cmd := exec.CommandContext(childCtx, python, "testdata/tui_history_public_pty.py", binary, root, mode)
 			cmd.Env = []string{"PATH=/usr/bin:/bin", "HOME=" + root, "TMPDIR=" + root}
+			capturePublicGoCoverage(t, cmd)
 			out, err := cmd.CombinedOutput()
 			if err != nil {
 				t.Fatalf("actual public TUI history %v %.7000s", err, out)

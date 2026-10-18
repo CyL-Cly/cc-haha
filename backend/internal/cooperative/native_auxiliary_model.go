@@ -8,7 +8,7 @@ import "context"
 type NativeAuxiliaryModels struct{ owner *Owner }
 
 func NewNativeAuxiliaryModels(scope *Scope, owner *Owner) (*NativeAuxiliaryModels, error) {
-	if !scope.BelongsTo(owner) || scope.callback != 0 || scope.frame != 0 {
+	if !scope.BelongsTo(owner) || scope.callback != 0 || scope.frame != 0 || scope.sideContinuation != nil && scope.sideContinuation.promptAuthority != nil {
 		return nil, ErrRestricted
 	}
 	if err := scope.check(); err != nil {
@@ -31,7 +31,9 @@ func (a *NativeAuxiliaryModels) Run(caller *Scope, ctx context.Context, source s
 	if a == nil || source != "web_fetch_apply" && source != "web_search_tool" {
 		return ErrRestricted
 	}
-	return runNativeAuxiliaryProducer(a.owner, caller, ctx, producer)
+	return runNativeAuxiliaryProducer(a.owner, caller, ctx, func(admitted *Scope) error {
+		return runParkedNativeAuxiliary(a.owner, admitted, ctx, producer, a, nil)
+	})
 }
 
 func runNativeAuxiliaryProducer(owner *Owner, caller *Scope, ctx context.Context, producer func(*Scope) error) error {

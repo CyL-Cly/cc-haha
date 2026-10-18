@@ -14,8 +14,12 @@ import (
 )
 
 func originalGlobalConfigDirectory(n *NativeBoundary, config string) *string {
-	if n.NativeProcess && !n.ConfigDirExplicit {
-		return nil
+	if n.NativeProcess {
+		directory, present := n.nativeEnvironmentValue("CLAUDE_CONFIG_DIR")
+		if !present {
+			return nil
+		}
+		return &directory
 	}
 	return &config
 }

@@ -10,7 +10,9 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/builtinwrite"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/modelaccounting"
+	"github.com/NanmiCoder/cc-haha/backend/internal/ownerasync"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/providernative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/sdkhost"
 	"github.com/NanmiCoder/cc-haha/backend/internal/sessioncontroller"
 )
@@ -19,11 +21,14 @@ import (
 // callback crosses through an owner-local native future; it never borrows a
 // foreign Bootstrap, Scope, permission State, or accounting Session.
 type NativeDetachedAgentOptions struct {
+	agentSummary            bool
 	inheritedFileCache      []builtinwrite.CachedFile
 	isBackgrounded          func() bool
 	backgroundToolNames     map[string]bool
 	sourceMCP               *NativeMCPToolContext
 	authParent              *MainPrint
+	httpPool                *providernative.PoolTransfer
+	workflowTaskViewParent  bool
 	Bootstrap               bootstrapstate.Snapshot
 	PromptSections          []json.RawMessage
 	PermissionMode          string
@@ -71,6 +76,23 @@ func (m *MainPrint) nativeDetachedControllerOptions(o sessioncontroller.Options)
 		}
 		return out, nil
 	}
+	// This child already captured its original Agent prompt before construction.
+	// Its pending prefix must observe those same sections, not the parent's
+	// default prompt builder. Preserve the original fulfilled async result.
+	o.BeginNativeDefaultPrompt = func(scope *cooperative.Scope, _ []protocol.JSONObject, _ string) (*ownerasync.OwnerFuture[[]json.RawMessage], error) {
+		if _, _, err := m.nativePromptProducer(scope); err != nil {
+			return nil, err
+		}
+		future, err := ownerasync.NewOwnerFuture[[]json.RawMessage](m.Owner)
+		if err != nil {
+			return nil, err
+		}
+		out := make([]json.RawMessage, len(sections))
+		for i, section := range sections {
+			out[i] = append(json.RawMessage(nil), section...)
+		}
+		return future, future.Resolve(scope, out)
+	}
 	o.LiveSDKSettings = func(scope *cooperative.Scope) (*protocol.JSONObject, protocol.JSONObject, error) {
 		return d.liveSettings(m, scope)
 	}
@@ -115,6 +137,11 @@ func (m *MainPrint) initializeDetachedAgent(scope *cooperative.Scope) error {
 	}
 	if e := m.state.SetCWD(scope, m.options.Native.CWD); e != nil {
 		return e
+	}
+	if d.authParent != nil {
+		if e := m.Controller.BindNativeParentSessionOnOwner(scope, d.authParent.state); e != nil {
+			return e
+		}
 	}
 	agentType := strings.TrimPrefix(m.options.QuerySource, "agent:builtin:")
 	if d.AgentType != "" {

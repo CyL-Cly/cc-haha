@@ -19,5 +19,7 @@ func (a *NativeInsightsModels) Run(caller *Scope, ctx context.Context, producer 
 	if a == nil {
 		return ErrRestricted
 	}
-	return runNativeAuxiliaryProducer(a.owner, caller, ctx, producer)
+	return runNativeAuxiliaryProducer(a.owner, caller, ctx, func(admitted *Scope) error {
+		return runParkedNativeAuxiliary(a.owner, admitted, ctx, producer, nil, a)
+	})
 }

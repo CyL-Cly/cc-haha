@@ -52,16 +52,32 @@ func writePhysicalPDFFixture(t *testing.T, path string, pages int) []byte {
 	}
 	return append([]byte(nil), data.Bytes()...)
 }
-func requirePhysicalPoppler(t *testing.T) {
+func requirePhysicalPoppler(t *testing.T) string {
 	t.Helper()
+	bin := os.Getenv("CC_HAHA_TEST_POPPLER_BIN")
+	explicit := bin != ""
+	if !explicit {
+		bin = "/opt/homebrew/bin"
+	} else if !filepath.IsAbs(bin) {
+		t.Fatal("CC_HAHA_TEST_POPPLER_BIN must name an absolute actual Poppler directory")
+	}
 	for _, name := range []string{"pdfinfo", "pdftoppm"} {
-		if _, err := os.Stat(filepath.Join("/opt/homebrew/bin", name)); err != nil {
+		info, err := os.Stat(filepath.Join(bin, name))
+		if err != nil {
+			if explicit {
+				t.Fatal("explicit actual Poppler dependency is unavailable", name, err)
+			}
 			t.Skip("actual Poppler required")
 		}
+		if !info.Mode().IsRegular() || info.Mode()&0111 == 0 {
+			t.Fatal("actual Poppler dependency is not executable", name)
+		}
 	}
+	return bin
 }
+
 func TestActualMainPrintPDFReadNativeFilesPagesMessagesAndWriteGuard(t *testing.T) {
-	requirePhysicalPoppler(t)
+	popplerBin := requirePhysicalPoppler(t)
 	for _, scenario := range []string{"full-document", "page-range", "too-many-pages", "invalid-pages", "invalid-header"} {
 		t.Run(scenario, func(t *testing.T) {
 			var calls atomic.Int32
@@ -166,7 +182,7 @@ func TestActualMainPrintPDFReadNativeFilesPagesMessagesAndWriteGuard(t *testing.
 				}
 			}))
 			defer peer.Close()
-			m := backgroundAgentMainWithOptions(t, peer.URL, func(n *NativeBoundary) { n.Environment["PATH"] = "/opt/homebrew/bin:/usr/bin:/bin" }, func(options *MainPrintOptions) {
+			m := backgroundAgentMainWithOptions(t, peer.URL, func(n *NativeBoundary) { n.Environment["PATH"] = popplerBin + ":/opt/homebrew/bin:/usr/bin:/bin" }, func(options *MainPrintOptions) {
 				options.Native.ImageLibraryPath, _ = filepath.Abs("../../../node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.17.3.dylib")
 			})
 			path = filepath.Join(m.options.Native.CWD, "actual-document.pdf")
@@ -200,12 +216,12 @@ func TestActualMainPrintPDFReadNativeFilesPagesMessagesAndWriteGuard(t *testing.
 	}
 }
 func TestActualNativeMCPPDFReadBareAndOrdinaryFactories(t *testing.T) {
-	requirePhysicalPoppler(t)
+	popplerBin := requirePhysicalPoppler(t)
 	for _, bare := range []bool{true, false} {
 		t.Run(fmt.Sprint("bare=", bare), func(t *testing.T) {
 			f := newNativePluginFixture(t)
 			f.write(t, filepath.Join(f.config, "settings.json"), `{"enabledPlugins":{"sample@mkt":false}}`)
-			f.n.Environment["PATH"] = "/opt/homebrew/bin:/usr/bin:/bin"
+			f.n.Environment["PATH"] = popplerBin + ":/opt/homebrew/bin:/usr/bin:/bin"
 			f.n.Environment["ANTHROPIC_API_KEY"] = "fake-no-model"
 			f.n.Environment["ANTHROPIC_BASE_URL"] = "http://127.0.0.1:1"
 			f.n.Environment["CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"] = "1"

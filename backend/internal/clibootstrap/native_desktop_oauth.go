@@ -37,9 +37,15 @@ func (m *MainPrint) nativeClaudeAuthBinding(scope *cooperative.Scope) (*requestr
 	if !scope.BelongsTo(m.Owner) {
 		return nil, cooperative.ErrRestricted
 	}
-	// Existing standalone CLI credential consumers are not changed by the
-	// desktop bridge. Only the real managed-OAuth entrypoint installs this branch.
-	if m.nativeOpenAIEnvironment()["CLAUDE_CODE_ENTRYPOINT"] != "claude-desktop" {
+	// getAnthropicClient uses the cached CLI subscriber identity for ordinary
+	// requests as well as desktop requests. The live desktop token-update API
+	// remains restricted to its managed entrypoint; both use this owned reader.
+	if m.options.Native == nil || !m.options.Native.NativeProcess {
+		if m.nativeOpenAIEnvironment()["CLAUDE_CODE_ENTRYPOINT"] == "claude-desktop" {
+			// Selecting the desktop auth domain cannot mint its producer on a
+			// finite/offline graph. Ordinary native CLI uses the same real reader.
+			return nil, cooperative.ErrRestricted
+		}
 		return nil, nil
 	}
 	// An unselected optional auth domain has no producer on the offline print
@@ -49,9 +55,12 @@ func (m *MainPrint) nativeClaudeAuthBinding(scope *cooperative.Scope) (*requestr
 		return nil, cooperative.ErrRestricted
 	}
 	return requestretry.NewNativeClaudeAuth(m.Owner, scope, func(ctx context.Context) (bool, error) {
-		return m.openAIAuth.IsClaudeSubscriber(ctx, scope, !m.options.Interactive)
+		// getAnthropicClient resolves cached subscriber/auth state before
+		// messages.create receives the model AbortSignal. A queued submit that
+		// already aborted this turn cannot cancel those signal-free getters.
+		return m.openAIAuth.IsClaudeSubscriber(context.WithoutCancel(ctx), scope, !m.options.Interactive)
 	}, func(ctx context.Context) (*string, error) {
-		owned, err := m.openAIAuth.owned(ctx, scope)
+		owned, err := m.openAIAuth.owned(context.WithoutCancel(ctx), scope)
 		if err != nil {
 			return nil, err
 		}
@@ -65,5 +74,7 @@ func (m *MainPrint) nativeClaudeAuthBinding(scope *cooperative.Scope) (*requestr
 			return nil, mainCap("Claude OAuth access token string")
 		}
 		return &token, nil
+	}, func(ctx context.Context) error {
+		return m.openAIAuth.checkClaudeTokensBeforeClient(context.WithoutCancel(ctx), scope)
 	})
 }

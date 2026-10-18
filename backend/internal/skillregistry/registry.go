@@ -57,10 +57,14 @@ type PluginSource interface {
 }
 type Options struct {
 	Home, ConfigDir, CWD, ProjectRoot string
-	FS                                FileSystem
-	Environment                       func(string) string
-	Settings                          func(context.Context) (protocol.JSONObject, error)
-	Plugins                           PluginSource
+	// NativeConfigDirectory samples the native CLI directory at the original
+	// root lookup. Discovery caches keep their own existing lifetimes.
+	NativeConfigDirectory func() string
+	NativeHomeDirectory   func() string
+	FS                    FileSystem
+	Environment           func(string) string
+	Settings              func(context.Context) (protocol.JSONObject, error)
+	Plugins               PluginSource
 }
 type Service struct{ options Options }
 type Error struct {
@@ -95,9 +99,17 @@ func (s *Service) agentsEnabled(ctx context.Context) bool {
 	return err != nil || string(settings.Get("disableAgentSkillsDirectory")) != "true"
 }
 func (s *Service) UserRoots(ctx context.Context) []Root {
-	roots := []Root{{filepath.Join(s.options.ConfigDir, "skills"), "claude", "user"}}
+	directory := s.options.ConfigDir
+	if s.options.NativeConfigDirectory != nil {
+		directory = s.options.NativeConfigDirectory()
+	}
+	roots := []Root{{filepath.Join(directory, "skills"), "claude", "user"}}
 	if s.agentsEnabled(ctx) {
-		roots = append(roots, Root{filepath.Join(norm.NFC.String(s.options.Home), ".agents", "skills"), "agents", "user"})
+		home := s.options.Home
+		if s.options.NativeHomeDirectory != nil {
+			home = s.options.NativeHomeDirectory()
+		}
+		roots = append(roots, Root{filepath.Join(norm.NFC.String(home), ".agents", "skills"), "agents", "user"})
 	}
 	return roots
 }

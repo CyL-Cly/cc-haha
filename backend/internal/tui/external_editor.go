@@ -9,9 +9,13 @@ import (
 	"strings"
 )
 
-// ExternalEditor retains the host's selected executable and arguments. Shell
-// commands, GUI wait flags and editor discovery are resolved by that host.
+// ExternalEditor retains the host's editor authority. Resolve samples current
+// session state at the actual handoff; Editor keeps the user's shell command.
+// Command remains the explicit-argv path used by existing callers.
 type ExternalEditor struct {
+	Resolve     func(context.Context) (*ExternalEditor, error)
+	Editor      string
+	Directory   string
 	Command     []string
 	Environment []string
 	TempDir     string
@@ -50,7 +54,20 @@ func (e *editorExecution) SetStderr(output io.Writer) {
 }
 
 func (e *editorExecution) Run() (err error) {
-	if len(e.options.Command) == 0 || e.options.Command[0] == "" || e.options.TempDir == "" {
+	if e.options.Resolve != nil {
+		resolved, resolveError := e.options.Resolve(e.ctx)
+		if resolveError != nil {
+			return resolveError
+		}
+		if resolved == nil {
+			return errors.New("External editor is not configured")
+		}
+		e.options = *resolved
+		e.options.Resolve = nil
+		e.options.Command = append([]string(nil), resolved.Command...)
+		e.options.Environment = append([]string{}, resolved.Environment...)
+	}
+	if e.options.TempDir == "" || e.options.Editor == "" && (len(e.options.Command) == 0 || e.options.Command[0] == "") {
 		return errors.New("External editor requires an executable and explicit temporary directory")
 	}
 	file, err := os.CreateTemp(e.options.TempDir, "claude-prompt-*")
@@ -66,21 +83,40 @@ func (e *editorExecution) Run() (err error) {
 	if err = file.Close(); err != nil {
 		return err
 	}
-	args := append([]string(nil), e.options.Command[1:]...)
-	// Preserve the original prompt editor's overrides for exact commands.
-	if len(e.options.Command) == 1 {
-		switch e.options.Command[0] {
-		case "code":
-			args = append(args, "-w")
-		case "subl":
-			args = append(args, "--wait")
+	if e.options.Editor != "" {
+		// Reuse the existing quoted command, platform shell and cancellation path.
+		execution := &fileEditorExecution{ctx: e.ctx, request: FileEditorRequest{Context: e.ctx, Path: path, Editor: e.options.Editor, Directory: e.options.Directory, Environment: e.options.Environment}, stdin: e.stdin, stdout: e.stdout, stderr: e.stderr}
+		if err = execution.Run(); err != nil {
+			return err
 		}
-	}
-	command := exec.CommandContext(e.ctx, e.options.Command[0], append(args, path)...)
-	command.Env = e.options.Environment
-	command.Stdin, command.Stdout, command.Stderr = e.stdin, e.stdout, e.stderr
-	if err = command.Run(); err != nil {
-		return err
+		if execution.result.Failure != nil {
+			return execution.result.Failure
+		}
+		if execution.result.Error != "" {
+			return errors.New(execution.result.Error)
+		}
+	} else {
+		args := append([]string(nil), e.options.Command[1:]...)
+		// Preserve the original prompt editor's overrides for exact commands.
+		if len(e.options.Command) == 1 {
+			switch e.options.Command[0] {
+			case "code":
+				args = append(args, "-w")
+			case "subl":
+				args = append(args, "--wait")
+			}
+		}
+		command := exec.CommandContext(e.ctx, e.options.Command[0], append(args, path)...)
+		command.Env = e.options.Environment
+		command.Stdin, command.Stdout, command.Stderr = e.stdin, e.stdout, e.stderr
+		joined := configureFileEditorProcess(command)
+		err = command.Run()
+		if e.ctx.Err() != nil {
+			return errors.Join(context.Cause(e.ctx), joined())
+		}
+		if err != nil {
+			return err
+		}
 	}
 	content, err := os.ReadFile(path)
 	if err != nil {

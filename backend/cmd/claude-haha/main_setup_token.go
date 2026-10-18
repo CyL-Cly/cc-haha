@@ -35,12 +35,16 @@ func runSetupTokenCommand(ctx context.Context, args []string) int {
 	}
 	stat, e := os.Stdout.Stat()
 	nonInteractive := e != nil || stat.Mode()&os.ModeCharDevice == 0
-	m, e := clibootstrap.NewMainCommand(clibootstrap.MainCommandOptions{Arguments: args, Native: native, Platform: runtime.GOOS, Version: version, PID: os.Getpid(), NonInteractive: nonInteractive, Output: os.Stdout, Error: os.Stderr})
+	m, e := clibootstrap.NewMainCommand(clibootstrap.MainCommandOptions{Input: os.Stdin, Context: ctx, Arguments: args, Native: native, Platform: runtime.GOOS, Version: version, PID: os.Getpid(), NonInteractive: nonInteractive, Output: os.Stdout, Error: os.Stderr})
 	if e != nil {
 		fmt.Fprintln(os.Stderr, e)
 		return 1
 	}
 	defer m.Close()
+	if e := m.BeginNativeAPIPreconnect(ctx); e != nil {
+		fmt.Fprintln(os.Stderr, e)
+		return 1
+	}
 	external := cliAuthLoginOptions(native)
 	var result cliauth.Result
 	e = m.Run(ctx, func(scope *cooperative.Scope) error {

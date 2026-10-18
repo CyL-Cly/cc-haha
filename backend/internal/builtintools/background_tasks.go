@@ -20,6 +20,7 @@ import (
 // These callbacks reach the one Controller.AppState.tasks producer. No tool,
 // host, or native process keeps a competing registry of task state.
 type BackgroundTaskBindings struct {
+	RegisterAgent             func(*cooperative.Scope, *sessioncontroller.BackgroundTask, string) (*sessioncontroller.BackgroundTaskRegistration, error)
 	Register                  func(*cooperative.Scope, *sessioncontroller.BackgroundTask) error
 	Lookup                    func(*cooperative.Scope, string) (*sessioncontroller.BackgroundTask, error)
 	List                      func(*cooperative.Scope) ([]protocol.JSONObject, error)

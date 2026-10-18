@@ -22,7 +22,11 @@ for (const row of input.rows) {
  const call: any = { abortController:controller, agentId:undefined, messages:[], options:{}, getAppState:()=>appState, setAppState:(f:any)=>{appState=f(appState)} }
  const operation = io.createCanUseTool()(tool, { actual:'physical' }, call, undefined as any, 'permission-tool-P700', { behavior:'ask', suggestions:undefined })
  const event: any = (await io.outbound.next()).value
- if (row.abort) controller.abort()
+ if (row.abort) {
+  controller.abort()
+  if (row.abortThenEOF) raw.done()
+  else if (row.abortThenResponse) raw.enqueue(JSON.stringify({type:'control_response',response:{subtype:'success',request_id:event.request_id,response:row.response}})+'\n')
+ }
  else if (row.eof) raw.done()
  else raw.enqueue(JSON.stringify({type:'control_response',response:{subtype:row.peerError?'error':'success',request_id:event.request_id,...(row.peerError?{error:'physical peer rejected'}:{response:row.response})}})+'\n')
  const decision = await operation

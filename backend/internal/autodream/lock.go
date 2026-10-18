@@ -32,7 +32,9 @@ func (s *Service) lockPath() (string, error) {
 	root, err := s.memoryRoot()
 	return filepath.Join(root, ".consolidate-lock"), err
 }
-func stamp(time time.Time) float64 { return float64(time.UnixNano()) / 1e6 }
+func stamp(time time.Time) float64 {
+	return float64(time.Unix())*1000 + float64(time.Nanosecond())/1e6
+}
 func (s *Service) ReadLastConsolidatedAt() float64 {
 	path, err := s.lockPath()
 	if err != nil {

@@ -153,13 +153,13 @@ func TestAnthropicDuplicateStopsAndDistinctIndexToolIDsExecuteOnce(t *testing.T)
 	}
 }
 
-func TestAnthropicEOFNeverCommitsLocalTools(t *testing.T) {
+func TestAnthropicIncompleteEOFNeverCommitsLocalTools(t *testing.T) {
 	for _, test := range []struct {
 		name  string
 		input string
 	}{
 		{"completed block without terminal", messageStart() + toolBlock(0, "call_fixture", `{}`, true)},
-		{"terminal reason without message stop", messageStart() + toolBlock(0, "call_fixture", `{}`, true) + terminal("tool_use", false)},
+		{"content after terminal reason", messageStart() + toolBlock(0, "call_fixture", `{}`, true) + terminal("tool_use", false) + blockStop(0)},
 		{"message stop without terminal reason", messageStart() + toolBlock(0, "call_fixture", `{}`, true) + sseJSON("message_stop", map[string]any{"type": "message_stop"})},
 		{"unfinished tool with terminal", messageStart() + toolBlock(0, "call_fixture", `{}`, false) + terminal("tool_use", true)},
 		{"empty tool use", messageStart() + terminal("tool_use", true)},
@@ -180,6 +180,28 @@ func TestAnthropicEOFNeverCommitsLocalTools(t *testing.T) {
 				t.Fatalf("failed tool appeared in returned content: %#v", message)
 			}
 		})
+	}
+}
+
+func TestAnthropicTerminalReasonCommitsCompletedToolWithoutMessageStop(t *testing.T) {
+	for _, suffix := range []string{
+		"",
+		sseJSON("ping", map[string]any{"type": "ping"}),
+		sseJSON("message_delta", map[string]any{"type": "message_delta", "delta": map[string]any{"stop_reason": nil}, "usage": map[string]any{"output_tokens": 9}}),
+		"event: message_stop\ndata: {\"type\":\"message_stop\"}",
+		"event: message_stop\ndata: {\"type\":\"message_stop\"}\r\n",
+	} {
+		commits := 0
+		wire := messageStart() + toolBlock(0, "terminal-tool", `{"path":"once"}`, true) + terminal("tool_use", false) + suffix
+		message, err := DecodeAnthropicStream(context.Background(), strings.NewReader(wire), func(update StreamUpdate) error {
+			if update.Message != nil {
+				commits++
+			}
+			return nil
+		})
+		if err != nil || message == nil || len(message.Blocks()) != 1 || commits != 1 || string(message.Blocks()[0].Input()) != `{"path":"once"}` {
+			t.Fatalf("terminal reason with trailing %q did not retain the completed tool once: %#v %v commits=%d", suffix, message, err, commits)
+		}
 	}
 }
 
@@ -413,7 +435,7 @@ func TestAnthropicCancellationAndConsumerErrorsNeverManufactureSuccess(t *testin
 	}
 }
 
-func TestAnthropicCRLFMultilineAndUnterminatedStopRejected(t *testing.T) {
+func TestAnthropicCRLFMultilineRetainsTerminalReasonWithUnterminatedStop(t *testing.T) {
 	input := strings.ReplaceAll(messageStart()+textBlock(0, "中文🙂", true)+terminal("end_turn", true), "\n", "\r\n")
 	// A multiline JSON frame retains literal line boundaries between data
 	// fields, rather than concatenating tokens without whitespace.
@@ -424,9 +446,8 @@ func TestAnthropicCRLFMultilineAndUnterminatedStopRejected(t *testing.T) {
 	}
 	input = strings.TrimSuffix(input, "\r\n\r\n")
 	message, err = DecodeAnthropicStream(context.Background(), &fragmentReader{data: []byte(input), step: 1}, nil)
-	assertStreamError(t, err, StreamIncomplete)
-	if message.Text() != "中文🙂" {
-		t.Fatalf("unterminated stop discarded display text: %#v", message)
+	if err != nil || message == nil || message.Text() != "中文🙂" {
+		t.Fatalf("unterminated stop lost the preceding terminal reason: %#v %v", message, err)
 	}
 }
 
@@ -444,20 +465,23 @@ func TestAnthropicSDKDecodesInvalidUTF8InsideStrings(t *testing.T) {
 	}
 }
 
-func TestAnthropicPendingStopCannotCommitCompletedTool(t *testing.T) {
+func TestAnthropicTerminalReasonDoesNotDispatchPendingStopFrame(t *testing.T) {
 	base := messageStart() + textBlock(0, "visible", true) + toolBlock(1, "completed", `{}`, true) + terminal("tool_use", false)
 	for _, ending := range []string{"", "\n", "\r", "\r\n", "\n\n", "\r\r", "\r\n\r\n"} {
-		message, err := DecodeAnthropicStream(context.Background(), &fragmentReader{data: []byte(base + "data: {\"type\":\"message_stop\"}" + ending), step: 1}, nil)
+		stopEvents := 0
+		message, err := DecodeAnthropicStream(context.Background(), &fragmentReader{data: []byte(base + "data: {\"type\":\"message_stop\"}" + ending), step: 1}, func(update StreamUpdate) error {
+			if bytesContain(update.Event, `"type":"message_stop"`) {
+				stopEvents++
+			}
+			return nil
+		})
 		complete := ending == "\n\n" || ending == "\r\r" || ending == "\r\n\r\n"
+		wantStops := 0
 		if complete {
-			if err != nil || len(message.Blocks()) != 2 {
-				t.Fatalf("blank-separated stop %q lost completed tool: %#v, %v", ending, message, err)
-			}
-		} else {
-			assertStreamError(t, err, StreamIncomplete)
-			if message.Text() != "visible" || len(message.Blocks()) != 1 {
-				t.Fatalf("unterminated stop %q exposed completed tool: %#v", ending, message)
-			}
+			wantStops = 1
+		}
+		if err != nil || message == nil || len(message.Blocks()) != 2 || message.Text() != "visible" || stopEvents != wantStops {
+			t.Fatalf("terminal reason with stop ending %q changed content or synthesized an SSE frame: %#v %v stopEvents=%d want=%d", ending, message, err, stopEvents, wantStops)
 		}
 	}
 }

@@ -20,7 +20,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
+	"github.com/NanmiCoder/cc-haha/backend/internal/messages"
+	"github.com/NanmiCoder/cc-haha/backend/internal/modelselection"
+	"github.com/NanmiCoder/cc-haha/backend/internal/ownerasync"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
+	"github.com/NanmiCoder/cc-haha/backend/internal/requestcontext"
+	"github.com/NanmiCoder/cc-haha/backend/internal/sdkhost"
 	"github.com/NanmiCoder/cc-haha/backend/internal/securestorage"
 )
 
@@ -127,6 +133,7 @@ func TestNativeMCPOrdinaryWebActualSourceAndGoHTTPSModelConsumers(t *testing.T) 
 		// primitive resolves absence and never invokes the actual keychain.
 		return nil, os.ErrNotExist
 	}
+	bindCommandPrefetchFixture(t, n)
 	command, err := NewMainCommand(MainCommandOptions{Arguments: []string{"mcp", "serve"}, Native: n, Platform: "darwin", Version: "fixture", PID: os.Getpid(), NonInteractive: true, Output: &bytes.Buffer{}, Error: &bytes.Buffer{}})
 	if err != nil {
 		t.Fatal(err)
@@ -196,5 +203,113 @@ func TestNativeMCPOrdinaryWebActualSourceAndGoHTTPSModelConsumers(t *testing.T) 
 				t.Errorf("request%d %s differs Go=%v Source=%v", i, key, got[key], want[key])
 			}
 		}
+	}
+}
+
+func TestNativeMCPAuxiliaryAccountingUsesOriginalProcessEnvironment(t *testing.T) {
+	f := newNativePluginFixture(t)
+	f.write(t, filepath.Join(f.config, "settings.json"), `{}`)
+	var mu sync.Mutex
+	requests := []protocol.JSONObject{}
+	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		if r.Method != http.MethodPost || r.URL.Path != "/v1/messages" {
+			t.Errorf("unexpected auxiliary transport %s %s", r.Method, r.URL.Path)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		data, err := io.ReadAll(r.Body)
+		var body protocol.JSONObject
+		if err != nil || body.UnmarshalJSON(data) != nil {
+			t.Error("invalid auxiliary body", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		mu.Lock()
+		requests = append(requests, body)
+		mu.Unlock()
+		emitWorktreeModel(w, 1, "", "", "actual auxiliary accounting")
+	}))
+	defer peer.Close()
+	f.n.Environment["ANTHROPIC_API_KEY"] = "fake-only-loopback"
+	f.n.Environment["ANTHROPIC_BASE_URL"] = peer.URL
+	f.n.Environment["ANTHROPIC_MODEL"] = "fixture-model"
+	f.n.Environment["CLAUDE_CODE_MODEL_CONTEXT_WINDOWS"] = `{"fixture-model":1000000}`
+	f.n.Environment["CLAUDE_CODE_PROVIDER_MAX_OUTPUT_TOKENS"] = "2048"
+	f.n.Environment["CLAUDE_CODE_MAX_RETRIES"] = "0"
+	command, err := NewMainCommand(MainCommandOptions{Arguments: []string{"mcp", "serve"}, Native: f.n, Platform: "darwin", Version: "fixture", PID: os.Getpid(), NonInteractive: true, Output: io.Discard, Error: io.Discard})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer command.Close()
+	ordinary, err := NewNativeMCPToolContext(command, "darwin", false, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer ordinary.Close(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), 35*time.Second)
+	defer cancel()
+	selectionCalls := 0
+	err = command.Owner.Run(ctx, func(scope *cooperative.Scope) error {
+		factory, err := messages.NewFactory(uuidMain, f.n.Now)
+		if err != nil {
+			return err
+		}
+		permission := func(next *cooperative.Scope) (*ownerasync.OwnerFuture[protocol.JSONObject], error) {
+			value, err := ownerasync.NewOwnerFuture[protocol.JSONObject](command.Owner)
+			if err != nil {
+				return nil, err
+			}
+			return value, value.Resolve(next, emptyMCPPermissionContext())
+		}
+		auth := ordinary.modelAuth
+		if auth == nil || ordinary.modelTLS == nil {
+			return fmt.Errorf("actual ordinary MCP model authority unavailable")
+		}
+		options := sdkhost.Options{NativeOpenAI: auth.nativeOpenAIConfig, NativeGrok: auth.nativeGrokConfig, NativeAPIKeySource: auth.nativeAPIKeySource, NativeAuthHelper: auth.nativeAuthHelperBinding, NativeClaudeAuth: ordinary.ordinaryClaudeAuthBinding, NativeBedrock: auth.nativeBedrockBinding, NativeVertex: auth.nativeVertexBinding, Owner: command.Owner, Factory: factory, Global: command.Global, Startup: command.Startup, UUID: uuidMain, Now: f.n.Now, NowMillis: f.n.NowMillis, OriginalEnv: f.n.Environment, TLSState: ordinary.modelTLS, Model: "fixture-model", Runtime: provider.SourceRuntime{Platform: "darwin", Arch: "arm64", Version: "v24.3.0"}, Print: &sdkhost.PrintOptions{NativeProcess: true, Tools: ordinary.tools, Thinking: requestcontext.Thinking{Type: "disabled"}}, Version: "fixture"}
+		filtered, err := sdkhost.NativePrintRequestEnvironment(options.OriginalEnv)
+		if err != nil {
+			return err
+		}
+		if _, present := filtered["CLAUDE_CODE_MODEL_CONTEXT_WINDOWS"]; present {
+			return fmt.Errorf("local accounting context leaked into filtered request environment")
+		}
+		models, err := sdkhost.NewNativeMCPModels(scope, options, ordinary.state.Snapshot().SessionID, permission, func(next *cooperative.Scope, selected modelselection.Options) (*modelselection.Selector, error) {
+			selectionCalls++
+			if selected.Environment["CLAUDE_CODE_MODEL_CONTEXT_WINDOWS"] != `{"fixture-model":1000000}` {
+				return nil, fmt.Errorf("actual MCP accounting charge lost original process context: %q", selected.Environment["CLAUDE_CODE_MODEL_CONTEXT_WINDOWS"])
+			}
+			return auth.nativeModelSelection(ctx, next, selected)
+		})
+		if err != nil {
+			return err
+		}
+		answer, err := models.ApplyWebFetchPrompt(ctx, scope, quoteMain("actual private process context"), "fixture-model", true)
+		if err != nil {
+			return err
+		}
+		if string(answer) != `"actual auxiliary accounting"` || selectionCalls == 0 {
+			return fmt.Errorf("actual auxiliary model did not return and charge: %s calls=%d", answer, selectionCalls)
+		}
+		output, err := models.OutputTokens(scope)
+		if err != nil {
+			return err
+		}
+		if output <= 0 {
+			return fmt.Errorf("actual auxiliary SSE usage never reached shared ledger")
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	mu.Lock()
+	defer mu.Unlock()
+	var maxTokens float64
+	if len(requests) != 1 || json.Unmarshal(requests[0].Get("max_tokens"), &maxTokens) != nil || maxTokens != 2048 {
+		t.Fatal("actual auxiliary request or output control changed", len(requests), maxTokens)
 	}
 }

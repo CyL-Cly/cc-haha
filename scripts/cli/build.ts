@@ -45,27 +45,27 @@ export async function buildCLI(options: {
   const version = options.version ?? JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version
   if (typeof version !== 'string' || !/^[A-Za-z0-9.+_-]+$/.test(version)) throw new Error('CLI build requires a version without whitespace or linker expressions')
   const home = mkdtempSync(join(tmpdir(), 'cc-haha-cli-build-'))
-  chmodSync(home, 0o700)
-  const env = createHermeticGoEnvironment(home, options.sourceEnvironment)
-  const telemetry = join(home, 'telemetry')
-  mkdirSync(telemetry, { recursive: true, mode: 0o700 })
-  writeFileSync(join(telemetry, 'mode'), 'off\n', { mode: 0o600 })
-  env.GOTELEMETRY = 'off'
-  env.TEST_TELEMETRY_DIR = telemetry
-  for (const path of [env.CLAUDE_CONFIG_DIR, env.XDG_CONFIG_HOME, env.TMPDIR, env.GOPATH, env.GOMODCACHE, env.GOCACHE]) {
-    mkdirSync(path, { recursive: true, mode: 0o700 })
-    chmodSync(path, 0o700)
-  }
-  const go = options.sourceEnvironment?.CC_HAHA_GO_EXECUTABLE || 'go'
-  const run = options.execute ?? execute
-  const runner: Execute = (command, settings) => run([command[0] === 'go' ? go : command[0], ...command.slice(1)], settings)
-  const cwd = join(root, 'backend')
-  const checked = async (args: string[]) => {
-    const result = await runner(['go', ...args], { cwd, env })
-    if (result.exitCode !== 0) throw new Error(`Go CLI ${args[0]} failed: ${result.stderr || result.stdout}`)
-    return result.stdout
-  }
   try {
+    chmodSync(home, 0o700)
+    const env = createHermeticGoEnvironment(home, options.sourceEnvironment, false, root)
+    const telemetry = join(home, 'telemetry')
+    mkdirSync(telemetry, { recursive: true, mode: 0o700 })
+    writeFileSync(join(telemetry, 'mode'), 'off\n', { mode: 0o600 })
+    env.GOTELEMETRY = 'off'
+    env.TEST_TELEMETRY_DIR = telemetry
+    for (const path of [env.CLAUDE_CONFIG_DIR, env.XDG_CONFIG_HOME, env.TMPDIR, env.GOPATH, env.GOMODCACHE, env.GOCACHE]) {
+      mkdirSync(path, { recursive: true, mode: 0o700 })
+      chmodSync(path, 0o700)
+    }
+    const go = options.sourceEnvironment?.CC_HAHA_GO_EXECUTABLE || 'go'
+    const run = options.execute ?? execute
+    const runner: Execute = (command, settings) => run([command[0] === 'go' ? go : command[0], ...command.slice(1)], settings)
+    const cwd = join(root, 'backend')
+    const checked = async (args: string[]) => {
+      const result = await runner(['go', ...args], { cwd, env })
+      if (result.exitCode !== 0) throw new Error(`Go CLI ${args[0]} failed: ${result.stderr || result.stdout}`)
+      return result.stdout
+    }
     // Verify the physical off file before dependency hydration's first Go call.
     const state = JSON.parse(await checked(['env', '-json', 'GOTELEMETRY', 'GOTELEMETRYDIR', 'GOENV', 'GOMODCACHE', 'GOCACHE']))
     if (state.GOTELEMETRY !== 'off' || resolve(state.GOTELEMETRYDIR) !== telemetry || state.GOENV !== ''

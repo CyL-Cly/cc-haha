@@ -27,7 +27,7 @@ func (m *NativeMCPToolContext) ordinaryHooks() (*queryhooks.Service, error) {
 				return protocol.JSONObject{}, e
 			}
 			state := m.state.Snapshot()
-			config := n.Environment["CLAUDE_CONFIG_DIR"]
+			config := n.ConfigHomeDirectory()
 			if config == "" {
 				config = filepath.Join(n.Home, ".claude")
 			}

@@ -33,6 +33,7 @@ func TestPublicNonModelCLICommandsActualPrivateProcess(t *testing.T) {
 	var log bytes.Buffer
 	build.Stdout = &log
 	build.Stderr = &log
+	capturePublicGoCoverage(t, build)
 	if err = build.Run(); err != nil {
 		t.Fatalf("actual CLI build: %v %s", err, log.String())
 	}
@@ -49,6 +50,7 @@ func TestPublicNonModelCLICommandsActualPrivateProcess(t *testing.T) {
 		cmd.Stdout = &out
 		cmd.Stderr = &stderr
 		code := 0
+		capturePublicGoCoverage(t, cmd)
 		if err := cmd.Run(); err != nil {
 			var exit *exec.ExitError
 			if !errors.As(err, &exit) {
@@ -83,6 +85,7 @@ func TestPublicNonModelCLICommandsActualPrivateProcess(t *testing.T) {
 				cmd.ExtraFiles = []*os.File{read}
 				var out, stderr bytes.Buffer
 				cmd.Stdout, cmd.Stderr = &out, &stderr
+				capturePublicGoCoverage(t, cmd)
 				err = cmd.Run()
 				_ = read.Close()
 				want := "Auth token: CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR\n"

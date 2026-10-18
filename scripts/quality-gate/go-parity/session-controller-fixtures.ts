@@ -39,7 +39,7 @@ export function controllerCases(home: string): ControllerCase[] {
     { name: 'fork-original-retained-history-new-writer', input: { ...base, forkSession: true }, files },
     { name: 'historical-and-runtime-sdk-duplicates', input: { ...base, sdk: [sdk('old-user', 'historical retry'), sdk('input-uuid'), sdk('input-uuid', 'runtime retry')] }, files },
     { name: 'resume-at-before-assistant', input: { ...base, resumeAt: 'old-user' }, files },
-    { name: 'multiple-sdk-original-priority-batch-and-last-uuid', pending: true, input: { ...base, sdk: [{ ...sdk('later-id', 'later original'), priority: 'later' }, { ...sdk('now-id', 'now original'), priority: 'now' }, sdk('next-id', 'next original')] }, files },
+    { name: 'multiple-sdk-original-priority-batch-and-last-uuid', input: { ...base, sdk: [{ ...sdk('later-id', 'later original'), priority: 'later' }, { ...sdk('now-id', 'now original'), priority: 'now' }, sdk('next-id', 'next original')] }, files },
     { name: 'missing-sdk-uuid-real-factory-allocation', input: { ...base, sdk: [{ type: 'user', message: { role: 'user', content: 'original missing uuid' } }] }, files },
     { name: 'read-cache-hosted-12-original-history', input: base, files: { ...files, [path]: hostedReadHistory(12) } },
     { name: 'read-cache-hosted-101-original-history', input: base, files: { ...files, [path]: hostedReadHistory(101) } },

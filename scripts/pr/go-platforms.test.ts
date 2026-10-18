@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test'
+import { afterAll, describe, expect, test } from 'bun:test'
 import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -6,6 +6,29 @@ import { collectGoSourceScope, GO_PLATFORMS, goNativeTarget, goPlatformEvidence,
 import { createGoTestEnvironment, evaluateGoChangedCoverage, parseGoCoverageProfile } from './run-go-tests'
 import { goDependencyLock } from './go-dependencies'
 import { evaluateGoPlatformClosure, type GoMatrixInput } from './run-go-matrix'
+
+// Compile the standard testing/coverage runtime before starting the five-second
+// consumer assertion window. The cache belongs to this suite's disposable HOME;
+// it never reads a user's compiler cache or weakens the fixture's offline env.
+const compilerHome = mkdtempSync(join(tmpdir(), 'go-controlled-compiler-home-'))
+const compilerFixture = join(compilerHome, 'fixture')
+mkdirSync(compilerFixture)
+writeFileSync(join(compilerFixture, 'go.mod'), 'module example.test/compiler-fixture\n\ngo 1.25.7\n')
+writeFileSync(join(compilerFixture, 'warm_test.go'), 'package fixture\nimport "testing"\nfunc TestWarm(t *testing.T) {}\n')
+const compilerEnvironment = createGoTestEnvironment(compilerHome, { PATH: process.env.PATH })
+const compilerPreparation = Bun.spawn(['go', 'test', '-run', '^$', '-covermode=atomic', '-coverpkg=./...', './...'], {
+  cwd: compilerFixture, env: compilerEnvironment, stdout: 'pipe', stderr: 'pipe',
+})
+const [compilerExit, compilerError] = await Promise.all([compilerPreparation.exited, new Response(compilerPreparation.stderr).text(), new Response(compilerPreparation.stdout).text()])
+if (compilerExit !== 0) {
+  rmSync(compilerHome, { recursive: true, force: true })
+  throw new Error(`Private Go compiler preparation failed: ${compilerError}`)
+}
+afterAll(() => rmSync(compilerHome, { recursive: true, force: true }))
+
+function controlledFixtureEnvironment(home: string) {
+  return { ...createGoTestEnvironment(home, { PATH: process.env.PATH }), GOCACHE: compilerEnvironment.GOCACHE }
+}
 
 describe('native Go platform source and coverage scope', () => {
   test('snapshots raw module resources, embed data, fixtures and additions without treating them as Go source', () => {
@@ -54,7 +77,7 @@ describe('native Go platform source and coverage scope', () => {
       const sources = scanGoSources(backend), modules = goDependencyLock(root).localForks!
       const directories = goSourceDirectories(sources, backend, modules)
       expect(directories).toEqual(['./', 'go.mau.fi/libsignal'])
-      const result = Bun.spawnSync(['go', 'list', '-e', '-json', ...directories], { cwd: backend, env: createGoTestEnvironment(home), stdout: 'pipe', stderr: 'pipe' })
+      const result = Bun.spawnSync(['go', 'list', '-e', '-json', ...directories], { cwd: backend, env: controlledFixtureEnvironment(home), stdout: 'pipe', stderr: 'pipe' })
       expect(result.exitCode).toBe(0)
       const scope = collectGoSourceScope(Buffer.from(result.stdout).toString(), sources, backend)
       expect(scope.active).toEqual(['backend/query.go', 'backend/third_party/libsignal-node/value.go'])
@@ -62,7 +85,7 @@ describe('native Go platform source and coverage scope', () => {
       expect(scope.formatted).toHaveLength(3)
       const profile = join(home, 'coverage.out')
       const consumer = Bun.spawnSync(['go', 'test', '-count=1', '-covermode=atomic', '-coverpkg=./...,go.mau.fi/libsignal/...', `-coverprofile=${profile}`, './...'], {
-        cwd: backend, env: createGoTestEnvironment(home), stdout: 'pipe', stderr: 'pipe',
+        cwd: backend, env: controlledFixtureEnvironment(home), stdout: 'pipe', stderr: 'pipe',
       })
       expect(consumer.exitCode).toBe(0)
       const coverage = parseGoCoverageProfile(readFileSync(profile, 'utf8'), 'example.test/backend', modules)

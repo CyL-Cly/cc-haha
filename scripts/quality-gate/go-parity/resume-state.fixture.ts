@@ -87,11 +87,13 @@ const link = fsPromises.link
 spyOn(fsPromises, 'link').mockImplementation(async (old, target) => { guard(String(old)); guard(String(target)); if (input.holdCopies) await held; return link(old, target) })
 let probingUUIDs = false, transcriptReadsDuringProbes = 0
 const probePath = input.uuidProbes ? join(home, '.claude', 'projects', home.replace(/[^a-zA-Z0-9]/g, '-'), JSON.parse(input.source!) + '.jsonl') : undefined
-const readOriginal = fsPromises.readFile
+const readOriginal = (fsPromises.readFile as any).getMockImplementation?.() as typeof fsPromises.readFile
+if (typeof readOriginal !== 'function') throw new Error('Guarded resume readFile implementation missing')
 spyOn(fsPromises, 'readFile').mockImplementation((...args) => { if (probingUUIDs && String(args[0]) === probePath) transcriptReadsDuringProbes++; return readOriginal(...args as Parameters<typeof readOriginal>) })
 const liteReadFaults: Array<{ operation: string, ordinal: number, position: number }> = []
 if (input.liteReadFault) {
-  const originalOpen = fsPromises.open
+  const originalOpen = (fsPromises.open as any).getMockImplementation?.() as typeof fsPromises.open
+  if (typeof originalOpen !== 'function') throw new Error('Guarded resume open implementation missing')
   spyOn(fsPromises, 'open').mockImplementation(async (...args) => {
     guard(String(args[0]))
     const handle = await originalOpen(...args)

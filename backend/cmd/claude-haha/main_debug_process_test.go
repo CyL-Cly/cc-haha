@@ -30,6 +30,7 @@ func TestPublicDebugCLIActualPrivateSharedHarnessFilesStderrAndClose(t *testing.
 	defer cancel()
 	binary := filepath.Join(root, "actual-debug-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if data, e := build.CombinedOutput(); e != nil {
 		t.Fatal(e, string(data))
 	}
@@ -85,7 +86,7 @@ func TestPublicDebugCLIActualPrivateSharedHarnessFilesStderrAndClose(t *testing.
 				}
 			}
 			var calls atomic.Int32
-			peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			peer := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 				_, _ = io.Copy(io.Discard, r.Body)
 				calls.Add(1)
 				jsonSchemaCLIResponse(w, "debug-private-response", "", nil, "ACTUAL_DEBUG_DONE")
@@ -108,6 +109,7 @@ func TestPublicDebugCLIActualPrivateSharedHarnessFilesStderrAndClose(t *testing.
 			var out, stderr bytes.Buffer
 			cmd.Stdout = &out
 			cmd.Stderr = &stderr
+			capturePublicGoCoverage(t, cmd)
 			e := cmd.Run()
 			if p.fail {
 				var exit *exec.ExitError
@@ -215,6 +217,7 @@ func TestActualSourcePublicDebugCLIStartupFilesStderrAndSDKIsolation(t *testing.
 			var out, stderr bytes.Buffer
 			cmd.Stdout = &out
 			cmd.Stderr = &stderr
+			capturePublicGoCoverage(t, cmd)
 			runError := cmd.Run()
 			if runError != nil && !p.fail {
 				t.Fatal(runError, out.String(), stderr.String())

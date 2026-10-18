@@ -55,6 +55,7 @@ func TestActualPublicGoCLIAutoDreamDialogPhysicalWriteKillNextTurnAndDisabled(t 
 	defer cancel()
 	binary := filepath.Join(root, "public-dream-go-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-mod=readonly", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if out, err := build.CombinedOutput(); err != nil {
 		t.Fatal(err, string(out))
 	}
@@ -85,7 +86,7 @@ func TestActualPublicGoCLIAutoDreamDialogPhysicalWriteKillNextTurnAndDisabled(t 
 			roots, dreams := 0, 0
 			cancelled := make(chan struct{}, 1)
 			requests := [][]byte{}
-			peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			peer := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 				body, _ := io.ReadAll(r.Body)
 				dream := bytes.Contains(body, []byte("# Dream: Memory Consolidation"))
 				mu.Lock()
@@ -142,6 +143,7 @@ func TestActualPublicGoCLIAutoDreamDialogPhysicalWriteKillNextTurnAndDisabled(t 
 			defer peer.Close()
 			python := exec.CommandContext(ctx, "/usr/bin/python3", "testdata/dream-dialog.py", binary, home, profile)
 			python.Env = append(resumeErrorEnv(home, root, peer.URL), "TERM=xterm-256color", "CLAUDE_COWORK_MEMORY_PATH_OVERRIDE="+memory, "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL=1", "CLAUDE_CODE_TMPDIR="+filepath.Join(home, "tmp"))
+			capturePublicGoCoverage(t, python)
 			out, err := python.CombinedOutput()
 			if err != nil {
 				t.Fatal(err, string(out))

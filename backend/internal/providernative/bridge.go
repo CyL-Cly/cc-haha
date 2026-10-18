@@ -24,10 +24,14 @@ func New(owner *cooperative.Owner, scope *cooperative.Scope, observe func(provid
 type Factory struct {
 	boundary *Boundary
 	observe  func(provider.OwnerNativeEvent)
+	pool     *Pool
 }
 
 func NewFactory(owner *cooperative.Owner, scope *cooperative.Scope, observe func(provider.OwnerNativeEvent)) *Factory {
 	return &Factory{boundary: &Boundary{owner, scope}, observe: observe}
+}
+func NewPooledFactory(owner *cooperative.Owner, scope *cooperative.Scope, observe func(provider.OwnerNativeEvent), pool *Pool) *Factory {
+	return &Factory{boundary: &Boundary{owner, scope}, observe: observe, pool: pool}
 }
 func (factory *Factory) CheckOwner() error {
 	if factory == nil {
@@ -39,7 +43,29 @@ func (factory *Factory) NewNativeOpenIO() (*provider.OwnerNativeIO, error) {
 	if factory == nil {
 		return provider.NewOwnerNativeIO(nil, nil)
 	}
+	if factory.pool != nil {
+		return factory.pool.Driver(factory.boundary.owner, factory.boundary.scope, factory.observe)
+	}
 	return provider.NewOwnerNativeIO(factory.boundary, factory.observe)
+}
+
+func (factory *Factory) NativeKeepAliveDisable() func() error {
+	if factory == nil || factory.pool == nil {
+		return nil
+	}
+	return func() error {
+		if err := factory.CheckOwner(); err != nil {
+			return err
+		}
+		if !factory.pool.Owns(factory.boundary.owner) {
+			return cooperative.ErrRestricted
+		}
+		if err := factory.pool.checkBorrowed(); err != nil {
+			return err
+		}
+		factory.pool.io.DisableKeepAlive()
+		return nil
+	}
 }
 
 func (boundary *Boundary) CheckOwner() error {

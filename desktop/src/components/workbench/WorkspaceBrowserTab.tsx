@@ -378,7 +378,7 @@ export function WorkspaceBrowserTab({ sessionId, tab, active }: WorkspaceBrowser
           applyZoom(1)
           break
         case 'capture':
-          runCommand(() => workspaceBrowserHost.capture(browserTabId, 'full'))
+          await workspaceBrowserHost.capture(browserTabId, 'full')
           break
         case 'pickElement':
           pickElement()

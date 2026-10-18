@@ -1,0 +1,9 @@
+# Compiled CMD init HEAD fixtures — bounded evidence
+
+The immutable checkpoint 12 unit failures included real init HEAD requests entering existing model-only peers. Empty HEAD bodies were decoded as model input or incremented POST counters, so subsequent real model requests selected the wrong response. The checkpoint and original failed outputs are retained.
+
+The test-only `nativeCLIModelHTTPHandler` handles only HEAD with a physical 204 response, checks that it carries no model authentication and the original `Bun/1.3.14` identity, and records a separate HEAD count. Twenty existing CMD test files (22 model handlers) use it. Existing model bodies/counters, tool artifacts, canonical transcript assertions, PTY windows and termios assertions are unchanged. MCP, OAuth and release peers are not broadly replaced.
+
+On the current tree, the 15 exact failed top-level selectors were run using `go test -p=1 -race -json ./cmd/claude-haha -run '^(...)$' -count=1`. Package time was 115.398 seconds: 14 top-level tests passed, while the typed-model Source tail skipped because this private runner omitted `CC_HAHA_PINNED_BUN`. That same top-level test was then run with the explicit pinned Bun path; it passed in 6.52 seconds (package 8.399 seconds), with no skip. The original v14 skip is retained separately. `go vet -p=1 ./cmd/claude-haha` passed in 7.465 seconds, and diff-check passed.
+
+The ignored receipt `artifacts/go-migration-20261013/cli-flags/cmd-preconnect-fixture-bounded-receipt-v16.json` includes selectors, commands, source/log SHA256 values and independent HEAD receipts. Tests use private homes, fake credentials and loopback models; no real Claude OAuth is exercised. These are bounded regression results, not a whole quality-gate result. Strict cold-title five-pair parity, shared native TCP pooling, unchanged 90% coverage, final same-version desktop/Web/CLI acceptance and 120 Benchmark pairs remain open.

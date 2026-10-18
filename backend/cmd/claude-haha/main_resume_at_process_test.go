@@ -31,6 +31,7 @@ func TestActualSourceAndPublicCLIResumeAtFilteredBoundary(t *testing.T) {
 	defer cancel()
 	binary := filepath.Join(root, "actual-resume-at-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if output, err := build.CombinedOutput(); err != nil {
 		t.Fatal(err, string(output))
 	}
@@ -82,7 +83,7 @@ func TestActualSourceAndPublicCLIResumeAtFilteredBoundary(t *testing.T) {
 				}
 			}
 			var calls atomic.Int32
-			peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			peer := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 				body, _ := io.ReadAll(r.Body)
 				calls.Add(1)
 				assertRequest(body)

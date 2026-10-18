@@ -234,7 +234,9 @@ func TestNativeBridgeFiniteConfigurationGuardsHaveNoSocketFallback(t *testing.T)
 		edit func(*provider.AnthropicConfig, *provider.MessagesRequest)
 	}{
 		{"pooled-custom-client", func(c *provider.AnthropicConfig, _ *provider.MessagesRequest) { c.HTTPClient = &http.Client{} }},
-		{"missing-default-port", func(c *provider.AnthropicConfig, _ *provider.MessagesRequest) { c.BaseURL = "http://127.0.0.1" }},
+		{"credentials-in-url", func(c *provider.AnthropicConfig, _ *provider.MessagesRequest) {
+			c.BaseURL = "http://private-user:fake-password@127.0.0.1:1"
+		}},
 		{"netHTTP-no-original-exchange", func(c *provider.AnthropicConfig, _ *provider.MessagesRequest) { c.HTTPExchange = nil }},
 		{"custom-dial", func(c *provider.AnthropicConfig, _ *provider.MessagesRequest) {
 			c.HTTPExchange = &provider.RawHTTP1Exchange{DialContext: func(context.Context, string, string) (net.Conn, error) {
@@ -244,10 +246,12 @@ func TestNativeBridgeFiniteConfigurationGuardsHaveNoSocketFallback(t *testing.T)
 		}},
 		{"https", func(c *provider.AnthropicConfig, _ *provider.MessagesRequest) { c.BaseURL = "https://127.0.0.1:1" }},
 		{"tls-config", func(c *provider.AnthropicConfig, _ *provider.MessagesRequest) {
+			c.BaseURL = "https://127.0.0.1:1"
 			c.HTTPExchange = &provider.RawHTTP1Exchange{VerifiedTLS: &tls.Config{}}
 		}},
 		{"tls-resolver", func(c *provider.AnthropicConfig, _ *provider.MessagesRequest) {
-			c.HTTPExchange = &provider.RawHTTP1Exchange{ResolveVerifiedTLS: func() (*tls.Config, error) { t.Fatal("TLS callback reached"); return nil, nil }}
+			c.BaseURL = "https://127.0.0.1:1"
+			c.HTTPExchange = &provider.RawHTTP1Exchange{VerifiedTLS: &tls.Config{}, ResolveVerifiedTLS: func() (*tls.Config, error) { t.Fatal("ambiguous TLS callback reached"); return nil, nil }}
 		}},
 		{"proxy", func(_ *provider.AnthropicConfig, p *provider.MessagesRequest) {
 			p.Headers.Set("Proxy-Authorization", "fake")

@@ -32,7 +32,7 @@ func (m *MainPrint) nativeWorkflowGuideline(scope *cooperative.Scope) (string, e
 	if !scope.BelongsTo(m.Owner) {
 		return "", cooperative.ErrRestricted
 	}
-	policy, e := m.Startup.GetSettingsForSource("policySettings")
+	policy, e := m.nativeSDKSourceSettings("policySettings")
 	if e != nil {
 		return "", e
 	}
@@ -41,7 +41,7 @@ func (m *MainPrint) nativeWorkflowGuideline(scope *cooperative.Scope) (string, e
 			return value, nil
 		}
 	}
-	initial, e := m.Startup.GetInitialSettings()
+	initial, e := m.nativeSDKInitialSettings()
 	if e != nil {
 		return "", e
 	}

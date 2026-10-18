@@ -49,16 +49,23 @@ type AuthError struct{ Challenge AuthChallenge }
 func (e *AuthError) Error() string { return "Unauthorized" }
 
 type Options struct {
-	SDK          *SDKControlBindings
-	Name         string
-	ClientInfo   protocol.JSONObject
-	Capabilities protocol.JSONObject
-	Version      string
-	UserAgent    string
+	// The frozen distribution aliases the private Chrome MCP package to an
+	// empty in-process server. Preserve its timeout without spawning a legacy
+	// runtime or advertising tools that the Source package does not contain.
+	NativeChromeStub bool
+	SDK              *SDKControlBindings
+	Name             string
+	ClientInfo       protocol.JSONObject
+	Capabilities     protocol.JSONObject
+	Version          string
+	UserAgent        string
 	// Environment is the resolved subprocess environment, including the caller's
 	// shell PATH. It is explicit, so tests and host integrations do not implicitly
 	// inherit real credentials. Config.Env overlays this environment.
-	Environment          map[string]string
+	Environment map[string]string
+	// EnvironmentValue is the actual mutable process-environment producer.
+	// Subprocess env stays snapshotted; timeout getters remain per invocation.
+	EnvironmentValue     func(context.Context, string) (string, error)
 	CWD                  string
 	RootURI              string
 	HTTPClient           *http.Client
@@ -82,8 +89,14 @@ type Options struct {
 }
 
 type RequestOptions struct {
-	Timeout    time.Duration
-	OnProgress func(protocol.JSONObject)
+	// OnSent observes the actual transport write for owned cleanup consumers.
+	// It carries no business reply and does not alter request admission/order.
+	OnSent  func(error)
+	Timeout time.Duration
+	// TimeoutMilliseconds preserves original negative/oversized SDK timeout
+	// values separately from the platform timer's scheduling delay.
+	TimeoutMilliseconds *float64
+	OnProgress          func(protocol.JSONObject)
 	// CancelReason is the originating SDK/host abort reason. Without an explicit
 	// reason, context cancellation uses the original AbortSignal default text.
 	CancelReason string

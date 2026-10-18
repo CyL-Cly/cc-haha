@@ -12,8 +12,18 @@ func (f *Factory) CreateLocalCaveat() protocol.JSONObject {
 	return OrderedUser(f.CreateUser(storage.Object{"content": stringJSON(LocalCommandCaveat), "isMeta": json.RawMessage("true")}))
 }
 func (f *Factory) CreateLocalCommandInput(content string) protocol.JSONObject {
+	value, _ := f.CreateLocalCommandInputJSON(stringJSON(content))
+	return value
+}
+
+// CreateLocalCommandInputJSON retains an original JavaScript string, including
+// lone UTF16 code units, through the same local-command factory.
+func (f *Factory) CreateLocalCommandInputJSON(content json.RawMessage) (protocol.JSONObject, error) {
+	if _, err := protocol.DecodeJavaScriptJSONString(content); err != nil {
+		return protocol.JSONObject{}, err
+	}
 	// Source createCommandInputMessage evaluates its timestamp before UUID.
 	timestamp := f.timestamp()
 	id := stringJSON(f.uuid())
-	return protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: stringJSON("system")}, protocol.JSONField{Name: "subtype", Value: stringJSON("local_command")}, protocol.JSONField{Name: "content", Value: stringJSON(content)}, protocol.JSONField{Name: "level", Value: stringJSON("info")}, protocol.JSONField{Name: "timestamp", Value: timestamp}, protocol.JSONField{Name: "uuid", Value: id}, protocol.JSONField{Name: "isMeta", Value: json.RawMessage("false")})
+	return protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: stringJSON("system")}, protocol.JSONField{Name: "subtype", Value: stringJSON("local_command")}, protocol.JSONField{Name: "content", Value: append(json.RawMessage(nil), content...)}, protocol.JSONField{Name: "level", Value: stringJSON("info")}, protocol.JSONField{Name: "timestamp", Value: timestamp}, protocol.JSONField{Name: "uuid", Value: id}, protocol.JSONField{Name: "isMeta", Value: json.RawMessage("false")}), nil
 }

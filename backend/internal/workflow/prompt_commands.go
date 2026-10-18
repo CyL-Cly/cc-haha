@@ -6,13 +6,22 @@ import (
 )
 
 func (s *Service) CommandsOnOwner(scope *cooperative.Scope) ([]*workflowcommands.Command, error) {
+	if s == nil {
+		return nil, cooperative.ErrRestricted
+	}
+	return s.CommandsForDirectoryOnOwner(scope, s.definitions.OriginalCWD)
+}
+
+// CommandsForDirectoryOnOwner preserves the original getWorkflowCommands(cwd)
+// cache key when the actual process CWD changes in the same session.
+func (s *Service) CommandsForDirectoryOnOwner(scope *cooperative.Scope, cwd string) ([]*workflowcommands.Command, error) {
 	if s == nil || !scope.BelongsTo(s.definitions.Owner) {
 		return nil, cooperative.ErrRestricted
 	}
 	if s.definitions.BeginCommands == nil {
 		return nil, &CapabilityError{"actual Workflow command source"}
 	}
-	future, e := s.definitions.BeginCommands(scope, s.definitions.OriginalCWD)
+	future, e := s.definitions.BeginCommands(scope, cwd)
 	if e != nil {
 		return nil, e
 	}

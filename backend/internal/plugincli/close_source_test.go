@@ -43,7 +43,7 @@ func TestCLIPluginCloseJoinsActualLocalGitProducer(t *testing.T) {
 		t.Fatal(err)
 	}
 	env := map[string]string{"HOME": home, "USERPROFILE": home, "USER": "owned", "CLAUDE_CONFIG_DIR": config, "TMPDIR": home, "PATH": bin + ":/usr/bin:/bin", "USER_TYPE": "external", "NODE_ENV": "production", "CLAUDE_CODE_LOCAL_SKIP_REMOTE_PREFETCH": "1", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"}
-	native, err := clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: home, Platform: "darwin", ManagedRoot: filepath.Join(root, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+	native, err := newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: home, Platform: "darwin", ManagedRoot: filepath.Join(root, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 	if err != nil {
 		t.Fatal(err)
 	}

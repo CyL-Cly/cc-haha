@@ -17,7 +17,7 @@ func (h *Host) consumeWebModel(ctx context.Context, scope *cooperative.Scope, in
 	if len(promptAuthority) == 1 && promptAuthority[0].Owns(h.options.Owner) {
 		deps.NativePromptHookSource = promptAuthority[0]
 	}
-	_, e := modelyield.RunQueued(ctx, input, modelyield.QueuedDependencies{Request: deps, Activity: h.options.Activity, Session: h.sessionAccounting, AgentContext: h.agentContext, StreamClock: h.streamClock, StreamPolicy: h.streamPolicy, SuccessDuration: &modelaccounting.SuccessDuration{NowMillis: h.options.NowMillis, GetPermission: h.webModelPermission, Ignored: h.permissionRejections}, Start: func(first *cooperative.Scope, it *modelyield.QueryIterator, _ *modelyield.ResourceControl) (*ownerasync.OwnerFuture[struct{}], error) {
+	_, e := modelyield.RunQueued(ctx, input, modelyield.QueuedDependencies{OnNativeQuota: h.nativeQuotaConsumer(), Request: deps, Activity: h.options.Activity, Session: h.sessionAccounting, AgentContext: h.agentContext, StreamClock: h.streamClock, StreamPolicy: h.streamPolicy, SuccessDuration: &modelaccounting.SuccessDuration{NowMillis: h.options.NowMillis, GetPermission: h.webModelPermission, Ignored: h.permissionRejections}, Start: func(first *cooperative.Scope, it *modelyield.QueryIterator, _ *modelyield.ResourceControl) (*ownerasync.OwnerFuture[struct{}], error) {
 		done, e := ownerasync.NewOwnerFuture[struct{}](h.options.Owner)
 		if e != nil {
 			return nil, e

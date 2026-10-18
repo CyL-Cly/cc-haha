@@ -79,7 +79,7 @@ func TestActualDesktopLeaderIdleMailboxReconnectSamePendingAndServerCloseJoinsWo
 	}
 	target = filepath.Join(o.WorkDir, "desktop-durable.txt")
 	s, err := NewDesktopServer(ServerOptions{Environment: o.Environment, HomeDir: o.Environment["HOME"], ConfigDir: configDir, WorkDir: o.WorkDir, Version: o.Version, Arguments: o.Arguments, NativeFactory: func(env map[string]string, cwd, platform string) (*clibootstrap.NativeBoundary, error) {
-		return clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: cwd, Platform: platform, ManagedRoot: o.Native.ManagedRoot, ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+		return newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: env, CWD: cwd, Platform: platform, ManagedRoot: o.Native.ManagedRoot, ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 	}})
 	if err != nil {
 		t.Fatal(err)
@@ -198,10 +198,6 @@ func TestActualDesktopLeaderIdleMailboxReconnectSamePendingAndServerCloseJoinsWo
 	}
 	_ = ws.Close()
 	ws = dial()
-	state := receive("session_state")
-	if state.String("turnState") != "idle" {
-		t.Fatal("internal SDK run incorrectly registered a foreground user turn", string(raw(state)))
-	}
 	restored := receive("permission_request")
 	if restored.String("requestId") != request {
 		t.Fatal("reconnect replaced pending future", string(raw(restored)))
@@ -211,6 +207,11 @@ func TestActualDesktopLeaderIdleMailboxReconnectSamePendingAndServerCloseJoinsWo
 	_ = json.Unmarshal(snapshot.Get("toolRequestIds"), &ids)
 	if len(ids) != 1 || ids[0] != request || string(snapshot.Get("turnActive")) != "false" {
 		t.Fatal("reconnect snapshot incorrect", string(raw(snapshot)))
+	}
+	requestDesktopSessionSync(t, ws)
+	state := receive("session_state")
+	if state.String("turnState") != "idle" {
+		t.Fatal("internal SDK run incorrectly registered a foreground user turn", string(raw(state)))
 	}
 	send(map[string]any{"type": "permission_response", "requestId": request, "allowed": true})
 	receive("permission_resolved")

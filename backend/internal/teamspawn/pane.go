@@ -17,17 +17,18 @@ import (
 // PaneRuntime retains Source detection's launch TMUX value and the original
 // process PATH. Mailbox body metadata never selects a process or a socket.
 type PaneRuntime struct {
-	cwd           string
-	pid           int
-	environment   map[string]string
-	insideTmux    bool
-	mu            sync.Mutex
-	firstExternal bool
-	leaderWindow  string
-	itermSessions []string
-	backend       string
-	mode          string
-	needsSetup    bool
+	cwd               string
+	pid               int
+	environment       map[string]string
+	insideTmux        bool
+	mu                sync.Mutex
+	firstExternal     bool
+	leaderWindow      string
+	itermSessions     []string
+	backend           string
+	inProcessFallback bool
+	mode              string
+	needsSetup        bool
 }
 
 func NewPaneRuntime(cwd string, pid int, environment map[string]string) (*PaneRuntime, error) {

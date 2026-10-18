@@ -22,7 +22,7 @@ func TestActualSourcePowerShellHintsStripBeforeFailureAndRawWhitespace(t *testin
 	if bun == "" {
 		t.Skip("pinned Source Bun required")
 	}
-	const executable = "/opt/homebrew/bin/pwsh"
+	executable := physicalPowerShell(t)
 	if _, e := os.Stat(executable); e != nil {
 		t.Skip("actual PowerShell required")
 	}

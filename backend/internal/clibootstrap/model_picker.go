@@ -10,18 +10,20 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/clisettings"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/modelselection"
+	"github.com/NanmiCoder/cc-haha/backend/internal/openaiauth"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/requestcontext"
 	"github.com/NanmiCoder/cc-haha/backend/internal/tui"
 )
 
 type nativeModelPickerState struct {
-	rawModel    *string
-	initial     *string
-	effort      json.RawMessage
-	next        uint64
-	pending     *tui.ModelPicker
-	validModels map[string]bool
+	rawModel        *string
+	initial         *string
+	effort          json.RawMessage
+	next            uint64
+	pending         *tui.ModelPicker
+	pendingTeammate bool
+	validModels     map[string]bool
 }
 
 func pickerPointer(value string) *string { return &value }
@@ -101,10 +103,41 @@ func pickerEffortLevel(raw json.RawMessage) *string {
 }
 
 func (m *MainPrint) NativeModelPicker(ctx context.Context, standalone bool) (tui.ModelPicker, error) {
+	return m.nativeModelPicker(ctx, standalone, false)
+}
+
+func (m *MainPrint) NativeTeammateModelPicker(ctx context.Context) (tui.ModelPicker, error) {
+	return m.nativeModelPicker(ctx, false, true)
+}
+
+func (m *MainPrint) nativeModelPicker(ctx context.Context, standalone, teammate bool) (tui.ModelPicker, error) {
 	var result tui.ModelPicker
 	receipt, err := m.Owner.Submit(ctx, cooperative.Read, func(scope *cooperative.Scope) error {
 		if err := m.initializePicker(scope); err != nil {
 			return err
+		}
+		global, err := m.Global.Get()
+		if err != nil {
+			return err
+		}
+		current, initial := m.modelPicker.rawModel, m.modelPicker.initial
+		if teammate {
+			enabled, err := m.nativeSendMessageEnabled(scope)
+			if err != nil {
+				return err
+			}
+			if !enabled {
+				return mainCap("disabled teammate model picker")
+			}
+			current = nil
+			if value := global.Get("teammateDefaultModel"); len(value) > 0 && string(value) != "null" {
+				text, err := decodeNativeModel(value)
+				if err != nil {
+					return err
+				}
+				current = pickerPointer(text)
+			}
+			initial = pickerClone(current)
 		}
 		env, err := m.pickerEnvironment()
 		if err != nil {
@@ -119,32 +152,40 @@ func (m *MainPrint) NativeModelPicker(ctx context.Context, standalone bool) (tui
 			merged = settings.Clone()
 		}
 		var override json.RawMessage = []byte("null")
-		if m.modelPicker.rawModel != nil {
-			override = quoteMain(*m.modelPicker.rawModel)
+		if current != nil {
+			override = quoteMain(*current)
 		}
 		selector, err := m.nativeModelSelection(ctx, scope, modelselection.Options{Environment: env, Settings: merged, Override: override})
 		if err != nil {
 			return err
 		}
-		global, err := m.Global.Get()
+		identity, err := m.openAIAuth.AnthropicModelIdentity(ctx, scope, false)
 		if err != nil {
 			return err
 		}
-		options, err := nativePickerOptions(env, merged, global, selector, m.modelPicker.initial)
+		openAIValue, err := m.openAIAuth.GetCached(ctx, scope)
 		if err != nil {
 			return err
 		}
-		initialLabel, err := nativePickerDisplay(selector, m.modelPicker.rawModel)
+		openAIActive, err := m.openAIAuth.ModelActive(ctx, scope, false)
 		if err != nil {
 			return err
 		}
-		if m.modelPicker.rawModel != nil {
+		options, err := nativeSDKModelOptions(env, merged, global, selector, initial, identity, openaiauth.HasOpenAIAuth(openAIValue), openAIActive)
+		if err != nil {
+			return err
+		}
+		initialLabel, err := nativePickerDisplay(selector, current)
+		if err != nil {
+			return err
+		}
+		if current != nil {
 			found := false
 			for _, option := range options {
-				found = found || pickerSame(option.Value, m.modelPicker.rawModel)
+				found = found || pickerSame(option.Value, current)
 			}
 			if !found {
-				options = append(options, tui.ModelOption{Value: pickerClone(m.modelPicker.rawModel), Label: initialLabel, Description: "Current model"})
+				options = append(options, tui.ModelOption{Value: pickerClone(current), Label: initialLabel, Description: "Current model"})
 			}
 		}
 		for i := range options {
@@ -162,9 +203,14 @@ func (m *MainPrint) NativeModelPicker(ctx context.Context, standalone bool) (tui
 			}
 		}
 		m.modelPicker.next++
-		result = tui.ModelPicker{ID: fmt.Sprintf("model-picker-%d", m.modelPicker.next), Initial: pickerClone(m.modelPicker.rawModel), InitialLabel: initialLabel, Options: options, Effort: pickerEffortLevel(m.modelPicker.effort), Standalone: standalone}
+		result = tui.ModelPicker{ID: fmt.Sprintf("model-picker-%d", m.modelPicker.next), Initial: pickerClone(current), InitialLabel: initialLabel, Options: options, Effort: pickerEffortLevel(m.modelPicker.effort), Standalone: standalone}
+		if teammate {
+			result.SkipSettingsWrite = true
+			result.HeaderText = "Default model for newly spawned teammates. The leader can override via the tool call's model parameter."
+		}
 		pending := cloneNativePicker(result)
 		m.modelPicker.pending = &pending
+		m.modelPicker.pendingTeammate = teammate
 		return nil
 	})
 	if err != nil {
@@ -226,13 +272,22 @@ func nativePickerDisplay(selector *modelselection.Selector, model *string) (stri
 // ApplyNativeModelPicker retains Source raw aliases/null, persists the exact
 // user settings fields, and updates the shared SDK host's next ASK snapshot.
 func (m *MainPrint) ApplyNativeModelPicker(ctx context.Context, id string, result tui.ModelPickerResult) (string, error) {
+	return m.applyNativeModelPicker(ctx, id, result, false)
+}
+
+// Config shares ModelPicker's persistence and effort callback, while its
+// parent only changes the base/session model AppState fields.
+func (m *MainPrint) ApplyNativeConfigModelPicker(ctx context.Context, id string, result tui.ModelPickerResult) (string, error) {
+	return m.applyNativeModelPicker(ctx, id, result, true)
+}
+func (m *MainPrint) applyNativeModelPicker(ctx context.Context, id string, result tui.ModelPickerResult, config bool) (string, error) {
 	var notice string
 	receipt, err := m.Owner.Submit(ctx, cooperative.Input, func(scope *cooperative.Scope) error {
 		if err := m.initializeNativeModelCommandState(scope); err != nil {
 			return err
 		}
 		picker := m.modelPicker.pending
-		if picker == nil || picker.ID != id {
+		if picker == nil || picker.ID != id || m.modelPicker.pendingTeammate {
 			return mainCap("stale native model picker response")
 		}
 		m.modelPicker.pending = nil
@@ -342,6 +397,13 @@ func (m *MainPrint) ApplyNativeModelPicker(ctx context.Context, id string, resul
 				return err
 			}
 			notice = "Model set to " + notice
+		}
+		if config {
+			state, err := m.Controller.TypedModelStateOnOwner(scope)
+			if err != nil {
+				return err
+			}
+			return m.Controller.ApplyTypedModelState(scope, result.Model, state.FastMode)
 		}
 		suffix, err := m.applyNativeSelectedModelState(ctx, scope, result.Model, selector, env, picker.Standalone)
 		if err != nil {

@@ -113,6 +113,35 @@ func (a *SerialASK) BeginDequeued(scope *cooperative.Scope) (*protocol.JSONObjec
 	a.cache = a.controller.readCache.Clone()
 	return accepted, err
 }
+
+// HasPendingNativeInput observes the exact accepted descriptor identity. It
+// does not admit a process profile from a caller-controlled boolean or JSON.
+func (a *SerialASK) HasPendingNativeInput(scope *cooperative.Scope, target *protocol.JSONObject) bool {
+	return scope.BelongsTo(a.owner) && a.running && a.controller.options.PublicPrint && a.controller.options.NativeTools && a.controller.pendingInput != nil && a.controller.pendingInput.target == target
+}
+
+// PrepareAcceptedInput runs only on the actual ASK producer stack. Finite
+// and non-native consumers already produced their input during BeginDequeued.
+func (a *SerialASK) PrepareAcceptedInput(scope *cooperative.Scope, target *protocol.JSONObject) error {
+	if !scope.BelongsTo(a.owner) || !a.running {
+		return cooperative.ErrRestricted
+	}
+	pending := a.controller.pendingInput
+	if pending == nil {
+		return nil
+	}
+	if pending.target != target || !a.controller.options.PublicPrint || !a.controller.options.NativeTools || a.controller.inputProcessor == nil {
+		return cooperative.ErrRestricted
+	}
+	a.controller.pendingInput = nil
+	prepared, err := a.controller.prepareAcceptedInput(scope, pending.input, pending.batch)
+	if err != nil {
+		return err
+	}
+	*target = *prepared
+	return nil
+}
+
 func (a *SerialASK) History() []queryloop.Message {
 	result := make([]queryloop.Message, 0, len(a.controller.messages))
 	for _, record := range a.controller.messages {
@@ -188,6 +217,7 @@ func (a *SerialASK) Finally(scope *cooperative.Scope) error {
 	if !scope.BelongsTo(a.owner) || !a.running {
 		return capability("serial ASK finally owner/lifecycle")
 	}
+	a.controller.pendingInput = nil
 	a.controller.readCache = a.cache
 	a.running = false
 	a.controller.options.OnPhase("read-cache:return")
@@ -203,6 +233,9 @@ func (a *SerialASK) Resolve(ctx context.Context, raw RawContext, history []proto
 func (a *SerialASK) BeginRecord(scope *cooperative.Scope, history []queryloop.Message) (*RecordFuture, error) {
 	if !scope.BelongsTo(a.owner) || !a.running || !a.controller.options.AsyncPersistence || a.pending == nil {
 		return nil, capability("independent serial ASK record owner/lifecycle")
+	}
+	if a.controller.options.OnSDKRecord != nil {
+		a.controller.options.OnSDKRecord()
 	}
 	values := make([]LiveRecord, 0, len(history))
 	for _, message := range history {
@@ -221,7 +254,15 @@ func (a *SerialASK) BeginRecord(scope *cooperative.Scope, history []queryloop.Me
 	if source == "" {
 		source = "sdk"
 	}
-	return a.pending.BeginRecordLive(scope, a.controller.options.ResumeOptions.Loader, LiveRecordProfile{QuerySource: source}, values, options)
+	observers, err := a.controller.sdkAsyncObserverBinding(scope)
+	if err != nil {
+		return nil, err
+	}
+	original, err := a.pending.BeginRecordLive(scope, a.controller.options.ResumeOptions.Loader, LiveRecordProfile{QuerySource: source}, values, options)
+	if err != nil || observers == nil {
+		return original, err
+	}
+	return observers.recordReturn(scope, original)
 }
 func (controller *Controller) UsesIndependentPersistence() bool {
 	return controller.options.AsyncPersistence

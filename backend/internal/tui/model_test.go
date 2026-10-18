@@ -229,9 +229,16 @@ func TestEOFIsIdempotentAndCancelsActiveTurnBeforeQuit(t *testing.T) {
 
 func TestRendererNeverExecutesToolOrModelTerminalEscapes(t *testing.T) {
 	s := NewState(nil, 80, 24)
-	s.Entries = []Entry{{Kind: "assistant", Text: "safe\x1b]52;c;malicious\a\x1b[2J中文"}}
+	s.Entries = []Entry{{Kind: "assistant", Text: "safe\x1b]52;c;malicious\a\x1b[2J\x1b[38;2;215;119;87m中文\x1b[39m"}}
 	view := s.View("", false)
-	if strings.ContainsAny(view.Content, "\x1b\a") || !strings.Contains(view.Content, "safe中文") {
+	// Only the trusted prompt's exact Source theme SGR pair is permitted.
+	// Counting it before removal also catches a model injecting the same color.
+	accent := TerminalThemeRoleEscape("dark", "claude", false)
+	if strings.Count(view.Content, accent) != 1 || strings.Count(view.Content, "\x1b[39m") != 1 {
+		t.Fatalf("untrusted theme SGR leaked: %q", view.Content)
+	}
+	visible := strings.ReplaceAll(strings.ReplaceAll(view.Content, accent, ""), "\x1b[39m", "")
+	if strings.ContainsAny(visible, "\x1b\a") || !strings.Contains(visible, "safe中文") {
 		t.Fatalf("terminal escapes leaked: %q", view.Content)
 	}
 }

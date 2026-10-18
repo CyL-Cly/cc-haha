@@ -36,7 +36,7 @@ func TestPublicCompiledCLIActualTypedModelPTYValidationNextASKAndClose(t *testin
 	}
 	var mu sync.Mutex
 	var bodies []map[string]any
-	peer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	peer := httptest.NewTLSServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 		b, _ := io.ReadAll(r.Body)
 		var body map[string]any
 		_ = json.Unmarshal(b, &body)
@@ -64,11 +64,13 @@ func TestPublicCompiledCLIActualTypedModelPTYValidationNextASKAndClose(t *testin
 	defer cancel()
 	binary := filepath.Join(root, "go-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-mod=readonly", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if out, e := build.CombinedOutput(); e != nil {
 		t.Fatal(e, string(out))
 	}
 	driver := exec.CommandContext(ctx, python, "testdata/model_typed_pty.py", binary, root, work)
 	driver.Env = []string{"HOME=" + home, "USERPROFILE=" + home, "CLAUDE_CONFIG_DIR=" + config, "TMPDIR=" + tmp, "CC_HAHA_NATIVE_FIXTURE_ROOT=" + root, "PATH=/usr/bin:/bin", "TERM=xterm-256color", "NODE_ENV=test", "USER_TYPE=external", "DISABLE_TELEMETRY=1", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1", "CLAUDE_CODE_DISABLE_FAST_MODE=1", "CLAUDE_CODE_LOCAL_SKIP_REMOTE_PREFETCH=1", "ANTHROPIC_API_KEY=owned-public-model-key", "ANTHROPIC_BASE_URL=" + peer.URL, "NODE_EXTRA_CA_CERTS=" + ca, "CLAUDE_CODE_MAX_RETRIES=0"}
+	capturePublicGoCoverage(t, driver)
 	out, e := driver.CombinedOutput()
 	if e != nil {
 		t.Fatal("actual public TUI", e, string(out))
@@ -119,20 +121,28 @@ func TestPublicCompiledCLIActualTypedModelPTYValidationNextASKAndClose(t *testin
 	_ = os.MkdirAll(filepath.Join(sourceHome, "tmp"), 0700)
 	fixture, _ := filepath.Abs("../../testdata/native-model-command.fixture.ts")
 	profile, _ := filepath.Abs("../../testdata/loopback-only.sb")
-	sourceInput, _ := json.Marshal(map[string]any{"home": sourceHome, "rows": []map[string]any{{"name": "public-help", "args": "help", "settings": map[string]any{"model": "sonnet", "future": true}, "state": map[string]any{"mainLoopModel": "sonnet", "mainLoopModelForSession": nil, "fastMode": false}}}})
+	sourceInput, _ := json.Marshal(map[string]any{"home": sourceHome, "rows": []map[string]any{{"name": "public-help", "args": "help", "renderFinalMessages": true, "settings": map[string]any{"model": "sonnet", "future": true}, "state": map[string]any{"mainLoopModel": "sonnet", "mainLoopModelForSession": nil, "fastMode": false}}}})
 	sourceCmd := exec.CommandContext(ctx, "/usr/bin/sandbox-exec", "-f", profile, bun, "--no-env-file", fixture)
 	sourceCmd.Dir = sourceHome
 	sourceCmd.Stdin = bytes.NewReader(sourceInput)
 	sourceCmd.Env = []string{"HOME=" + sourceHome, "USERPROFILE=" + sourceHome, "CLAUDE_CONFIG_DIR=" + filepath.Join(sourceHome, ".claude"), "TMPDIR=" + filepath.Join(sourceHome, "tmp"), "PATH=/usr/bin:/bin", "CC_HAHA_MODEL_COMMAND_FIXTURE=1", "CC_HAHA_FIXTURE_TEMP_ROOT=" + root, "BUN_OPTIONS=--no-env-file", "NODE_ENV=production", "ANTHROPIC_API_KEY=owned-Source-model-key", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1", "DISABLE_TELEMETRY=1"}
+	capturePublicGoCoverage(t, sourceCmd)
 	sourceOut, e := sourceCmd.CombinedOutput()
 	if e != nil {
 		t.Fatal("actual original local JSX/API normalization", e, string(sourceOut))
 	}
 	var source struct {
-		Rows []struct{ API []struct{ Content any } }
+		Rows []struct {
+			API      []struct{ Content any }
+			Rendered string
+			Messages []struct{ Type, Subtype, Content string }
+		}
 	}
 	if e = json.Unmarshal(sourceOut, &source); e != nil || len(source.Rows) != 1 {
 		t.Fatal(e, string(sourceOut))
+	}
+	if !strings.Contains(source.Rows[0].Rendered, "Run /model to open the model selection menu") || len(source.Rows[0].Messages) != 2 || source.Rows[0].Messages[0].Type != "system" || source.Rows[0].Messages[1].Subtype != "local_command" {
+		t.Fatal("actual processSlashCommand final-kind renderer", source.Rows[0])
 	}
 	sourceHelpVisible := false
 	for _, message := range source.Rows[0].API {

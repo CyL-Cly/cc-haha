@@ -42,7 +42,7 @@ export async function runGoPersistence(root: string, sourceEnvironment: NodeJS.P
   const pinned = (JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')) as { packageManager?: string }).packageManager
   if (pinned !== `bun@${process.versions.bun}`) throw new Error(`Native persistence Source must use the repository pinned Bun ${pinned ?? 'missing'}, got ${process.versions.bun}`)
   const home = mkdtempSync(join(tmpdir(), 'go-persistence-upgrade-'))
-  const env = createGoTestEnvironment(home, sourceEnvironment)
+  const env = createGoTestEnvironment(home, sourceEnvironment, root)
   env.CC_HAHA_SOURCE_BUN = process.execPath
   env.CC_HAHA_PINNED_BUN = process.execPath
   try {

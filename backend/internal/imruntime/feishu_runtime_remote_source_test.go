@@ -56,6 +56,7 @@ func TestActualFeishuSourceOutboundLocalBase64PublicAddressAndPinnedRemoteRedire
 		case "/size":
 			w.Header().Set("Content-Type", "image/png")
 			w.Header().Set("Content-Length", "10485761")
+			_, _ = w.Write(make([]byte, 10485761))
 		default:
 			w.Header().Set("Content-Type", " image/png ; private")
 			_, _ = w.Write([]byte("private-remote-image"))

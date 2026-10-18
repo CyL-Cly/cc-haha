@@ -19,6 +19,7 @@ import (
 
 type Options struct {
 	Home, ConfigDir, CWD, ManagedDir string
+	NativeConfigDirectory            func() string
 	Roots                            *skillregistry.Service
 	Files                            skillregistry.FileSystem
 	Environment                      func(string) string
@@ -39,6 +40,8 @@ type Service struct {
 	options                    Options
 	mu                         sync.Mutex
 	cache                      map[string][]Definition
+	localProducers             map[string]*LocalLoadFuture
+	pluginMemos                map[bool]*pluginDefinitionMemo
 	pending, dynamic           map[string]Definition
 	pendingOrder, dynamicOrder []string
 	activated, checked         map[string]bool
@@ -60,6 +63,13 @@ func New(o Options) (*Service, error) {
 type entry struct {
 	definition          Definition
 	path, flavor, scope string
+}
+
+func (s *Service) configDirectory() string {
+	if s.options.NativeConfigDirectory != nil {
+		return s.options.NativeConfigDirectory()
+	}
+	return s.options.ConfigDir
 }
 
 func RenderableName(name string) bool {
@@ -161,6 +171,10 @@ func (s *Service) Local(ctx context.Context, cwd string) ([]Definition, error) {
 }
 
 func (s *Service) loadLocal(ctx context.Context, cwd string) ([]entry, bool, error) {
+	// Source samples both user roots and the legacy markdown loader's user
+	// directory before awaiting any of the independent filesystem loads.
+	userRoots := s.options.Roots.UserRoots(ctx)
+	legacyDirectory := s.configDirectory()
 	locked, e := s.options.SkillsLocked(ctx)
 	if e != nil {
 		return nil, false, e
@@ -196,7 +210,7 @@ func (s *Service) loadLocal(ctx context.Context, cwd string) ([]entry, bool, err
 			return nil, false, e
 		}
 		if user && !locked {
-			for _, root := range s.options.Roots.UserRoots(ctx) {
+			for _, root := range userRoots {
 				all = append(all, s.skills(ctx, root, "userSettings")...)
 			}
 		}
@@ -212,7 +226,7 @@ func (s *Service) loadLocal(ctx context.Context, cwd string) ([]entry, bool, err
 			add()
 		}
 		if !locked {
-			legacy, e := s.legacy(ctx, cwd)
+			legacy, e := s.legacy(ctx, cwd, legacyDirectory)
 			if e != nil {
 				return nil, false, e
 			}
@@ -263,6 +277,8 @@ func (s *Service) Clear() {
 	defer s.mu.Unlock()
 	s.generation++
 	s.cache = map[string][]Definition{}
+	s.localProducers = nil
+	s.pluginMemos = nil
 	s.pending = map[string]Definition{}
 	s.pendingOrder = nil
 	s.activated = map[string]bool{}

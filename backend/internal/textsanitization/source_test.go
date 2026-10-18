@@ -26,7 +26,12 @@ func TestFullUnicodeAndRecursiveStructuresAgainstActualSource(t *testing.T) {
 	if err := os.Mkdir(filepath.Join(home, "tmp"), 0700); err != nil {
 		t.Fatal(err)
 	}
-	values := []json.RawMessage{[]byte(`""`), []byte(`"ＡＢＣ ℌ ① ﬀ \u200b \ue000 😀"`), []byte(`"e\u0301\ud800x\udfff"`), []byte(`{"＿name":"value\u200d","name":"first","ｎａｍｅ":"second","__proto__":{"outside":true},"prototype":[null,true,2,"\ud800"],"nested":{"Å":"\u2066text"}}`), []byte(`"\udfff\ud800\u31ef\ud87a\udff0"`)}
+	values := []json.RawMessage{[]byte(`""`), []byte(`"ＡＢＣ ℌ ① ﬀ \u200b \ue000 😀"`), []byte(`"e\u0301\ud800x\udfff"`), []byte(`{"＿name":"value\u200d","name":"first","ｎａｍｅ":"second","__proto__":{"outside":true},"prototype":[null,true,2,"\ud800"],"nested":{"Å":"\u2066text"}}`), []byte(`"\udfff\ud800\u31ef\ud87a\udff0"`),
+		// The OS normalizer and Bun's property tables can have different Unicode
+		// versions. These strings exercise expansion beyond the initial UTF-16
+		// buffer, Unicode 16 composition, and a Unicode 17 compatibility letter
+		// beside combining/lone-surrogate boundaries through the actual Source.
+		[]byte(`"\ufdfa\ufdfa e\u0301 \ud800 \ua7f1\u0301 \ud81b\udd68\ud81b\udd69\ud81b\udd6a \udfff"`)}
 	digest := sha256.New()
 	var diagnostic bytes.Buffer
 	for code := 0; code <= 0x10ffff; code++ {

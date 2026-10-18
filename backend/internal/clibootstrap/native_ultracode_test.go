@@ -38,6 +38,9 @@ func ultracodeMain(t *testing.T, endpoint, effort string, interactive bool, reso
 		setup(&f)
 	}
 	disabled := false
+	if interactive {
+		seedNativeReleaseWarmFixture(t, f, "fixture")
+	}
 	m, err := NewMainPrint(MainPrintOptions{Interactive: interactive, ResolvePermission: resolve, Arguments: PrintArguments{EffortLevel: effort, ComputerUse: &disabled, Model: "fixture-model", SystemPrompt: "private shared Ultracode parent", Tools: []string{"Workflow"}, MaxTurns: 8, PermissionMode: "default", Thinking: requestcontext.Thinking{Type: "disabled"}, Sources: DefaultState()}, Native: f.n, PID: os.Getpid(), Version: "fixture", Platform: runtime.GOOS, Input: bytes.NewReader(nil), Output: io.Discard, Error: io.Discard})
 	if err != nil {
 		t.Fatal(err)
@@ -168,6 +171,22 @@ func TestActualUltracodeInteractiveWorkflowSharedHarnessLaunchAndReply(t *testin
 			input := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoteMain("user")}, protocol.JSONField{Name: "message", Value: rawMain(map[string]string{"role": "user", "content": "Explicitly run the private workflow"})})
 			if err := m.RunTurn(ctx, input); err != nil {
 				t.Fatal(err)
+			}
+			// The real REPL returns the foreground reply while Workflow remains
+			// in AppState. Its idle queue consumer then handles the actual child
+			// notification without waiting for every running background task.
+			for calls.Load() < 3 {
+				if _, err := m.RunLeaderInboxCycle(ctx); err != nil {
+					t.Fatal(err)
+				}
+				if calls.Load() >= 3 {
+					break
+				}
+				select {
+				case <-ctx.Done():
+					t.Fatal("actual idle Workflow completion never woke the parent", ctx.Err())
+				case <-time.After(10 * time.Millisecond):
+				}
 			}
 			want := int32(1)
 			if effort == "ultracode" {

@@ -65,7 +65,7 @@ func (m *MainPrint) nativeSandboxConfig(scope *cooperative.Scope, runtime *nativ
 		path := ""
 		switch name {
 		case "userSettings":
-			root = m.options.Native.Environment["CLAUDE_CONFIG_DIR"]
+			root = m.options.Native.ConfigHomeDirectory()
 			path, e = m.settings.Path(name, "")
 		case "projectSettings", "localSettings":
 			path, e = m.settings.Path(name, "")

@@ -3,11 +3,37 @@ package agentcatalog
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"path/filepath"
 	"strings"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 )
+
+// PluginDefinitionJSON keeps a plugin's substituted prompt immutable and raw
+// through its actual model consumer. The public metadata is a separate copy;
+// changing a returned rawSystemPrompt field cannot change the captured prompt.
+func PluginDefinitionJSON(path, pluginName, pluginSource string, namespace []string, data []byte, memoryEnabled bool, substitute func(json.RawMessage) (json.RawMessage, error)) (*Definition, error) {
+	var prompt json.RawMessage
+	definition, err := PluginDefinition(path, pluginName, pluginSource, namespace, data, memoryEnabled, func(body string) (string, error) {
+		var err error
+		prompt = quoteAgentPrompt(body)
+		if substitute != nil {
+			prompt, err = substitute(prompt)
+		}
+		if err != nil {
+			return "", err
+		}
+		var display string
+		err = json.Unmarshal(prompt, &display)
+		return display, err
+	})
+	if err == nil {
+		definition.promptJSON = append(json.RawMessage(nil), prompt...)
+		definition.Fields.Set("rawSystemPrompt", prompt)
+	}
+	return definition, err
+}
 
 // PluginDefinition applies the shipped plugin trust boundary: per-agent
 // permissionMode, hooks and mcpServers are ignored by this Source producer.

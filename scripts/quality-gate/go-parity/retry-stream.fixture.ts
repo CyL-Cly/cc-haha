@@ -9,7 +9,7 @@ const capabilities = await installClientFixtureCapabilities(input.home, { absent
 const sdk = await import('@anthropic-ai/sdk')
 const { getOpenAIPolicyError } = await import('../../../src/services/openaiAuth/policyError')
 const { extractConnectionErrorDetails } = await import('../../../src/services/api/errorUtils')
-const { isRetryableStreamError, isRetryableStreamTransportError, shouldRetryStreamAfterTransportDisconnect } = await import('../../../src/services/api/withRetry')
+const { isRetryableStreamError, isRetryableStreamTransportError, getStreamRetryKind } = await import('../../../src/services/api/withRetry')
 
 type Failure = { kind: 'api' | 'syntax' | 'native' | 'nil'; sdkClass?: string; message?: string; code?: string; payload?: unknown; cause?: Failure; selfCause?: boolean }
 function sdkFault(spec: Failure): Error {
@@ -38,8 +38,11 @@ function fault(spec: Failure): Error | null {
 }
 const outcomes = input.failures.map(spec => {
   const error = fault(spec)
-  const states = Array.from({ length: 8 }, (_, flags) => shouldRetryStreamAfterTransportDisconnect({ error,
-    hasCrossedSideEffectBoundary: Boolean(flags & 1), streamIdleAborted: Boolean(flags & 2), signalAborted: Boolean(flags & 4) }))
+  // Exercise the current Source decision at the original transport-only caller
+  // boundary: it has no non-streaming fallback or transient retry allowance.
+  const states = Array.from({ length: 8 }, (_, flags) => getStreamRetryKind({ error,
+    canReplay: !Boolean(flags & 1), streamIdleAborted: Boolean(flags & 2), signalAborted: Boolean(flags & 4),
+    nonStreamingFallbackAvailable: false, transientRetryAllowed: false }) === 'transport')
   return { policy: getOpenAIPolicyError(error) !== null, api: isRetryableStreamError(error), transport: isRetryableStreamTransportError(error), code: extractConnectionErrorDetails(error)?.code ?? null, states }
 })
 process.stdout.write(JSON.stringify({ outcomes, capabilities: { blocked: capabilities.blocked, secureReads: capabilities.secureReads } }))

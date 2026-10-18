@@ -3,6 +3,7 @@ package clibootstrap
 import (
 	"context"
 	"encoding/json"
+	"sync/atomic"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/builtintools"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
@@ -96,6 +97,15 @@ func (m *MainPrint) detachedTaskBindings(child *MainPrint, directory string) *bu
 			}
 			return bridgeAgentVoid(child, m, scope, func(s *cooperative.Scope) error { return root.Register(s, &copy) })
 		},
+		RegisterAgent: func(scope *cooperative.Scope, entry *sessioncontroller.BackgroundTask, name string) (*sessioncontroller.BackgroundTaskRegistration, error) {
+			copy := *entry
+			copy.Data = entry.Data.Clone()
+			if entry.Promote != nil {
+				promote := entry.Promote
+				copy.Promote = func(parentScope *cooperative.Scope) error { return bridgeAgentVoid(m, child, parentScope, promote) }
+			}
+			return registerDetachedAgentTask(child, m, scope, root, &copy, name)
+		},
 		Lookup: func(scope *cooperative.Scope, id string) (*sessioncontroller.BackgroundTask, error) {
 			return nativeAgentOwnerCall(child, scope, m, func(s *cooperative.Scope) (*sessioncontroller.BackgroundTask, error) { return root.Lookup(s, id) })
 		},
@@ -124,6 +134,100 @@ func (m *MainPrint) detachedTaskBindings(child *MainPrint, directory string) *bu
 			})
 		},
 	}
+}
+
+// Registration owns its actual target completion and native reference until the
+// caller commits transfer or the target Owner finishes rollback. In particular,
+// cancelling Await cannot discard a registration already made on another Owner.
+func registerDetachedAgentTask(child, parent *MainPrint, scope *cooperative.Scope, bindings *builtintools.BackgroundTaskBindings, entry *sessioncontroller.BackgroundTask, name string) (*sessioncontroller.BackgroundTaskRegistration, error) {
+	if !scope.BelongsTo(child.Owner) || child.Owner == parent.Owner || bindings.RegisterAgent == nil {
+		return nil, cooperative.ErrRestricted
+	}
+	binding, e := child.Controller.BorrowNativeCopyBinding(child.Owner)
+	if e != nil {
+		return nil, e
+	}
+	ref, e := binding.Acquire(scope)
+	if e != nil {
+		return nil, e
+	}
+	future, e := ownerasync.NewOwnerFuture[*sessioncontroller.BackgroundTaskRegistration](child.Owner)
+	if e != nil {
+		ref.DeliveryFinished()
+		return nil, e
+	}
+	var decision atomic.Uint32 // 0 pending, 1 committed, 2 abandoned
+	chosen := make(chan uint32, 1)
+	choose := func(value uint32) {
+		if decision.CompareAndSwap(0, value) {
+			chosen <- value
+		}
+	}
+	done := make(chan struct{})
+	var completionError error // published by close(done), read only after join
+	var actual *sessioncontroller.BackgroundTaskRegistration
+	receipt, failure := parent.Owner.SubmitIndependent(context.Background(), cooperative.Read, func(targetScope *cooperative.Scope) error {
+		var e error
+		actual, e = bindings.RegisterAgent(targetScope, entry, name)
+		return e
+	})
+	go func() {
+		defer func() { ref.DeliveryFinished(); close(done) }()
+		if failure == nil {
+			failure = receipt.Wait()
+		}
+		delivery, e := child.Owner.SubmitIndependent(context.Background(), cooperative.Read, func(callerScope *cooperative.Scope) error {
+			if failure != nil {
+				return future.Reject(callerScope, failure)
+			}
+			returned := &sessioncontroller.BackgroundTaskRegistration{Replaced: actual.Replaced, Commit: func() {
+				if decision.CompareAndSwap(0, 1) {
+					// Commit is custody-only, so forward synchronously through all
+					// layers before this layer may release its native reference.
+					actual.Commit()
+					chosen <- 1
+				}
+			}, Rollback: func(scope *cooperative.Scope) error {
+				if !scope.BelongsTo(child.Owner) {
+					return cooperative.ErrRestricted
+				}
+				choose(2)
+				if decision.Load() == 1 {
+					return nil
+				}
+				// The physical rollback still runs if this observer is cancelled.
+				if e := scope.AwaitPromise(done); e != nil {
+					return e
+				}
+				return completionError
+			}}
+			return future.Resolve(callerScope, returned)
+		})
+		if e == nil {
+			e = delivery.Wait()
+		}
+		if e != nil {
+			_ = future.RejectAdministrative(e)
+		}
+		selected := <-chosen
+		if failure != nil {
+			completionError = failure
+			return
+		}
+		if selected == 1 {
+			return
+		}
+		rollback, e := parent.Owner.SubmitIndependent(context.Background(), cooperative.Read, actual.Rollback)
+		if e == nil {
+			e = rollback.Wait()
+		}
+		completionError = e
+	}()
+	registration, e := future.Await(scope)
+	if e != nil {
+		choose(2)
+	}
+	return registration, e
 }
 
 func (m *MainPrint) nativeAgentQueuedAttachments(scope *cooperative.Scope) ([]protocol.JSONObject, error) {

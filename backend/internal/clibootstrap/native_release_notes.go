@@ -23,21 +23,53 @@ func (m *MainPrint) nativeLocalCommand(ctx context.Context, scope *cooperative.S
 	if name == "effort" {
 		return m.nativeEffortCommand(scope, args)
 	}
+	if name == "vim" && m.options.Interactive {
+		return m.nativeVimCommand(scope)
+	}
+	if name == "stickers" && m.options.Interactive {
+		return m.nativeStickersCommand(ctx, scope)
+	}
+	if name == "keybindings" && m.options.Interactive {
+		text, err := m.nativeKeybindingsCommand(ctx, scope)
+		if err != nil {
+			// processSlashCommand's local catch reports the original error before
+			// returning stderr. A failed diagnostic sink cannot replace it.
+			_ = m.nativeLogError(context.WithValue(ctx, nativeOpenAIAuthScopeKey{}, scope), err)
+		}
+		return text, err
+	}
 	if name == "heapdump" {
 		return m.nativeHeapDump(ctx, scope)
 	}
 	if name != "release-notes" {
 		return "", mainCap("native local command /" + name)
 	}
+	if err := m.ensureNativeReleaseNotes(scope); err != nil {
+		return "", err
+	}
+	// Source's global session flag is interactive only for the terminal process.
+	// The embedded SDK's own normalized noninteractive policy stays unchanged.
+	nonInteractive := !m.options.ForegroundShellProgress
+	essentialOnly := m.options.Native.Environment["CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"] != ""
+	future, err := nativeSkillWork(m, scope, func() (string, error) {
+		return m.nativeLocalCommands.releaseNotes.Command(ctx, nonInteractive, essentialOnly)
+	})
+	if err != nil {
+		return "", err
+	}
+	return future.Await(scope)
+}
+
+func (m *MainPrint) ensureNativeReleaseNotes(scope *cooperative.Scope) error {
 	if m.nativeLocalCommands == nil {
 		n := m.options.Native
-		config := n.Environment["CLAUDE_CONFIG_DIR"]
+		config := n.ConfigHomeDirectory()
 		if config == "" {
 			config = filepath.Join(n.Home, ".claude")
 		}
 		client, err := webfetch.NewHTTPClient(n.Environment, m.tls)
 		if err != nil {
-			return "", err
+			return err
 		}
 		files := mainResumeFiles{n: n}
 		service, err := releasenotes.New(releasenotes.Options{CachePath: filepath.Join(config, "cache", "changelog.md"), ReadFile: n.readFile, MkdirAll: files.MkdirAll, WriteFile: files.WriteFile, Fetch: releasenotes.HTTPFetcher(client, releasenotes.RawChangelogURL), NowMillis: n.NowMillis, SaveTimestamp: func(timestamp float64) error {
@@ -57,25 +89,15 @@ func (m *MainPrint) nativeLocalCommand(ctx context.Context, scope *cooperative.S
 			return err
 		}})
 		if err != nil {
-			return "", err
+			return err
 		}
 		if _, err = m.Cleanup.Register(scope, runtimecleanup.NewCallback(func(next *cooperative.Scope) (*runtimecleanup.Future, error) {
 			return nativeSkillWork(m, next, func() (struct{}, error) { service.Close(); return struct{}{}, nil })
 		})); err != nil {
 			service.Close()
-			return "", err
+			return err
 		}
 		m.nativeLocalCommands = &nativeLocalCommandState{releaseNotes: service}
 	}
-	// Source's global session flag is interactive only for the terminal process.
-	// The embedded SDK's own normalized noninteractive policy stays unchanged.
-	nonInteractive := !m.options.ForegroundShellProgress
-	essentialOnly := m.options.Native.Environment["CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"] != ""
-	future, err := nativeSkillWork(m, scope, func() (string, error) {
-		return m.nativeLocalCommands.releaseNotes.Command(ctx, nonInteractive, essentialOnly)
-	})
-	if err != nil {
-		return "", err
-	}
-	return future.Await(scope)
+	return nil
 }

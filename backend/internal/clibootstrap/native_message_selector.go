@@ -11,9 +11,22 @@ import (
 func (m *MainPrint) TerminalMessageSelector(ctx context.Context) (tui.MessageSelectorSnapshot, error) {
 	result := tui.MessageSelectorSnapshot{}
 	e := m.Owner.Run(ctx, func(scope *cooperative.Scope) error {
-		if m.closed {
-			return cooperative.ErrClosed
-		}
+		var err error
+		result, err = m.terminalMessageSelectorOnOwner(ctx, scope)
+		return err
+	})
+	return result, e
+}
+
+func (m *MainPrint) terminalMessageSelectorOnOwner(ctx context.Context, scope *cooperative.Scope) (tui.MessageSelectorSnapshot, error) {
+	result := tui.MessageSelectorSnapshot{}
+	if !scope.BelongsTo(m.Owner) {
+		return result, cooperative.ErrRestricted
+	}
+	if m.closed {
+		return result, cooperative.ErrClosed
+	}
+	e := func() error {
 		if m.fileHistory != nil {
 			var e error
 			result.FileHistoryEnabled, e = m.fileHistory.Enabled(scope)
@@ -49,7 +62,7 @@ func (m *MainPrint) TerminalMessageSelector(ctx context.Context) (tui.MessageSel
 			result.Choices = append(result.Choices, choice)
 		}
 		return nil
-	})
+	}()
 	return result, e
 }
 func (m *MainPrint) TerminalSelectMessage(ctx context.Context, selected tui.MessageSelection) (tui.MessageSelectionResult, error) {

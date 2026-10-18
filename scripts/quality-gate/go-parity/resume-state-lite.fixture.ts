@@ -12,7 +12,9 @@ if (process.env.CC_HAHA_RESUME_STATE_FIXTURE !== '1' || process.env.NODE_ENV !==
 for (const target of [path, output]) { try { if (lstatSync(target).isSymbolicLink()) throw new Error('Direct lite helper requires ordinary private files') } catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error } }
 const capabilities = await installClientFixtureCapabilities(home)
 if ((await fs.stat(path)).size !== input.stat[path]!.size) throw new Error('Original lite helper stat differs')
-const calls: Array<Record<string, unknown>> = [], open = fs.open
+const calls: Array<Record<string, unknown>> = []
+const open = (fs.open as any).getMockImplementation?.() as typeof fs.open
+if (typeof open !== 'function') throw new Error('Guarded resume lite open implementation missing')
 spyOn(fs, 'open').mockImplementation(async (...args) => {
   if (String(args[0]) !== path) throw new Error('Direct lite helper requires exact original path')
   const handle = await open(...args), read = handle.read.bind(handle), close = handle.close.bind(handle)

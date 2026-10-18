@@ -55,6 +55,7 @@ func TestDoctorVersionLockDiagnosticAgainstActualSourcePhysicalFiles(t *testing.
 	child.Dir = home
 	child.Env = []string{"HOME=" + home, "USERPROFILE=" + home, "CLAUDE_CONFIG_DIR=" + filepath.Join(home, ".claude"), "CC_HAHA_FIXTURE_TEMP_ROOT=" + root, "BUN_OPTIONS=--no-env-file", "PATH=/usr/bin:/bin"}
 	child.Stdin = bytes.NewReader(diagnosticJSON(map[string]any{"homeDir": home, "directory": sourceDir}))
+	capturePublicGoCoverage(t, child)
 	out, e := child.CombinedOutput()
 	if e != nil {
 		t.Fatal(e, string(out))

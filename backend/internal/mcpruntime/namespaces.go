@@ -37,6 +37,7 @@ func (s *Service) ShareNamespace(candidate *Service) (*Service, error) {
 	if current := root.namespaces[candidate.options.CWD]; current != nil {
 		return current, nil
 	}
+	candidate.options.AuthenticationCache = root.options.AuthenticationCache
 	candidate.namespaceRoot = root
 	root.namespaces[candidate.options.CWD] = candidate
 	return candidate, nil
@@ -114,6 +115,9 @@ func (s *Service) closeSharedNamespaces(ctx context.Context) error {
 			for _, view := range views {
 				failures = append(failures, drainNamespace(view))
 			}
+			if root.options.AuthenticationCache != nil {
+				failures = append(failures, root.options.AuthenticationCache.Join(context.Background()))
+			}
 			root.mu.Lock()
 			root.closeErr = errors.Join(failures...)
 			close(root.closeDone)
@@ -146,6 +150,18 @@ func drainNamespace(s *Service) error {
 	for discovery := range s.discoveries {
 		discoveries = append(discoveries, discovery)
 	}
+	prompts := make([]*promptDiscovery, 0, len(s.promptReads))
+	for read := range s.promptReads {
+		prompts = append(prompts, read)
+	}
+	resources := make([]*resourceDiscovery, 0, len(s.resourceReads))
+	for read := range s.resourceReads {
+		resources = append(resources, read)
+	}
+	s.resourceCache = nil
+	s.resourceOrder = nil
+	s.promptCache = nil
+	s.promptOrder = nil
 	s.entries = map[string]*pending{}
 	s.sdkAttempts = map[*pending]bool{}
 	s.sdkCurrent = map[string]*pending{}
@@ -164,6 +180,12 @@ func drainNamespace(s *Service) error {
 	}
 	for _, discovery := range discoveries {
 		<-discovery.done
+	}
+	for _, read := range prompts {
+		<-read.done
+	}
+	for _, read := range resources {
+		<-read.done
 	}
 	return errors.Join(failures...)
 }

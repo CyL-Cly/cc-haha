@@ -22,6 +22,7 @@ const PROTECTED_ENV_NAMES = new Set([
   'XDG_CONFIG_HOME', 'XDG_DATA_HOME', 'XDG_CACHE_HOME', 'XDG_STATE_HOME',
   'CODEX_HOME', 'GH_CONFIG_DIR', 'CLAUDE_CONFIG_DIR', 'TEMP', 'TMP', 'TMPDIR',
   'BUN_OPTIONS', 'CC_HAHA_DISABLE_TERMINAL_SHELL_ENV', 'CLAUDE_CLI_PATH',
+  'CC_HAHA_ELECTRON_SMOKE_STATE_ROOT', 'CC_HAHA_ELECTRON_WINDOW_SMOKE_LOG',
   'SERVER_HOST', 'SERVER_PORT', BACKEND_TARGET_ENV,
 ])
 const SANDBOX_PATH_NAMES = [
@@ -183,7 +184,19 @@ export function spawnBackendServer(options: {
   const target = resolveBackendLaunchTarget(options.rootDir, options.target)
   const baseEnv = options.env ?? options.sandbox.env
   validateSandbox(options.sandbox, baseEnv)
-  const childEnv = { ...baseEnv, ...target.env, SERVER_HOST: '127.0.0.1', SERVER_PORT: String(options.port) }
+  const childEnv: Record<string, string> = { ...baseEnv, ...target.env, SERVER_HOST: '127.0.0.1', SERVER_PORT: String(options.port) }
+  if (target.kind === 'go') {
+    // Even a loopback provider can probe cached OS accounts during model setup.
+    // Reuse the native credential-I/O seam without changing tools or auth files.
+    const credentialRoot = realpathSync(options.sandbox.home)
+    for (const name of Object.keys(childEnv)) {
+      if (name.toUpperCase() === 'CC_HAHA_ELECTRON_SMOKE_STATE_ROOT' || name.toUpperCase() === 'CC_HAHA_ELECTRON_WINDOW_SMOKE_LOG') {
+        delete childEnv[name]
+      }
+    }
+    childEnv.CC_HAHA_ELECTRON_SMOKE_STATE_ROOT = credentialRoot
+    childEnv.CC_HAHA_ELECTRON_WINDOW_SMOKE_LOG = resolve(credentialRoot, 'native-credential-smoke.jsonl')
+  }
   const child = spawn(target.command, [...(target.args ?? []), '--host', '127.0.0.1', '--port', String(options.port)], {
     cwd: target.cwd,
     env: childEnv,

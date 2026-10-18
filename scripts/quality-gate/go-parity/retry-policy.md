@@ -3,7 +3,8 @@
 `backend/internal/retrypolicy` ports the actual Source `getRetryDelay`,
 `getDefaultMaxRetries`, `getMaxStreamTransientRetries`,
 `isRetryableStreamError`, `isRetryableStreamTransportError` and
-`shouldRetryStreamAfterTransportDisconnect` decisions.
+`getStreamRetryKind` decisions at the transport-only caller boundary (no
+non-streaming fallback or transient retry allowance).
 
 The offline corpus executes those Source exports after a disposable HOME/config
 guard and capability interception. Its SDK error classes remain the pinned real

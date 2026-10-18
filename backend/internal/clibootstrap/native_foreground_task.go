@@ -44,6 +44,14 @@ func (m *MainPrint) beginForegroundAgentTask(scope *cooperative.Scope, agentID, 
 	return m.beginNativeAgentTask(scope, agentID, path, request, cancel, done, false)
 }
 func (m *MainPrint) beginNativeAgentTask(scope *cooperative.Scope, agentID, path string, request builtintools.AgentRequest, cancel context.CancelCauseFunc, done <-chan struct{}, background bool) error {
+	registration, e := m.prepareNativeAgentTask(scope, agentID, path, request, cancel, done, background)
+	if e == nil {
+		registration.Commit()
+	}
+	return e
+}
+
+func (m *MainPrint) prepareNativeAgentTask(scope *cooperative.Scope, agentID, path string, request builtintools.AgentRequest, cancel context.CancelCauseFunc, done <-chan struct{}, background bool) (*sessioncontroller.BackgroundTaskRegistration, error) {
 	b := m.nativeBackgroundBindings()
 	data := protocol.NewJSONObject(protocol.JSONField{Name: "id", Value: quoteMain(agentID)}, protocol.JSONField{Name: "type", Value: quoteMain("local_agent")}, protocol.JSONField{Name: "status", Value: quoteMain("running")}, protocol.JSONField{Name: "description", Value: quoteMain(request.Description)}, protocol.JSONField{Name: "startTime", Value: rawMain(m.options.Native.NowMillis())}, protocol.JSONField{Name: "outputOffset", Value: rawMain(0)}, protocol.JSONField{Name: "notified", Value: rawMain(false)}, protocol.JSONField{Name: "agentId", Value: quoteMain(agentID)}, protocol.JSONField{Name: "prompt", Value: quoteMain(request.Prompt)}, protocol.JSONField{Name: "agentType", Value: quoteMain(request.AgentType)}, protocol.JSONField{Name: "retrieved", Value: rawMain(false)}, protocol.JSONField{Name: "lastReportedToolCount", Value: rawMain(0)}, protocol.JSONField{Name: "lastReportedTokenCount", Value: rawMain(0)}, protocol.JSONField{Name: "isBackgrounded", Value: rawMain(false)}, protocol.JSONField{Name: "pendingMessages", Value: rawMain([]string{})}, protocol.JSONField{Name: "retain", Value: rawMain(false)}, protocol.JSONField{Name: "diskLoaded", Value: rawMain(false)})
 	if request.SelectedAgent.IsObject() {
@@ -52,11 +60,11 @@ func (m *MainPrint) beginNativeAgentTask(scope *cooperative.Scope, agentID, path
 	data.Set("isBackgrounded", rawMain(background))
 	directory, e := m.nativeTaskOutputDirectory(scope)
 	if e != nil {
-		return e
+		return nil, e
 	}
 	output := filepath.Join(directory, agentID+".output")
 	if e := os.MkdirAll(directory, 0777); e != nil {
-		return e
+		return nil, e
 	}
 	if e := os.Symlink(path, output); e != nil {
 		if !os.IsNotExist(e) {
@@ -94,20 +102,19 @@ func (m *MainPrint) beginNativeAgentTask(scope *cooperative.Scope, agentID, path
 			return context.Cause(ctx)
 		}
 	}}
-	previous, e := b.Lookup(scope, agentID)
+	if b.RegisterAgent == nil {
+		return nil, mainCap("Agent task registration compensation")
+	}
+	name := ""
+	if background {
+		name = request.Name
+	}
+	registration, e := b.RegisterAgent(scope, entry, name)
 	if e != nil {
-		return e
+		return nil, e
 	}
-	if e := b.Register(scope, entry); e != nil {
-		return e
-	}
-	if background && request.Name != "" {
-		if e := b.RegisterName(scope, request.Name, agentID); e != nil {
-			return e
-		}
-	}
-	if previous != nil {
-		return nil
+	if registration.Replaced {
+		return registration, nil
 	}
 	event := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoteMain("system")}, protocol.JSONField{Name: "subtype", Value: quoteMain("task_started")}, protocol.JSONField{Name: "task_id", Value: quoteMain(agentID)}, protocol.JSONField{Name: "description", Value: quoteMain(request.Description)}, protocol.JSONField{Name: "task_type", Value: quoteMain("local_agent")}, protocol.JSONField{Name: "prompt", Value: quoteMain(request.Prompt)})
 	if request.ToolUseID != nil {
@@ -116,7 +123,10 @@ func (m *MainPrint) beginNativeAgentTask(scope *cooperative.Scope, agentID, path
 	if m.options.AgentID != "" {
 		event.Set("owner_agent_id", quoteMain(m.options.AgentID))
 	}
-	return b.Emit(scope, event)
+	if e = b.Emit(scope, event); e != nil {
+		return nil, errors.Join(e, registration.Rollback(scope))
+	}
+	return registration, nil
 }
 func (m *MainPrint) endForegroundAgentTask(scope *cooperative.Scope, agentID string, request builtintools.AgentRequest, start float64, cause error, progress *foregroundAgentProgress) error {
 	if e := m.nativeBackgroundBindings().Delete(scope, agentID); e != nil {

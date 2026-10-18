@@ -35,6 +35,7 @@ func TestActualPublicGoCLIIDEPickerSameOwnerDiagnosticsNextRequestCancelAndDisco
 	defer cancel()
 	binary := filepath.Join(root, "actual-ide-go-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-mod=readonly", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if out, e := build.CombinedOutput(); e != nil {
 		t.Fatal(e, string(out))
 	}
@@ -91,7 +92,7 @@ func TestActualPublicGoCLIIDEPickerSameOwnerDiagnosticsNextRequestCancelAndDisco
 			if e := os.WriteFile(lock, ideCLIJSON(map[string]any{"workspaceFolders": []string{home}, "transport": "ws", "ideName": "Private CLI IDE", "authToken": "private-ide-token"}), 0600); e != nil {
 				t.Fatal(e)
 			}
-			model := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			model := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 				data, _ := io.ReadAll(r.Body)
 				mu.Lock()
 				requests = append(requests, append([]byte{}, data...))
@@ -126,6 +127,7 @@ func TestActualPublicGoCLIIDEPickerSameOwnerDiagnosticsNextRequestCancelAndDisco
 			flags, _ := json.Marshal([]string{"--bare", "--model", "fixture-model", "--thinking", "disabled", "--no-computer-use", "--tools", "Read", "--allowedTools", "mcp__ide__getDiagnostics", "--max-turns", "4"})
 			python := exec.CommandContext(ctx, "/usr/bin/python3", "testdata/ide-picker.py", binary, home, profile, string(flags))
 			python.Env = append(resumeErrorEnv(home, root, model.URL), "TERM=xterm-256color", "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL=1")
+			capturePublicGoCoverage(t, python)
 			out, e := python.CombinedOutput()
 			if e != nil {
 				t.Fatal(e, string(out))

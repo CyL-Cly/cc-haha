@@ -35,6 +35,7 @@ type Selector struct {
 	thirdParty        bool
 	openAIActive      bool
 	anthropicIdentity *MetadataIdentity
+	nativeCCRRemote   bool
 }
 
 // The caller must resolve isOpenAIAuthActive from the actual cached credential
@@ -70,10 +71,13 @@ func NewDirectCredentials(o Options) (*Selector, error) {
 // Parsing command frontmatter does not open a model request or require login.
 // Request selection continues through NewDirectCredentials and its auth gate.
 func NewParsing(o Options) (*Selector, error) {
+	return newParsing(o, false)
+}
+func newParsing(o Options, nativeCCRRemote bool) (*Selector, error) {
 	if o.Environment == nil || !o.Settings.IsObject() {
 		return nil, errors.New("model parsing requires original environment and merged settings")
 	}
-	if o.Environment["USER_TYPE"] == "ant" {
+	if o.Environment["USER_TYPE"] == "ant" && !nativeCCRRemote {
 		return nil, &CapabilityError{"internal model flag configuration"}
 	}
 	o.Environment = cloneEnvironment(o.Environment)
@@ -91,7 +95,7 @@ func NewParsing(o Options) (*Selector, error) {
 		u, err := weburl.Parse(base)
 		firstParty = err == nil && u.Host() == "api.anthropic.com"
 	}
-	return &Selector{options: o, provider: provider, thirdParty: provider != "firstParty" || !firstParty}, nil
+	return &Selector{options: o, provider: provider, thirdParty: provider != "firstParty" || !firstParty, nativeCCRRemote: nativeCCRRemote}, nil
 }
 func cloneEnvironment(input map[string]string) map[string]string {
 	out := map[string]string{}
@@ -320,6 +324,9 @@ func (s *Selector) Parse(raw json.RawMessage) (json.RawMessage, error) {
 		}
 		return protocol.QuoteJavaScriptUTF16(value), nil
 	}
+	if s.nativeCCRRemote && s.options.Environment["USER_TYPE"] == "ant" {
+		return nil, &CapabilityError{"frozen ant custom model flag references are unavailable"}
+	}
 	if has1m {
 		if ends(n, "[1m]") {
 			original = trim(original[:len(original)-4])
@@ -487,6 +494,9 @@ func (s *Selector) Select() (json.RawMessage, error) {
 	}
 	if specified != nil && !bytes.Equal(bytes.TrimSpace(specified), []byte("null")) {
 		return s.Parse(specified)
+	}
+	if s.nativeCCRRemote && s.options.Environment["USER_TYPE"] == "ant" {
+		return nil, &CapabilityError{"frozen ant default model flag references are unavailable"}
 	}
 	return s.Parse(s.DefaultSetting())
 }

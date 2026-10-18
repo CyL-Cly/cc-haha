@@ -1,7 +1,8 @@
 import { describe, expect, test } from 'bun:test'
-import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { delimiter, join, sep } from 'node:path'
+import { spawnSync } from 'node:child_process'
 import {
   createOfflineTestEnvironment,
   createSandboxedTestEnvironment,
@@ -101,6 +102,91 @@ describe('offline test environment', () => {
       expect(stdout).toBe('clean')
     } finally {
       rmSync(sandboxHome, { recursive: true, force: true })
+    }
+  })
+})
+
+describe('sandboxed macOS credential subprocess isolation', () => {
+  const posixTest = test.skipIf(process.platform === 'win32')
+
+  function fixture() {
+    const root = realpathSync(mkdtempSync(join(tmpdir(), 'cc-haha-security-env-')))
+    const bin = join(root, 'downstream-bin')
+    const marker = join(root, 'downstream-security-called')
+    mkdirSync(bin, { mode: 0o700 })
+    // This is the only fallback executable used by these tests. Never resolve
+    // the real security command, even while demonstrating the old failure.
+    const quotedMarker = `'${marker.replaceAll("'", "'\\''")}'`
+    writeFileSync(join(bin, 'security'), `#!/bin/sh\nprintf '%s\\n' sentinel >> ${quotedMarker}\nexit 73\n`, { mode: 0o700 })
+    return { root, bin, marker }
+  }
+
+  function invoke(env: Record<string, string>, fallbackBin: string, shell = false) {
+    const previousPath = process.env.PATH
+    process.env.PATH = fallbackBin
+    try {
+      // Both parent-side resolution and the child's PATH are private, so a
+      // regression cannot accidentally invoke a system credential command.
+      const result = spawnSync(
+        shell ? '/bin/sh' : 'security',
+        shell ? ['-c', 'security find-generic-password -s quality-gate-sentinel'] : ['find-generic-password', '-s', 'quality-gate-sentinel'],
+        { cwd: env.HOME, env, encoding: 'utf8', timeout: 5_000 },
+      )
+      expect(result.error).toBeUndefined()
+      expect(result.signal).toBeNull()
+      return result
+    } finally {
+      if (previousPath === undefined) delete process.env.PATH
+      else process.env.PATH = previousPath
+    }
+  }
+
+  posixTest('denies bare and shell security before a downstream executable', () => {
+    const f = fixture()
+    try {
+      const home = join(f.root, 'home')
+      const env = createSandboxedTestEnvironment(home, {}, { PATH: f.bin })
+      const bare = invoke(env, f.bin)
+      const shell = invoke(env, f.bin, true)
+      expect([bare.status, shell.status]).toEqual([44, 44])
+      expect([bare.stdout, bare.stderr, shell.stdout, shell.stderr]).toEqual(['', '', '', ''])
+      expect(existsSync(f.marker)).toBe(false)
+      expect(env.PATH.split(delimiter)[0].startsWith(realpathSync(home) + sep)).toBe(true)
+    } finally {
+      rmSync(f.root, { recursive: true, force: true })
+    }
+  })
+
+  posixTest('a nested sandbox retains its own denial after its parent is removed', () => {
+    const f = fixture()
+    try {
+      const parentHome = join(f.root, 'parent-home')
+      const nestedHome = join(f.root, 'nested-home')
+      const parent = createSandboxedTestEnvironment(parentHome, {}, { PATH: f.bin })
+      const nested = createSandboxedTestEnvironment(nestedHome, {}, parent)
+      rmSync(parentHome, { recursive: true, force: true })
+      expect([invoke(nested, f.bin).status, invoke(nested, f.bin, true).status]).toEqual([44, 44])
+      expect(existsSync(f.marker)).toBe(false)
+      expect(nested.PATH.split(delimiter)[0].startsWith(realpathSync(nestedHome) + sep)).toBe(true)
+    } finally {
+      rmSync(f.root, { recursive: true, force: true })
+    }
+  })
+
+  posixTest('guards explicit PATH overrides while permitting a later owned physical fixture', () => {
+    const f = fixture()
+    try {
+      const env = createSandboxedTestEnvironment(join(f.root, 'home'), { PATH: f.bin }, { PATH: f.bin })
+      expect([invoke(env, f.bin).status, invoke(env, f.bin, true).status]).toEqual([44, 44])
+      expect(existsSync(f.marker)).toBe(false)
+
+      // Physical credential fixtures explicitly own and prepend their fake
+      // executable after constructing the sandbox. Keep that test boundary.
+      const physical = { ...env, PATH: f.bin + delimiter + env.PATH }
+      expect(invoke(physical, f.bin).status).toBe(73)
+      expect(existsSync(f.marker)).toBe(true)
+    } finally {
+      rmSync(f.root, { recursive: true, force: true })
     }
   })
 })

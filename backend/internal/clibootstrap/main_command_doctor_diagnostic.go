@@ -42,7 +42,7 @@ func (m *MainCommand) NativeInstallationDiagnostic(ctx context.Context, scope *c
 	if !specified {
 		packageName = "claude-code-local"
 	}
-	options := installationdiagnostics.Options{PackageOptions: installationdiagnostics.PackageOptions{Platform: platform, Executable: executable, Argv0: os.Args[0], ReadFile: m.Native.readFile, Run: installationdiagnostics.NativeRunner(m.Native.CWD, env)}, Home: m.Native.Home, CWD: m.Native.CWD, ConfigDir: env["CLAUDE_CONFIG_DIR"], ManagedRoot: m.Native.ManagedRoot, Version: m.version, PackageName: packageName, Bundled: true, Environment: env, Stat: m.Native.stat, Realpath: filepath.EvalSymlinks, Which: installationdiagnostics.NativeWhich(env, m.Native.CWD)}
+	options := installationdiagnostics.Options{PackageOptions: installationdiagnostics.PackageOptions{Platform: platform, Executable: executable, Argv0: os.Args[0], ReadFile: m.Native.readFile, Run: installationdiagnostics.NativeRunner(m.Native.CWD, env)}, Home: m.Native.Home, CWD: m.Native.CWD, ConfigDir: m.Native.ConfigHomeDirectory(), ManagedRoot: m.Native.ManagedRoot, Version: m.version, PackageName: packageName, Bundled: true, Environment: env, Stat: m.Native.stat, Realpath: filepath.EvalSymlinks, Which: installationdiagnostics.NativeWhich(env, m.Native.CWD)}
 	if m.doctorPackages == nil {
 		m.doctorPackages = installationdiagnostics.NewPackages(options.PackageOptions)
 	}

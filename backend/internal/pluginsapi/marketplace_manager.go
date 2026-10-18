@@ -17,13 +17,17 @@ import (
 // MarketplaceManager binds CLI management to the same physical catalog fetch,
 // native settings writer and process plugin cache as installed-plugin consumers.
 type MarketplaceManagerOptions struct {
+	Roots         *MarketplaceRoots
+	Flagged       *FlaggedRegistry
 	Resolver      *MarketplaceResolver
 	Seeds         []string
 	ReadSettings  func(context.Context, string, string) (protocol.JSONObject, error)
 	WriteSettings func(context.Context, string, protocol.JSONObject, [][]string) error
 	ClearCaches   func(context.Context) error
 }
-type MarketplaceManager struct{ options MarketplaceManagerOptions }
+type MarketplaceManager struct {
+	options MarketplaceManagerOptions
+}
 type AddedMarketplace struct {
 	Name                string
 	AlreadyMaterialized bool
@@ -31,8 +35,14 @@ type AddedMarketplace struct {
 }
 
 func NewMarketplaceManager(o MarketplaceManagerOptions) (*MarketplaceManager, error) {
+	if o.Roots == nil {
+		o.Roots = NewMarketplaceRoots()
+	}
 	if o.Resolver == nil || o.ReadSettings == nil || o.WriteSettings == nil || o.ClearCaches == nil {
 		return nil, fmt.Errorf("Marketplace management requires native fetch/settings/cache producers")
+	}
+	if o.Flagged == nil {
+		o.Flagged = NewFlaggedRegistry(o.Resolver.options.PluginsDir)
 	}
 	return &MarketplaceManager{options: o}, nil
 }
@@ -75,6 +85,17 @@ func (m *MarketplaceManager) location(source, catalog protocol.JSONObject) strin
 	return filepath.Join(m.options.Resolver.options.PluginsDir, "marketplaces", catalog.String("name"))
 }
 func (m *MarketplaceManager) Add(ctx context.Context, source protocol.JSONObject, scope string, progress func(string)) (AddedMarketplace, error) {
+	added, err := m.Materialize(ctx, source, progress)
+	if err != nil {
+		return AddedMarketplace{}, err
+	}
+	return added, m.declare(ctx, added.Name, added.Source, scope)
+}
+
+// Materialize is the Source addMarketplaceSource primitive. Startup reconciles
+// existing declared intent; writing another editable declaration here would
+// change its scope and overwrite caller-owned settings.
+func (m *MarketplaceManager) Materialize(ctx context.Context, source protocol.JSONObject, progress func(string)) (AddedMarketplace, error) {
 	policySettings, err := m.options.ReadSettings(ctx, "managed", "")
 	if err != nil {
 		return AddedMarketplace{}, err
@@ -101,7 +122,7 @@ func (m *MarketplaceManager) Add(ctx context.Context, source protocol.JSONObject
 	}
 	for _, name := range properties(known) {
 		if equalJSON(obj(obj(known.Get(name)).Get("source")), source) {
-			return AddedMarketplace{name, true, source}, m.declare(ctx, name, source, scope)
+			return AddedMarketplace{name, true, source}, nil
 		}
 	}
 	catalog, err := m.options.Resolver.FetchWithProgress(ctx, source, progress)
@@ -134,7 +155,7 @@ func (m *MarketplaceManager) Add(ctx context.Context, source protocol.JSONObject
 	if err = m.save(ctx, known); err != nil {
 		return AddedMarketplace{}, err
 	}
-	return AddedMarketplace{name, false, source}, m.declare(ctx, name, source, scope)
+	return AddedMarketplace{name, false, source}, nil
 }
 func validateOfficialSource(name string, source protocol.JSONObject) error {
 	reserved := map[string]bool{"claude-code-marketplace": true, "claude-code-plugins": true, "claude-plugins-official": true, "anthropic-marketplace": true, "anthropic-plugins": true, "agent-skills": true, "life-sciences": true, "knowledge-work-plugins": true}

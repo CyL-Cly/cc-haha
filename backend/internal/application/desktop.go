@@ -23,6 +23,7 @@ type DesktopSession struct {
 	acceptedPlanApprovals    map[string]*Session
 	canContinueRuntime       func() bool
 	onRuntimeClosed          func(context.Context, server.LiveSession) error
+	onBackgroundTaskStopped  func(string, bool) func()
 	sdk                      *desktopSDKState
 	autoQuestionUnbind       func()
 	engine                   *Session
@@ -49,7 +50,7 @@ type DesktopSession struct {
 
 func DesktopFactory(base Options) server.SessionFactory {
 	return func(ctx context.Context, options server.SessionOptions, emit server.Emit) (server.LiveSession, error) {
-		d := &DesktopSession{canContinueRuntime: options.CanContinueRuntime, onRuntimeClosed: options.OnRuntimeClosed, emit: emit, projection: NewProjection(), ctx: ctx, id: options.ID, sideChat: options.SideChat != nil, updateLaunchMetadata: options.UpdateLaunchMetadata, onSDK: options.OnSDK, resolveSessionReferences: options.ResolveSessionReferences}
+		d := &DesktopSession{canContinueRuntime: options.CanContinueRuntime, onRuntimeClosed: options.OnRuntimeClosed, onBackgroundTaskStopped: options.OnBackgroundTaskStopped, emit: emit, projection: NewProjection(), ctx: ctx, id: options.ID, sideChat: options.SideChat != nil, updateLaunchMetadata: options.UpdateLaunchMetadata, onSDK: options.OnSDK, resolveSessionReferences: options.ResolveSessionReferences}
 		o := base
 		o.HookEvents = true
 		// Original conversationService always launches its SDK with
@@ -263,6 +264,9 @@ func (d *DesktopSession) Handle(ctx context.Context, data json.RawMessage) error
 	m := obj(data)
 	switch m.String("type") {
 	case "user_message":
+		if err := ctx.Err(); err != nil {
+			return err
+		}
 		d.mu.Lock()
 		restart := d.planRestart
 		d.mu.Unlock()
@@ -289,6 +293,9 @@ func (d *DesktopSession) Handle(ctx context.Context, data json.RawMessage) error
 		}
 		d.admission.Lock()
 		defer d.admission.Unlock()
+		if err := ctx.Err(); err != nil {
+			return err
+		}
 		content := m.String("content")
 		if m.Get("sessionReferences") != nil {
 			if d.resolveSessionReferences == nil && string(m.Get("sessionReferences")) != "[]" {
@@ -311,6 +318,10 @@ func (d *DesktopSession) Handle(ctx context.Context, data json.RawMessage) error
 			return materializeErr
 		}
 		d.runtimeMu.Lock()
+		if err := ctx.Err(); err != nil {
+			d.runtimeMu.Unlock()
+			return err
+		}
 		d.mu.Lock()
 		rejected := d.rejectedRuntime
 		closed := d.closed

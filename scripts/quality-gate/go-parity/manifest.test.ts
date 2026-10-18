@@ -50,12 +50,12 @@ test.each([false, true])('actual offline Bun child records a manifest and reject
   const root = fixture()
   const home = mkdtempSync(join(tmpdir(), 'go-corpus-real-child-home-'))
   try {
-    const env = createHermeticGoEnvironment(home)
+    const env = createHermeticGoEnvironment(home, { PATH: process.env.PATH })
     const child = Bun.spawn(['git', 'init', '-q', root], { env, stdin: 'ignore', stdout: 'pipe', stderr: 'pipe' })
     expect(await child.exited, await new Response(child.stderr).text()).toBe(0)
     writeFileSync(join(root, '.gitignore'), 'artifacts/\n')
     writeFileSync(join(root, 'oracle.test.ts'), `import { test, expect } from 'bun:test'\nimport { writeFileSync } from 'node:fs'\ntest('disposable metadata probe', () => { ${mutate ? "writeFileSync('backend/spec.json', '{}');" : ''} expect(1).toBe(1) })\n`)
-    const report = await runCorpusWithManifest({ rootDir: root, artifactDir: join(root, 'artifacts/checkpoint'), corpus: [join(root, 'oracle.test.ts')] })
+    const report = await runCorpusWithManifest({ rootDir: root, artifactDir: join(root, 'artifacts/checkpoint'), corpus: [join(root, 'oracle.test.ts')], sourceEnvironment: { PATH: process.env.PATH } })
     expect(report.childExitCode).toBe(0)
     expect(report.status).toBe(mutate ? 'failed' : 'passed')
     expect(report.runtime.goBefore).toMatch(/^go version go1\.25\.7 /)
@@ -67,7 +67,7 @@ test('actual Git inventory includes untracked inputs and excludes private ignore
   const root = fixture()
   const home = mkdtempSync(join(tmpdir(), 'go-corpus-inventory-home-'))
   try {
-    const env = createHermeticGoEnvironment(home)
+    const env = createHermeticGoEnvironment(home, { PATH: process.env.PATH })
     const child = Bun.spawn(['git', 'init', '-q', root], { env, stdin: 'ignore', stdout: 'pipe', stderr: 'pipe' })
     expect(await child.exited, await new Response(child.stderr).text()).toBe(0)
     writeFileSync(join(root, '.gitignore'), 'artifacts/\n.env\n')
@@ -87,7 +87,7 @@ test('an unlisted corpus file or escaping Git inventory cannot become passing ev
   try {
     let started = false
     const report = await runCorpusWithManifest({
-      rootDir: root, artifactDir: join(root, 'artifacts/checkpoint'), corpus: [join(root, 'oracle.test.ts')],
+      rootDir: root, artifactDir: join(root, 'artifacts/checkpoint'), corpus: [join(root, 'oracle.test.ts')], sourceEnvironment: { PATH: process.env.PATH },
       execute: async command => {
         if (command.includes('--version')) return { exitCode: 0, stdout: '1.3.14\n', stderr: '' }
         if (command[0] === 'go') return { exitCode: 0, stdout: 'go version go1.25.7 darwin/arm64', stderr: '' }
@@ -99,7 +99,7 @@ test('an unlisted corpus file or escaping Git inventory cannot become passing ev
     expect(report.status).toBe('failed')
     expect(report.failures[0]).toContain('missing from the repository input inventory')
     expect(started).toBe(false)
-    await expect(collectCorpusSnapshot(root, createHermeticGoEnvironment(home), async command => ({ exitCode: 0, stdout: command.includes('--deleted') ? '' : '../outside.json\0', stderr: '' }))).rejects.toThrow('Invalid corpus input path')
+    await expect(collectCorpusSnapshot(root, createHermeticGoEnvironment(home, { PATH: process.env.PATH }), async command => ({ exitCode: 0, stdout: command.includes('--deleted') ? '' : '../outside.json\0', stderr: '' }))).rejects.toThrow('Invalid corpus input path')
   } finally { rmSync(root, { recursive: true, force: true }); rmSync(home, { recursive: true, force: true }) }
 })
 
@@ -107,7 +107,7 @@ test('actual Git tracked deletions leave current inputs and restoration invalida
   const root = fixture()
   const home = mkdtempSync(join(tmpdir(), 'go-corpus-deletion-home-'))
   try {
-    const env = createHermeticGoEnvironment(home)
+    const env = createHermeticGoEnvironment(home, { PATH: process.env.PATH })
     for (const args of [['init', '-q'], ['add', 'backend/spec.json', 'oracle.test.ts']]) {
       const child = Bun.spawn(['git', ...args], { cwd: root, env, stdin: 'ignore', stdout: 'pipe', stderr: 'pipe' })
       const [exitCode, stderr] = await Promise.all([child.exited, new Response(child.stderr).text()])
@@ -128,7 +128,7 @@ test('actual Git tracked deletions leave current inputs and restoration invalida
 test('deletion metadata cannot hide restored inputs, symlinks, invalid paths or an unavailable inventory', async () => {
   const root = fixture()
   const home = mkdtempSync(join(tmpdir(), 'go-corpus-deletion-guard-'))
-  const env = createHermeticGoEnvironment(home)
+  const env = createHermeticGoEnvironment(home, { PATH: process.env.PATH })
   const run = (names: string[], deleted: string[], deletionCode = 0) => async (command: string[]) => ({
     exitCode: command.includes('--deleted') ? deletionCode : 0,
     stdout: (command.includes('--deleted') ? deleted : names).join('\0') + '\0', stderr: '',

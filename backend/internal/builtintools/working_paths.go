@@ -37,6 +37,10 @@ func pathInWorkingPath(path, root string) bool {
 	return !filepath.IsAbs(rel)
 }
 
+// PathInWorkingPath exposes the original shared filesystem path predicate to
+// memory import inspection, which uses the same aliases and traversal rules.
+func PathInWorkingPath(path, root string) bool { return pathInWorkingPath(path, root) }
+
 var regexpTraversal = regexp.MustCompile(`(?:^|[\\/])\.\.(?:[\\/]|$)`)
 
 func (s *Service) pathInAllowedWorkingPath(c protocol.JSONObject, path string) bool {

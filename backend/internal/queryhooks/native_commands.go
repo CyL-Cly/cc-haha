@@ -2,8 +2,6 @@ package queryhooks
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"regexp"
 	"strings"
 	"sync"
@@ -43,6 +41,7 @@ type CommandStore struct {
 	events           map[string]map[string][]commandMatcher
 	promptSuccess    map[string]map[string]func(*cooperative.Scope) error
 	structuredOutput map[string]string
+	frontmatter      map[string]map[string][]nativeFrontmatterGroup
 }
 
 func (s *Service) HasNativeCommandBindings(owner *cooperative.Owner) bool {
@@ -61,62 +60,7 @@ func (s *Service) NativeCommandStore() *CommandStore {
 	return s.options.Commands.Store
 }
 func (s *Service) RegisterNativeAgentHooks(sid string, hooks protocol.JSONObject) error {
-	if sid == "" || !hooks.IsObject() {
-		return errors.New("native Agent hooks require actual Agent identity and declaration")
-	}
-	store := s.NativeCommandStore()
-	if store == nil {
-		return unsupported("actual native command hook bindings")
-	}
-	prepared := map[string][]commandMatcher{}
-	// registerFrontmatterHooks iterates original HOOK_EVENTS; Stop is converted
-	// before SubagentStop entries are registered, regardless of JSON key order.
-	for _, event := range []string{"Stop", "SubagentStop"} {
-		var matchers []protocol.JSONObject
-		if raw := hooks.Get(event); raw != nil {
-			if e := json.Unmarshal(raw, &matchers); e != nil {
-				return e
-			}
-		}
-		for _, matcher := range matchers {
-			var commands []protocol.JSONObject
-			if e := json.Unmarshal(matcher.Get("hooks"), &commands); e != nil {
-				return e
-			}
-			for _, hook := range commands {
-				if hook.String("type") != "command" {
-					return unsupported("Agent " + event + " hook kind " + hook.String("type"))
-				}
-				if (string(hook.Get("async")) == "true" || string(hook.Get("asyncRewake")) == "true") && s.options.Commands.Async == nil {
-					return unsupported("Agent command hook asynchronous task lifecycle")
-				}
-				if hook.Get("if") != nil {
-					return unsupported("Agent command hook if predicate")
-				}
-				prepared["SubagentStop"] = append(prepared["SubagentStop"], commandMatcher{matcher.String("matcher"), hook.Clone()})
-			}
-		}
-	}
-	for _, field := range hooks.OwnProperties() {
-		var event string
-		_ = json.Unmarshal(field.NameJSON, &event)
-		if event == "Stop" || event == "SubagentStop" {
-			continue
-		}
-		var entries []json.RawMessage
-		if json.Unmarshal(field.Value, &entries) != nil || len(entries) > 0 {
-			return unsupported("Agent frontmatter hook event " + event)
-		}
-	}
-	store.mu.Lock()
-	defer store.mu.Unlock()
-	if store.events[sid] == nil {
-		store.events[sid] = map[string][]commandMatcher{}
-	}
-	for event, rows := range prepared {
-		store.events[sid][event] = append(store.events[sid][event], rows...)
-	}
-	return nil
+	return s.registerNativeFrontmatterHooks(sid, hooks, "", false, true)
 }
 func (s *Service) ClearNativeAgentHooks(sid string) {
 	store := s.NativeCommandStore()
@@ -126,6 +70,10 @@ func (s *Service) ClearNativeAgentHooks(sid string) {
 	store.mu.Lock()
 	defer store.mu.Unlock()
 	delete(store.events, sid)
+	if _, tracked := store.frontmatter[sid]; tracked {
+		delete(store.promptSuccess, sid)
+	}
+	delete(store.frontmatter, sid)
 	delete(store.structuredOutput, sid)
 }
 
@@ -137,22 +85,23 @@ func (s *Service) NativeAgentHookCount(sid string) int {
 	store.mu.Lock()
 	defer store.mu.Unlock()
 	count := 0
-	for _, hooks := range store.events[sid] {
-		count += len(hooks)
+	for event, hooks := range store.events[sid] {
+		if _, tracked := store.frontmatter[sid][event]; !tracked {
+			count += len(hooks)
+		}
+	}
+	for _, groups := range store.frontmatter[sid] {
+		for _, group := range groups {
+			count += len(group.hooks)
+		}
 	}
 	return count
 }
 func (s *Service) nativeCommandMatchers(event, sid string) []commandMatcher {
-	if s.options.Commands == nil || s.options.Commands.Store == nil {
-		return nil
-	}
-	store := s.options.Commands.Store
-	store.mu.Lock()
-	defer store.mu.Unlock()
-	in := store.events[sid][event]
-	out := make([]commandMatcher, len(in))
-	for i, row := range in {
-		out[i] = commandMatcher{row.matcher, row.hook.Clone()}
+	matched := s.nativeMatchedCommandMatchers(event, sid, false)
+	out := make([]commandMatcher, len(matched))
+	for i, row := range matched {
+		out[i] = row.commandMatcher
 	}
 	return out
 }

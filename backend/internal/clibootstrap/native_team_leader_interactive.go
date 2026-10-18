@@ -57,7 +57,7 @@ func (m *MainPrint) interactiveLeaderInbox(scope *cooperative.Scope) (*teamspawn
 	}
 	if m.teamLeader.mailbox == nil {
 		var err error
-		m.teamLeader.mailbox, err = teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.Environment["CLAUDE_CONFIG_DIR"], TaskStore: m.taskStore, Log: func(err error) { _, _ = fmt.Fprintln(m.options.Error, err) }})
+		m.teamLeader.mailbox, err = teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.ConfigHomeDirectory(), TaskStore: m.taskStore, Log: func(err error) { _, _ = fmt.Fprintln(m.options.Error, err) }})
 		if err != nil {
 			return nil, "", err
 		}
@@ -189,6 +189,7 @@ func (m *MainPrint) pollInteractiveLeaderInboxOnOwner(scope *cooperative.Scope) 
 			snapshot := m.teamState.snapshot.Clone()
 			snapshot.Set("teammates", rawMain(roster))
 			m.teamState.snapshot = snapshot
+			m.publishTerminalTeamFooter(scope)
 			tasks, err := m.Controller.BackgroundTasksOnOwner(scope)
 			if err != nil {
 				return err
@@ -245,7 +246,7 @@ func (m *MainPrint) nativeTeamMailboxAttachments(scope *cooperative.Scope, callA
 			return nil, cooperative.ErrRestricted
 		}
 		if m.teamLeader.mailbox == nil {
-			m.teamLeader.mailbox, e = teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.Environment["CLAUDE_CONFIG_DIR"], TaskStore: m.taskStore})
+			m.teamLeader.mailbox, e = teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.ConfigHomeDirectory(), TaskStore: m.taskStore})
 			if e != nil {
 				return nil, e
 			}

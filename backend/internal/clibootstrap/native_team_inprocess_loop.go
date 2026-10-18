@@ -46,11 +46,11 @@ func (m *MainPrint) runNativeInProcessLoop(ctx context.Context, taskID string, i
 	if stored.String("agentId") != identity.AgentID || stored.String("agentName") != identity.AgentName || stored.String("teamName") != identity.TeamName || identity.ParentSessionID != m.Controller.SessionID() {
 		return cooperative.ErrRestricted
 	}
-	config, err := teamstore.NewConfig(teamstore.ConfigOptions{ConfigDir: m.options.Native.Environment["CLAUDE_CONFIG_DIR"], TaskStore: m.taskStore, PID: m.options.PID, Platform: m.options.Platform})
+	config, err := teamstore.NewConfig(teamstore.ConfigOptions{ConfigDir: m.options.Native.ConfigHomeDirectory(), TaskStore: m.taskStore, PID: m.options.PID, Platform: m.options.Platform})
 	if err != nil {
 		return err
 	}
-	mailbox, err := teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.Environment["CLAUDE_CONFIG_DIR"], TaskStore: m.taskStore, Log: func(err error) { _, _ = fmt.Fprintln(m.options.Error, err) }})
+	mailbox, err := teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.ConfigHomeDirectory(), TaskStore: m.taskStore, Log: func(err error) { _, _ = fmt.Fprintln(m.options.Error, err) }})
 	if err != nil {
 		return err
 	}

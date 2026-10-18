@@ -55,7 +55,7 @@ func (m *Mailbox) Path(name, team string) string {
 	if team == "" {
 		team = "default"
 	}
-	return filepath.Join(m.options.ConfigDir, "teams", taskstore.SanitizePathComponent(team), "inboxes", taskstore.SanitizePathComponent(name)+".json")
+	return filepath.Join(m.configDirectory(), "teams", taskstore.SanitizePathComponent(team), "inboxes", taskstore.SanitizePathComponent(name)+".json")
 }
 func (m *Mailbox) log(e error) {
 	if e != nil && m.options.Log != nil {

@@ -14,5 +14,8 @@ func (s *Session) emitNativeSpinner(ctx context.Context, turnID string, emit tui
 	if err != nil {
 		return err
 	}
+	if err := emit(tui.Event{TurnID: turnID, Kind: tui.TerminalSpinnerProgressChanged, Spinner: &tui.TerminalSpinnerProgress{Verb: &verb}}); err != nil {
+		return err
+	}
 	return emit(tui.Event{TurnID: turnID, Kind: tui.Notice, Text: verb + "…"})
 }

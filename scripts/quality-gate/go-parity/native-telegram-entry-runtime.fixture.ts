@@ -8,7 +8,7 @@ let now = input.now
 Date.now = () => now
 console.log = (...values) => process.stderr.write(values.join(' ') + '\n')
 Bun.plugin({ name: 'actual-private-telegram-entry-handlers', setup(build) {
-  build.onLoad({ filter: /\/adapters\/telegram\/index\.ts$/ }, async args => ({ contents: `${await Bun.file(args.path).text()}\nexport { handleServerMessage, getRuntimeState, pendingPermissions, accumulatedThinkingText }`, loader: 'ts' }))
+  build.onLoad({ filter: /\/adapters\/telegram\/index\.ts$/ }, async args => ({ contents: `${await Bun.file(args.path).text()}\nexport { handleServerMessage, getRuntimeState, pendingPermissions, accumulatedThinkingText, commandController }`, loader: 'ts' }))
 } })
 const calls: any[] = []
 const http: any[] = []
@@ -62,6 +62,38 @@ const privateApi = new Bot('private-token', { client: { apiRoot: `http://127.0.0
 const entry: any = await import('../../../adapters/telegram/index')
 entry.bot.botInfo = botInfo
 entry.bot.api.config.use(async (_prev: any, method: any, payload: any, signal: any) => ({ ok: true, result: await privateApi.raw[method](payload, signal) }))
+// Extended command registrations intentionally discard the actual controller Promise.
+// Observe that same work without changing the production handler's call or return value.
+const commandMethods = ['sendHelp', 'handleProviderCommand', 'handleModelCommand', 'handleSkillsCommand'] as const
+const originalCommandMethods = new Map<string, (...args: any[]) => Promise<unknown>>()
+const pendingCommandWork: Array<Promise<PromiseSettledResult<unknown>>> = []
+for (const name of commandMethods) {
+  const original = entry.commandController[name]
+  if (typeof original !== 'function') throw new Error(`Missing actual Telegram command method: ${name}`)
+  originalCommandMethods.set(name, original)
+  entry.commandController[name] = function (this: unknown, ...args: any[]) {
+    const task = Reflect.apply(original, this, args)
+    if (!task || typeof task.then !== 'function') throw new Error(`Telegram command did not return its actual Promise: ${name}`)
+    pendingCommandWork.push(task.then(
+      (value: unknown) => ({ status: 'fulfilled' as const, value }),
+      (reason: unknown) => ({ status: 'rejected' as const, reason }),
+    ))
+    return task
+  }
+}
+async function drainCommandWork(): Promise<number> {
+  let joined = 0
+  let failure: PromiseRejectedResult | undefined
+  while (pendingCommandWork.length > 0) {
+    const batch = pendingCommandWork.splice(0)
+    joined += batch.length
+    for (const result of await Promise.all(batch)) {
+      if (result.status === 'rejected' && !failure) failure = result
+    }
+  }
+  if (failure) throw failure.reason
+  return joined
+}
 const rows = []
 try {
   for (const action of input.actions) {
@@ -69,11 +101,20 @@ try {
     if (action.responses) responseOverrides = action.responses
     if (action.update) await entry.bot.handleUpdate(action.update)
     if (action.event) await entry.handleServerMessage('42', action.event)
-    await new Promise(resolve => setTimeout(resolve, 15))
+    const joinedCommandWork = await drainCommandWork()
+    // Retain the pre-existing WS/event observation turn only for actions which
+    // did not dispatch an extended command; it is never command completion proof.
+    if (joinedCommandWork === 0) await new Promise(resolve => setTimeout(resolve, 15))
+    await drainCommandWork()
+    if (pendingCommandWork.length !== 0) throw new Error('Unsettled Telegram command work at snapshot')
     const sessionFile = join(process.env.CLAUDE_CONFIG_DIR!, 'adapter-sessions.json')
     let stored = null
     try { stored = JSON.parse(readFileSync(sessionFile, 'utf8')) } catch {}
     rows.push({ calls: calls.splice(0), http: http.splice(0), packets: packets.splice(0), state: { ...entry.getRuntimeState('42') }, stored })
   }
   process.stdout.write(JSON.stringify(rows))
-} finally { entry.stopTelegramAdapter(); peer.stop(true) }
+} finally {
+  for (const [name, original] of originalCommandMethods) entry.commandController[name] = original
+  entry.stopTelegramAdapter()
+  peer.stop(true)
+}

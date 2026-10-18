@@ -396,18 +396,9 @@ func TestPendingConstructorProfileAndFutureValidation(t *testing.T) {
 	if !errors.Is(future.Wait(context.Background()), io.EOF) {
 		t.Fatal("settlement was not once")
 	}
-	pendingCall(t, owner, cooperative.Input, func(scope *cooperative.Scope) error {
-		writer.queues["second-unsupported-target"] = []queuedEntry{{entry: plainMessage("second", "second")}}
-		_, err := pending.Begin(scope)
-		if err == nil {
-			return errors.New("multiple targets allowed")
-		}
-		return nil
-	})
-	if err := pending.Close(context.Background()); err == nil {
-		t.Fatal("Close bypassed unsupported order")
+	if err := pending.Close(context.Background()); err != nil {
+		t.Fatalf("valid owner/future Close: %v", err)
 	}
-	pendingCall(t, owner, cooperative.Input, func(*cooperative.Scope) error { delete(writer.queues, "second-unsupported-target"); return nil })
 }
 func TestLiveRecordRejectsBeforeAnyWriterEffects(t *testing.T) {
 	owner, writer, _ := makePending(t, OSFiles{})

@@ -46,6 +46,7 @@ type repositoryContext struct {
 type repositoryGitResult struct {
 	stdout, stderr string
 	code           int
+	failedToRun    bool
 }
 
 // Node's execFile maxBuffer is independent for stdout/stderr. Terminate the
@@ -54,10 +55,14 @@ type repositoryOutput struct {
 	data     []byte
 	cancel   context.CancelFunc
 	overflow bool
+	maximum  int
 }
 
 func (output *repositoryOutput) Write(data []byte) (int, error) {
-	const maximum = 2000000
+	maximum := output.maximum
+	if maximum == 0 {
+		maximum = 2000000
+	}
 	length := len(data)
 	remaining := maximum - len(output.data)
 	output.data = append(output.data, data[:min(remaining, len(data))]...)
@@ -68,6 +73,12 @@ func (output *repositoryOutput) Write(data []byte) (int, error) {
 	return length, nil
 }
 func (server *Server) repositoryGit(ctx context.Context, directory string, args ...string) repositoryGitResult {
+	return server.repositoryGitConfigured(ctx, directory, nil, 2000000, args...)
+}
+
+// Review shares the process boundary while selecting its inherited 8 MB cap and
+// removing Git retargeting variables. Other callers retain their existing defaults.
+func (server *Server) repositoryGitConfigured(ctx context.Context, directory string, configure func(map[string]string), maximum int, args ...string) repositoryGitResult {
 	environment := map[string]string{}
 	if server.options.Environment != nil {
 		for name, value := range server.options.Environment() {
@@ -79,9 +90,12 @@ func (server *Server) repositoryGit(ctx context.Context, directory string, args 
 	environment["HOME"], environment["USERPROFILE"] = server.options.HomeDir, server.options.HomeDir
 	environment["CLAUDE_CONFIG_DIR"] = server.options.ConfigDir
 	environment["GIT_TERMINAL_PROMPT"], environment["GIT_ASKPASS"] = "0", ""
+	if configure != nil {
+		configure(environment)
+	}
 	executable, err := executableUsingPath("git", environment)
 	if err != nil {
-		return repositoryGitResult{stderr: err.Error(), code: 1}
+		return repositoryGitResult{stderr: err.Error(), code: 1, failedToRun: true}
 	}
 	commandContext, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
@@ -90,7 +104,7 @@ func (server *Server) repositoryGit(ctx context.Context, directory string, args 
 	for name, value := range environment {
 		command.Env = append(command.Env, name+"="+value)
 	}
-	stdout, stderr := &repositoryOutput{cancel: cancel}, &repositoryOutput{cancel: cancel}
+	stdout, stderr := &repositoryOutput{cancel: cancel, maximum: maximum}, &repositoryOutput{cancel: cancel, maximum: maximum}
 	command.Stdout, command.Stderr = stdout, stderr
 	err = command.Run()
 	result := repositoryGitResult{stdout: string(stdout.data), stderr: string(stderr.data)}
@@ -103,7 +117,12 @@ func (server *Server) repositoryGit(ctx context.Context, directory string, args 
 			result.stderr = err.Error()
 		}
 	}
+	if err != nil {
+		_, exited := err.(*exec.ExitError)
+		result.failedToRun = !exited || commandContext.Err() != nil
+	}
 	if stdout.overflow || stderr.overflow {
+		result.failedToRun = true
 		result.code = 1
 	}
 	return result

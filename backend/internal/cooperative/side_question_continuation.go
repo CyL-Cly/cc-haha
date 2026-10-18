@@ -10,6 +10,9 @@ type sideQuestionContinuation struct {
 	authority           *NativeSideQuestionModels
 	dreamAuthority      *NativeAutoDreamModels
 	permissionAuthority *NativePermissionRequestHooks
+	auxiliaryAuthority  *NativeAuxiliaryModels
+	insightsAuthority   *NativeInsightsModels
+	promptAuthority     *NativePromptContinuations
 	owner               *Owner
 	resume              chan struct{}
 	segment             chan bool // false: suspended at real await; true: stack finalized

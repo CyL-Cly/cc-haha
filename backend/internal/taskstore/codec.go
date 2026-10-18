@@ -34,7 +34,7 @@ func sanitizeUnits(units []uint16) string {
 	return result.String()
 }
 func (s *Service) tasksDir(list string) string {
-	return filepath.Join(s.options.ConfigDir, "tasks", SanitizePathComponent(list))
+	return filepath.Join(s.configDirectory(), "tasks", SanitizePathComponent(list))
 }
 func (s *Service) taskPath(list string, id json.RawMessage) (string, error) {
 	units, err := protocol.DecodeJavaScriptJSONString(id)
@@ -200,6 +200,7 @@ func (s *Service) writeTask(list string, id json.RawMessage, task protocol.JSONO
 }
 
 func (s *Service) notify() {
+	s.publishUpdates()
 	if s.options.OnUpdate != nil {
 		s.options.OnUpdate()
 	}

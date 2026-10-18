@@ -93,6 +93,18 @@ for (const row of input.cases) {
     observations.push({ plugin: reduce(await getPluginById(row.id)), files: snapshot() })
     continue
   }
+  if (row.action === 'update-op') {
+    const { updatePluginOp } = await import('../../../src/services/plugins/pluginOperations')
+    observations.push({ body: reduce(await updatePluginOp(row.id, row.scope)), files: snapshot() })
+    continue
+  }
+  if (row.action === 'marketplace-auto-update') {
+    const { setMarketplaceAutoUpdate } = await import('../../../src/utils/plugins/marketplaceManager')
+    let error
+    try { await setMarketplaceAutoUpdate(row.name, row.enabled) } catch (failure) { error = failure instanceof Error ? failure.message : String(failure) }
+    observations.push({ files: snapshot(), ...(error === undefined ? {} : { error }) })
+    continue
+  }
   if (row.action === 'hooks') {
     const { loadPluginHooks, pruneRemovedPluginHooks, clearPluginHookCache } = await import('../../../src/utils/plugins/loadPluginHooks')
     if (row.callbacks) state.registerHookCallbacks(row.callbacks)

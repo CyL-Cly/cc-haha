@@ -1,3 +1,5 @@
+import type { ScopeExclusion } from './scope-exclusions'
+
 export type QualityGateMode = 'pr' | 'baseline' | 'release'
 
 export type LaneKind = 'command' | 'baseline-case' | 'desktop-smoke' | 'provider-smoke'
@@ -53,6 +55,7 @@ export type BaselineTarget = {
 export type LaneStatus = 'passed' | 'failed' | 'skipped'
 
 export type LaneResult = {
+  scopeExclusions?: ScopeExclusion[]
   id: string
   title: string
   description?: string
@@ -100,6 +103,7 @@ export type ReportArtifact = {
 }
 
 export type QualityGateOptions = {
+  scopeExclusions?: ScopeExclusion[]
   mode: QualityGateMode
   dryRun: boolean
   allowLive: boolean
@@ -113,6 +117,7 @@ export type QualityGateOptions = {
 }
 
 export type QualityGateReport = {
+  scopeExclusions?: ScopeExclusion[]
   schemaVersion: 1
   runId: string
   mode: QualityGateMode

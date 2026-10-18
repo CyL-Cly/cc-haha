@@ -62,7 +62,7 @@ func TestNativePluginCommandDefinitionsAgainstActualSource(t *testing.T) {
 
 	// Materialize with the actual native producer; Source independently reads
 	// its resulting installed artifacts, config and component declarations.
-	native, err := clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{
+	native, err := newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{
 		Environment: map[string]string{"HOME": home, "USERPROFILE": home, "CLAUDE_CONFIG_DIR": config, "TMPDIR": filepath.Join(home, "tmp")}, CWD: cwd, Platform: runtime.GOOS,
 		ManagedRoot: filepath.Join(home, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil },
 	})

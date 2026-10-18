@@ -19,8 +19,8 @@ func (s *Store) SaveLegacyManagedAPIKey(ctx context.Context, key string) (bool, 
 	if s.options.Platform != "darwin" {
 		return false, nil
 	}
-	service := strings.Replace(s.service, "-credentials", "", 1)
-	input := `add-generic-password -U -a "` + s.account + `" -s "` + service + `" -X "` + hex.EncodeToString([]byte(key)) + "\"\n"
+	service := strings.Replace(s.keychainServiceName(), "-credentials", "", 1)
+	input := `add-generic-password -U -a "` + s.keychainUsername() + `" -s "` + service + `" -X "` + hex.EncodeToString([]byte(key)) + "\"\n"
 	_, e := s.options.RunSecurity(ctx, Command{Args: []string{"-i"}, Input: input})
 	// Original execa({reject:false}) resolves process failures, including
 	// a nonzero exit and spawn ENOENT. Only a thrown primitive uses fallback.

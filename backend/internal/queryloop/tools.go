@@ -164,6 +164,21 @@ type SerialToolBatch struct {
 	general      bool
 }
 
+// ReplaceRegisteredTools is the original refreshTools consumer after a whole
+// iteration has finished. It retains this batch's Owner, hooks and permissions.
+func (batch *SerialToolBatch) ReplaceRegisteredTools(scope *cooperative.Scope, tools []RegisteredTool) error {
+	if batch == nil || !batch.general || scope == nil || !scope.BelongsTo(batch.capabilities.Owner) || scope != batch.capabilities.Scope {
+		return cooperative.ErrRestricted
+	}
+	for _, tool := range tools {
+		if err := validateRegisteredToolMode(tool, true); err != nil {
+			return err
+		}
+	}
+	batch.tools = append([]RegisteredTool{}, tools...)
+	return nil
+}
+
 func NewSerialToolBatch(tools []RegisteredTool, capabilities ToolBatchCapabilities, factory *messages.Factory) (*SerialToolBatch, error) {
 	return newToolBatch(tools, capabilities, factory, false)
 }

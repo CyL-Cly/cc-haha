@@ -59,12 +59,14 @@ type uuidPhysicalResult struct {
 	lease  *readLease
 }
 type uuidJob struct {
-	pending *PendingWriter
-	loader  *sessionhistory.Loader
-	reader  *sessionhistory.ReadContinuation
-	io      sessionhistory.PhysicalIO
-	future  *SessionUUIDFuture
-	lease   *readLease
+	pending    *PendingWriter
+	loader     *sessionhistory.Loader
+	reader     *sessionhistory.ReadContinuation
+	io         sessionhistory.PhysicalIO
+	future     *SessionUUIDFuture
+	lease      *readLease
+	loaded     *sessionhistory.Transcript
+	loadReturn *WriteFuture
 }
 
 // SessionUUIDs captures the original current-project directory and memoizes by
@@ -109,6 +111,11 @@ func (pending *PendingWriter) SessionUUIDs(scope *cooperative.Scope, loader *ses
 		future = &SessionUUIDFuture{future: newWriteFuture(), owner: pending.owner}
 		pending.uuidCache.promises[sid] = future
 		job := &uuidJob{pending: pending, loader: loader, reader: reader, io: loader.PhysicalIO(), future: future}
+		job.loadReturn, err = job.beginLoadReturn(scope)
+		if err != nil {
+			future.future.settle(err)
+			return nil
+		}
 		job.next()
 		return nil
 	})
@@ -130,16 +137,27 @@ func (pending *PendingWriter) ClearSessionUUIDCache(scope *cooperative.Scope) er
 }
 func (job *uuidJob) next() {
 	request := job.reader.Request()
+	primitive := job.reader.NativePrimitive()
 	if request.Operation == sessionhistory.ReadComplete {
 		value, err := job.loader.FinishRead(job.reader)
-		if err == nil {
-			job.future.set = value.OwnedMessageSet(job.pending.owner)
+		if job.pending.observeUUIDLoadReturn != nil {
+			job.pending.observeUUIDLoadReturn()
 		}
-		job.future.future.settle(err)
+		job.loaded = value
+		job.loadReturn.settle(err)
 		return
 	}
+	operation := transcriptNativeUnwrapped
+	if job.pending.sdkAsyncObservers != nil {
+		var err error
+		operation, err = transcriptReadNativeOperation(request.Operation, primitive)
+		if err != nil {
+			job.future.future.settle(err)
+			return
+		}
+	}
 	io, lease := job.io, job.lease
-	dispatch(job.pending, job.future.future, func() uuidPhysicalResult {
+	dispatchTranscriptNativeOperation(job.pending, job.future.future, operation, func() uuidPhysicalResult {
 		result := uuidPhysicalResult{lease: lease}
 		switch request.Operation {
 		case sessionhistory.ReadStat:
@@ -180,4 +198,31 @@ func (job *uuidJob) next() {
 		}
 		job.next()
 	})
+}
+
+func transcriptReadNativeOperation(operation sessionhistory.ReadOperation, primitive sessionhistory.ReadPrimitive) (transcriptNativeOperation, error) {
+	switch primitive {
+	case sessionhistory.ReadPrimitiveFSFunction:
+		switch operation {
+		case sessionhistory.ReadStat:
+			return transcriptNativeFSPStat, nil
+		case sessionhistory.ReadWhole:
+			return transcriptNativeFSPReadFile, nil
+		case sessionhistory.ReadOpen:
+			return transcriptNativeFSPOpen, nil
+		}
+	case sessionhistory.ReadPrimitiveFileHandleClose:
+		if operation == sessionhistory.ReadClose {
+			return transcriptNativeGuardedClose, nil
+		}
+	case sessionhistory.ReadPrimitiveFileHandle:
+		if operation == sessionhistory.ReadAt {
+			return transcriptNativeUnwrapped, nil
+		}
+	case sessionhistory.ReadPrimitiveStream:
+		if operation == sessionhistory.ReadOpen || operation == sessionhistory.ReadAt || operation == sessionhistory.ReadClose {
+			return transcriptNativeUnwrapped, nil
+		}
+	}
+	return transcriptNativeUnwrapped, cooperative.ErrRestricted
 }

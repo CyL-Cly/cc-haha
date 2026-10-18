@@ -22,6 +22,7 @@ func (s *Service) RegisterNativePromptHook(scope *cooperative.Scope, sid, event,
 		store.events[sid] = map[string][]commandMatcher{}
 	}
 	store.events[sid][event] = append(store.events[sid][event], commandMatcher{matcher, hook.Clone()})
+	store.appendLegacyFrontmatterIfTrackedLocked(sid, event, commandMatcher{matcher, hook.Clone()})
 	if success != nil {
 		if store.promptSuccess == nil {
 			store.promptSuccess = map[string]map[string]func(*cooperative.Scope) error{}
@@ -41,6 +42,13 @@ func (s *Service) RemoveNativePromptHook(scope *cooperative.Scope, sid, event st
 	store.mu.Lock()
 	defer store.mu.Unlock()
 	key := promptIdentity(hook)
+	if _, tracked := store.frontmatter[sid][event]; tracked {
+		logical, err := nativeEventHookKey(hook)
+		if err != nil {
+			return err
+		}
+		store.removeEqualFrontmatterLocked(sid, event, logical)
+	}
 	if events := store.events[sid]; events != nil {
 		next := []commandMatcher{}
 		for _, row := range events[event] {

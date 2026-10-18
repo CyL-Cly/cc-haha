@@ -108,7 +108,6 @@ func TestPublicAccessActualServerSharedSocketRevokeAndShutdown(t *testing.T) {
 	defer socket.Close()
 	_ = socket.SetDeadline(time.Now().Add(4 * time.Second))
 	receiveType(t, socket, "connected")
-	receiveType(t, socket, "session_state")
 	receiveType(t, socket, "permission_requests_snapshot")
 	if e = websocket.Message.Send(socket, `{"type":"user_message","content":"actual-shared-ingress"}`); e != nil {
 		t.Fatal(e)
@@ -126,9 +125,24 @@ func TestPublicAccessActualServerSharedSocketRevokeAndShutdown(t *testing.T) {
 		t.Fatal(string(raw))
 	}
 	control("revoke", `{"id":`+string(pair["id"])+`}`)
-	var ignored string
-	if e = websocket.Message.Receive(socket, &ignored); e == nil {
-		t.Fatal("revoked socket still open")
+	// A result replays existing approvals before revocation. Those already
+	// written frames can precede the close frame without keeping the socket live.
+	for {
+		var buffered string
+		if e = websocket.Message.Receive(socket, &buffered); e != nil {
+			if timeout, ok := e.(net.Error); ok && timeout.Timeout() {
+				t.Fatal("revoked socket did not physically close", e)
+			}
+			break
+		}
+		var frame map[string]json.RawMessage
+		if err := json.Unmarshal([]byte(buffered), &frame); err != nil {
+			t.Fatal(err, buffered)
+		}
+		kind := stringField(frame, "type")
+		if kind != "permission_request" && kind != "permission_requests_snapshot" {
+			t.Fatal("revoked socket delivered new business output", buffered)
+		}
 	}
 	r := request(base, "GET", "/api/sessions", "", cookie, false)
 	if r.StatusCode != 401 {

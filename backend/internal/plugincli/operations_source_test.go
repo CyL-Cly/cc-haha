@@ -151,7 +151,7 @@ func pairedPluginOperation(t *testing.T, action, scopeName string) {
 		}
 		sourceCode = exit.ExitCode()
 	}
-	n, e := clibootstrap.NewProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: goEnv, CWD: goHome, Platform: "darwin", ManagedRoot: filepath.Join(goHome, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) {
+	n, e := newIsolatedProcessNativeBoundary(clibootstrap.NativeProcessOptions{Environment: goEnv, CWD: goHome, Platform: "darwin", ManagedRoot: filepath.Join(goHome, "managed"), ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) {
 		if policy := goEnv["CC_HAHA_PLUGIN_CLI_POLICY"]; policy != "" {
 			var value protocol.JSONObject
 			_ = value.UnmarshalJSON([]byte(policy))

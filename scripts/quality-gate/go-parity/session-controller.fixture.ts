@@ -8,7 +8,7 @@ import { assertDisposableFixtureHome } from './fixture-guard'
 import { installClientFixtureCapabilities } from './client-options-capabilities'
 const input = JSON.parse(await new Response(Bun.stdin.stream()).text())
 const home = assertDisposableFixtureHome(input.home, 'Actual headless session controller')
-const keys = ['home', 'origin', 'temporary', 'sid', 'continue', 'forkSession', 'checkpointing', 'disabled', 'resumeInterrupted', 'resumeAt', 'model', 'sdk', 'stat', 'runtime', 'holdCopies']
+const keys = ['home', 'origin', 'temporary', 'sid', 'continue', 'forkSession', 'checkpointing', 'disabled', 'resumeInterrupted', 'resumeAt', 'model', 'sdk', 'stat', 'runtime', 'holdCopies', 'warmCleanup', 'nativeMain', 'nowMillis', 'clockStepMillis', 'clockReadStepMillis', 'sdkPrelude', 'pickerSelection', 'inspectRecords']
 if (process.env.CC_HAHA_SESSION_CONTROLLER_FIXTURE !== '1' || process.env.NODE_ENV !== 'production' || process.env.TZ !== 'UTC' || !feature('TRANSCRIPT_CLASSIFIER') || Object.keys(input).some(key => !keys.includes(key)) || !Array.isArray(input.sdk) || !input.stat || fs.realpathSync(home) !== home)
   throw new Error('Headless controller requires original canonical offline inputs')
 const origin = new URL(input.origin)
@@ -44,6 +44,13 @@ if (input.sdk.length)
     if (dirname(directory) === directory)
       break
   }
+if (input.inspectRecords) {
+  // Diagnostic visibility only: retain the entire original module and all of
+  // its business bodies. No replacement loader, delay or persistence policy.
+  Bun.plugin({ name: 'actual-project-record-observer', setup(build) {
+    build.onLoad({ filter: /\/src\/utils\/sessionStorage\.ts$/ }, args => ({ loader: 'ts', contents: fs.readFileSync(args.path, 'utf8').replace(/\/\/# sourceMappingURL=.*$/gm, '') + '\nexport { Project as FixtureProject }\n' }))
+  } })
+}
 const capabilities = await installClientFixtureCapabilities(home, { loopbackFetchOrigin: input.origin, absentPaths: exactAbsentPaths })
 let releaseCopy: () => void = () => { }, copyStarted = false
 const copyBarrier = input.holdCopies ? new Promise<void>(resolve => {
@@ -84,6 +91,24 @@ const permissionResult = await permissions.initializeToolPermissionContext({ all
 const { getDefaultAppState } = await import('../../../src/state/AppStateStore'), { createStore } = await import('../../../src/state/store')
 const store = createStore({ ...getDefaultAppState(), toolPermissionContext: permissionResult.toolPermissionContext })
 const storage = await import('../../../src/utils/sessionStorage'), recovery = await import('../../../src/utils/conversationRecovery'), engine = await import('../../../src/QueryEngine'), queue = await import('../../../src/utils/messageQueueManager')
+const recordBatches: unknown[] = []
+if (input.inspectRecords) {
+  const prototype = (storage as any).FixtureProject.prototype
+  const insert = prototype.insertMessageChain
+  const observed = new WeakSet<object>()
+  prototype.insertMessageChain = function (...args: unknown[]) {
+    if (!observed.has(this)) {
+      observed.add(this)
+      let value = this.currentSessionLastPrompt
+      Object.defineProperty(this, 'currentSessionLastPrompt', { configurable: true, enumerable: true, get() { return value }, set(next) {
+        recordBatches.push({ phase: 'memo:set', value: next ?? null, phases: phases.length })
+        value = next
+      } })
+    }
+    recordBatches.push({ phase: 'insert:start', messages: encode(args[0]), phases: phases.length })
+    return insert.apply(this, args)
+  }
+}
 const snapshotRecords: unknown[] = [], copyPromises: Promise<unknown>[] = [], background: {
   returnedBeforeCopy?: boolean
 } = {}
@@ -104,6 +129,28 @@ registerCleanup(async () => {
   await Promise.all(copyPromises)
 })
 const rawErrors: unknown[] = [], errors: string[] = [], phases: unknown[] = [], allocations: unknown[] = [], asks: unknown[] = []
+// Preserve the original native promise's identity. The private filesystem
+// guard is already a spy; capture its implementation before adding this
+// diagnostic observer, rather than calling the subsequently replaced spy.
+const nativeFilePromises: unknown[] = []
+let nativeFileSequence = 0
+for (const name of ['stat', 'mkdir', 'open', 'readFile', 'readdir'] as const) {
+  const guarded = fsp[name] as any
+  const original: (...args: any[]) => Promise<any> = guarded.getMockImplementation?.() ?? guarded
+  spyOn(fsp, name).mockImplementation(((...args: any[]) => {
+    const promise = original(...args)
+    const path = String(args[0])
+    if (!path.startsWith(home)) return promise
+    const id = ++nativeFileSequence
+    nativeFilePromises.push({ id, operation: name, state: 'start', path, phases: phases.length })
+    void promise.then(() => {
+      nativeFilePromises.push({ id, operation: name, state: 'fulfilled', phases: phases.length })
+    }, error => {
+      nativeFilePromises.push({ id, operation: name, state: 'rejected', code: error?.code, phases: phases.length })
+    })
+    return promise
+  }) as any)
+}
 const logging = await import('../../../src/utils/log')
 logging.attachErrorLogSink({ logError: e => {
     errors.push(e.message)
@@ -116,16 +163,22 @@ spyOn(crypto, 'randomUUID').mockImplementation(() => {
   return value as ReturnType<typeof crypto.randomUUID>
 })
 const OriginalDate = Date
+let nowMillis = input.nowMillis ?? 1700000000000
+const clockStepMillis = input.clockStepMillis ?? 0
+const clockReadStepMillis = input.clockReadStepMillis ?? 0
+if (!Number.isSafeInteger(clockStepMillis) || clockStepMillis < 0) throw new Error('Original clock step requires a nonnegative safe integer')
+if (!Number.isSafeInteger(clockReadStepMillis) || clockReadStepMillis < 0) throw new Error('Original clock read step requires a nonnegative safe integer')
+if (!Number.isSafeInteger(nowMillis)) throw new Error('Original clock primitive requires a safe integer')
 globalThis.Date = class extends OriginalDate {
   constructor(...args: unknown[]) {
-    super(...(args.length ? args : [1700000000000]) as [
+    super(...(args.length ? args : [nowMillis += clockReadStepMillis]) as [
       number
     ])
     if (!args.length)
       allocations.push({ scope, kind: 'time', value: this.toISOString() })
   }
   static now() {
-    return 1700000000000
+    return nowMillis += clockReadStepMillis
   }
 } as DateConstructor
 function encode(value: unknown) {
@@ -189,8 +242,12 @@ spyOn(queryHelpers, 'extractReadFilesFromMessages').mockImplementation((...args)
 })
 const oldAsk = engine.ask
 spyOn(engine, 'ask').mockImplementation(async function* (args) {
+  // Same external clock schedule as the Go actual ASK observer; no await.
+  nowMillis += clockStepMillis
   scope = 'turn'
-  counter = 0
+  // The additional normal-prior-turn profile needs non-colliding external
+  // UUIDs across completed ASK turns. Legacy allocation profiles stay exact.
+  counter = input.sdkPrelude ? asks.length * 1000 : 0
   activeMessages = args.mutableMessages
   activationHistory = encode(args.mutableMessages)
   cache = [...args.getReadFileCache().entries()].map(([path, value]) => ({ path, value }))
@@ -208,10 +265,16 @@ spyOn(storage, 'doesMessageExistInSession').mockImplementation(async (sid, uuid)
 })
 const { Stream } = await import('../../../src/utils/stream')
 const oldOutput = Stream.prototype.enqueue
+let releasePrelude: (() => void) | undefined
+const preludeResult = input.sdkPrelude ? new Promise<void>(resolve => { releasePrelude = resolve }) : undefined
 spyOn(Stream.prototype, 'enqueue').mockImplementation(function (value) {
   if (value?.type === 'user' && value.isReplay)
     replays.push(encode(value))
-  return oldOutput.call(this, value)
+  const result = oldOutput.call(this, value)
+  // A real SDK caller sends its next inputs after observing the first result.
+  // This observes the actual Stream output; it adds no delay or filesystem work.
+  if (value?.type === 'result' && value.subtype === 'success') releasePrelude?.()
+  return result
 })
 const lifecycle = await import('../../../src/utils/commandLifecycle'), oldLifecycle = lifecycle.notifyCommandLifecycle
 spyOn(lifecycle, 'notifyCommandLifecycle').mockImplementation((uuid, event) => {
@@ -257,14 +320,57 @@ function transcripts(directory = join(home, '.claude', 'projects'), result: Reco
   }
   return result
 }
+let resumePicker: unknown[] = []
+let pickerSelection: unknown
 process.on('exit', code => {
   const state = store.getState(), out = encode({ activationHistory, snapshotRecords, background, appState: { FileHistory: state.fileHistory, Todos: state.todos }, cache, uuidChecks, enqueued, replays, boundaryOrder: phases.slice(0, phases.some((value: any) => value.phase === 'HTTP') ? phases.findIndex((value: any) => value.phase === 'HTTP') + 1 : phases.length).filter((value: any) => ['resume:start', 'resume:return', 'switch', 'reset', 'state:restore', 'metadata:restore', 'enqueue', 'lifecycle:started', 'lifecycle:completed', 'ask:start', 'record', 'HTTP'].includes(value.phase) || value.phase === 'dequeue' && value.result).map((value: any) => value.phase), historySource: activeMessages.map(value => JSON.stringify(value)), requests, transcripts: transcripts(), copies: transcripts(join(home, '.claude', 'file-history')), errors })
   // SDK acknowledgements, allocation stream and all post-request host output are
   // retained raw alongside the finite migrated boundary; none feeds Go input.
-  fs.writeFileSync(join(home, 'controller-result.json'), JSON.stringify({ observation: out, sourceOnly: { code, phases, asks, records, allocations, capabilities, exactAbsentPaths, rawErrors, permissionResult, copyStarted } }))
+  fs.writeFileSync(join(home, 'controller-result.json'), JSON.stringify({ observation: out, sourceOnly: { code, phases, asks, records, allocations, capabilities, exactAbsentPaths, rawErrors, permissionResult, copyStarted, nativeFilePromises, resumePicker, pickerSelection, ...(input.inspectRecords ? { recordBatches } : {}) } }))
 })
 const { runHeadless } = await import('../../../src/cli/print')
+const nativeMainProfile = input.nativeMain || input.sdk.length > 1 && input.sdk.some((message: { priority?: string }) => message.priority === 'now')
+let commands: Awaited<ReturnType<typeof import('../../../src/commands').getCommands>> = []
+let agents: Awaited<ReturnType<typeof import('../../../src/tools/AgentTool/loadAgentsDir').getAgentDefinitionsWithOverrides>>['activeAgents'] = []
+if (nativeMainProfile) {
+  // main.tsx registers bundled producers before starting these same command
+  // and agent promises, then joins both before the headless command filter.
+  // Finite leaf profiles retain their deliberately narrower runHeadless entry.
+  const { initBuiltinPlugins } = await import('../../../src/plugins/bundled/index')
+  const { initBundledSkills } = await import('../../../src/skills/bundled/index')
+  const { getCommands } = await import('../../../src/commands')
+  const { getAgentDefinitionsWithOverrides } = await import('../../../src/tools/AgentTool/loadAgentsDir')
+  const { filterCommandsForHeadlessMode } = await import('../../../src/commands/headless')
+  initBuiltinPlugins()
+  initBundledSkills()
+  const [loadedCommands, definitions] = await Promise.all([getCommands(home), getAgentDefinitionsWithOverrides(home)])
+  commands = filterCommandsForHeadlessMode(loadedCommands)
+  agents = definitions.activeAgents
+}
+if (input.warmCleanup) {
+  if (!nativeMainProfile) throw new Error('Runtime warm diagnostic requires the actual native main profile')
+  const { cleanupComputerUseAfterTurn } = await import('../../../src/utils/computerUse/cleanup')
+  await cleanupComputerUseAfterTurn({ getAppState: store.getState, setAppState: store.setState })
+}
+if (input.nativeMain) {
+  const lite = await storage.getSessionFilesLite(storage.getProjectDir(home))
+  resumePicker = (await storage.enrichLogs(lite, 0, 10)).logs
+  if (input.pickerSelection) {
+    // ResumeConversation.onSelect passes the selected lite LogOption directly
+    // to this original loader. Observe that exact consumer on this process's
+    // own saved file, before a subsequent ordinary headless SID activation.
+    const selected = (resumePicker as any[]).find(log => log.sessionId === input.sid)
+    if (!selected) throw new Error('Actual resume picker did not contain the owned session')
+    pickerSelection = encode({ selected, result: await recovery.loadConversationForResume(selected, undefined) })
+  }
+}
 await runHeadless((async function* () {
+  if (input.sdkPrelude) {
+    const prelude = Array.isArray(input.sdkPrelude) ? input.sdkPrelude : [input.sdkPrelude]
+    if (!nativeMainProfile || input.warmCleanup || prelude.some(message => message.type !== 'user')) throw new Error('A normal prior SDK turn requires the actual native main profile')
+    for (const message of prelude) yield JSON.stringify(message) + '\n'
+    await preludeResult
+  }
   for (const message of input.sdk)
     yield JSON.stringify(message) + '\n'
-})(), () => store.getState(), store.setState, [], [], {}, [], { resume: input.continue ? undefined : input.sid, continue: input.continue, resumeSessionAt: input.resumeAt || undefined, verbose: true, outputFormat: 'stream-json', jsonSchema: undefined, permissionPromptToolName: undefined, allowedTools: [], thinkingConfig: { type: 'disabled' }, maxTurns: 1, maxBudgetUsd: undefined, taskBudget: undefined, systemPrompt: 'original custom system', appendSystemPrompt: undefined, userSpecifiedModel: input.model, fallbackModel: undefined, teleport: undefined, sdkUrl: undefined, replayUserMessages: true, includePartialMessages: true, forkSession: input.forkSession, rewindFiles: undefined, enableAuthStatus: false, agent: undefined, workload: undefined })
+})(), () => store.getState(), store.setState, commands, [], {}, agents, { resume: input.continue ? undefined : input.sid, continue: input.continue, resumeSessionAt: input.resumeAt || undefined, verbose: true, outputFormat: 'stream-json', jsonSchema: undefined, permissionPromptToolName: undefined, allowedTools: [], thinkingConfig: { type: 'disabled' }, maxTurns: 1, maxBudgetUsd: undefined, taskBudget: undefined, systemPrompt: 'original custom system', appendSystemPrompt: undefined, userSpecifiedModel: input.model, fallbackModel: undefined, teleport: undefined, sdkUrl: undefined, replayUserMessages: true, includePartialMessages: true, forkSession: input.forkSession, rewindFiles: undefined, enableAuthStatus: false, agent: undefined, workload: undefined })

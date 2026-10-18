@@ -27,6 +27,7 @@ func TestActualPublicDoctorSubcommandScreenDismissAndCancelPhysicalPTY(t *testin
 	defer cancel()
 	binary := filepath.Join(root, "actual-public-doctor-go-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-mod=readonly", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if output, e := build.CombinedOutput(); e != nil {
 		t.Fatal(e, string(output))
 	}
@@ -39,7 +40,7 @@ func TestActualPublicDoctorSubcommandScreenDismissAndCancelPhysicalPTY(t *testin
 				t.Fatal(e)
 			}
 			var model, requests, cancelled atomic.Int32
-			provider := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			provider := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 				model.Add(1)
 				t.Error("no MCP public Doctor must not call provider", r.URL.Path)
 				w.WriteHeader(500)
@@ -60,6 +61,7 @@ func TestActualPublicDoctorSubcommandScreenDismissAndCancelPhysicalPTY(t *testin
 			defer releases.Close()
 			process := exec.CommandContext(ctx, "/usr/bin/python3", "testdata/doctor_public.py", binary, home, dismiss)
 			process.Env = append(resumeErrorEnv(home, root, provider.URL), "CC_HAHA_CLI_RELEASE_API="+releases.URL, "ENABLE_PID_BASED_VERSION_LOCKING=true", "TERM=xterm-256color")
+			capturePublicGoCoverage(t, process)
 			output, e := process.CombinedOutput()
 			if e != nil || !bytes.Contains(output, []byte(`"restored": true`)) {
 				t.Fatal("actual public Doctor PTY", e, string(output))

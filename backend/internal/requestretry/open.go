@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/NanmiCoder/cc-haha/backend/internal/attachments"
+	"github.com/NanmiCoder/cc-haha/backend/internal/bootstrapstate"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/messages"
 	"math"
@@ -67,6 +68,10 @@ type NativeOpenIOFactory interface {
 }
 
 type Dependencies struct {
+	NativeParentClientState *bootstrapstate.NativeParentClientState
+	// ObserveOpenFailure receives the final failed Open result before UI
+	// presentation. It cannot change that error or the attempted request.
+	ObserveOpenFailure        func(error)
 	NativeThinkingSummaryBeta func(*cooperative.Scope, string) (*bool, error)
 	NativeRetryEnvironment    map[string]string
 	NativeFastModeProof       *cooperative.NativeFastModeRequest
@@ -88,12 +93,15 @@ type Dependencies struct {
 	NativeGrokOAuth  *provider.GrokOAuthConfig
 	// NativeWebSource is supplied only by the actual owner-bound Web tool model
 	// consumer; an arbitrary auxiliary querySource cannot unlock admission.
-	NativeWebSource          string
-	NativePromptHookSource   *cooperative.NativePromptHookModels
-	NativeAgentHookSource    *cooperative.NativeAgentHookModels
-	NativeInsightsSource     *cooperative.NativeInsightsModels
-	NativeSideQuestionSource *cooperative.NativeSideQuestionModels
-	NativeAutoDreamSource    *cooperative.NativeAutoDreamModels
+	NativeWebSource              string
+	NativePromptHookSource       *cooperative.NativePromptHookModels
+	NativeAgentHookSource        *cooperative.NativeAgentHookModels
+	NativeInsightsSource         *cooperative.NativeInsightsModels
+	NativeRemoteTitleSource      *cooperative.NativeRemoteTitleModels
+	NativeSideQuestionSource     *cooperative.NativeSideQuestionModels
+	NativeAutoDreamSource        *cooperative.NativeAutoDreamModels
+	NativePromptSuggestionSource *cooperative.NativeSideQuestionModels
+	NativeAgentSummarySource     *cooperative.NativeSideQuestionModels
 	// StreamOwner/StreamScope bind the current admitted model stack. They carry
 	// no prepared inputs and must be refreshed for every original ASK.
 	StreamOwner *cooperative.Owner
@@ -128,9 +136,19 @@ type Dependencies struct {
 	// PromptSnapshot only observes the actual prepared request; it must not await disk.
 	PromptSnapshot   func(json.RawMessage)
 	ObserveRequest   func(string, http.Header, json.RawMessage)
+	ObserveFetch     func(tracecapture.FetchInput)
 	ObserveFailure   func(error)
 	Trace            *tracecapture.Service
 	TraceEnvironment map[string]string
+}
+
+// NativeKeepAliveDisable returns the concrete host factory's captured-process
+// policy effect. Legacy finite fresh-connection fixtures have no shared pool.
+func (deps Dependencies) NativeKeepAliveDisable() func() error {
+	if native, ok := deps.NativeOpenIO.(interface{ NativeKeepAliveDisable() func() error }); ok {
+		return native.NativeKeepAliveDisable()
+	}
+	return nil
 }
 
 // The physical direct-env-key slice includes headless and original bare
@@ -138,7 +156,7 @@ type Dependencies struct {
 // textual tool history. Credential sources outside the finite profile stop.
 // The distinct component views are derived from these original, validated names.
 var environment = map[string]bool{
-	"ANTHROPIC_BASE_URL": true, "ANTHROPIC_API_KEY": true, "API_TIMEOUT_MS": true,
+	"ANTHROPIC_BASE_URL": true, "ANTHROPIC_API_KEY": true, "ANTHROPIC_CUSTOM_HEADERS": true, "API_TIMEOUT_MS": true,
 	"CLAUDE_CODE_EXTRA_METADATA": true, "CLAUDE_CODE_MAX_RETRIES": true, "CLAUDE_CODE_DISABLE_FAST_MODE": true,
 	"CLAUDE_CODE_SIMPLE": true,
 }
@@ -170,6 +188,14 @@ func validated(input Input, deps Dependencies) error {
 		return deps.NativeCloudError
 	}
 	native := input.Context.Host.Profile == requestcontext.NativeDirectRelayProfile
+	if deps.NativeParentClientState != nil {
+		if !native || !deps.NativeParentClientState.Owns(deps.StreamOwner) {
+			return cooperative.ErrRestricted
+		}
+		if _, err := deps.NativeParentClientState.SessionID(deps.StreamScope); err != nil {
+			return err
+		}
+	}
 	compact := native && input.Context.Options.QuerySource == "compact" && deps.NativeCompactSource.Owns(deps.StreamOwner)
 	if deps.APIAttemptBudget != nil && (!compact || deps.StreamScope == nil || !deps.StreamScope.BelongsTo(deps.StreamOwner)) {
 		return cooperative.ErrRestricted
@@ -221,7 +247,8 @@ func validated(input Input, deps Dependencies) error {
 	if simple, present := input.Context.Host.Env["CLAUDE_CODE_SIMPLE"]; present && simple != "1" && !native {
 		return unsupported("original bare environment value")
 	}
-	if !input.Context.Options.IsNonInteractiveSession && input.Context.Host.Env["CLAUDE_CODE_SIMPLE"] != "1" {
+	remoteTitle := native && deps.NativeRemoteTitleSource.AcceptsPurpose(input.Context.Options.QuerySource) && deps.NativeRemoteTitleSource.Owns(deps.StreamOwner) && deps.StreamScope.BelongsTo(deps.StreamOwner)
+	if !input.Context.Options.IsNonInteractiveSession && input.Context.Host.Env["CLAUDE_CODE_SIMPLE"] != "1" && !remoteTitle {
 		return unsupported("non-bare interactive approval/credential lifecycle")
 	}
 	if input.Auth.FlagSettingsPath != "" || len(bytes.TrimSpace(input.Auth.FlagSettingsInline)) > 0 && !bytes.Equal(bytes.TrimSpace(input.Auth.FlagSettingsInline), []byte("null")) {
@@ -265,10 +292,13 @@ func validated(input Input, deps Dependencies) error {
 			hook := native && querySource == "hook_prompt" && deps.NativePromptHookSource.Owns(deps.StreamOwner)
 			agentHook := native && querySource == "hook_agent" && deps.NativeAgentHookSource.Owns(deps.StreamOwner)
 			insights := native && querySource == "insights" && deps.NativeInsightsSource.Owns(deps.StreamOwner)
+			remoteTitle := native && deps.NativeRemoteTitleSource.AcceptsPurpose(querySource) && deps.NativeRemoteTitleSource.Owns(deps.StreamOwner)
 			sideQuestion := native && querySource == "side_question" && deps.NativeSideQuestionSource.Owns(deps.StreamOwner)
 			autoDream := native && querySource == "auto_dream" && deps.NativeAutoDreamSource.Current(deps.StreamScope)
+			promptSuggestion := native && querySource == "prompt_suggestion" && deps.NativePromptSuggestionSource.Current(deps.StreamScope)
+			agentSummary := native && querySource == "agent_summary" && deps.NativeAgentSummarySource.Current(deps.StreamScope)
 			entry := input.Context.Host.Env[name]
-			if ((entry != "sdk" && entry != "sdk-cli" && (!native || entry != "cli" && !(entry == "mcp" && (web || child && querySource == "workflow_agent")) && !(entry == "claude-desktop" && deps.NativeClaudeAuth.Owns(deps.StreamOwner, deps.StreamScope)))) || input.Context.Options.QuerySource != "sdk" && !child && !web && !hook && !agentHook && !insights && !sideQuestion && !autoDream) && !compact {
+			if ((entry != "sdk" && entry != "sdk-cli" && (!native || entry != "cli" && !(entry == "mcp" && (web || child && querySource == "workflow_agent")) && !(entry == "claude-desktop" && deps.NativeClaudeAuth.Owns(deps.StreamOwner, deps.StreamScope)))) || input.Context.Options.QuerySource != "sdk" && !child && !web && !hook && !agentHook && !insights && !remoteTitle && !sideQuestion && !autoDream && !promptSuggestion && !agentSummary) && !compact {
 				return unsupported("original runtime entrypoint value")
 			}
 			continue
@@ -276,7 +306,8 @@ func validated(input Input, deps Dependencies) error {
 		if !environment[name] && !tlsEnvironment[name] && !(native && (requestcontext.IsNativePolicyEnvironment(name) || input.Context.Host.NativeBedrockBound && requestcontext.IsNativeBedrockEnvironment(name) || input.Context.Host.NativeVertexBound && requestcontext.IsNativeVertexEnvironment(name) || provider.IsNativeProxyEnvironment(name) || name == "CLAUDE_CODE_SIMPLE" || input.Context.Host.NativeCodexOAuth != nil && IsOpenAIClientEnvironment(name) || input.Context.Host.NativeGrokOAuth != nil && IsGrokClientEnvironment(name))) {
 			return unsupported("original environment " + name)
 		}
-		if tlsEnvironment[name] && !isHTTPS(input) && input.Context.Host.NativeCodexOAuth == nil && input.Context.Host.NativeGrokOAuth == nil && input.Context.Host.Env[name] != "" {
+		boundClaudeTLS := native && input.Context.Host.NativeClaudeSubscriber && deps.NativeClaudeAuth.Owns(deps.StreamOwner, deps.StreamScope) && deps.TLSState != nil
+		if tlsEnvironment[name] && !isHTTPS(input) && input.Context.Host.NativeCodexOAuth == nil && input.Context.Host.NativeGrokOAuth == nil && !boundClaudeTLS && input.Context.Host.Env[name] != "" {
 			return unsupported("original TLS options on an HTTP target")
 		}
 	}
@@ -299,6 +330,11 @@ func validated(input Input, deps Dependencies) error {
 				return unsupported("retained attachment payload")
 			}
 			switch payload.String("type") {
+			case "diagnostics":
+				if !native {
+					return unsupported("native LSP diagnostic attachment renderer")
+				}
+				continue
 			case "teammate_mailbox":
 				if !native {
 					return unsupported("native teammate-mailbox attachment renderer")
@@ -314,7 +350,7 @@ func validated(input Input, deps Dependencies) error {
 					return unsupported("original plan attachment renderer bindings")
 				}
 				continue
-			case "auto_mode", "auto_mode_exit", "invoked_skills", "skill_listing", "deferred_tools_delta", "workflow_keyword_request", "ultra_effort_enter", "ultra_effort_exit":
+			case "auto_mode", "auto_mode_exit", "invoked_skills", "skill_listing", "deferred_tools_delta", "workflow_keyword_request", "ultra_effort_enter", "ultra_effort_exit", "companion_intro":
 				// Prepare owns actual renderer coercion and typed malformed-drop
 				// behavior. Never accept Source-rendered replacement history here.
 				continue
@@ -485,7 +521,12 @@ func resolveOriginalEnvKey(input Input) (*string, error) {
 	return &key, nil
 }
 
-func Open(ctx context.Context, input Input, deps Dependencies) (*provider.RawMessageStream, error) {
+func Open(ctx context.Context, input Input, deps Dependencies) (stream *provider.RawMessageStream, failure error) {
+	defer func() {
+		if failure != nil && deps.ObserveOpenFailure != nil {
+			deps.ObserveOpenFailure(failure)
+		}
+	}()
 	return openMessages(ctx, input, deps, nil)
 }
 
@@ -657,12 +698,21 @@ func openMessages(ctx context.Context, input Input, deps Dependencies, fallback 
 			return deps.NativeAuthHelper.clear()
 		}
 	}
+	callbacks.DisableKeepAlive = deps.NativeKeepAliveDisable()
 	return retrypolicy.RunAttempts(ctx, options, host, callbacks, func(client *provider.Anthropic, attempt float64, retry *retrypolicy.RetryContext) (*provider.RawMessageStream, error) {
 		if deps.OnAttempt != nil {
 			deps.OnAttempt(attempt)
 		}
 		result := firstResult
 		firstResult = nil
+		if deps.NativeParentClientState != nil {
+			if err := preparation.RefreshNativeParentMetadataOnOwner(deps.StreamScope, deps.NativeParentClientState); err != nil {
+				return nil, err
+			}
+			// Source samples metadata again after GetClient for the physical
+			// attempt. History/schema preparation remains once per query.
+			result = nil
+		}
 		if result == nil {
 			var err error
 			result, err = preparation.BuildAttempt(requestcontext.AttemptOptions{Model: retry.Model, MaxTokensOverride: retry.MaxTokensOverride, FastMode: retry.FastMode})

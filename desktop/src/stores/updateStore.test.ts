@@ -26,6 +26,10 @@ function installElectronUpdateHost() {
     ...browserHost,
     kind: 'electron',
     isDesktop: true,
+    app: {
+      ...browserHost.app,
+      getVersion: vi.fn().mockResolvedValue('0.1.0'),
+    },
     capabilities: {
       ...browserHost.capabilities,
       updates: true,
@@ -138,6 +142,10 @@ describe('updateStore', () => {
       ...browserHost,
       kind: 'electron',
       isDesktop: true,
+      app: {
+        ...browserHost.app,
+        getVersion: vi.fn().mockResolvedValue('0.1.0'),
+      },
       capabilities: {
         ...browserHost.capabilities,
         updates: true,
@@ -716,6 +724,10 @@ describe('updateStore', () => {
         ...browserHost,
         kind: 'electron',
         isDesktop: true,
+        app: {
+          ...browserHost.app,
+          getVersion: vi.fn().mockResolvedValue('0.1.0'),
+        },
         capabilities: {
           ...browserHost.capabilities,
           updates: true,

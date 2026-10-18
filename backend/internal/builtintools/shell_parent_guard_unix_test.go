@@ -34,6 +34,7 @@ func TestShellParentGuardMatchesFrozenMainScriptAndPreservesWaitArgsExit(t *test
 	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", `wait; printf '%s\n' "$1"; exit 3`, "target-shell", "unchanged literal; $argument")
 	cmd.Env = []string{"PATH=/usr/bin:/bin", "HOME=" + t.TempDir()}
 	configureShellProcess(cmd)
+	capturePublicGoCoverage(t, cmd)
 	output, err := cmd.CombinedOutput()
 	var exit *exec.ExitError
 	if !errors.As(err, &exit) || exit.ExitCode() != 3 || string(output) != "unchanged literal; $argument\n" || ctx.Err() != nil {
@@ -58,6 +59,7 @@ func TestGoShellGuardRuntimeFixture(t *testing.T) {
 	cmd.Env = []string{"PATH=/usr/bin:/bin", "HOME=" + home}
 	cmd.Stdout = file
 	configureShellProcess(cmd)
+	capturePublicGoCoverage(t, cmd)
 	if err = cmd.Start(); err != nil {
 		t.Fatal(err)
 	}
@@ -75,6 +77,7 @@ func TestShellGuardReapsProcessGroupAfterActualGoRuntimeSIGKILL(t *testing.T) {
 	}
 	runtime := exec.Command(binary, "-test.run=^TestGoShellGuardRuntimeFixture$")
 	runtime.Env = []string{"PATH=/usr/bin:/bin", "HOME=" + home, "USERPROFILE=" + home, "CLAUDE_CONFIG_DIR=" + filepath.Join(home, "config"), "TMPDIR=" + home, "CC_HAHA_NATIVE_SHELL_CRASH_FIXTURE=1"}
+	capturePublicGoCoverage(t, runtime)
 	if err = runtime.Start(); err != nil {
 		t.Fatal(err)
 	}

@@ -6,6 +6,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 )
 
@@ -25,6 +26,11 @@ type NativeHTTP1Reservation struct {
 	cancel    context.CancelFunc
 	closeOnce sync.Once
 	closeErr  error
+	pool      *NativeHTTP1Pool
+	poolKey   nativeHTTP1PoolKey
+	poolReuse bool
+	complete  bool
+	reusable  bool
 }
 
 func NewNativeHTTP1Reservation(ctx context.Context, authority string, wire []byte, headerLimit int) (*NativeHTTP1Reservation, error) {
@@ -170,6 +176,15 @@ func (reservation *NativeHTTP1Reservation) AdoptResponse(request *http.Request) 
 	if err != nil {
 		return nil, err
 	}
+	reservation.mu.Lock()
+	requestClose, method := false, ""
+	if request != nil {
+		requestClose = request.Close || nativeHTTP1ConnectionClose(request.Header.Get("Connection"))
+		method = request.Method
+	}
+	reservation.reusable = !response.Close && !requestClose && response.ProtoMajor == 1 && response.ProtoMinor == 1
+	reservation.complete = method == http.MethodHead || response.StatusCode == http.StatusNoContent || response.StatusCode == http.StatusNotModified || response.Body == http.NoBody || response.ContentLength == 0
+	reservation.mu.Unlock()
 	response.Body = &nativeReservedBody{ReadCloser: response.Body, reservation: reservation}
 	return response, nil
 }
@@ -182,12 +197,24 @@ func (reservation *NativeHTTP1Reservation) Close() error {
 		reservation.mu.Lock()
 		reservation.closed = true
 		operation := reservation.operation
+		eligible := reservation.complete && reservation.reusable && reservation.failure == nil && reservation.poolReuse
 		reservation.mu.Unlock()
 		reservation.announce()
-		if operation != nil {
+		// A response that overlaps a still-active writer cannot become idle.
+		// Preserve cancellation of a blocked physical write before joining it.
+		select {
+		case <-reservation.done:
+		default:
+			eligible = false
+		}
+		if operation != nil && (!eligible || reservation.pool == nil) {
 			reservation.closeErr = operation.Close()
 		}
 		<-reservation.done
+		retained := reservation.pool != nil && reservation.pool.release(reservation, operation, eligible)
+		if operation != nil && !retained {
+			reservation.closeErr = operation.Close()
+		}
 	})
 	return reservation.closeErr
 }
@@ -195,6 +222,31 @@ func (reservation *NativeHTTP1Reservation) Close() error {
 type nativeReservedBody struct {
 	io.ReadCloser
 	reservation *NativeHTTP1Reservation
+}
+
+func (body *nativeReservedBody) Read(out []byte) (int, error) {
+	body.reservation.mu.Lock()
+	closed := body.reservation.closed
+	body.reservation.mu.Unlock()
+	if closed {
+		return 0, net.ErrClosed
+	}
+	count, err := body.ReadCloser.Read(out)
+	if err == io.EOF {
+		body.reservation.mu.Lock()
+		body.reservation.complete = true
+		body.reservation.mu.Unlock()
+	}
+	return count, err
+}
+
+func nativeHTTP1ConnectionClose(value string) bool {
+	for _, token := range strings.Split(value, ",") {
+		if strings.EqualFold(strings.TrimSpace(token), "close") {
+			return true
+		}
+	}
+	return false
 }
 
 func (body *nativeReservedBody) Close() error { return body.reservation.Close() }

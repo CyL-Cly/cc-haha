@@ -18,6 +18,12 @@ import (
 func TestPublicCLIContextCommandUsesActualCounterThenSameCanonicalHarness(t *testing.T) {
 	var counts, inferences atomic.Int32
 	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		body, _ := io.ReadAll(r.Body)
 		if r.URL.Path == "/v1/messages/count_tokens" {
 			counts.Add(1)

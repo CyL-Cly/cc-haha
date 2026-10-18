@@ -138,6 +138,12 @@ func (s *Service) Start() {
 	}
 	s.started = true
 	s.mu.Unlock()
+	// The owned lifetime also ends a blocked reader. A transport loop may
+	// return on cancellation without reaching a protocol permanent-close frame.
+	s.spawn(func() {
+		<-s.ctx.Done()
+		_ = s.input.Close()
+	})
 	if s.ccr != nil {
 		s.spawn(func() { s.ccr.initialize() })
 	}

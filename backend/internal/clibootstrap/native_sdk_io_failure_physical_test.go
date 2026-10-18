@@ -3,6 +3,7 @@ package clibootstrap
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
@@ -74,10 +75,13 @@ func TestActualSDKTransportFaultClosesNativeRuntimeAndPreservesAdmittedWork(t *t
 				defer reader.Close()
 				defer writer.Close()
 			}
-			var resultCount, rejectedAssistant atomic.Int32
+			var resultCount, successfulResultCount, finalAssistantCount, rejectedAssistant atomic.Int32
+			var emittedFrames []json.RawMessage
+			var sdkPhases []string
 			var diagnostics bytes.Buffer
 			disabled := false
-			m, err := NewMainPrint(MainPrintOptions{Arguments: PrintArguments{ComputerUse: &disabled, Model: "fixture-model", PermissionMode: "default", AllowedTools: []string{"Read", "Write"}, MaxTurns: 100400, Sources: DefaultState()}, Native: f.n, PID: os.Getpid(), Version: "fixture", Platform: "darwin", Input: input, Output: io.Discard, Error: &diagnostics, OnOutput: func(data []byte) error {
+			m, err := NewMainPrint(MainPrintOptions{Arguments: PrintArguments{ComputerUse: &disabled, Model: "fixture-model", PermissionMode: "default", AllowedTools: []string{"Read", "Write"}, MaxTurns: 100400, Sources: DefaultState()}, Native: f.n, PID: os.Getpid(), Version: "fixture", Platform: "darwin", Input: input, Output: io.Discard, Error: &diagnostics, OnSDKPhase: func(phase string) { sdkPhases = append(sdkPhases, phase) }, OnOutput: func(data []byte) error {
+				emittedFrames = append(emittedFrames, append(json.RawMessage(nil), data...))
 				var frame protocol.JSONObject
 				if err := frame.UnmarshalJSON(data); err != nil {
 					return err
@@ -86,8 +90,14 @@ func TestActualSDKTransportFaultClosesNativeRuntimeAndPreservesAdmittedWork(t *t
 					rejectedAssistant.Add(1)
 					return fault
 				}
+				if frame.String("type") == "assistant" && bytes.Contains(data, []byte("ACTUAL_SDK_IO_TURN_FINISHED")) {
+					finalAssistantCount.Add(1)
+				}
 				if frame.String("type") == "result" {
 					resultCount.Add(1)
+					if frame.String("subtype") == "success" && string(frame.Get("is_error")) == "false" && frame.String("result") == "ACTUAL_SDK_IO_TURN_FINISHED" {
+						successfulResultCount.Add(1)
+					}
 					if writer != nil {
 						_ = writer.CloseWithError(fault)
 					}
@@ -126,8 +136,8 @@ func TestActualSDKTransportFaultClosesNativeRuntimeAndPreservesAdmittedWork(t *t
 				}
 			} else if scenario == "after-completed-read" {
 				wantCalls = 2
-				if resultCount.Load() != 1 {
-					t.Fatal("completed turn lost its SDK result before input failure")
+				if resultCount.Load() != 1 || successfulResultCount.Load() != 1 || finalAssistantCount.Load() != 1 {
+					t.Fatal("completed turn lost its successful SDK result/assistant before input failure", resultCount.Load(), successfulResultCount.Load(), finalAssistantCount.Load())
 				}
 			}
 			if calls.Load() != wantCalls {
@@ -143,7 +153,7 @@ func TestActualSDKTransportFaultClosesNativeRuntimeAndPreservesAdmittedWork(t *t
 					t.Fatal("transport failure polluted canonical history", err, string(data))
 				}
 				if scenario == "after-completed-read" && (!bytes.Contains(data, []byte(marker)) || !bytes.Contains(data, []byte("ACTUAL_SDK_IO_TURN_FINISHED"))) {
-					t.Fatal("physical completed turn disappeared during SDK failure cleanup", string(data))
+					t.Fatal("physical completed turn disappeared during SDK failure cleanup", string(data), "emitted SDK frames", string(rawMain(emittedFrames)), "diagnostics", diagnostics.String(), "SDK phases", sdkPhases)
 				}
 				if scenario == "assistant-consumer" && (!bytes.Contains(data, []byte("io-output-write")) || bytes.Contains(data, []byte(`"tool_use_id":"io-output-write"`))) {
 					t.Fatal("failed consumer lost accepted assistant or invented tool execution", string(data))

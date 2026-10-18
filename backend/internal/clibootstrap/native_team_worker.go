@@ -290,11 +290,11 @@ func (m *MainPrint) sendNativeTeamMessage(ctx context.Context, scope *cooperativ
 		}
 	}
 	if team != nil && team.mailbox == nil {
-		team.mailbox, err = teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.Environment["CLAUDE_CONFIG_DIR"], TaskStore: m.taskStore, Log: func(err error) { _, _ = fmt.Fprintln(m.options.Error, err) }})
+		team.mailbox, err = teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.ConfigHomeDirectory(), TaskStore: m.taskStore, Log: func(err error) { _, _ = fmt.Fprintln(m.options.Error, err) }})
 		if err != nil {
 			return nil, err
 		}
-		team.config, err = teamstore.NewConfig(teamstore.ConfigOptions{ConfigDir: m.options.Native.Environment["CLAUDE_CONFIG_DIR"], TaskStore: m.taskStore, PID: m.options.PID, Platform: m.options.Platform})
+		team.config, err = teamstore.NewConfig(teamstore.ConfigOptions{ConfigDir: m.options.Native.ConfigHomeDirectory(), TaskStore: m.taskStore, PID: m.options.PID, Platform: m.options.Platform})
 		if err != nil {
 			return nil, err
 		}
@@ -306,7 +306,7 @@ func (m *MainPrint) sendNativeTeamMessage(ctx context.Context, scope *cooperativ
 			return nil, mainCap("actual Team leader mailbox lifecycle")
 		}
 		if m.teamLeader.mailbox == nil {
-			m.teamLeader.mailbox, err = teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.Environment["CLAUDE_CONFIG_DIR"], TaskStore: m.taskStore, Log: func(err error) { _, _ = fmt.Fprintln(m.options.Error, err) }})
+			m.teamLeader.mailbox, err = teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.ConfigHomeDirectory(), TaskStore: m.taskStore, Log: func(err error) { _, _ = fmt.Fprintln(m.options.Error, err) }})
 			if err != nil {
 				return nil, err
 			}

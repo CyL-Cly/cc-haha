@@ -11,10 +11,14 @@ func (s *Service) GetSettingsWithSources() (protocol.JSONObject, error) {
 	if err := s.checkHostControls(); err != nil {
 		return protocol.JSONObject{}, err
 	}
+	return s.getSettingsWithSources()
+}
+
+func (s *Service) getSettingsWithSources() (protocol.JSONObject, error) {
 	s.options.SettingsState.ResetSettingsCache()
 	sources := []protocol.JSONObject{}
 	for _, name := range s.EnabledSettingSources() {
-		settings, err := s.GetSettingsForSource(name)
+		settings, err := s.getSource(name)
 		if err != nil {
 			return protocol.JSONObject{}, err
 		}
@@ -26,7 +30,7 @@ func (s *Service) GetSettingsWithSources() (protocol.JSONObject, error) {
 			sources = append(sources, protocol.NewJSONObject(protocol.JSONField{Name: "source", Value: quote(name)}, protocol.JSONField{Name: "settings", Value: data}))
 		}
 	}
-	effective, err := s.GetInitialSettings()
+	effective, err := s.getInitialSettings()
 	if err != nil {
 		return protocol.JSONObject{}, err
 	}

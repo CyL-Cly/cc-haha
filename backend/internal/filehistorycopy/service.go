@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
+	"github.com/NanmiCoder/cc-haha/backend/internal/filehistory"
 	"github.com/NanmiCoder/cc-haha/backend/internal/ownerasync"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"math"
@@ -147,6 +148,21 @@ func pathString(raw json.RawMessage, label string) (string, error) {
 	return value, nil
 }
 func (s *Service) Begin(scope *cooperative.Scope, log *Log) (*ownerasync.OwnerFuture[struct{}], error) {
+	return s.begin(scope, log, nil)
+}
+
+// BeginInteractive borrows the actual native checkpoint service. Its live
+// preference replaces only the headless environment opt-in in this caller.
+// The copy, captured old SID, native jobs and snapshot object identities are
+// the same producer used by Begin.
+func (s *Service) BeginInteractive(scope *cooperative.Scope, log *Log, checkpoints *filehistory.Service) (*ownerasync.OwnerFuture[struct{}], error) {
+	if s == nil || checkpoints == nil || !checkpoints.Owns(s.options.Owner) {
+		return nil, cooperative.ErrRestricted
+	}
+	return s.begin(scope, log, checkpoints.Enabled)
+}
+
+func (s *Service) begin(scope *cooperative.Scope, log *Log, interactive func(*cooperative.Scope) (bool, error)) (*ownerasync.OwnerFuture[struct{}], error) {
 	if s == nil || !scope.BelongsTo(s.options.Owner) {
 		return nil, cooperative.ErrRestricted
 	}
@@ -158,10 +174,18 @@ func (s *Service) Begin(scope *cooperative.Scope, log *Log) (*ownerasync.OwnerFu
 		if log == nil {
 			return &CapabilityError{"original log"}
 		}
-		if !s.options.NonInteractive() {
+		if interactive == nil && !s.options.NonInteractive() {
 			return &CapabilityError{"interactive global checkpoint setting"}
 		}
-		if !envTruthy(s.options.Environment("CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING")) || envTruthy(s.options.Environment("CLAUDE_CODE_DISABLE_FILE_CHECKPOINTING")) || log.Snapshots == nil || len(log.Messages) == 0 {
+		enabled := envTruthy(s.options.Environment("CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING")) && !envTruthy(s.options.Environment("CLAUDE_CODE_DISABLE_FILE_CHECKPOINTING"))
+		if interactive != nil {
+			var e error
+			enabled, e = interactive(next)
+			if e != nil {
+				return e
+			}
+		}
+		if !enabled || log.Snapshots == nil || len(log.Messages) == 0 {
 			return future.Resolve(next, struct{}{})
 		}
 		previous := log.Messages[len(log.Messages)-1].Get("sessionId")

@@ -27,6 +27,7 @@ func TestActualPublicCLIStartupFileErrorsInitOnlyAndRewindAgainstSource(t *testi
 	defer cancel()
 	binary := filepath.Join(root, "actual-file-flags-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-mod=readonly", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if out, e := build.CombinedOutput(); e != nil {
 		t.Fatal(e, string(out))
 	}

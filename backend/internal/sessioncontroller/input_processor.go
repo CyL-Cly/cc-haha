@@ -9,6 +9,8 @@ import (
 // ProcessedInput is the result of actual processUserInput, before Record/model
 // preparation. Nil LocalResult preserves ordinary input processing.
 type ProcessedInput struct {
+	TerminalLocalJSX   bool
+	TerminalRewindSkip bool
 	Messages           []protocol.JSONObject
 	LocalResult        *LocalInputResult
 	Model              string
@@ -22,7 +24,11 @@ type ProcessedInput struct {
 type LocalInputResult struct {
 	CompactHistory []protocol.JSONObject
 	Text           string
-	StartMillis    float64
+	// Local errors still produce the synthetic assistant from their stderr
+	// history message. The original caller leaves resultText undefined, which
+	// becomes an empty SDK result independently of that displayed message.
+	ResultText  *string
+	StartMillis float64
 }
 type InputProcessor struct {
 	NativeMedia         bool

@@ -5,7 +5,9 @@ import {SdkControlServerTransport} from '../../src/services/mcp/SdkControlTransp
 const name=process.argv[2]
 const transport=new SdkControlServerTransport(m=>process.stdout.write(JSON.stringify(m)+'\n'))
 let releaseHeld:any;const held=new Promise<void>(resolve=>releaseHeld=resolve)
-const server=new Server({name:'physical-'+name,version:'1'},{capabilities:{tools:{}}})
+// setupSdkMcpClients has an actual tools-only catalog even when an SDK peer
+// advertises prompts. Any invented prompts/list request changes the receipts.
+const server=new Server({name:'physical-'+name,version:'1'},{capabilities:{tools:{},prompts:{}}})
 server.setRequestHandler(ListToolsRequestSchema,async()=>({tools:[{name:'physical',inputSchema:{type:'object',properties:{text:{type:'string'}},required:['text']}}]}))
 server.setRequestHandler(CallToolRequestSchema,async(r:any)=>{if(r.params.arguments.text==='HELD_PHYSICAL_WRITE'){process.stderr.write('HELD\n');await held}
 fs.writeFileSync(process.env.HOME+'/'+name+'.txt',r.params.arguments.text,{mode:0o600});return {content:[{type:'text',text:fs.readFileSync(process.env.HOME+'/'+name+'.txt','utf8')}]}})

@@ -19,6 +19,12 @@ func TestPublicCLIHookInitialInputBeforeEmptyStdinAndSDKStream(t *testing.T) {
 		t.Run(mode, func(t *testing.T) {
 			var calls atomic.Int32
 			peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				// The original CLI init HEAD is distinct from model POSTs.
+				if r.Method == http.MethodHead {
+					w.WriteHeader(http.StatusNoContent)
+					return
+				}
+
 				body, _ := io.ReadAll(r.Body)
 				calls.Add(1)
 				if !bytes.Contains(body, []byte("ACTUAL_HOOK_INITIAL_A21")) || !bytes.Contains(body, []byte("ACTUAL_HOOK_CONTEXT_A21")) {

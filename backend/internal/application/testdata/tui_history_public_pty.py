@@ -1,4 +1,5 @@
 """Cold resume and main-screen presentation of the actual public Go CLI."""
+from public_cli_fixture import PrivateLoopbackHTTPServer, PrivatePublicCLINetwork
 import fcntl, http.server, json, os, pathlib, re, select, struct, subprocess, sys, termios, threading, time
 
 binary, root, mode = sys.argv[1:]
@@ -32,12 +33,14 @@ class ModelPeer(http.server.BaseHTTPRequestHandler):
   event('message_stop', {'type': 'message_stop'}); self.wfile.flush()
  def do_GET(self): self.send_response(500); self.end_headers()
  def log_message(self, *args): pass
-peer = http.server.ThreadingHTTPServer(('127.0.0.1', 0), ModelPeer)
+peer = PrivateLoopbackHTTPServer(('127.0.0.1', 0), ModelPeer)
 worker = threading.Thread(target=peer.serve_forever, daemon=True); worker.start()
 env = {'HOME': str(home), 'USERPROFILE': str(home), 'CLAUDE_CONFIG_DIR': str(config), 'TMPDIR': str(temp), 'CC_HAHA_NATIVE_FIXTURE_ROOT': str(root), 'PATH': '/usr/bin:/bin', 'SHELL': '/bin/bash', 'TERM': 'xterm-256color', 'TZ': 'UTC', 'USER': 'private-history-fixture', 'ANTHROPIC_API_KEY': 'fake-history-key', 'ANTHROPIC_BASE_URL': 'http://127.0.0.1:' + str(peer.server_address[1]), 'DISABLE_TELEMETRY': '1', 'CLAUDE_CODE_LOCAL_SKIP_REMOTE_PREFETCH': '1', 'CLAUDE_CODE_MAX_RETRIES': '0', 'CLAUDE_CODE_ATTRIBUTION_HEADER': '0'}
 if mode == 'fullscreen': env['CLAUDE_CODE_NO_FLICKER'] = '1'
 env['PATH'] = str(private_bin) + ':/usr/bin:/bin'
 args = [str(launcher), 'cli', '--app-root', str(root), '--system-prompt', 'private history presentation', '--model', 'fixture-model', '--tools', 'Read', '--thinking', 'disabled', '--no-computer-use']
+network = PrivatePublicCLINetwork(env)
+fixture_version = network.seed_startup(binary, env, work, config)
 master = slave = None; process = None
 try:
  seed = subprocess.run(args + ['--print', '--output-format', 'json', 'COLD_HISTORY_USER_MARKER'], cwd=work, env=env, capture_output=True, timeout=15)
@@ -75,6 +78,7 @@ try:
  for _ in range(4): pump()
  (root / 'terminal.raw').write_bytes(captured)
  state = json.loads((root / 'terminal-state.json').read_text())
+ network.assert_private()
  assert process.returncode == 0 and state['terminalRestored'], state
  assert len(requests) == 3 and read_observed == [True], (len(requests), read_observed)
  if mode == 'ordinary':
@@ -91,8 +95,9 @@ try:
  if mode == 'fullscreen':
   main = bytes(captured)[bytes(captured).rfind(b'\x1b[?1049l'):]
   assert hint in main and b'COLD_HISTORY_ASSISTANT_MARKER' not in main and b'NEW_HISTORY_ASSISTANT_MARKER' not in main, 'fullscreen shutdown invented a main-buffer transcript dump'
- print(json.dumps({'mode': mode, 'initialHistoryVisible': True, 'startupModelRequests': 0, 'startupCanonicalUnchanged': True, 'exitCode': process.returncode, 'terminalRestored': state['terminalRestored'], 'screenContractRetained': True, 'resumeHintOnMainBuffer': True, 'physicalRead': True, 'modelRequests': len(requests), 'keychainPrimitive': 'native_process_fixture unavailable', 'pidGone': process.poll() is not None, 'sessionID': sid}))
+ print(json.dumps({'mode': mode, 'initialHistoryVisible': True, 'startupModelRequests': 0, 'startupCanonicalUnchanged': True, 'exitCode': process.returncode, 'terminalRestored': state['terminalRestored'], 'screenContractRetained': True, 'resumeHintOnMainBuffer': True, 'physicalRead': True, 'unownedNetworkAttempts': len(network.attempts), 'fixtureVersion': fixture_version, 'modelRequests': len(requests), 'keychainPrimitive': 'native_process_fixture unavailable', 'pidGone': process.poll() is not None, 'sessionID': sid}))
 finally:
  if process is not None and process.poll() is None: process.kill(); process.wait()
  if master is not None: os.close(master); os.close(slave)
  peer.shutdown(); peer.server_close(); worker.join()
+ network.close()

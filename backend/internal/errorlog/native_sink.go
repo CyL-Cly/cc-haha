@@ -54,6 +54,20 @@ type NativeSink struct {
 }
 
 func NewNativeSink(o NativeSinkOptions) (*NativeSink, error) {
+	return newNativeSink(o, nil)
+}
+
+// NewAndAttachNativeSink is initializeErrorLogSink's actual ordering: retain
+// the first sink and flush queued errors before emitting initialization debug.
+// NewNativeSink keeps its existing standalone constructor semantics.
+func NewAndAttachNativeSink(o NativeSinkOptions, service *Service) (*NativeSink, error) {
+	if service == nil {
+		return nil, errors.New("native error sink requires its process error service")
+	}
+	return newNativeSink(o, service)
+}
+
+func newNativeSink(o NativeSinkOptions, service *Service) (*NativeSink, error) {
 	if o.Files == nil || o.Metadata == nil || o.Now == nil {
 		return nil, errors.New("native error sink requires actual files, metadata and clock")
 	}
@@ -69,7 +83,15 @@ func NewNativeSink(o NativeSinkOptions) (*NativeSink, error) {
 		}
 	}
 	sink.minDebug = strings.ToLower(protocol.TrimJavaScriptString(m.Environment["CLAUDE_CODE_DEBUG_LOG_LEVEL"]))
+	if service != nil {
+		service.Attach(sink.Write)
+	}
 	if e := sink.debugLog("Error log sink initialized", "DEBUG"); e != nil {
+		if service != nil {
+			// Attach has retained this sink already. The caller must retain its
+			// resource handle even when the following debug append fails.
+			return sink, e
+		}
 		return nil, e
 	}
 	return sink, nil

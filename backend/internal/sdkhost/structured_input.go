@@ -12,7 +12,7 @@ import (
 
 // PlainStructuredInput ports StructuredIO.read's actual initial split,
 // for-await raw blocks, splitAndProcess delegation and async processLine.
-// Session controls, environment updates, prepend/remote IO and consumer Return
+// Session controls, environment updates, prepend/remote IO
 // remain explicit capabilities. Original bytes are parsed here, not supplied as
 // a pre-resolved Source message or an expected phase schedule.
 type PlainStructuredInput struct {
@@ -31,6 +31,7 @@ type PlainStructuredInput struct {
 	sandboxReplay          bool
 	owner                  *cooperative.Owner
 	raw                    *OwnerIterator[string]
+	rawActive              bool
 	read                   *OwnerIterator[protocol.JSONObject]
 	content                string
 	diagnostics            *diagnostics.Process
@@ -57,10 +58,7 @@ func NewPlainStructuredInputWithDiagnostics(owner *cooperative.Owner, raw *Owner
 		return nil, cooperative.ErrRestricted
 	}
 	input := &PlainStructuredInput{owner: owner, raw: raw, diagnostics: sink}
-	read, err := NewOwnerIterator(owner, func(scope *cooperative.Scope, iterator *OwnerIterator[protocol.JSONObject], request IteratorRequest[protocol.JSONObject]) error {
-		if request.Returning {
-			return cap("StructuredIO consumer return")
-		}
+	read, err := NewOwnerIterator(owner, func(scope *cooperative.Scope, iterator *OwnerIterator[protocol.JSONObject], _ IteratorRequest[protocol.JSONObject]) error {
 		return input.split(scope, iterator)
 	})
 	input.read = read
@@ -78,7 +76,7 @@ func (input *PlainStructuredInput) split(scope *cooperative.Scope, read *OwnerIt
 	var step GeneratorContinuation[protocol.JSONObject]
 	step = func(scope *cooperative.Scope, iterator *OwnerIterator[protocol.JSONObject], request IteratorRequest[protocol.JSONObject]) error {
 		if request.Returning {
-			return cap("StructuredIO consumer return")
+			return iterator.CompleteReturn(scope)
 		}
 		if len(input.prepended) > 0 {
 			input.content = strings.Join(input.prepended, "") + input.content
@@ -118,13 +116,32 @@ func (input *PlainStructuredInput) split(scope *cooperative.Scope, read *OwnerIt
 	}
 	return read.Delegate(scope, split, IteratorRequest[protocol.JSONObject]{}, func(next *cooperative.Scope, _ IteratorResult[protocol.JSONObject], request IteratorRequest[protocol.JSONObject]) error {
 		if request.Returning {
-			return cap("StructuredIO consumer return")
+			return input.returnRead(next, read)
 		}
 		return input.nextRaw(next, read)
 	}, nil)
 }
 
+// returnRead completes the abrupt read Return. Only an active for-await loop
+// owns AsyncIteratorClose; the initial prepend delegate and final EOF yield do
+// not close raw. Closing awaits one raw return result, even when finally yields.
+// It never runs read's normal EOF permission/stream-close postlude.
+func (input *PlainStructuredInput) returnRead(scope *cooperative.Scope, read *OwnerIterator[protocol.JSONObject]) error {
+	if !input.rawActive {
+		return read.CompleteReturn(scope)
+	}
+	input.rawActive = false
+	closed, err := input.raw.ReturnUndefined(scope)
+	if err != nil {
+		return err
+	}
+	return AwaitGenerator(scope, read, closed, func(next *cooperative.Scope, _ IteratorResult[string]) error {
+		return read.CompleteReturn(next)
+	}, nil)
+}
+
 func (input *PlainStructuredInput) nextRaw(scope *cooperative.Scope, read *OwnerIterator[protocol.JSONObject]) error {
+	input.rawActive = true
 	pending, err := input.raw.Next(scope)
 	if err != nil {
 		return err
@@ -137,6 +154,7 @@ func (input *PlainStructuredInput) nextRaw(scope *cooperative.Scope, read *Owner
 			input.content += result.Value
 			return input.split(next, read)
 		}
+		input.rawActive = false
 		if input.content == "" {
 			if input.sandboxClose != nil {
 				if e := input.sandboxClose(next); e != nil {
@@ -162,7 +180,7 @@ func (input *PlainStructuredInput) nextRaw(scope *cooperative.Scope, read *Owner
 			}
 			return read.Yield(later, value.message, func(done *cooperative.Scope, iterator *OwnerIterator[protocol.JSONObject], request IteratorRequest[protocol.JSONObject]) error {
 				if request.Returning {
-					return cap("StructuredIO consumer return")
+					return iterator.CompleteReturn(done)
 				}
 				if input.sandboxClose != nil {
 					if e := input.sandboxClose(done); e != nil {

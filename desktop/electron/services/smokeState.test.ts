@@ -75,4 +75,43 @@ describe('Electron smoke state isolation', () => {
     expect(() => isolateElectronSmokeState(app, env)).toThrow('cache must stay inside')
     expect(app.setPath).not.toHaveBeenCalled()
   })
+
+  it('validates HOME/.claude when the config key is missing without adding it to the raw environment', () => {
+    const { app, env } = fixture()
+    const missing: NodeJS.ProcessEnv = { ...env }
+    delete missing.CLAUDE_CONFIG_DIR
+    const before = { ...missing }
+    Object.freeze(missing)
+    expect(isolateElectronSmokeState(app, missing)).toBe(true)
+    expect(app.setPath).toHaveBeenCalled()
+    expect(missing).toEqual(before)
+    expect(Object.prototype.hasOwnProperty.call(missing, 'CLAUDE_CONFIG_DIR')).toBe(false)
+  })
+
+  it.each(['', 'relative-config'])('rejects an explicitly present config value %j before any path mutation', value => {
+    const { app, env } = fixture()
+    const present = { ...env, CLAUDE_CONFIG_DIR: value }
+    const before = { ...present }
+    expect(() => isolateElectronSmokeState(app, present)).toThrow('CLAUDE_CONFIG_DIR must be an explicit absolute path')
+    expect(app.setPath).not.toHaveBeenCalled()
+    expect(app.commandLine.appendSwitch).not.toHaveBeenCalled()
+    expect(present).toEqual(before)
+  })
+
+  it('rejects a missing-config default .claude symlink escape without changing the raw environment', () => {
+    const { root, app, env } = fixture()
+    const outside = mkdtempSync(path.join(os.tmpdir(), 'electron-default-config-escape-'))
+    roots.push(outside)
+    mkdirSync(path.join(root, 'home'), { mode: 0o700 })
+    symlinkSync(outside, path.join(root, 'home', '.claude'), process.platform === 'win32' ? 'junction' : 'dir')
+    const missing: NodeJS.ProcessEnv = { ...env }
+    delete missing.CLAUDE_CONFIG_DIR
+    const before = { ...missing }
+    Object.freeze(missing)
+    expect(() => isolateElectronSmokeState(app, missing)).toThrow('CLAUDE_CONFIG_DIR must stay inside the smoke state root')
+    expect(app.setPath).not.toHaveBeenCalled()
+    expect(app.commandLine.appendSwitch).not.toHaveBeenCalled()
+    expect(missing).toEqual(before)
+    expect(Object.prototype.hasOwnProperty.call(missing, 'CLAUDE_CONFIG_DIR')).toBe(false)
+  })
 })

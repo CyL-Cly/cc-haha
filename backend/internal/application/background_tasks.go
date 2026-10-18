@@ -15,13 +15,35 @@ func (d *DesktopSession) stopBackgroundTask(ctx context.Context, id string) erro
 		d.emit(frame("background_task_stop_failed", field("taskId", id), field("message", "Background task id is required")))
 		return nil
 	}
-	result, e := d.currentEngine().process.StopBackgroundTask(ctx, id)
+	engine := d.currentEngine()
+	result, e := engine.process.StopBackgroundTask(ctx, id)
 	if e != nil {
 		d.emit(frame("background_task_stop_failed", field("taskId", id), field("message", e.Error())))
 		return nil
 	}
 	if string(result.Get("ok")) != "true" {
 		d.emit(frame("background_task_stop_failed", field("taskId", id), protocol.JSONField{Name: "message", Value: result.Get("message")}))
+		return nil
+	}
+	// A nil Handle error also represents a reported failed control. Only this
+	// actual successful owner result may confirm the exact task's stop.
+	d.mu.Lock()
+	current := !d.closed && d.engine == engine
+	claimed := current && d.onBackgroundTaskStopped != nil
+	var persist func()
+	if claimed {
+		// Claim only while the actual engine identity is locked. The callback
+		// performs no persistence, output, owner command or application call.
+		persist = d.onBackgroundTaskStopped(id, string(result.Get("alreadyGone")) == "true")
+	}
+	d.mu.Unlock()
+	if claimed {
+		if persist != nil {
+			persist()
+		}
+		return nil
+	}
+	if !current {
 		return nil
 	}
 	if string(result.Get("alreadyGone")) == "true" {

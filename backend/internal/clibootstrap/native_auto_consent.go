@@ -16,16 +16,19 @@ type NativeAutoConsent struct {
 
 func (m *MainPrint) TerminalAutoConsent(ctx context.Context) (*NativeAutoConsent, error) {
 	var result *NativeAutoConsent
-	err := m.Owner.Run(ctx, func(scope *cooperative.Scope) error {
-		if err := scope.Inline(cooperative.Read, func(*cooperative.Scope) error { return nil }); err != nil {
-			return err
-		}
+	// REPL mounts this read after the actual pane inbox effect may already
+	// have started its model continuation. Observing pending consent is not a
+	// second ASK, and must remain readable while that continuation is parked.
+	receipt, err := m.Owner.SubmitIndependent(ctx, cooperative.Read, func(scope *cooperative.Scope) error {
 		if m.nativeAutoConsent != nil {
 			copy := *m.nativeAutoConsent
 			result = &copy
 		}
 		return nil
 	})
+	if err == nil {
+		err = receipt.Wait()
+	}
 	return result, err
 }
 

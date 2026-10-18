@@ -22,6 +22,13 @@ func WithThinkingSummaryBeta(values []string, enabled bool) []string {
 // Interactive is the CLI runtime's global mode, independent of a side query's
 // request-level isNonInteractiveSession option.
 func NativeThinkingSummaryBeta(model string, env map[string]string, interactive bool, settings protocol.JSONObject) bool {
+	return NativeModelThinkingSummaryBeta(model, env, interactive, settings, false)
+}
+
+// Model validation calls getModelBetas even when getMergedBetas skips a custom
+// relay. Its first-party defaults therefore consume the actual subscriber
+// identity, while ordinary relay turns retain the getMergedBetas shortcut.
+func NativeModelThinkingSummaryBeta(model string, env map[string]string, interactive bool, settings protocol.JSONObject, subscriber bool) bool {
 	if !interactive || string(settings.Get("showThinkingSummaries")) == "true" || envTrue(env["CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS"]) {
 		return false
 	}
@@ -29,11 +36,12 @@ func NativeThinkingSummaryBeta(model string, env map[string]string, interactive 
 		return false
 	}
 	foundry := envTrue(env["CLAUDE_CODE_USE_FOUNDRY"])
-	if !foundry && nativeCustomBetaRelay(env) {
+	customRelay := nativeCustomBetaRelay(env)
+	if !foundry && customRelay && !subscriber {
 		return false
 	}
 	isp, present := nativeCapability(Context{Options: Options{Model: model}, Host: Host{Env: env}}, "interleaved_thinking")
-	if !foundry {
+	if !foundry && !customRelay {
 		// The official first-party provider ignores 3P tier capability overrides.
 		present = false
 	}

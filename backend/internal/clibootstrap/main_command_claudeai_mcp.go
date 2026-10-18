@@ -104,6 +104,7 @@ func (m *MainCommand) newClaudeAIMCP(ctx context.Context, externalHTTP *http.Cli
 	cached, loaded := (*openaiauth.Value)(nil), false
 	invalidateMemo := func() {
 		cached, loaded = nil, false
+		m.commandClaudeTokens = nil
 		if m.mcpClaudeAuth != nil {
 			m.mcpClaudeAuth.claudeTokens, m.mcpClaudeAuth.claudeTokensLoaded = nil, false
 		}
@@ -119,6 +120,12 @@ func (m *MainCommand) newClaudeAIMCP(ctx context.Context, externalHTTP *http.Cli
 				var err error
 				auth := m.mcpClaudeAuth
 				tokens, err = auth.claudeTokensFor(context.WithValue(ctx, nativeOpenAIAuthScopeKey{}, scope), auth.main.nativeOpenAIEnvironment(), envTruthyNative(auth.main.nativeOpenAIEnvironment()["CLAUDE_CODE_SIMPLE"]))
+				return err
+			}
+			if !clear && m.ownsNativeCommandFactory() {
+				var err error
+				tokens, err = m.nativeCommandClaudeTokens(ctx, scope)
+				cached, loaded = tokens, err == nil
 				return err
 			}
 			if !clear && loaded {
@@ -147,6 +154,9 @@ func (m *MainCommand) newClaudeAIMCP(ctx context.Context, externalHTTP *http.Cli
 				tokens = openaiauth.ClaudeTokensFromSecure(raw)
 			}
 			cached, loaded = tokens, true
+			if m.ownsNativeCommandFactory() {
+				m.commandClaudeTokens = &nativeCommandClaudeTokenMemo{store: m.Secure, tokens: tokens}
+			}
 			if m.mcpClaudeAuth != nil {
 				m.mcpClaudeAuth.claudeTokens, m.mcpClaudeAuth.claudeTokensLoaded = tokens, true
 			}

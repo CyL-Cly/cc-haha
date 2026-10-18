@@ -52,6 +52,7 @@ func TestActualSourceSandboxInitializationFailureDoesNotAbortHostAndCanRetry(t *
 	f.write(t, path, `{"sandbox":{"enabled":true,"allowUnsandboxedCommands":false,"filesystem":{"allowWrite":["null\u0000path"]}}}`)
 	disabled := false
 	var terminal bytes.Buffer
+	seedNativeReleaseWarmFixture(t, f, "fixture")
 	m, e := NewMainPrint(MainPrintOptions{Arguments: PrintArguments{ComputerUse: &disabled, Model: "fixture-model", MaxTurns: 100, Tools: []string{"Bash"}, Thinking: requestcontext.Thinking{Type: "disabled"}, Sources: DefaultState()}, Native: f.n, PID: os.Getpid(), Version: "fixture", Platform: "darwin", Interactive: true, Input: strings.NewReader(""), Output: io.Discard, Error: &terminal})
 	if e != nil {
 		t.Fatal(e)

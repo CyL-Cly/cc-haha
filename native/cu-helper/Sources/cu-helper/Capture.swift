@@ -35,7 +35,9 @@
 import CoreGraphics
 import Foundation
 import ImageIO
-import ScreenCaptureKit
+// Older macOS SDKs do not annotate shareable-content snapshots as Sendable.
+// Capture remains main-actor isolated, matching the existing stream bridge.
+@preconcurrency import ScreenCaptureKit
 import UniformTypeIdentifiers
 
 enum WindowShotCaptureSource: String, Equatable, Sendable {

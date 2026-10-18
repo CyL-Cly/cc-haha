@@ -23,12 +23,16 @@ func runAutoModeCommand(ctx context.Context, args []string, parsed *cliargs.Pars
 }
 
 func runNativeAutoModeCommand(ctx context.Context, args []string, parsed *cliargs.Parsed, native *clibootstrap.NativeBoundary, out, stderr io.Writer) int {
-	m, err := clibootstrap.NewMainCommand(clibootstrap.MainCommandOptions{Arguments: args, Native: native, Platform: runtime.GOOS, Version: version, PID: os.Getpid(), NonInteractive: true, Output: out, Error: stderr})
+	m, err := clibootstrap.NewMainCommand(clibootstrap.MainCommandOptions{Context: ctx, Arguments: args, Native: native, Platform: runtime.GOOS, Version: version, PID: os.Getpid(), NonInteractive: true, Output: out, Error: stderr})
 	if err != nil {
 		fmt.Fprintln(stderr, err)
 		return 1
 	}
 	defer m.Close()
+	if err := m.BeginNativeAPIPreconnect(ctx); err != nil {
+		fmt.Fprintln(stderr, err)
+		return 1
+	}
 	model, _ := parsed.Options["model"].(string)
 	code := 1
 	err = m.Run(ctx, func(scope *cooperative.Scope) error {

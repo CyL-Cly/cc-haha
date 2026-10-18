@@ -68,6 +68,10 @@ export function renderMarkdownReport(report: QualityGateReport) {
     '',
   ]
 
+  if (report.scopeExclusions?.length) {
+    lines.push(`- User-requested scope exclusions: ${report.scopeExclusions.join(', ')}`, '')
+  }
+
   if (report.impact) {
     lines.push(`- Changed files: ${report.impact.changedFiles ?? 'unknown'}`)
     lines.push(`- Areas: ${report.impact.areas.length ? report.impact.areas.join(', ') : 'none'}`)

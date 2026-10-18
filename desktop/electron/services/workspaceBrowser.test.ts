@@ -653,39 +653,23 @@ describe('Electron workspace browser service', () => {
     ])
   })
 
-  it('captures the viewport natively and the full page over CDP', async () => {
+  it('captures the viewport natively and emits the exact screenshot event', async () => {
     const harness = createHarness()
 
     await harness.open('tab-a', { storageId: 'store-a' })
     const webContents = requireGuest(harness, 0)
-    webContents.debugger = {
-      isAttached: vi.fn(() => false),
-      attach: vi.fn(),
-      detach: vi.fn(),
-      sendCommand: vi.fn(async (method: string) => {
-        if (method === 'Page.getLayoutMetrics') {
-          return { cssContentSize: { x: 0, y: 0, width: 1280, height: 3200 } }
-        }
-        return { data: 'FULL' }
-      }),
-    }
     harness.events.length = 0
 
     await harness.service.capture('tab-a', 'viewport')
-    await harness.service.capture('tab-a', 'full')
 
+    expect(webContents.capturePage).toHaveBeenCalledTimes(1)
+    expect(webContents.capturePage).toHaveBeenCalledWith()
     expect(harness.events).toEqual([
       {
         type: 'screenshot',
         tabId: 'tab-a',
         dataUrl: 'data:image/png;base64,VIEWPORT',
         kind: 'viewport',
-      },
-      {
-        type: 'screenshot',
-        tabId: 'tab-a',
-        dataUrl: 'data:image/png;base64,FULL',
-        kind: 'full',
       },
     ])
   })

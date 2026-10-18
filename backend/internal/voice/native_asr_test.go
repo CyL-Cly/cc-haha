@@ -15,8 +15,26 @@ func TestActualSourceAndGoNativeWorkerTranscribeSameSpeech(t *testing.T) {
 	if root == "" || executable == "" {
 		t.Skip("separate pinned local ASR evidence; no network in deterministic checks")
 	}
+	testActualNativeSpeech(t, root, executable, "en", "voice.wav")
+}
+
+func TestActualSourceAndGoNativeWorkerTranscribeOfficialLanguageSamples(t *testing.T) {
+	root := os.Getenv("CC_HAHA_VOICE_NATIVE_ASR_ROOT")
+	executable := os.Getenv("CC_HAHA_VOICE_NATIVE_ASR_EXECUTABLE")
+	if root == "" || executable == "" {
+		t.Skip("separate pinned local ASR evidence; no network in deterministic checks")
+	}
+	for _, language := range []string{"zh", "en", "ja", "ko", "yue"} {
+		t.Run(language, func(t *testing.T) {
+			testActualNativeSpeech(t, root, executable, language, language+".wav")
+		})
+	}
+}
+
+func testActualNativeSpeech(t *testing.T, root, executable, language, filename string) {
+	t.Helper()
 	config := WorkerConfig{RuntimeRoot: filepath.Join(root, "native-runtime"), Model: filepath.Join(root, "model.int8.onnx"), Tokens: filepath.Join(root, "tokens.txt"), VAD: filepath.Join(root, "silero_vad.onnx"), Threads: 2, MaxAudioBytes: MaxAudioBytes, VADThreshold: 0.5, MinSilenceSeconds: 0.5, MinSpeechSeconds: 0.25, SegmentSeconds: 30}
-	out := sourceVoice(t, "native-voice-native-asr.fixture.ts", map[string]any{"config": config, "wavPath": filepath.Join(root, "voice.wav")}, map[string]string{"CC_HAHA_VOICE_NATIVE_ASR_FIXTURE": "1"})
+	out := sourceVoice(t, "native-voice-native-asr.fixture.ts", map[string]any{"config": config, "wavPath": filepath.Join(root, filename), "language": language}, map[string]string{"CC_HAHA_VOICE_NATIVE_ASR_FIXTURE": "1"})
 	var source struct{ Result Transcript }
 	if e := json.Unmarshal(out, &source); e != nil {
 		t.Fatal(e)
@@ -28,11 +46,11 @@ func TestActualSourceAndGoNativeWorkerTranscribeSameSpeech(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	wav, e := os.ReadFile(filepath.Join(root, "voice.wav"))
+	wav, e := os.ReadFile(filepath.Join(root, filename))
 	if e != nil {
 		t.Fatal(e)
 	}
-	result, e := recognizer.Transcribe(ctx, wav, "en")
+	result, e := recognizer.Transcribe(ctx, wav, language)
 	if e != nil {
 		t.Fatal(e)
 	}

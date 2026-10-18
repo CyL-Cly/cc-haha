@@ -22,12 +22,16 @@ func runPluginCommand(ctx context.Context, args []string, parsed *cliargs.Parsed
 	return runNativePluginCommand(ctx, args, parsed, native, os.Stdout, os.Stderr)
 }
 func runNativePluginCommand(ctx context.Context, args []string, parsed *cliargs.Parsed, native *clibootstrap.NativeBoundary, out, diagnostics io.Writer) int {
-	command, err := clibootstrap.NewMainCommand(clibootstrap.MainCommandOptions{Arguments: args, Native: native, Platform: runtime.GOOS, PID: os.Getpid(), Version: version, NonInteractive: true, Output: out, Error: diagnostics})
+	command, err := clibootstrap.NewMainCommand(clibootstrap.MainCommandOptions{Context: ctx, Arguments: args, Native: native, Platform: runtime.GOOS, PID: os.Getpid(), Version: version, NonInteractive: true, Output: out, Error: diagnostics})
 	if err != nil {
 		fmt.Fprintln(diagnostics, err)
 		return 1
 	}
 	defer command.Close()
+	if err := command.BeginNativeAPIPreconnect(ctx); err != nil {
+		fmt.Fprintln(diagnostics, err)
+		return 1
+	}
 	action := strings.TrimPrefix(parsed.Path, "claude plugin ")
 	action = strings.ReplaceAll(action, " ", "-")
 	input := plugincli.Command{Action: action, JSON: parsed.Options["json"] == true, Available: parsed.Options["available"] == true, Cowork: parsed.Options["cowork"] == true, All: parsed.Options["all"] == true, KeepData: parsed.Options["keepData"] == true}

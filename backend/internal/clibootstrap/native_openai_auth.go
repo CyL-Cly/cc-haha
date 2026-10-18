@@ -28,13 +28,14 @@ func nativeOpenAIAuthOwnerFailure(err error) error {
 // NativeOpenAIAuth holds one CLI storage/cache producer. Each method receives
 // the current owner scope; no scope from an earlier request is retained.
 type NativeOpenAIAuth struct {
-	main                *MainPrint
-	service             *openaiauth.Service
-	claudeTokens        *openaiauth.Value
-	claudeTokensLoaded  bool
-	legacyAPIKeyLoaded  bool
-	legacyAPIKey        string
-	legacyAPIKeyPresent bool
+	main                       *MainPrint
+	service                    *openaiauth.Service
+	claudeTokens               *openaiauth.Value
+	claudeTokensLoaded         bool
+	lastCredentialsMtimeMillis float64
+	legacyAPIKeyLoaded         bool
+	legacyAPIKey               string
+	legacyAPIKeyPresent        bool
 }
 type nativeOpenAIAuthScopeKey struct{}
 

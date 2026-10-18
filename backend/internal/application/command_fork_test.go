@@ -20,6 +20,12 @@ func TestPublicNativeForkKeepsOriginalAndResumesIndependentConversation(t *testi
 	var mu sync.Mutex
 	var requests []json.RawMessage
 	provider := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		body, _ := io.ReadAll(r.Body)
 		mu.Lock()
 		requests = append(requests, body)

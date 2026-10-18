@@ -27,6 +27,7 @@ func TestActualPublicCLIJSONCollectionAndEarlyValidationStderr(t *testing.T) {
 	defer cancel()
 	binary := filepath.Join(root, "actual-public-json-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if raw, err := build.CombinedOutput(); err != nil {
 		t.Fatal(err, string(raw))
 	}
@@ -52,7 +53,7 @@ func TestActualPublicCLIJSONCollectionAndEarlyValidationStderr(t *testing.T) {
 			}
 			config := filepath.Join(home, ".claude")
 			var calls atomic.Int32
-			peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			peer := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 				_, _ = io.Copy(io.Discard, r.Body)
 				calls.Add(1)
 				jsonSchemaCLIResponse(w, "actual-verbose-json-response", "", nil, "ACTUAL_PUBLIC_VERBOSE_JSON_DONE")
@@ -66,6 +67,7 @@ func TestActualPublicCLIJSONCollectionAndEarlyValidationStderr(t *testing.T) {
 			command.Env = []string{"HOME=" + home, "USERPROFILE=" + home, "CLAUDE_CONFIG_DIR=" + config, "TMPDIR=" + tmp, "CC_HAHA_NATIVE_FIXTURE_ROOT=" + root, "PATH=" + os.Getenv("PATH"), "NODE_ENV=production", "USER_TYPE=external", "DISABLE_TELEMETRY=1", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1", "CLAUDE_CODE_LOCAL_SKIP_REMOTE_PREFETCH=1", "ANTHROPIC_API_KEY=private-verbose-fake", "ANTHROPIC_BASE_URL=" + peer.URL, "CLAUDE_CODE_MAX_RETRIES=0"}
 			var stdout, stderr bytes.Buffer
 			command.Stdout, command.Stderr = &stdout, &stderr
+			capturePublicGoCoverage(t, command)
 			err := command.Run()
 			if profile.stderr != "" {
 				var exit *exec.ExitError

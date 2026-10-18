@@ -35,7 +35,7 @@ func (m *MainPrint) nativeRequestTeamPlanApproval(scope *cooperative.Scope, plan
 	}
 	// The immutable leader and worker role both use the original physical store.
 	if m.teamLeader.mailbox == nil {
-		mailbox, e := teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.Environment["CLAUDE_CONFIG_DIR"], TaskStore: m.taskStore})
+		mailbox, e := teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.ConfigHomeDirectory(), TaskStore: m.taskStore})
 		err = e
 		m.teamLeader.mailbox = mailbox
 		if err != nil {

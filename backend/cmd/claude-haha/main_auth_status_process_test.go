@@ -30,11 +30,12 @@ func TestActualSourceAndPublicCLIAuthStatusInitializeAndOptOut(t *testing.T) {
 	defer cancel()
 	binary := filepath.Join(root, "actual-auth-status-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if out, err := build.CombinedOutput(); err != nil {
 		t.Fatal(err, string(out))
 	}
 	fixture, _ := filepath.Abs("../../testdata/native-sdk-initialize-options.fixture.ts")
-	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	peer := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 		jsonSchemaCLIResponse(w, "normal-resume-response", "", nil, "PUBLIC_RESUME_NORMAL_OK")
 	}))
 	defer peer.Close()
@@ -160,6 +161,7 @@ func runAuthStatusCLI(t *testing.T, cmd *exec.Cmd) (int, []byte, []byte) {
 	var stderr bytes.Buffer
 	cmd.Stdout = output
 	cmd.Stderr = &stderr
+	capturePublicGoCoverage(t, cmd)
 	if err = cmd.Start(); err != nil {
 		t.Fatal(err)
 	}

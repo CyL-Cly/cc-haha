@@ -79,12 +79,13 @@ func TestActualPublicCLIContinuePromptFilesAndNameReachOriginalSourceConsumer(t 
 	defer cancel()
 	binary := filepath.Join(root, "actual-go-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-mod=readonly", "-p=4", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if output, err := build.CombinedOutput(); err != nil {
 		t.Fatal(err, string(output))
 	}
 	var mu sync.Mutex
 	var requests []json.RawMessage
-	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	peer := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/v1/messages" {
 			http.Error(w, "unexpected", 404)
 			return
@@ -132,6 +133,7 @@ func TestActualPublicCLIContinuePromptFilesAndNameReachOriginalSourceConsumer(t 
 			source := exec.CommandContext(ctx, bun, "--no-env-file", fixture)
 			source.Dir = sourceHome
 			source.Env = append(resumeErrorEnv(sourceHome, root, "http://127.0.0.1:1"), "PATH=/usr/bin:/bin", "CC_HAHA_RESUME_ERROR_FIXTURE=1", "CC_HAHA_RESUME_ERROR_INPUT="+string(input))
+			capturePublicGoCoverage(t, source)
 			sourceOut, sourceErr := source.CombinedOutput()
 			if sourceErr != nil {
 				receipt, _ := os.ReadFile(filepath.Join(sourceHome, "source-resume-error-receipt.json"))
@@ -157,6 +159,7 @@ func TestActualPublicCLIContinuePromptFilesAndNameReachOriginalSourceConsumer(t 
 			command.Env = resumeErrorEnv(goHome, root, peer.URL)
 			var stdout, stderr bytes.Buffer
 			command.Stdout, command.Stderr = &stdout, &stderr
+			capturePublicGoCoverage(t, command)
 			if e = command.Run(); e != nil {
 				t.Fatal("actual Go public startup", e, stderr.String(), stdout.String())
 			}

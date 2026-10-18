@@ -56,6 +56,7 @@ func TestActualSourceOrdinaryMCPBashHintsFinalDataWhitespaceAndEarlyFailure(t *t
 		t.Fatal(e)
 	}
 	n.RunSecurity = func(context.Context, securestorage.Command) ([]byte, error) { return nil, os.ErrNotExist }
+	bindCommandPrefetchFixture(t, n)
 	main, e := NewMainCommand(MainCommandOptions{Arguments: []string{"mcp", "serve"}, Native: n, Platform: "darwin", Version: "fixture", PID: os.Getpid(), NonInteractive: true, Output: &bytes.Buffer{}, Error: &bytes.Buffer{}})
 	if e != nil {
 		t.Fatal(e)

@@ -14,6 +14,7 @@
     "appId": "com.claude-code-haha.desktop",
     "productName": "Claude Code Haha",
     "asar": true,
+    "afterPack": "./scripts/electron-signing-scope.ts",
     "asarUnpack": [
       "dist/**",
       "node_modules/node-pty/**",

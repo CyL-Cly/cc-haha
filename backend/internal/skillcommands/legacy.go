@@ -116,7 +116,7 @@ func transform(files []markdownFile) []markdownFile {
 	}
 	return out
 }
-func (s *Service) legacy(ctx context.Context, cwd string) ([]entry, error) {
+func (s *Service) legacy(ctx context.Context, cwd, configDirectory string) ([]entry, error) {
 	roots := []struct{ path, source string }{{filepath.Join(s.options.ManagedDir, ".claude", "commands"), "policySettings"}}
 	user, e := s.options.EnabledSource(ctx, "userSettings")
 	if e != nil {
@@ -127,7 +127,7 @@ func (s *Service) legacy(ctx context.Context, cwd string) ([]entry, error) {
 		return nil, e
 	}
 	if user {
-		roots = append(roots, struct{ path, source string }{filepath.Join(s.options.ConfigDir, "commands"), "userSettings"})
+		roots = append(roots, struct{ path, source string }{filepath.Join(configDirectory, "commands"), "userSettings"})
 	}
 	projectDirs := []string{}
 	for _, dir := range s.options.Roots.WalkProjectDirs(cwd) {

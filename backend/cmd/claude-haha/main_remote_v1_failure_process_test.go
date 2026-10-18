@@ -28,11 +28,12 @@ func TestActualSourceAndPublicSDKURLV1UnauthorizedPersistenceExitsAndCancelsRunt
 	defer cancel()
 	binary := filepath.Join(root, "public-v1-fatal-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-p=2", "-tags=native_process_fixture", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if data, err := build.CombinedOutput(); err != nil {
 		t.Fatal(err, string(data))
 	}
 	var modelCalls atomic.Int32
-	model := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	model := httptest.NewServer(nativeCLIModelHTTPHandler(t, func(w http.ResponseWriter, r *http.Request) {
 		_, _ = io.Copy(io.Discard, r.Body)
 		modelCalls.Add(1)
 		<-r.Context().Done()

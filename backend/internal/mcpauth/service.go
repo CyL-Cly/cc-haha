@@ -13,6 +13,7 @@ import (
 	"io"
 	mathrand "math/rand/v2"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -29,6 +30,8 @@ const FlowTimeout = 5 * time.Minute
 type Options struct {
 	Secure                         *securestorage.Store
 	Home, ConfigDir, CWD, Platform string
+	NativeConfigDirectory          func() string
+	MkdirAll                       func(string, os.FileMode) error
 	Environment                    map[string]string
 	HTTPClient                     *http.Client
 	Now                            func() time.Time
@@ -54,6 +57,9 @@ func New(o Options) (*Service, error) {
 	}
 	if o.Now == nil {
 		o.Now = time.Now
+	}
+	if o.MkdirAll == nil {
+		o.MkdirAll = os.MkdirAll
 	}
 	if o.Random == nil {
 		o.Random = rand.Reader

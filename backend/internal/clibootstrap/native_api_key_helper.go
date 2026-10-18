@@ -26,7 +26,7 @@ func (m *MainPrint) nativeConfiguredAPIKeyHelperJSON() (json.RawMessage, error) 
 	if envTruthyNative(m.nativeOpenAIEnvironment()["CLAUDE_CODE_SIMPLE"]) {
 		settings, err = m.Startup.GetSettingsForSource("flagSettings")
 	} else {
-		settings, err = m.Startup.GetInitialSettings()
+		settings, err = m.nativeSDKInitialSettings()
 	}
 	if err != nil || settings == nil {
 		return nil, err
@@ -121,7 +121,7 @@ func (m *MainPrint) nativeAuthHelperBinding(scope *cooperative.Scope) (*requestr
 			})
 		})
 	}
-	return requestretry.NewNativeAuthHelper(m.Owner, scope, func(_ context.Context, nonInteractive bool) (requestretry.NativeAuthHelperResult, error) {
+	return requestretry.NewNativeAuthHelper(m.Owner, scope, func(ctx context.Context, nonInteractive bool) (requestretry.NativeAuthHelperResult, error) {
 		nonInteractive = !m.options.Interactive
 		env := m.nativeOpenAIEnvironment()
 		command, err := m.nativeConfiguredAPIKeyHelper()
@@ -152,11 +152,15 @@ func (m *MainPrint) nativeAuthHelperBinding(scope *cooperative.Scope) (*requestr
 				}
 			}
 		}
+		value, source, err := m.openAIAuth.apiKeyWithSource(context.WithoutCancel(ctx), env, envTruthyNative(env["CLAUDE_CODE_SIMPLE"]), nonInteractive)
+		if err != nil {
+			return result, err
+		}
 		var key *string
-		if value := env["ANTHROPIC_API_KEY"]; value != "" {
-			key = &value
-		} else if command != "" {
+		if source == "apiKeyHelper" {
 			key = m.apiKeyHelper.Cached()
+		} else if source != "none" {
+			key = &value
 		}
 		result.Key, result.Token = key, token
 		return result, nil

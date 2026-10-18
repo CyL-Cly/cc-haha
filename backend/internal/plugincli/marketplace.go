@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/NanmiCoder/cc-haha/backend/internal/analytics"
 	"github.com/NanmiCoder/cc-haha/backend/internal/pluginsapi"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"net/url"
@@ -91,8 +92,19 @@ func fileErrno(err error) string {
 	return err.Error()
 }
 func RunMarketplace(ctx context.Context, c Command, manager *pluginsapi.MarketplaceManager, home, cwd, platform string, emit ...func(string) int) (Result, error) {
+	return RunMarketplaceWithAnalytics(ctx, c, manager, home, cwd, platform, nil, emit...)
+}
+
+// The actual parsed source and update count already belong to this operation.
+// Reporting does not perform another parse/read or await any telemetry HTTP.
+func RunMarketplaceWithAnalytics(ctx context.Context, c Command, manager *pluginsapi.MarketplaceManager, home, cwd, platform string, report func(analytics.Event), emit ...func(string) int) (Result, error) {
 	result := Result{}
 	var err error
+	event := func(name string, metadata protocol.JSONObject) {
+		if report != nil {
+			report(analytics.Event{Name: name, Metadata: metadata})
+		}
+	}
 	progress := func(message string) {
 		line := message + "\n"
 		result.Stdout += line
@@ -127,6 +139,11 @@ func RunMarketplace(ctx context.Context, c Command, manager *pluginsapi.Marketpl
 		var added pluginsapi.AddedMarketplace
 		added, err = manager.Add(ctx, *source, scope, progress)
 		if err == nil {
+			kind := source.String("source")
+			if kind == "github" {
+				kind = source.String("repo")
+			}
+			event("tengu_marketplace_added", record(field("source_type", kind)))
 			if added.AlreadyMaterialized {
 				progress(fmt.Sprintf("✔ Marketplace '%s' already on disk — declared in %s settings", added.Name, scope))
 			} else {
@@ -137,70 +154,12 @@ func RunMarketplace(ctx context.Context, c Command, manager *pluginsapi.Marketpl
 		var known protocol.JSONObject
 		known, err = manager.Known(ctx)
 		if err == nil {
-			names := []string{}
-			for _, property := range known.OwnProperties() {
-				var name string
-				_ = json.Unmarshal(property.NameJSON, &name)
-				names = append(names, name)
-			}
-			if c.JSON {
-				rows := []protocol.JSONObject{}
-				for _, name := range sortedKeys(known) {
-					entry := object(known.Get(name))
-					source := object(entry.Get("source"))
-					row := record(field("name", name))
-					if value := source.Get("source"); value != nil {
-						row.Set("source", value)
-					}
-					key := ""
-					switch source.String("source") {
-					case "github":
-						key = "repo"
-					case "git", "url":
-						key = "url"
-					case "directory", "file":
-						key = "path"
-					}
-					if key != "" {
-						row.Set(key, source.Get(key))
-					}
-					if value := entry.Get("installLocation"); value != nil {
-						row.Set("installLocation", value)
-					}
-					rows = append(rows, row)
-				}
-				progress(pretty(rows))
-			} else if len(names) == 0 {
-				progress("No marketplaces configured")
-			} else {
-				progress("Configured marketplaces:\n")
-				for _, name := range names {
-					entry := object(known.Get(name))
-					source := object(entry.Get("source"))
-					progress("  ❯ " + name)
-					label, key := "", ""
-					switch source.String("source") {
-					case "github":
-						label, key = "GitHub", "repo"
-					case "git":
-						label, key = "Git", "url"
-					case "url":
-						label, key = "URL", "url"
-					case "directory":
-						label, key = "Directory", "path"
-					case "file":
-						label, key = "File", "path"
-					}
-					if label != "" {
-						progress("    Source: " + label + " (" + source.String(key) + ")")
-					}
-					progress("")
-				}
-			}
+			result = FormatMarketplaceList(known, c.JSON, emit...)
 		}
 	case "marketplace-remove":
 		err = manager.Remove(ctx, c.Argument)
 		if err == nil {
+			event("tengu_marketplace_removed", record(field("marketplace_name", c.Argument)))
 			progress("✔ Successfully removed marketplace: " + c.Argument)
 		}
 	case "marketplace-update":
@@ -208,6 +167,7 @@ func RunMarketplace(ctx context.Context, c Command, manager *pluginsapi.Marketpl
 			progress("Updating marketplace: " + c.Argument + "...")
 			err = manager.Update(ctx, c.Argument, progress)
 			if err == nil {
+				event("tengu_marketplace_updated", record(field("marketplace_name", c.Argument)))
 				progress("✔ Successfully updated marketplace: " + c.Argument)
 			}
 		} else {
@@ -221,6 +181,7 @@ func RunMarketplace(ctx context.Context, c Command, manager *pluginsapi.Marketpl
 					progress(fmt.Sprintf("Updating %d marketplace(s)...", count))
 					err = manager.UpdateAll(ctx)
 					if err == nil {
+						event("tengu_marketplace_updated_all", record(field("count", count)))
 						progress(fmt.Sprintf("✔ Successfully updated %d marketplace(s)", count))
 					}
 				}
@@ -235,4 +196,78 @@ func RunMarketplace(ctx context.Context, c Command, manager *pluginsapi.Marketpl
 		result.ExitCode = 1
 	}
 	return result, nil
+}
+
+// FormatMarketplaceList projects already-loaded original configuration. The
+// caller owns the actual read/parse await and output transport separately.
+func FormatMarketplaceList(known protocol.JSONObject, jsonOutput bool, emit ...func(string) int) Result {
+	result := Result{}
+	progress := func(message string) {
+		line := message + "\n"
+		result.Stdout += line
+		if len(emit) > 0 && emit[0] != nil {
+			result.StreamedBytes += emit[0](line)
+		}
+	}
+	names := []string{}
+	for _, property := range known.OwnProperties() {
+		var name string
+		_ = json.Unmarshal(property.NameJSON, &name)
+		names = append(names, name)
+	}
+	if jsonOutput {
+		rows := []protocol.JSONObject{}
+		for _, name := range sortedKeys(known) {
+			entry := object(known.Get(name))
+			source := object(entry.Get("source"))
+			row := record(field("name", name))
+			if value := source.Get("source"); value != nil {
+				row.Set("source", value)
+			}
+			key := ""
+			switch source.String("source") {
+			case "github":
+				key = "repo"
+			case "git", "url":
+				key = "url"
+			case "directory", "file":
+				key = "path"
+			}
+			if key != "" {
+				row.Set(key, source.Get(key))
+			}
+			if value := entry.Get("installLocation"); value != nil {
+				row.Set("installLocation", value)
+			}
+			rows = append(rows, row)
+		}
+		progress(pretty(rows))
+	} else if len(names) == 0 {
+		progress("No marketplaces configured")
+	} else {
+		progress("Configured marketplaces:\n")
+		for _, name := range names {
+			entry := object(known.Get(name))
+			source := object(entry.Get("source"))
+			progress("  ❯ " + name)
+			label, key := "", ""
+			switch source.String("source") {
+			case "github":
+				label, key = "GitHub", "repo"
+			case "git":
+				label, key = "Git", "url"
+			case "url":
+				label, key = "URL", "url"
+			case "directory":
+				label, key = "Directory", "path"
+			case "file":
+				label, key = "File", "path"
+			}
+			if label != "" {
+				progress("    Source: " + label + " (" + source.String(key) + ")")
+			}
+			progress("")
+		}
+	}
+	return result
 }

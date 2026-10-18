@@ -18,6 +18,12 @@ func TestPublicCLIContextControlsReadSameNativeHistoryWithoutAdditionalInference
 	started := make(chan struct{}, 1)
 	allowModel := make(chan struct{})
 	provider := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		calls.Add(1)
 		started <- struct{}{}
 		select {

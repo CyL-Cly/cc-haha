@@ -41,7 +41,7 @@ func (m *MainPrint) nativeLeaderInboxOnOwner(ctx context.Context, scope *coopera
 		return false, context.Cause(ctx)
 	}
 	if m.teamLeader.mailbox == nil {
-		m.teamLeader.mailbox, err = teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.Environment["CLAUDE_CONFIG_DIR"], TaskStore: m.taskStore, Log: func(err error) { _, _ = fmt.Fprintln(m.options.Error, err) }})
+		m.teamLeader.mailbox, err = teamstore.NewMailbox(teamstore.MailboxOptions{ConfigDir: m.options.Native.ConfigHomeDirectory(), TaskStore: m.taskStore, Log: func(err error) { _, _ = fmt.Fprintln(m.options.Error, err) }})
 		if err != nil {
 			return false, err
 		}
@@ -66,6 +66,7 @@ func (m *MainPrint) nativeLeaderInboxOnOwner(ctx context.Context, scope *coopera
 			}
 			current.Set("teammates", rawMain(roster))
 			m.teamState.snapshot = current
+			m.publishTerminalTeamFooter(scope)
 		}
 	}
 	part := result.Partition

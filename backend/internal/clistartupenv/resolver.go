@@ -69,7 +69,7 @@ func (s *Service) getSource(source string) (*protocol.JSONObject, error) {
 		return s.options.Settings.GetEditableSource(source, "")
 	}
 	var result *protocol.JSONObject
-	if source == "policySettings" && s.options.Host.Profile == ResolvedPolicyReleaseProfile {
+	if source == "policySettings" && resolvedNativePolicyProfile(s.options.Host.Profile) {
 		var err error
 		result, err = s.options.Host.ResolvePolicy()
 		if err != nil {
@@ -111,6 +111,10 @@ func (s *Service) GetInitialSettings() (*protocol.JSONObject, error) {
 	if err := s.checkHostControls(); err != nil {
 		return nil, err
 	}
+	return s.getInitialSettings()
+}
+
+func (s *Service) getInitialSettings() (*protocol.JSONObject, error) {
 	if _, err := s.mergedEnv(); err != nil {
 		return nil, err
 	}
@@ -150,7 +154,7 @@ func (s *Service) mergedEnv() (json.RawMessage, error) {
 	seenErrors := map[string]bool{}
 	for _, source := range s.EnabledSettingSources() {
 		if source == "policySettings" {
-			if s.options.Host.Profile == ResolvedPolicyReleaseProfile {
+			if resolvedNativePolicyProfile(s.options.Host.Profile) {
 				policy, err := s.getSource(source)
 				if err != nil {
 					return nil, err

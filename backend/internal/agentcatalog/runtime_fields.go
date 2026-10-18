@@ -294,6 +294,32 @@ func (s *Service) Prompt(scope *cooperative.Scope, definition Definition, guide 
 // PromptJSON is the same owner-bound producer with a quoted request result.
 // Ordinary agents retain the existing prompt/memory path unchanged.
 func (s *Service) PromptJSON(scope *cooperative.Scope, definition Definition, guide agentbuiltinmetadata.GuideContext) (json.RawMessage, error) {
+	if definition.promptJSON != nil {
+		if err := s.check(scope); err != nil {
+			return nil, err
+		}
+		prompt := append(json.RawMessage(nil), definition.promptJSON...)
+		if definition.Memory == "" {
+			return prompt, nil
+		}
+		enabled, err := s.autoMemory(scope)
+		if err != nil || !enabled {
+			return prompt, err
+		}
+		if s.options.MemoryPrompt == nil {
+			return nil, cap("actual agent memory prompt producer")
+		}
+		memory, err := s.options.MemoryPrompt(scope, definition.Name, definition.Memory)
+		if err != nil {
+			return nil, err
+		}
+		units, err := protocol.DecodeJavaScriptJSONString(prompt)
+		if err != nil {
+			return nil, err
+		}
+		additional, _ := protocol.DecodeJavaScriptJSONString(quoteAgentPrompt("\n\n" + memory))
+		return protocol.QuoteJavaScriptUTF16(append(units, additional...)), nil
+	}
 	if definition.Source == "built-in" && definition.Name == "claude-code-guide" {
 		if err := s.check(scope); err != nil {
 			return nil, err

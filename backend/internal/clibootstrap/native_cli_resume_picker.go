@@ -61,7 +61,7 @@ func (p *CLIResumePicker) ReadResumePicker(ctx context.Context, reset *bool, cou
 	}
 	files := mainResumeFiles{n: p.n}
 	if reset != nil {
-		config := p.n.Environment["CLAUDE_CONFIG_DIR"]
+		config := p.n.ConfigHomeDirectory()
 		if config == "" {
 			config = filepath.Join(p.n.Home, ".claude")
 		}

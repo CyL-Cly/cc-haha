@@ -163,7 +163,7 @@ func (h *Host) queryAgentHookOnProducer(ctx context.Context, scope *cooperative.
 	}
 	deps := view.requestDependencies(scope)
 	deps.NativeAgentHookSource = h.nativeAgentHookModels
-	loop := queryloop.Host{Activity: h.options.Activity, Session: h.sessionAccounting, AgentContext: h.agentContext, StreamClock: h.streamClock, StreamPolicy: h.streamPolicy, SuccessDuration: &modelaccounting.SuccessDuration{NowMillis: h.options.NowMillis, GetPermission: h.options.Controller.SuccessPermissionOnOwner, Ignored: h.permissionRejections}, Request: deps,
+	loop := queryloop.Host{OnNativeQuota: h.nativeQuotaConsumer(), Activity: h.options.Activity, Session: h.sessionAccounting, AgentContext: h.agentContext, StreamClock: h.streamClock, StreamPolicy: h.streamPolicy, SuccessDuration: &modelaccounting.SuccessDuration{NowMillis: h.options.NowMillis, GetPermission: h.options.Controller.SuccessPermissionOnOwner, Ignored: h.permissionRejections}, Request: deps,
 		ResolvePreflight: func(ctx context.Context, round queryloop.Round) (queryloop.PreflightResult, error) {
 			model, e := view.skillMainModel(input.Model)
 			if e != nil {

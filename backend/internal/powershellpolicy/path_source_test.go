@@ -20,7 +20,10 @@ func ownedCanonical(path string) (string, bool, error) {
 	}
 }
 func TestActualSourcePowerShellPathNormalizationAndNativeCanonicalResolution(t *testing.T) {
-	home := t.TempDir()
+	home, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
 	work := filepath.Join(home, "work")
 	outside := filepath.Join(home, "outside")
 	for _, dir := range []string{work, outside} {

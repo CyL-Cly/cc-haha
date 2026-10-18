@@ -52,6 +52,7 @@ func authCommandFixture(t *testing.T, row map[string]any) *MainCommand {
 		}
 		return nil, errors.New("private keychain absent")
 	}
+	bindCommandPrefetchFixture(t, n)
 	if settings, ok := row["settings"]; ok {
 		agentsWrite(t, filepath.Join(env["CLAUDE_CONFIG_DIR"], "settings.json"), string(rawMain(settings)))
 	}
@@ -68,16 +69,16 @@ func authCommandFixture(t *testing.T, row map[string]any) *MainCommand {
 	if flag, ok := row["flagSettings"]; ok {
 		args = append([]string{"--settings", string(rawMain(flag))}, args...)
 	}
-	m, e := NewMainCommand(MainCommandOptions{Arguments: args, Native: n, Platform: "darwin", Version: "test", PID: os.Getpid(), NonInteractive: row["nonInteractive"] == true, Output: new(bytes.Buffer), Error: new(bytes.Buffer)})
-	if e != nil {
-		t.Fatal(e)
-	}
-	m.credentialDirectory = filepath.Join(tmp, "remote")
+	n.CCRCredentialDirectory = filepath.Join(tmp, "remote")
 	credentialFiles, _ := row["credentialFiles"].(map[string]string)
 	for filename, data := range credentialFiles {
 		if filename == ".oauth_token" || filename == ".api_key" {
-			agentsWrite(t, filepath.Join(m.credentialDirectory, filename), data)
+			agentsWrite(t, filepath.Join(n.CCRCredentialDirectory, filename), data)
 		}
+	}
+	m, e := NewMainCommand(MainCommandOptions{Arguments: args, Native: n, Platform: "darwin", Version: "test", PID: os.Getpid(), NonInteractive: row["nonInteractive"] == true, Output: new(bytes.Buffer), Error: new(bytes.Buffer)})
+	if e != nil {
+		t.Fatal(e)
 	}
 	t.Cleanup(m.Close)
 	return m

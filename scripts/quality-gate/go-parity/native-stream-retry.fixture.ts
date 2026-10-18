@@ -46,7 +46,7 @@ spyOn(globalThis, 'fetch').mockImplementation(async (url: any, init: any) => {
   return physicalFetch(url, init)
 })
 const yielded: unknown[] = []
-for await (const message of queryModelWithStreaming({
+const queryParams: Parameters<typeof queryModelWithStreaming>[0] = {
   messages: [{ type: 'user', uuid: 'original-user', message: { role: 'user', content: 'original' } }] as any,
   systemPrompt: asSystemPrompt([]), tools: [], thinkingConfig: { type: 'disabled' }, signal: new AbortController().signal,
   options: {
@@ -55,16 +55,35 @@ for await (const message of queryModelWithStreaming({
     agents: [], mcpTools: [], hasAppendSystemPrompt: false, getToolPermissionContext: async () => getEmptyToolPermissionContext(),
     fetchOverride: async (url, init) => {
       if (new URL(String(url)).origin !== origin.origin || init?.method !== 'POST') throw new Error('Stream retry escaped the exact fixture POST')
-      return fetch(url, init)
+      const pending = fetch(url, init)
+      if (input.poolHeadersReceipt === true && input.poolCutAfterMessageStart !== true) {
+        // The private fault producer closes only after actual fetch headers
+        // are fulfilled. This observes that Promise without awaiting the
+        // observer, replacing its identity, or adding a transport request.
+        void pending.then(response => {
+          if (response.headers.get('x-owned-stream-cutpoint') === 'headers') process.stderr.write('owned-stream-headers-ready\n')
+        }, () => {})
+      }
+      return pending
     },
   },
-})) {
+}
+for await (const message of queryModelWithStreaming(queryParams)) {
   // Frozen UUID/Date primitives make complete emitted fields comparable. Their
   // allocation and owner scheduling are covered by the separate demand tests.
   const record = JSON.parse(JSON.stringify(message))
   yielded.push(record)
+  if (input.poolHeadersReceipt === true && input.poolCutAfterMessageStart === true && record.type === 'stream_event' && record.event.type === 'message_start') process.stderr.write('owned-stream-message-start-ready\n')
   if (input.stopRecovery && record.type === 'system' && record.subtype === 'streaming_fallback') break
   if (input.stopAssistant && record.type === 'assistant') break
 }
+if (input.poolFollowup) {
+  const count = input.poolFollowup === true ? 1 : input.poolFollowup
+  if (!Number.isInteger(count) || count < 1 || count > 2) throw new Error('Owned pool followup must be one or two actual queries')
+  for (let index = 0; index < count; index++) {
+    for await (const _message of queryModelWithStreaming(queryParams)) { /* actual following query consumes the same process fetch policy */ }
+  }
+}
 if (capabilities.blocked.length) throw new Error('Stream retry left the isolated Source capabilities')
-process.stdout.write(JSON.stringify({ posts, yielded, sleeps, totals: { input: state.getTotalInputTokens(), output: state.getTotalOutputTokens() }, capabilities }))
+const { getProxyFetchOptions } = await import('../../../src/utils/proxy')
+process.stdout.write(JSON.stringify({ posts, yielded, sleeps, keepaliveDisabled: getProxyFetchOptions().keepalive === false, totals: { input: state.getTotalInputTokens(), output: state.getTotalOutputTokens() }, capabilities }))

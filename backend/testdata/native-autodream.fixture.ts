@@ -26,6 +26,7 @@ const { drainSdkEvents } = await import('../../src/utils/sdkEventQueue')
 const { getProjectDir } = await import('../../src/utils/sessionStorage')
 const { listCandidates } = await import('../../src/utils/listSessionsImpl')
 const transcript = getProjectDir(path.join(home, 'work'))
+if (input.nowOverride !== undefined) Date.now = () => input.nowOverride
 const now = Date.now()
 const lockFile = path.join(memory, '.consolidate-lock')
 const lockResults = []

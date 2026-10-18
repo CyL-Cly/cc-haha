@@ -51,7 +51,10 @@ beforeEach(async () => {
   clearTraceCaptureStateForTests()
 })
 
-afterEach(async () => {
+async function cleanupTraceCaptureFixture() {
+  // A final call row can be visible before its detached lifecycle event has
+  // finished appending/projecting. Keep its captured scope alive until then.
+  await drainTraceCaptureForTests()
   clearTraceCaptureStateForTests()
   if (originalConfigDir === undefined) {
     delete process.env.CLAUDE_CONFIG_DIR
@@ -64,9 +67,81 @@ afterEach(async () => {
     process.env.CC_HAHA_LOCAL_INDEX = originalLocalIndexMode
   }
   await fs.rm(tmpDir, { recursive: true, force: true })
-})
+}
+
+afterEach(cleanupTraceCaptureFixture)
 
 describe('trace capture service', () => {
+  test('joins a held lifecycle event before teardown removes its captured scope', async () => {
+    const root = tmpDir
+    const sessionId = 'session-held-teardown'
+    const filePath = path.join(root, 'cc-haha', 'traces', `${sessionId}.jsonl`)
+    let releaseWrite: () => void = () => {}
+    const heldWrite = new Promise<void>(resolve => { releaseWrite = resolve })
+    let enteredWrite: () => void = () => {}
+    const writeEntered = new Promise<void>(resolve => { enteredWrite = resolve })
+    setTraceAppendBeforeWriteHookForTests(async () => {
+      setTraceAppendBeforeWriteHookForTests(null)
+      enteredWrite()
+      await heldWrite
+    })
+    const event = traceCaptureService.recordEvent({
+      id: 'held-teardown-event',
+      sessionId,
+      phase: 'api_call_aborted',
+      severity: 'error',
+      message: 'private held event must finish before its scope is removed',
+    }).then(
+      () => ({ failure: undefined }),
+      failure => ({ failure }),
+    )
+    const originalRemove = fs.rm.bind(fs)
+    let removeStarted = false
+    let persistedBeforeRemove = ''
+    let readBeforeRemoveFailure: unknown
+    let restoreRemove: (() => void) | undefined
+    let cleanup: Promise<{ failure: unknown }> | undefined
+    try {
+      await writeEntered
+      const removeSpy = spyOn(fs, 'rm').mockImplementation(async (...args) => {
+        if (args[0] === root) {
+          removeStarted = true
+          try {
+            persistedBeforeRemove = await fs.readFile(filePath, 'utf8')
+          } catch (error) {
+            readBeforeRemoveFailure = error
+          }
+        }
+        return originalRemove(...args)
+      })
+      restoreRemove = () => removeSpy.mockRestore()
+      cleanup = cleanupTraceCaptureFixture().then(
+        () => ({ failure: undefined }),
+        failure => ({ failure }),
+      )
+      // The same real teardown has started, but its actual append is still
+      // held. This observes the synchronous removal prefix, not elapsed time.
+      const removedWhileWriteHeld = removeStarted
+      releaseWrite()
+      const eventResult = await event
+      const result = await cleanup
+      expect(removedWhileWriteHeld).toBe(false)
+      expect(eventResult.failure).toBeUndefined()
+      expect(result.failure).toBeUndefined()
+      expect(readBeforeRemoveFailure).toBeUndefined()
+      expect(persistedBeforeRemove).toContain('held-teardown-event')
+      await expect(fs.stat(root)).rejects.toMatchObject({ code: 'ENOENT' })
+    } finally {
+      releaseWrite()
+      try {
+        await event
+        await cleanup
+      } finally {
+        restoreRemove?.()
+      }
+    }
+  })
+
   test('reads legacy metadata without protocol summaries alongside additive diagnostic metadata', async () => {
     const common = {
       sessionId: 'protocol-metadata-upgrade', source: 'proxy' as const,
@@ -1090,7 +1165,8 @@ describe('trace capture service', () => {
 
       const trace = await waitForTrace(
         'session-direct-abort-bare',
-        (snapshot) => snapshot.calls[0]?.status === 'error',
+        (snapshot) => snapshot.calls[0]?.status === 'error'
+          && snapshot.events.some((event) => event.phase === 'api_call_aborted'),
       )
       expect(trace.calls[0].status).toBe('error')
       expect(trace.calls[0].error?.name).toBe('AbortError')

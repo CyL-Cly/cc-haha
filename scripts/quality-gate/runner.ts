@@ -6,6 +6,7 @@ import { executeDesktopSmoke } from './desktop-smoke/execute'
 import { lanesForMode } from './modes'
 import { executeProviderSmoke } from './provider-smoke/execute'
 import { writeReport } from './reporter'
+import { readScopeExclusions, scopeEnvironment, validateScopeExclusions } from './scope-exclusions'
 import type {
   CoverageSuiteSummary,
   ImpactSummary,
@@ -154,6 +155,7 @@ async function runCommandLane(lane: LaneDefinition, options: QualityGateOptions)
   const writeStderr = streamLogs ? (chunk: Buffer) => process.stderr.write(chunk) : () => {}
   const proc = Bun.spawn(command, {
     cwd: options.rootDir,
+    env: scopeEnvironment(process.env, options.scopeExclusions ?? []),
     stdout: 'pipe',
     stderr: 'pipe',
   })
@@ -460,7 +462,10 @@ function enforceBlockedImpact(
 }
 
 export async function runQualityGate(options: QualityGateOptions) {
-  return runQualityGateLanes(options, lanesForMode(options.mode, options.baselineTargets))
+  return runQualityGateLanes({
+    ...options,
+    scopeExclusions: options.scopeExclusions ?? readScopeExclusions(),
+  }, lanesForMode(options.mode, options.baselineTargets))
 }
 
 export async function runQualityGateLanes(
@@ -473,19 +478,24 @@ export async function runQualityGateLanes(
   const artifactsRoot = options.artifactsDir ?? join(options.rootDir, 'artifacts', 'quality-runs')
   const outputDir = join(artifactsRoot, runId)
   mkdirSync(outputDir, { recursive: true })
+  const scopeExclusions = validateScopeExclusions(options.scopeExclusions ?? [])
   const selectedLanes = filterLanesForOptions(lanes, options)
 
-  const runOptions = { ...options, runId, runOutputDir: outputDir }
+  const runOptions = { ...options, scopeExclusions, runId, runOutputDir: outputDir }
   const rawResults: LaneResult[] = []
   for (const lane of selectedLanes) {
     const result = await executeLane(lane, runOptions)
-    rawResults.push(withLaneMetadata(lane, result))
+    rawResults.push({
+      ...withLaneMetadata(lane, result),
+      ...(lane.id === 'native-checks' && scopeExclusions.length ? { scopeExclusions } : {}),
+    })
   }
   const releaseResults = enforceReleaseLiveLanes(options, selectedLanes, rawResults)
   const results = enforceBlockedImpact(options, releaseResults)
 
   const report: QualityGateReport = {
     schemaVersion: 1,
+    ...(scopeExclusions.length ? { scopeExclusions } : {}),
     runId,
     mode: options.mode,
     dryRun: options.dryRun,

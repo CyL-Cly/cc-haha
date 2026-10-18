@@ -47,6 +47,10 @@ func (s *Session) initialTUIHistory(ctx context.Context) ([]protocol.JSONObject,
 	if err := ctx.Err(); err != nil {
 		return nil, false, err
 	}
+	if s.terminalInteractive {
+		fullscreen, err := s.process.ReadTerminalFullscreen(ctx)
+		return records, fullscreen, err
+	}
 	fullscreen := tui.FullscreenEnabled(environment, func() (string, error) {
 		probeCtx, cancel := context.WithTimeout(ctx, 2*time.Second)
 		defer cancel()

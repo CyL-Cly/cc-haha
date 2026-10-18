@@ -21,6 +21,9 @@ export async function installClientFixtureCapabilities(home: string, options: {
   readonlyExternalFiles?: readonly string[]
   privateExecutableFiles?: readonly string[]
   approvedSpawn?: (request: ApprovedFixtureSpawn) => boolean
+  // The whole startup-prefetch fixture retains the original cache and getter.
+  // External Keychain operations remain subject to the subprocess guards.
+  originalSecureStorage?: boolean
 } = {}) {
   const root = resolve(fileURLToPath(new URL('../../../', import.meta.url)))
   const canonicalHome = fs.realpathSync(home), canonicalRoot = fs.realpathSync(root)
@@ -59,6 +62,11 @@ export async function installClientFixtureCapabilities(home: string, options: {
     throw new Error(`Client options fixture blocked ${operation}`)
   }
   const isAbsentRead = (value: unknown, operation: string, write: boolean) => {
+    if (value instanceof URL) {
+      if (value.protocol !== 'file:') return false
+      value = fileURLToPath(value)
+    }
+    if (Buffer.isBuffer(value)) value = value.toString()
     if (write || typeof value !== 'string' || !absent.has(resolve(value))) return false
     const path = resolve(value)
     absentReads.push({ operation, path })
@@ -207,11 +215,13 @@ export async function installClientFixtureCapabilities(home: string, options: {
   Bun.file = ((value: any, ...args: any[]) => inside(value) ? (bunFile as any)(value, ...args) : deny('filesystem:Bun.file')) as typeof Bun.file
   Bun.write = ((value: any, ...args: any[]) => inside(value, true) ? (bunWrite as any)(value, ...args) : deny('filesystem:Bun.write')) as typeof Bun.write
   syncBuiltinESMExports()
-  mock.module(resolve(root, 'src/utils/secureStorage/index.ts'), () => ({ getSecureStorage: () => ({
-    name: 'fixture-external-empty-credentials',
-    read: () => { secureReads.push('read'); return null },
-    readAsync: async () => { secureReads.push('readAsync'); return null },
-    update: () => deny('secure-storage:update'), delete: () => deny('secure-storage:delete'),
-  }) }))
+  if (!options.originalSecureStorage) {
+    mock.module(resolve(root, 'src/utils/secureStorage/index.ts'), () => ({ getSecureStorage: () => ({
+      name: 'fixture-external-empty-credentials',
+      read: () => { secureReads.push('read'); return null },
+      readAsync: async () => { secureReads.push('readAsync'); return null },
+      update: () => deny('secure-storage:update'), delete: () => deny('secure-storage:delete'),
+    }) }))
+  }
   return { blocked, secureReads, absentReads }
 }

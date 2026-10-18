@@ -64,7 +64,7 @@ func (m *NativeMCPToolContext) launchOrdinaryWorkflow(ctx context.Context, scope
 		return protocol.JSONObject{}, err
 	}
 	n := m.command.Native
-	config := n.Environment["CLAUDE_CONFIG_DIR"]
+	config := n.ConfigHomeDirectory()
 	if config == "" {
 		config = filepath.Join(n.Home, ".claude")
 	}

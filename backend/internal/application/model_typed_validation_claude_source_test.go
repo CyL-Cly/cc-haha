@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"encoding/pem"
+	"fmt"
 	"github.com/NanmiCoder/cc-haha/backend/internal/securestorage"
 	"github.com/NanmiCoder/cc-haha/backend/internal/tui"
 	"io"
@@ -17,6 +18,14 @@ import (
 )
 
 func TestTypedCustomModelActualSourceOrdinaryCLIStoredClaudeIdentityAndNonstreamAuth(t *testing.T) {
+	for _, showSummaries := range []bool{false, true} {
+		t.Run(fmt.Sprint("show-thinking-summaries=", showSummaries), func(t *testing.T) {
+			runStoredClaudeModelValidationSource(t, showSummaries)
+		})
+	}
+}
+
+func runStoredClaudeModelValidationSource(t *testing.T, showSummaries bool) {
 	type request struct {
 		Body    map[string]any
 		Headers http.Header
@@ -37,7 +46,7 @@ func TestTypedCustomModelActualSourceOrdinaryCLIStoredClaudeIdentityAndNonstream
 	defer peer.Close()
 	cert := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: peer.Certificate().Raw})
 	secure := map[string]any{"claudeAiOauth": map[string]any{"accessToken": "owned-fake-claude-token", "refreshToken": "owned-fake-refresh", "expiresAt": 2000000000000, "scopes": []string{"user:profile", "user:inference"}, "subscriptionType": "max", "rateLimitTier": "default_claude_max_5x"}, "future": true}
-	row := typedModelSourceRow{Name: "ordinary-stored-Claude", Args: "MiXeD-CLI-Custom", Settings: map[string]any{"model": "sonnet", "future": true}, State: map[string]any{"mainLoopModel": "sonnet", "mainLoopModelForSession": nil}, Env: map[string]string{"CLAUDE_CODE_ENTRYPOINT": "cli", "ANTHROPIC_API_KEY": ""}}
+	row := typedModelSourceRow{Name: "ordinary-stored-Claude", Args: "MiXeD-CLI-Custom", Settings: map[string]any{"model": "sonnet", "future": true, "showThinkingSummaries": showSummaries}, State: map[string]any{"mainLoopModel": "sonnet", "mainLoopModelForSession": nil}, Env: map[string]string{"CLAUDE_CODE_ENTRYPOINT": "cli", "ANTHROPIC_API_KEY": ""}}
 	want := runTypedModelSourceCredentials(t, []typedModelSourceRow{row}, peer.URL, secure, string(cert))
 	o := nativeSessionOptions(t, peer.URL)
 	o.Interactive = true
@@ -55,7 +64,8 @@ func TestTypedCustomModelActualSourceOrdinaryCLIStoredClaudeIdentityAndNonstream
 	o.Native.RunSecurity = func(context.Context, securestorage.Command) ([]byte, error) { return secureRaw, nil }
 	config := o.Environment["CLAUDE_CONFIG_DIR"]
 	_ = os.MkdirAll(config, 0700)
-	_ = os.WriteFile(filepath.Join(config, "settings.json"), []byte(`{"model":"sonnet","future":true}`), 0600)
+	settingsRaw, _ := json.Marshal(row.Settings)
+	_ = os.WriteFile(filepath.Join(config, "settings.json"), settingsRaw, 0600)
 	s, e := NewSession(context.Background(), o)
 	if e != nil {
 		t.Fatal(e)

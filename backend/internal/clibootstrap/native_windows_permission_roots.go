@@ -16,7 +16,7 @@ func (m *MainPrint) nativeFilePermissionRoots() map[string]string {
 	} else if m.state != nil && m.state.Snapshot().OriginalCWD != "" {
 		original = m.state.Snapshot().OriginalCWD
 	}
-	config := n.Environment["CLAUDE_CONFIG_DIR"]
+	config := n.ConfigHomeDirectory()
 	if config == "" {
 		config = nativepaths.JoinWindows(n.Home, ".claude")
 	}

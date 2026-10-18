@@ -33,9 +33,10 @@ func (s *Store) primarySourceJSON(ctx context.Context) json.RawMessage {
 	if s.cacheFresh() {
 		return rawCopy(s.cachedJSON)
 	}
-	output, err := s.options.RunSecurity(ctx, Command{Args: []string{"find-generic-password", "-a", s.account, "-w", "-s", s.service}})
+	account, service := s.keychainUsername(), s.keychainServiceName()
+	output, err := s.options.RunSecurity(ctx, Command{Args: []string{"find-generic-password", "-a", account, "-w", "-s", service}, ShellScript: `security find-generic-password -a "` + account + `" -w -s "` + service + `"`})
 	var next json.RawMessage
-	if err == nil && len(output) > 0 {
+	if nativeProcessReceipt(err) && len(output) > 0 {
 		next = sourceJSON([]byte(protocol.TrimJavaScriptString(string(protocol.DecodeJavaScriptUTF8(output)))))
 	}
 	if next == nil {
@@ -45,7 +46,8 @@ func (s *Store) primarySourceJSON(ctx context.Context) json.RawMessage {
 	return next
 }
 func (s *Store) plaintextSourceJSON() json.RawMessage {
-	data, err := os.ReadFile(s.path)
+	_, path := s.plaintextLocation()
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil
 	}
@@ -118,7 +120,7 @@ func (s *Store) ReadSourceJSONAsync(ctx context.Context) (json.RawMessage, error
 	flight := &sourceReadFlight{done: make(chan struct{})}
 	s.readInFlight = flight
 	s.mu.Unlock()
-	output, err := s.options.RunSecurity(ctx, Command{Args: []string{"find-generic-password", "-a", s.account, "-w", "-s", s.service}})
+	output, err := s.options.RunSecurity(ctx, Command{Args: []string{"find-generic-password", "-a", s.keychainUsername(), "-w", "-s", s.keychainServiceName()}})
 	var next json.RawMessage
 	if err == nil && len(output) > 0 {
 		next = sourceJSON([]byte(protocol.TrimJavaScriptString(string(protocol.DecodeJavaScriptUTF8(output)))))

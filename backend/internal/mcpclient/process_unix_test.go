@@ -26,6 +26,7 @@ func TestOwnedStubbornMCPProcess(t *testing.T) {
 		cmd.Env = []string{"CC_HAHA_MCP_STUBBORN=child", "HOME=" + os.Getenv("HOME")}
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
+		capturePublicGoCoverage(t, cmd)
 		if cmd.Start() != nil {
 			os.Exit(3)
 		}

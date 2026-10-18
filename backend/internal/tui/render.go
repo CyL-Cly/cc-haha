@@ -1,8 +1,11 @@
 package tui
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/NanmiCoder/cc-haha/backend/internal/contextusage"
 	"strings"
+	"time"
 	"unicode"
 
 	tea "charm.land/bubbletea/v2"
@@ -68,7 +71,24 @@ func (s *State) transcriptLines() []string {
 		var label string
 		text := entry.Text
 		switch entry.Kind {
+		case "context_usage":
+			var data contextusage.Data
+			if json.Unmarshal(entry.Input, &data) == nil {
+				lines = append(lines, ContextVisualization(data, s.Width)...)
+			}
+			continue
 		case "user":
+			if projected, handled := terminalLocalUserMessageLines(text, s.Width, s.previewTheme()); handled {
+				if len(projected) > 0 {
+					lines = append(lines, projected...)
+					lines = append(lines, "")
+				}
+				continue
+			}
+			if projected, handled := s.terminalTeammateHistoricalUserLines(text, index); handled {
+				lines = append(lines, projected...)
+				continue
+			}
 			label = "You: "
 		case "thinking":
 			if entry.Redacted {
@@ -87,23 +107,37 @@ func (s *State) transcriptLines() []string {
 		case "assistant":
 			label = "Claude: "
 		case "teammate":
-			row := presentationObject(entry.Input)
-			label = "@" + row.String("from") + "› "
-			if s.Transcript {
-				text = row.String("summary") + "\n" + text
-			} else {
-				text = row.String("summary")
+			if entry.Subtype == string(TeammateMessageAttachment) && !s.taskTeamsEnabled {
+				continue
 			}
+			lines = append(lines, terminalTeammateMessageLines(presentationObject(entry.Input), s.Width, s.previewTheme(), s.Transcript, TeammateMessageOrigin(entry.Subtype))...)
+			continue
 		case "local_output":
 			label = "⎿ "
 		case "system":
+			if entry.Subtype == "local_command" {
+				projected, handled := terminalLocalUserMessageLines(text, s.Width, s.previewTheme())
+				if !handled {
+					projected = exportWrapWords("❯ "+displayText(text), max(1, s.Width-1))
+				}
+				if len(projected) > 0 {
+					lines = append(lines, projected...)
+					lines = append(lines, "")
+				}
+				continue
+			}
 			label = "● "
+		case "turn_duration":
+			if !s.Preferences.ShowTurnDuration {
+				continue
+			}
+			label = "✻ "
 		case "bash_output":
 			label = ""
 		default:
 			label = entry.Kind + ": "
 		}
-		if s.Transcript && entry.Kind == "tool" && len(entry.Output) > 0 {
+		if (s.Transcript || s.Preferences.Verbose) && entry.Kind == "tool" && len(entry.Output) > 0 {
 			text = toolInputPresentation(entry.ToolName, entry.Input) + "\n" + toolResultPresentation(entry, true)
 		}
 		lines = append(lines, wrap(label+text, s.Width)...)
@@ -113,7 +147,11 @@ func (s *State) transcriptLines() []string {
 }
 
 func (s *State) editorLines() ([]string, int, int) {
+	width := max(1, s.Width-s.buddyReservedColumns())
 	prefix := "> "
+	if s.SessionName != "" {
+		prefix = displayText(s.SessionName) + "> "
+	}
 	if s.Mode == "bash" {
 		prefix = "! "
 	}
@@ -143,12 +181,12 @@ func (s *State) editorLines() ([]string, int, int) {
 		}
 		visible := displayText(cluster)
 		cells := uniseg.StringWidth(visible)
-		if x+cells > s.Width {
+		if x+cells > width {
 			lines = append(lines, strings.Repeat(" ", prefixWidth))
 			y++
 			x = prefixWidth
 		}
-		if cells > s.Width-prefixWidth {
+		if cells > width-prefixWidth {
 			visible, cells = "…", 1
 		}
 		if start == s.Editor.Cursor() {
@@ -161,7 +199,7 @@ func (s *State) editorLines() ([]string, int, int) {
 			cursorX, cursorY = x, y
 		}
 	}
-	if cursorX >= s.Width {
+	if cursorX >= width {
 		lines = append(lines, strings.Repeat(" ", prefixWidth))
 		cursorX, cursorY = prefixWidth, len(lines)-1
 	}
@@ -169,13 +207,48 @@ func (s *State) editorLines() ([]string, int, int) {
 }
 
 func (s *State) View(title string, fullscreen bool) tea.View {
+	if s.Transcript && s.LocalPanel != nil && s.LocalPanel.props.HelpDialog {
+		return s.terminalHelpTranscriptView(fullscreen)
+	}
 	header := wrap(title, s.Width)
 	if title == "" {
 		header = nil
 	}
 	footer := []string{}
+	inputVisible := false
 	var cursor *tea.Cursor
-	if s.Doctor != nil {
+	if s.ModelPicker != nil && s.LocalPanel != nil {
+		footer = s.ModelPicker.lines(s.Width)
+	} else if s.LocalPanel != nil && s.LocalPanel.props.ThemePicker {
+		shortcut, ok := BindingDisplay("theme:toggleSyntaxHighlighting", "ThemePicker", s.bindings)
+		if !ok {
+			shortcut = "ctrl+t"
+		}
+		footer = s.LocalPanel.terminalThemePickerLines(s.Width, s.Height, shortcut)
+	} else if s.LocalPanel != nil && s.LocalPanel.props.Kind == "diff" {
+		footer = s.LocalPanel.terminalDiffLines(s.Width, s.Height, s.Preferences.Theme, s.bindings)
+	} else if s.LocalPanel != nil && s.LocalPanel.props.Kind == "btw" {
+		footer = s.LocalPanel.terminalBtwLines(s.Width, s.Height, s.Preferences.Theme, time.Now())
+		if s.LocalPanel.props.KeepPromptInput {
+			inputVisible = true
+			input, _, _ := s.editorLines()
+			footer = append(footer, input...)
+		}
+	} else if s.LocalPanel != nil && s.LocalPanel.props.Kind == "buddy" {
+		footer = terminalBuddyCardLines(s.LocalPanel.props.Presentation, s.Width, s.Preferences.Theme)
+	} else if s.LocalPanel != nil && s.LocalPanel.props.Kind == "resume" {
+		footer = s.LocalPanel.terminalResumeLines(s.Width, s.Height, time.Now(), s.bindings)
+	} else if s.LocalPanel != nil && s.LocalPanel.props.Kind == "teams" {
+		footer = s.LocalPanel.terminalTeamsLines(s.Width, s.Height, s.previewTheme(), s.bindings)
+	} else if s.LocalPanel != nil && s.LocalPanel.props.HelpDialog {
+		if fullscreen {
+			footer = s.LocalPanel.terminalFullscreenHelpLines(s.Width, s.Height, s.previewTheme(), s.bindings)
+		} else {
+			footer = s.LocalPanel.terminalHelpLines(s.Width, s.Height, s.previewTheme(), s.bindings)
+		}
+	} else if s.LocalPanel != nil {
+		footer = s.LocalPanel.lines(s.Width, s.Height, s.Preferences.Theme)
+	} else if s.Doctor != nil {
 		footer = s.Doctor.lines(s.Width, s.Height)
 	} else if s.DreamDialog != nil {
 		footer = s.dreamLines()
@@ -205,11 +278,16 @@ func (s *State) View(title string, fullscreen bool) tea.View {
 				title = "Allow " + permission.ToolName + "?"
 			}
 			footer = append(footer, wrap(title, s.Width)...)
+			if permission.IDEName != "" {
+				footer = append(footer, wrap("Opened changes in "+permission.IDEName+" ⧉", s.Width)...)
+			}
 			footer = append(footer, wrap(permission.Description, s.Width)...)
 			if permission.Title == "" {
 				footer = append(footer, wrap(toolInputPresentation(permission.ToolName, permission.Input), s.Width)...)
 			}
 			if permission.DisplayOnly {
+			} else if s.PermissionDebugVisible(permission) {
+				footer = append(footer, PermissionDebugLines(permission, s.Width)...)
 			} else if len(permission.Choices) == 0 {
 				footer = append(footer, wrap("y/Enter: allow · n/Esc: deny", s.Width)...)
 			} else {
@@ -241,26 +319,52 @@ func (s *State) View(title string, fullscreen bool) tea.View {
 				}
 			}
 		}
+		if permission.Debug != nil && permission.Debug.DebugHint && !s.PermissionDebugVisible(permission) {
+			if binding, ok := BindingDisplay("permission:toggleDebug", "Confirmation", s.bindings); ok {
+				footer = append(footer, wrap(binding+" to show debug info", s.Width)...)
+			}
+		}
 	} else {
+		inputVisible = true
 		input, x, y := s.editorLines()
 		maxInput := min(8, max(1, s.Height-2))
 		start := max(0, y-maxInput+1)
 		end := min(len(input), start+maxInput)
-		footer = append(footer, input[start:end]...)
-		cursor = tea.NewCursor(min(x, s.Width-1), y-start)
+		visible, offset := s.joinBuddyEditor(input[start:end], fullscreen)
+		footer = append(footer, visible...)
+		cursor = tea.NewCursor(min(x, s.Width-1), y-start+offset)
+		if s.selectedTerminalFooter() != "" {
+			cursor = nil
+		}
 		if s.Searching {
 			footer = append(footer, wrap("History search: "+s.Search, s.Width)...)
 		} else if len(s.Completions) > 0 {
 			footer = append(footer, s.completionLines(fullscreen)...)
 			footer = append(footer, wrap("↑/↓: choose · Tab: complete · Esc: dismiss", s.Width)...)
+		} else if s.HelpOpen {
+			footer = append(footer, s.shortcutHelpRows()...)
 		} else if s.ArgumentHint != "" {
 			footer = append(footer, wrap(s.ArgumentHint, s.Width)...)
 		}
+		if mode := s.VimMode(); mode != "" {
+			footer = append(footer, wrap(mode, s.Width)...)
+		}
+	}
+	if fullscreen && s.LocalPanel != nil && s.LocalPanel.props.HelpDialog {
+		// FullscreenLayout's opaque local-JSX pane replaces PromptInput. Its
+		// bottom widgets are not children of Help or part of the modal height.
+		return s.terminalFullscreenHelpView(footer)
+	}
+	if inputVisible && s.terminalStatusLineInputMounted(fullscreen) {
+		footer = append(footer, s.terminalStatusLineLines(fullscreen)...)
 	}
 	if s.Notification != "" {
-		footer = append(footer, wrap(s.Notification, s.Width)...)
+		footer = append(footer, s.terminalPluginNotificationLines()...)
 	}
-	if s.PermissionMode != "" && s.PermissionMode != "default" {
+	if s.keybindingWarning != "" {
+		footer = append(footer, wrap(s.keybindingWarning, s.Width)...)
+	}
+	if !s.HelpOpen && s.PermissionMode != "" && s.PermissionMode != "default" {
 		label := map[string]string{"acceptEdits": "accept edits on", "plan": "plan mode on", "bypassPermissions": "bypass permissions on", "auto": "auto mode on"}[s.PermissionMode]
 		if label != "" {
 			if shortcut := s.modeCycleShortcut(); shortcut != "" {
@@ -269,13 +373,39 @@ func (s *State) View(title string, fullscreen bool) tea.View {
 			footer = append(footer, wrap(label, s.Width)...)
 		}
 	}
-	if s.Status != "" {
-		footer = append(footer, wrap(s.Status, s.Width)...)
+	spinner := s.terminalSpinnerLines(s.dreamClock)
+	spinnerStatus := s.Status == "Working…" || s.spinnerClock != nil && s.Status == s.spinnerClock.verb+"…"
+	if s.Status != "" && !spinnerStatus {
+		status := s.Status
+		if status == "Working…" && s.Preferences.Theme != "" && !s.Preferences.ReducedMotion {
+			frames := []string{"·", "✢", "✳", "✶", "✻", "✽"}
+			status = frames[(s.dreamClock.UnixMilli()/200)%int64(len(frames))] + " " + status
+		}
+		footer = append(footer, wrap(status, s.Width)...)
+		if len(spinner) == 0 && s.Busy() && s.Preferences.ShowTips && s.Preferences.SpinnerTip != "" {
+			footer = append(footer, wrap("Tip: "+s.Preferences.SpinnerTip, s.Width)...)
+		}
 	}
-	footer = append(footer, s.teammateTreeLines()...)
-	if s.DreamDialog == nil {
-		footer = append(footer, s.dreamFooterLines()...)
+	if len(spinner) == 0 {
+		footer = append(footer, s.teammateTreeLines()...)
 	}
+	footer = append(footer, s.terminalUpdateLines()...)
+	for _, line := range s.terminalRemoteLines() {
+		footer = append(footer, wrap(line, s.Width)...)
+	}
+	if !s.HelpOpen {
+		footer = append(footer, s.terminalPRFooterLines()...)
+	}
+	if mount := s.terminalTaskListMount(); mount == "standalone" || mount == "spinner" && len(spinner) == 0 {
+		footer = append(s.expandedTaskLines(), footer...)
+	}
+	if len(spinner) > 0 {
+		footer = append(spinner, footer...)
+		if cursor != nil {
+			cursor.Y += len(spinner)
+		}
+	}
+	footer = append(footer, s.terminalNavigationFooterLines()...)
 	footer = append(footer, s.teammateInboxLines()...)
 	if len(s.Queue) > 0 {
 		footer = append(footer, wrap(fmt.Sprintf("%d queued", len(s.Queue)), s.Width)...)
@@ -302,6 +432,13 @@ func (s *State) View(title string, fullscreen bool) tea.View {
 		body = body[start:end]
 	}
 	lines := append(append(header, body...), footer...)
+	if accent := s.promptAccent(); accent != "" {
+		for i, line := range lines {
+			if strings.HasPrefix(line, "> ") || s.SessionName != "" && strings.HasPrefix(line, displayText(s.SessionName)+"> ") || i < len(header) {
+				lines[i] = accent + line + "\x1b[39m"
+			}
+		}
+	}
 	if cursor != nil {
 		cursor.Y += len(header) + len(body)
 		if cursor.Y >= len(lines) {
@@ -310,6 +447,9 @@ func (s *State) View(title string, fullscreen bool) tea.View {
 	}
 	view := tea.NewView(strings.Join(lines, "\n"))
 	view.Cursor, view.AltScreen = cursor, fullscreen
+	if s.Preferences.ProgressBarEnabled && s.Busy() {
+		view.ProgressBar = &tea.ProgressBar{State: tea.ProgressBarIndeterminate}
+	}
 	view.ReportFocus = true
 	return view
 }

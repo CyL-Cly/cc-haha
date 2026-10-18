@@ -2,8 +2,31 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { browserHost } from './browserHost'
 import { createDesktopHost, detectDesktopHostEnvironment } from './index'
+import { version as frontendVersion } from '../../../package.json'
 
 describe('desktop host contract', () => {
+  it('reports the renderer product version in browser runtimes without consulting a server', async () => {
+    const fetch = vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Version must belong to the renderer asset'))
+    try {
+      await expect(browserHost.app.getVersion()).resolves.toBe(frontendVersion)
+      expect(fetch).not.toHaveBeenCalled()
+    } finally {
+      fetch.mockRestore()
+    }
+  })
+
+  it('keeps the injected Electron runtime version independent of the browser renderer version', async () => {
+    const getVersion = vi.fn().mockResolvedValue('9.8.7-native-fixture')
+    const electronHost = {
+      ...browserHost,
+      kind: 'electron' as const,
+      isDesktop: true,
+      app: { ...browserHost.app, getVersion },
+    }
+    await expect(createDesktopHost({ electronHost }).app.getVersion()).resolves.toBe('9.8.7-native-fixture')
+    expect(getVersion).toHaveBeenCalledOnce()
+  })
+
   it('keeps browser fallback explicit for non-desktop runtimes', () => {
     expect(browserHost.kind).toBe('browser')
     expect(browserHost.isDesktop).toBe(false)

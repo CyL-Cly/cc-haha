@@ -12,6 +12,17 @@ import (
 // the same capability and canonical-name producers as ordinary native requests.
 // Subscription and experiment identities remain with their actual host.
 func DirectCountingBetas(model string, env map[string]string, settings protocol.JSONObject) ([]string, error) {
+	return directModelBetas(model, env, settings, false)
+}
+
+// CachedSubscriberModelBetas is getModelBetas' metadata consumer. The identity
+// comes from the CLI's existing cached-auth getter; it grants no transport or
+// provider capability. The direct counting caller keeps its original domain.
+func CachedSubscriberModelBetas(model string, env map[string]string, settings protocol.JSONObject, subscriber bool) ([]string, error) {
+	return directModelBetas(model, env, settings, subscriber)
+}
+
+func directModelBetas(model string, env map[string]string, settings protocol.JSONObject, subscriber bool) ([]string, error) {
 	for _, name := range []string{"CLAUDE_CODE_USE_BEDROCK", "CLAUDE_CODE_USE_VERTEX", "CLAUDE_CODE_USE_FOUNDRY", "CLAUDE_CODE_USE_AZURE_OPENAI", "CLAUDE_CODE_REMOTE"} {
 		if envTrue(env[name]) {
 			return nil, unsupported("token counting provider " + name)
@@ -34,7 +45,7 @@ func DirectCountingBetas(model string, env map[string]string, settings protocol.
 		}
 	}
 	canonical := nativeCanonicalModel(canonicalInput)
-	trusted := env["ANTHROPIC_BASE_URL"] == ""
+	trusted := env["ANTHROPIC_BASE_URL"] == "" || subscriber
 	if !trusted {
 		u, err := weburl.Parse(env["ANTHROPIC_BASE_URL"])
 		trusted = err == nil && u.Host() == "api.anthropic.com"
@@ -43,6 +54,9 @@ func DirectCountingBetas(model string, env map[string]string, settings protocol.
 	betas := []string{}
 	if !strings.Contains(canonical, "haiku") {
 		betas = append(betas, "claude-code-20250219")
+	}
+	if subscriber {
+		betas = append(betas, "oauth-2025-04-20")
 	}
 	if !envTrue(env["CLAUDE_CODE_DISABLE_1M_CONTEXT"]) && (strings.Contains(strings.ToLower(model), "[1m]") || strings.HasSuffix(strings.ToLower(model), ":1m")) {
 		betas = append(betas, "context-1m-2025-08-07")

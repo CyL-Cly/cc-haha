@@ -45,8 +45,8 @@ export function isolateElectronSmokeState(app: SmokeApp, env: NodeJS.ProcessEnv 
   }
 
   privatePath(root, env.CC_HAHA_ELECTRON_WINDOW_SMOKE_LOG, 'window smoke log')
-  privatePath(root, env.CLAUDE_CONFIG_DIR, 'CLAUDE_CONFIG_DIR')
   const home = privatePath(root, env.HOME || env.USERPROFILE, 'HOME')
+  privatePath(root, env.CLAUDE_CONFIG_DIR === undefined ? path.join(home, '.claude') : env.CLAUDE_CONFIG_DIR, 'CLAUDE_CONFIG_DIR')
   const userData = privatePath(root, app.commandLine.getSwitchValue('user-data-dir'), '--user-data-dir')
   const paths = {
     home,

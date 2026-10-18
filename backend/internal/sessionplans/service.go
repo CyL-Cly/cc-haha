@@ -122,11 +122,19 @@ func (s *Service) Slug(scope *cooperative.Scope) (string, error) {
 	if e := s.check(scope); e != nil {
 		return "", e
 	}
+	return s.SlugForSession(scope, s.options.Bootstrap.SessionID())
+}
+
+// SlugForSession is getPlanSlug(targetSessionId)'s explicit-id overload. A
+// fork calls it before switchSession, so the old process SID must stay intact.
+func (s *Service) SlugForSession(scope *cooperative.Scope, id string) (string, error) {
+	if e := s.check(scope); e != nil {
+		return "", e
+	}
 	cache, e := s.options.Bootstrap.PlanSlugCache(scope)
 	if e != nil {
 		return "", e
 	}
-	id := s.options.Bootstrap.SessionID()
 	slug, exists, e := cache.Get(scope, id)
 	if e != nil || exists && slug != "" {
 		return slug, e

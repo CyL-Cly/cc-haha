@@ -122,6 +122,7 @@ func (s *Service) ReconnectSDKControl(ctx context.Context, scope *cooperative.Sc
 	if !scope.BelongsTo(s.options.Owner) {
 		return cooperative.ErrRestricted
 	}
+	s.retireInteractivePeer(name)
 	if name == ComputerUseServerName && s.computerUse != nil {
 		_, e := s.computerUseServerStatus(ctx, scope)
 		return e
@@ -195,6 +196,7 @@ func (s *Service) ReconnectSDKControl(ctx context.Context, scope *cooperative.Sc
 		s.connections = append(s.connections, peer)
 	}
 
+	delete(s.authenticationTools, name)
 	if peer.Status != "connected" && peer.Status != "disabled" {
 		message := "Server status: " + peer.Status
 		if peer.Status == "failed" {

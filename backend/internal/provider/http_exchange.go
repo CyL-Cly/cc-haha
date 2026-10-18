@@ -58,6 +58,9 @@ type RawHTTP1Exchange struct {
 	DialContext    func(context.Context, string, string) (net.Conn, error)
 	MaxHeaderBytes int
 	VerifiedTLS    *tls.Config
+	// NativeTLSOptions distinguishes Source's explicit fetch tls.ca object from
+	// the runtime default TLS store. Equal certificates do not merge those pools.
+	NativeTLSOptions bool
 	// ResolveVerifiedTLS runs at physical fetch, after GetClient has captured
 	// its process-owned original CA array. A malformed CA must not become an
 	// earlier client-construction failure or be re-read between retry attempts.

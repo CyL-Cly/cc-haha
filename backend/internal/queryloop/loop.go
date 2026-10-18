@@ -9,6 +9,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/messages"
 	"github.com/NanmiCoder/cc-haha/backend/internal/modelaccounting"
 	"github.com/NanmiCoder/cc-haha/backend/internal/modelyield"
@@ -129,6 +130,7 @@ type PreflightResult struct {
 }
 
 type Host struct {
+	OnNativeQuota        func(*cooperative.Scope, *provider.BunHeaders, error) error
 	ModelFallbackChanged func(context.Context, string) error
 	ModelDisplayName     func(string) (string, error)
 	Activity             *sessionactivity.Tracker
@@ -157,6 +159,7 @@ type Host struct {
 	StopHooks             func(context.Context, Round, []*streamhistory.Envelope, Emit) (StopDecision, error)
 	PauseAfterTools       func(context.Context, Round) (bool, error)
 	AttachmentsAfterTools func(context.Context, Round) ([]Message, error)
+	RefreshTools          func() error // Original optional ToolUseContext.options.refreshTools.
 }
 type Options struct {
 	// NativeModelPresent distinguishes an actual Source string override ""
@@ -415,6 +418,11 @@ func RunControlled(ctx context.Context, initial []Message, options Options, host
 				history = next
 			}
 		}
+		if host.RefreshTools != nil {
+			if err := host.RefreshTools(); err != nil {
+				return Outcome{}, err
+			}
+		}
 		if ctx.Err() != nil {
 			if err := host.AbortCleanup(ctx, round); err != nil {
 				return Outcome{}, err
@@ -458,7 +466,7 @@ func consume(ctx context.Context, input requestretry.Input, options Options, hos
 	request := host.Request
 	// All query/model/factory allocations share the caller's one source.
 	request.UUID, request.Now = options.UUID, options.Now
-	outcome, err := modelyield.Run(ctx, input, modelyield.Dependencies{Activity: host.Activity, Request: request, Session: host.Session, AgentContext: host.AgentContext, SuccessDuration: host.SuccessDuration, StreamClock: host.StreamClock, StreamPolicy: host.StreamPolicy, Emit: func(value modelyield.Yield) (requestretry.NoticeAction, error) {
+	outcome, err := modelyield.Run(ctx, input, modelyield.Dependencies{OnNativeQuota: host.OnNativeQuota, Activity: host.Activity, Request: request, Session: host.Session, AgentContext: host.AgentContext, SuccessDuration: host.SuccessDuration, StreamClock: host.StreamClock, StreamPolicy: host.StreamPolicy, Emit: func(value modelyield.Yield) (requestretry.NoticeAction, error) {
 		var yield Yield
 		var original *streamhistory.Envelope
 		if value.Notice != nil {

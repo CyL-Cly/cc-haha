@@ -38,6 +38,13 @@ func SmokeSecurity(environment map[string]string) (func(context.Context, secures
 		if key == "HOME" && runtime.GOOS == "windows" {
 			value = environment["USERPROFILE"]
 		}
+		if _, present := environment[key]; key == "CLAUDE_CONFIG_DIR" && !present {
+			homeKey := "HOME"
+			if runtime.GOOS == "windows" {
+				homeKey = "USERPROFILE"
+			}
+			value = filepath.Join(environment[homeKey], ".claude")
+		}
 		if !filepath.IsAbs(value) {
 			return nil, errors.New("desktop smoke credential path must be absolute: " + key)
 		}

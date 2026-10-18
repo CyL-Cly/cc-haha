@@ -61,14 +61,28 @@ func (s *Service) BranchWithCWD(scope *cooperative.Scope, cwd func(*cooperative.
 			}
 			dir := stringValue(r.raw)
 			finish := func(scope *cooperative.Scope, value string) {
-				entry := s.branch
-				if entry != nil && !entry.dirty {
-					entry.value = raw(value)
+				if s.observeBranchComputeReturn != nil {
+					s.observeBranchComputeReturn(scope)
 				}
-				if entry == nil {
-					s.branch = &cacheEntry{value: raw(value)}
-				}
-				s.settle(scope, f, result{raw: raw(value)})
+				// computeBranch's async body has returned. GitFileWatcher.get
+				// awaits that result before publishing its cache, even for HEAD
+				// with no repository. This is a Promise reaction, not native work.
+				computed := s.future()
+				s.then(scope, computed, func(next *cooperative.Scope, r result) {
+					if r.err != nil {
+						s.settle(next, f, r)
+						return
+					}
+					entry := s.branch
+					if entry != nil && !entry.dirty {
+						entry.value = r.raw
+					}
+					if entry == nil {
+						s.branch = &cacheEntry{value: r.raw}
+					}
+					s.settle(next, f, r)
+				})
+				s.settle(scope, computed, result{raw: raw(value)})
 			}
 			if dir == "" {
 				finish(scope, "HEAD")
@@ -103,8 +117,14 @@ func (s *Service) ensureWithCWD(scope *cooperative.Scope, cwd func(*cooperative.
 		return f
 	}
 	if s.init != nil {
-		return s.init
+		return s.adoptStartReturn(scope, s.init)
 	}
+	return s.adoptStartReturn(scope, s.startWithCWD(scope, cwd))
+}
+
+// startWithCWD is GitFileWatcher's actual start body and single cached
+// initPromise. ensureStarted's separate async return is owned by its caller.
+func (s *Service) startWithCWD(scope *cooperative.Scope, cwd func(*cooperative.Scope) (string, error)) *Future {
 	f := s.future()
 	s.init = f
 	value, e := cwd(scope)

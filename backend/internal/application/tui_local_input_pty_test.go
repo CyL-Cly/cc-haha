@@ -39,6 +39,7 @@ func TestActualCLILocalNoQueryUsageAndModelOnlyMessagesPTY(t *testing.T) {
 	defer cancel()
 	cmd := exec.CommandContext(ctx, python, "testdata/tui_local_input_pty.py", binary, home)
 	cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "HOME=" + home, "USERPROFILE=" + home, "CLAUDE_CONFIG_DIR=" + filepath.Join(home, ".claude"), "TMPDIR=" + home, "TERM=xterm-256color", "TZ=UTC", "CC_HAHA_TUI_LOCAL_NOQUERY_HELPER=1"}
+	capturePublicGoCoverage(t, cmd)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("actual local noquery PTY %v %.6500s", err, out)
@@ -59,6 +60,12 @@ func TestNativeTUILocalNoQueryFixtureProcess(t *testing.T) {
 	var count atomic.Int32
 	var actualHistory atomic.Bool
 	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		body, _ := io.ReadAll(r.Body)
 		count.Add(1)
 		actualHistory.Store(strings.Contains(string(body), "Usage: /agent <agent> <prompt>") && strings.Contains(string(body), "This skill can only be invoked by Claude"))

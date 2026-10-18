@@ -199,7 +199,7 @@ func (service *Service) exists(event, sid string) (bool, error) {
 	if service.registry.registered != nil && len(service.registry.registered[event]) > 0 {
 		return true, nil
 	}
-	if len(service.nativeCommandMatchers(event, sid)) > 0 {
+	if len(service.nativeMatchedCommandMatchers(event, sid, true)) > 0 {
 		return true, nil
 	}
 	if len(service.sdkCallbackMatchers(event)) > 0 {

@@ -115,8 +115,9 @@ func (h *Host) acceptInternalPermissionSettings(scope *cooperative.Scope, before
 }
 
 // get_settings resets the Source cache to read disk, even when nothing has
-// changed. A value-identical owned refresh can retain the proven consumers;
-// changed settings still require the real notifier or an explicit internal edit.
+// changed. A value-identical owned refresh retains the proven consumers. The
+// constructor-bound SDK directory reader also certifies its actual fresh disk
+// result; unbound changed settings still require the real notifier or edit.
 func (h *Host) AcceptNativeSettingsReadRefresh(scope *cooperative.Scope, before *protocol.JSONObject) error {
 	if err := h.checkInferenceOwner(scope); err != nil {
 		return err
@@ -128,13 +129,13 @@ func (h *Host) AcceptNativeSettingsReadRefresh(scope *cooperative.Scope, before 
 	if err = h.validateASKSettingsReference(previous, before, scope); err != nil {
 		return nil
 	}
-	next, err := h.options.Startup.GetInitialSettings()
+	next, err := h.nativeSDKInitialSettings()
 	if err != nil {
 		return err
 	}
 	oldRaw, _ := before.MarshalJSON()
 	newRaw, _ := next.MarshalJSON()
-	if !bytes.Equal(protocol.StringifyValidatedJavaScriptJSON(oldRaw), protocol.StringifyValidatedJavaScriptJSON(newRaw)) {
+	if !bytes.Equal(protocol.StringifyValidatedJavaScriptJSON(oldRaw), protocol.StringifyValidatedJavaScriptJSON(newRaw)) && h.nativeSDKSettingsReader == nil {
 		return nil
 	}
 	if err = h.validateInternalNativeSettings(scope, next); err != nil {

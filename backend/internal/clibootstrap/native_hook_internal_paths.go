@@ -91,7 +91,7 @@ func (m *MainPrint) nativeHookInternalEditable(scope *cooperative.Scope, path st
 	}
 	env := m.options.Native.Environment
 	state := m.state.Snapshot()
-	config := env["CLAUDE_CONFIG_DIR"]
+	config := m.options.Native.ConfigHomeDirectory()
 	if config == "" {
 		config = filepath.Join(m.options.Native.Home, ".claude")
 	}

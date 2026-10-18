@@ -28,7 +28,7 @@ func (p *NativeSideQuestionModels) Current(scope *Scope) bool {
 // goroutine owns the stack, but cannot execute a segment concurrently with the
 // Owner: every await/return hands back its exclusive token before dispatch.
 func (p *NativeSideQuestionModels) Start(caller *Scope, ctx context.Context, produce func(*Scope) error, complete func(*Scope, error)) error {
-	if p == nil || !caller.BelongsTo(p.owner) || caller.frame != 0 || ctx == nil || produce == nil || complete == nil {
+	if p == nil || !caller.BelongsTo(p.owner) || caller.frame != 0 || caller.sideContinuation != nil && caller.sideContinuation.promptAuthority != nil || ctx == nil || produce == nil || complete == nil {
 		return ErrRestricted
 	}
 	if err := caller.check(); err != nil {

@@ -37,6 +37,7 @@ func TestActualCLIShiftTabCycleChangesToolsAndPlanContextPTY(t *testing.T) {
 	defer cancel()
 	cmd := exec.CommandContext(ctx, python, "testdata/tui_mode_cycle_pty.py", binary, home)
 	cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "HOME=" + home, "USERPROFILE=" + home, "CLAUDE_CONFIG_DIR=" + filepath.Join(home, ".claude"), "TMPDIR=" + home, "TERM=xterm-256color", "TZ=UTC", "CC_HAHA_TUI_MODE_CYCLE_HELPER=1"}
+	capturePublicGoCoverage(t, cmd)
 	out, e := cmd.CombinedOutput()
 	if e != nil {
 		t.Fatalf("actual mode PTY %v %.6000s", e, out)
@@ -58,6 +59,12 @@ func TestNativeTUIModeCycleFixtureProcess(t *testing.T) {
 	var planContext atomic.Bool
 	var file string
 	peer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		body, _ := io.ReadAll(r.Body)
 		n := count.Add(1)
 		switch n {

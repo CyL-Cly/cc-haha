@@ -79,9 +79,15 @@ func (reservation *NativeHTTP1Reservation) dialTLSAndWrite(ctx context.Context, 
 		reservation.publishFailure(err)
 		return
 	}
-	writer, err := newNativeTLSRecordWriter(ctx, socket, func(failure error) {
+	writerContext := ctx
+	if reservation.pool != nil {
+		writerContext = reservation.pool.life
+	}
+	writer, err := newNativeTLSRecordWriter(writerContext, socket, func(failure error) {
 		wrapped.writeFault.Store(&nativeTLSWriteFault{err: failure})
-		reservation.publishFailure(failure)
+		if reservation.pool == nil {
+			reservation.publishFailure(failure)
+		}
 		socket.wake()
 	})
 	if err != nil {

@@ -17,6 +17,7 @@ mock.module(new URL('../../../../src/utils/platform.ts', import.meta.url).pathna
 const parser = await import('../../../../src/keybindings/parser')
 const resolver = await import('../../../../src/keybindings/resolver')
 const { DEFAULT_BINDINGS } = await import('../../../../src/keybindings/defaultBindings')
+const { generateKeybindingsTemplate } = await import('../../../../src/keybindings/template')
 const { parseSlashCommand } = await import('../../../../src/utils/slashCommandParsing')
 const bindings = parser.parseBindings(input.blocks)
 function incoming(current: any) {
@@ -39,7 +40,7 @@ process.stdout.write(JSON.stringify({
     return { parsed, canonical: parser.keystrokeToString(parsed), display: parser.keystrokeToDisplayString(parsed, input.platform) }
   }),
   chords: input.chords.map((chord: string) => { const parsed = parser.parseChord(chord); return { parsed, canonical: parser.chordToString(parsed) } }),
-  bindings, defaults: parser.parseBindings(DEFAULT_BINDINGS), events,
+  bindings, defaults: parser.parseBindings(DEFAULT_BINDINGS), template: generateKeybindingsTemplate(), events,
   displays: bindings.map((binding: any) => resolver.getBindingDisplayText(binding.action, binding.context, bindings) ?? null),
   slashes: input.slashes.map(parseSlashCommand), capabilities,
 }))

@@ -12,12 +12,16 @@ import (
 // The SDK protocol deliberately emits no synthetic assistant for that branch.
 // Deliver the same actual visible users through the internal terminal seam.
 func (s *Session) localInputMessages(records []protocol.JSONObject) error {
+	return s.localInputMessagesTo(records, s.emitEvent)
+}
+
+func (s *Session) localInputMessagesTo(records []protocol.JSONObject, emit tui.Emit) error {
 	texts := []string{}
 	processed := []tui.LocalProcessedMessage{}
 	hasWarning := false
 	for _, record := range records {
 		if record.String("type") == "system" && record.String("subtype") == "local_command" {
-			processed = append(processed, tui.LocalProcessedMessage{Kind: "system", Text: record.String("content"), Level: record.String("level")})
+			processed = append(processed, tui.LocalProcessedMessage{Kind: "system", Text: record.String("content"), Level: record.String("level"), Subtype: record.String("subtype")})
 			hasWarning = true
 			continue
 		}
@@ -43,10 +47,10 @@ func (s *Session) localInputMessages(records []protocol.JSONObject) error {
 		}
 	}
 	if hasWarning {
-		return s.emitEvent(tui.Event{Kind: tui.LocalProcessedMessages, LocalMessages: processed})
+		return emit(tui.Event{Kind: tui.LocalProcessedMessages, LocalMessages: processed})
 	}
 	if len(texts) == 0 {
 		return nil
 	}
-	return s.emitEvent(tui.Event{Kind: tui.LocalUserMessages, UserMessages: texts})
+	return emit(tui.Event{Kind: tui.LocalUserMessages, UserMessages: texts})
 }

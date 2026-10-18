@@ -109,6 +109,28 @@ func TestActualSourceControlledMissingRefCallerKeepsStrictContract(t *testing.T)
 		if len(caps.Blocked) != 0 || len(caps.SecureReads) != 0 {
 			t.Fatal("Source fixture escaped native/private boundary", string(source["caps"]))
 		}
+		var watchTrace []struct {
+			Path, Phase    string
+			InitialMissing bool
+		}
+		if err = json.Unmarshal(source["watchTrace"], &watchTrace); err != nil {
+			t.Fatal("native watch callback evidence missing", err)
+		}
+		var callbacks []string
+		for _, event := range watchTrace {
+			if event.Phase != "native-callback" {
+				continue
+			}
+			if event.Path != "work/.git/HEAD" && !event.InitialMissing {
+				t.Fatal("missing-ref observer did not retain actual zero-link native stat pair", event)
+			}
+			callbacks = append(callbacks, event.Path)
+		}
+		wantCallbacks, _ := json.Marshal([]string{"work/.git/refs/heads/first", "work/.git/HEAD", "work/.git/refs/heads/second"})
+		gotCallbacks, _ := json.Marshal(callbacks)
+		if !bytes.Equal(gotCallbacks, wantCallbacks) {
+			t.Fatal("original callback order differed", string(source["watchTrace"]))
+		}
 	}
 	// The Go side is already exact-checked in TestActualSourceOriginalContracts;
 	// execute its original case here too, using the identical new caller control.

@@ -120,14 +120,16 @@ type anthropicState struct {
 	completed     []finishedBlock
 	toolIDs       map[string]bool
 	messageStop   bool
+	stopTerminal  bool
 	hasStopReason bool
 	stopReason    string
 	limitReason   string
 }
 
 // DecodeAnthropicStream reads Anthropic Messages SSE and commits tools once,
-// after an explicit terminal reason and message_stop. Completed tool blocks
-// on a clean EOF, provider error, or output limit are never executable.
+// after an explicit terminal reason and either message_stop or that reason
+// remaining the last content-bearing event. Incomplete EOF, errors and limits
+// do not expose executable local tools.
 //
 // The returned partial message and callback's Message retain completed
 // thinking/server blocks and visible text on failure; incomplete thinking and
@@ -187,7 +189,7 @@ func DecodeAnthropicStream(ctx context.Context, reader io.Reader, emit func(Stre
 	if state.limitReason != "" {
 		return state.finish(&StreamError{Code: StreamOutputLimit, Detail: "Provider response was truncated at an output or context limit", StopReason: state.limitReason, TruncatedToolUse: state.hasToolUse()}, emit)
 	}
-	if state.message == nil || !state.messageStop || !state.hasStopReason || state.hasIncompleteBlocks() || (state.stopReason == "tool_use" && len(state.completed) == 0) {
+	if state.message == nil || (!state.messageStop && !state.stopTerminal) || !state.hasStopReason || state.hasIncompleteBlocks() || (state.stopReason == "tool_use" && len(state.completed) == 0) {
 		return state.finish(&StreamError{Code: StreamIncomplete, Detail: "Provider stream ended before completing the response", StopReason: state.stopReason}, emit)
 	}
 	return state.finish(nil, emit)
@@ -210,6 +212,7 @@ func (state *anthropicState) apply(part map[string]json.RawMessage) error {
 		state.message["stop_reason"] = json.RawMessage("null")
 		state.message["stop_sequence"] = json.RawMessage("null")
 	case "content_block_start":
+		state.stopTerminal = false
 		index, err := eventIndex(part)
 		if err != nil {
 			return err
@@ -243,6 +246,7 @@ func (state *anthropicState) apply(part map[string]json.RawMessage) error {
 		}
 		state.blocks[index] = &blockState{block: block}
 	case "content_block_delta":
+		state.stopTerminal = false
 		index, err := eventIndex(part)
 		if err != nil {
 			return err
@@ -300,6 +304,7 @@ func (state *anthropicState) apply(part map[string]json.RawMessage) error {
 			// The existing external TS build does not project them into content.
 		}
 	case "content_block_stop":
+		state.stopTerminal = false
 		index, err := eventIndex(part)
 		if err != nil {
 			return err
@@ -344,6 +349,7 @@ func (state *anthropicState) apply(part map[string]json.RawMessage) error {
 			// a terminal; retain its original JSON in the provider message.
 			reason := stringField(delta, "stop_reason")
 			state.hasStopReason = true
+			state.stopTerminal = true
 			state.stopReason = reason
 			state.message["stop_reason"] = append(json.RawMessage(nil), raw...)
 			state.message["stop_sequence"] = json.RawMessage("null")

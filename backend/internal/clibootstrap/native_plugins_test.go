@@ -48,6 +48,7 @@ func newNativePluginFixture(t *testing.T) nativePluginFixture {
 	n.RunSecurity = func(context.Context, securestorage.Command) ([]byte, error) {
 		return nil, fmt.Errorf("isolated fixture Keychain unavailable")
 	}
+	bindCommandPrefetchFixture(t, n)
 	f.n = n
 	return f
 }

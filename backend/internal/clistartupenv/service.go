@@ -18,6 +18,15 @@ import (
 
 const EmptyPolicyReleaseProfile = "cli-startup-pretrust-external-absent-policy-no-plugins-v1"
 const ResolvedPolicyReleaseProfile = "cli-startup-resolved-native-policy-v1"
+const NativeRemoteCCRPolicyReleaseProfile = "cli-startup-resolved-native-ccr-flags-v1"
+
+func resolvedNativePolicyProfile(profile string) bool {
+	return profile == ResolvedPolicyReleaseProfile || profile == NativeRemoteCCRPolicyReleaseProfile
+}
+
+func (s *Service) NativeRemoteCCRProfile() bool {
+	return s != nil && s.options.Host.Profile == NativeRemoteCCRPolicyReleaseProfile
+}
 
 type Host struct {
 	Profile string
@@ -29,7 +38,8 @@ type Host struct {
 	FlagInline                                                                              json.RawMessage
 	// ResolvePolicy reads native policy sources in Source precedence. Unlike the
 	// finite profile, a missing policy is established by these real reads.
-	ResolvePolicy func() (*protocol.JSONObject, error)
+	ResolvePolicy       func() (*protocol.JSONObject, error)
+	PrepareNativePolicy func() error
 }
 type FileSystem interface{ ReadFile(string) ([]byte, error) }
 type OSFileSystem struct{}
@@ -53,6 +63,10 @@ type Options struct {
 	// legacy reader remains shared; this callback replaces only active-provider
 	// resolution, never the trusted settings filters or assignment order.
 	MergeCcHahaEnvironment func(protocol.JSONObject) (protocol.JSONObject, error)
+	// NativeCcHahaConfigDirectory supplies the actual native process's current
+	// filesystem directory for this uncached reader. It does not admit settings
+	// assignments to any frozen host control or reset unrelated settings memos.
+	NativeCcHahaConfigDirectory func() (string, error)
 }
 type Service struct {
 	options      Options
@@ -69,7 +83,10 @@ func New(options Options) (*Service, error) {
 		return nil, errors.New("CLI startup env requires explicit enabled services, state, environment and config HOME")
 	}
 	h := options.Host
-	if h.Profile == ResolvedPolicyReleaseProfile {
+	if options.NativeCcHahaConfigDirectory != nil && !resolvedNativePolicyProfile(h.Profile) {
+		return nil, &CapabilityError{"native cc-haha directory producer"}
+	}
+	if resolvedNativePolicyProfile(h.Profile) {
 		if h.ResolvePolicy == nil || !options.Settings.UsesState(options.SettingsState) || (!h.PluginBaseAbsent && !options.Plugins.SharesSettingsState(options.SettingsState)) || (h.PluginBaseAbsent && options.Plugins != nil) {
 			return nil, &CapabilityError{"native policy resolver/plugin host snapshot"}
 		}
@@ -93,7 +110,7 @@ func New(options Options) (*Service, error) {
 	if options.FS == nil {
 		options.FS = OSFileSystem{}
 	}
-	if equalString(options.Environment.Get("USER_TYPE"), "ant") {
+	if equalString(options.Environment.Get("USER_TYPE"), "ant") && h.Profile != NativeRemoteCCRPolicyReleaseProfile {
 		return nil, &CapabilityError{"internal schema host profile"}
 	}
 	if options.NowMillis == nil {
@@ -264,7 +281,10 @@ func (s *Service) computeEligibility() error {
 	if s.eligibility != nil {
 		return nil
 	}
-	if s.options.Host.Profile == ResolvedPolicyReleaseProfile {
+	if resolvedNativePolicyProfile(s.options.Host.Profile) {
+		if prepare := s.options.Host.PrepareNativePolicy; prepare != nil {
+			return prepare()
+		}
 		// Native policy resolution owns provider/credential eligibility; the
 		// finite fixture's synthetic remote-absence flag is not used here.
 		return nil
@@ -358,25 +378,36 @@ func (s *Service) checkHostControls() error {
 	return nil
 }
 func (s *Service) ensureProvidersAbsent() error {
-	_, err := s.options.FS.ReadFile(filepath.Join(s.options.ConfigHome, "cc-haha", "providers.json"))
+	directory, err := s.ccHahaConfigDirectory()
+	if err != nil {
+		return err
+	}
+	return s.ensureProvidersAbsentAt(directory)
+}
+func (s *Service) ensureProvidersAbsentAt(directory string) error {
+	_, err := s.options.FS.ReadFile(filepath.Join(directory, "cc-haha", "providers.json"))
 	if err == nil || !os.IsNotExist(err) {
 		return &CapabilityError{"cc-haha providers index/runtime"}
 	}
 	return nil
 }
 func (s *Service) ccHahaEnv() (json.RawMessage, error) {
+	directory, err := s.ccHahaConfigDirectory()
+	if err != nil {
+		return nil, err
+	}
 	host, err := envTruthy(s.options.Environment.Get("CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST"))
 	if err != nil {
 		return nil, err
 	}
 	if !host {
 		if s.options.MergeCcHahaEnvironment == nil {
-			if err = s.ensureProvidersAbsent(); err != nil {
+			if err = s.ensureProvidersAbsentAt(directory); err != nil {
 				return nil, err
 			}
 		}
 	}
-	raw, readErr := s.options.FS.ReadFile(filepath.Join(s.options.ConfigHome, "cc-haha", "settings.json"))
+	raw, readErr := s.options.FS.ReadFile(filepath.Join(directory, "cc-haha", "settings.json"))
 	raw = protocol.DecodeJavaScriptUTF8(raw)
 	object := protocol.NewJSONObject()
 	if readErr == nil && json.Valid(raw) && rawKind(raw) == "object" {
@@ -419,7 +450,7 @@ func (s *Service) ccHahaEnv() (json.RawMessage, error) {
 		if err != nil {
 			return nil, err
 		}
-	} else if err = s.ensureProvidersAbsent(); err != nil {
+	} else if err = s.ensureProvidersAbsentAt(directory); err != nil {
 		return nil, err
 	}
 	return object.MarshalJSON()

@@ -90,6 +90,12 @@ func TestActualPaneCLIWorkerMainInboxPermissionRoundTripArtifactAndStandaloneTra
 	case <-ctx.Done():
 		t.Fatal(ctx.Err())
 	}
+	// The actual REPL binds its consent display after the pane inbox effect
+	// starts. Reading that display must not admit a second ASK while this real
+	// worker's first provider request is held.
+	if pending, err := m.TerminalAutoConsent(ctx); err != nil || pending != nil {
+		t.Errorf("pane startup consent read tried to replace its active model continuation: %v %v", pending, err)
+	}
 	receipt, err := m.Owner.SubmitIndependent(ctx, cooperative.Read, func(scope *cooperative.Scope) error {
 		m.options.Native.Environment["USER_TYPE"] = "ant"
 		delete(m.options.Native.Environment, "CLAUDE_CODE_DISABLE_ATTACHMENTS")

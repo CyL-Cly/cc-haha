@@ -19,7 +19,7 @@ func requestEnvironmentForProfile(original map[string]string, neutral bool) (map
 				return nil, cap("original environment CLAUDE_CODE_ENTRYPOINT")
 			}
 			out[key] = value
-		case "ANTHROPIC_BASE_URL", "ANTHROPIC_API_KEY", "CLAUDE_CODE_SIMPLE", "CLAUDE_CODE_DISABLE_FAST_MODE", "CLAUDE_CODE_MAX_RETRIES", "NODE_EXTRA_CA_CERTS", "API_TIMEOUT_MS":
+		case "ANTHROPIC_BASE_URL", "ANTHROPIC_API_KEY", "ANTHROPIC_CUSTOM_HEADERS", "CLAUDE_CODE_SIMPLE", "CLAUDE_CODE_DISABLE_FAST_MODE", "CLAUDE_CODE_MAX_RETRIES", "NODE_EXTRA_CA_CERTS", "API_TIMEOUT_MS":
 			out[key] = value
 		case "CLAUDE_CODE_DIAGNOSTICS_FILE":
 			// Retained by the original process registry and consumed only by the

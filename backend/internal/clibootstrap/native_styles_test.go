@@ -41,7 +41,7 @@ func TestServerSettingsUsesActualGlobalAndCompleteSourcePrecedence(t *testing.T)
 			if err := os.MkdirAll(home, 0700); err != nil {
 				t.Fatal(err)
 			}
-			n, err := NewProcessNativeBoundary(NativeProcessOptions{Environment: map[string]string{"HOME": home, "CLAUDE_CONFIG_DIR": config, "ANTHROPIC_BASE_URL": "http://127.0.0.1:1"}, CWD: work, Platform: runtime.GOOS, ManagedRoot: managed, ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
+			n, err := newIsolatedProcessNativeBoundary(NativeProcessOptions{Environment: map[string]string{"HOME": home, "CLAUDE_CONFIG_DIR": config, "ANTHROPIC_BASE_URL": "http://127.0.0.1:1"}, CWD: work, Platform: runtime.GOOS, ManagedRoot: managed, ReadMDM: func() (*protocol.JSONObject, *protocol.JSONObject, error) { return nil, nil, nil }})
 			if err != nil {
 				t.Fatal(err)
 			}

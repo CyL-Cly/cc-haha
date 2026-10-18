@@ -78,13 +78,18 @@ func (m *ExplicitUserMemory) NormalMemoryFiles(mode string, additional []string,
 	}
 	if f, exists := n.cache[forceExternal]; exists {
 		n.mu.Unlock()
-		<-f.done
+		if err := m.waitMemory(f.done); err != nil {
+			return nil, err
+		}
 		return append([]MemoryFile(nil), f.files...), f.err
 	}
 	f := &normalMemoryFuture{done: make(chan struct{})}
 	n.cache[forceExternal] = f
 	n.mu.Unlock()
 	f.files, f.err = m.discoverNormal(mode, additional, forceExternal)
+	if files, ok := m.Files.(NativeMemoryPrimitives); ok && f.err == nil {
+		f.err = files.MemoryError()
+	}
 	reason := ""
 	if f.err == nil && !forceExternal {
 		n.mu.Lock()
@@ -185,11 +190,7 @@ func withinMemoryPath(path, root string) bool {
 	return err == nil && relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator)) && !filepath.IsAbs(relative)
 }
 func (m *ExplicitUserMemory) nativeRealpath(path string) string {
-	resolve := m.Normal.Realpath
-	if resolve == nil {
-		resolve = filepath.EvalSymlinks
-	}
-	if result, err := resolve(path); err == nil {
+	if result, err := m.nativeResolvePath(path); err == nil {
 		return result
 	}
 	return path
@@ -261,7 +262,7 @@ func (m *ExplicitUserMemory) normalRules(directory, kind string, processed, visi
 	if resolved != directory {
 		visited[resolved] = true
 	}
-	entries, err := m.Normal.ReadDir(resolved)
+	entries, err := m.nativeReadDir(resolved)
 	if err != nil {
 		return nil
 	}
@@ -297,11 +298,9 @@ type normalDirectory struct {
 
 func (m *ExplicitUserMemory) normalDirectories() []normalDirectory {
 	n := m.Normal
-	resolve := n.Realpath
-	if resolve == nil {
-		resolve = filepath.EvalSymlinks
-	}
-	git, canonical := gitRoot(m.Files, n.CWD), canonicalGitRoot(m.Files, resolve, n.CWD)
+	resolve := m.nativeResolvePath
+	files := m.nativeSynchronousFiles()
+	git, canonical := gitRoot(files, n.CWD), canonicalGitRoot(files, resolve, n.CWD)
 	nested := git != "" && canonical != "" && normalizeMemoryPath(git) != normalizeMemoryPath(canonical) && withinMemoryPath(git, canonical)
 	dirs := []normalDirectory{}
 	for d := n.CWD; filepath.Dir(d) != d; d = filepath.Dir(d) {
@@ -341,7 +340,9 @@ func (m *ExplicitUserMemory) canUseNormalFallback(dirs []normalDirectory) (allow
 	}
 	if f := n.fallback[n.CWD]; f != nil {
 		n.mu.Unlock()
-		<-f.done
+		if err := m.waitMemory(f.done); err != nil {
+			panic(excludeFailure{err})
+		}
 		if f.err != nil {
 			panic(excludeFailure{f.err})
 		}
@@ -388,7 +389,9 @@ func (m *ExplicitUserMemory) discoverNormal(mode string, additional []string, fo
 		agents = m.canUseNormalFallback(dirs)
 	}
 	processed := map[string]bool{}
+	n.mu.Lock()
 	external := forceExternal || n.IncludeExternal
+	n.mu.Unlock()
 	result := []MemoryFile{}
 	addFile := func(path, kind string, allowExternal bool) {
 		result = append(result, m.processNormalFile(path, kind, processed, allowExternal, 0, "")...)
@@ -409,8 +412,8 @@ func (m *ExplicitUserMemory) discoverNormal(mode string, additional []string, fo
 	addRules(filepath.Join(n.ManagedRoot, ".claude", "rules"), "Managed", external)
 	managedOnly := mode == "managed-only"
 	if !managedOnly && m.normalHasSource("userSettings") {
-		addFile(filepath.Join(m.ConfigHome, "CLAUDE.md"), "User", true)
-		addRules(filepath.Join(m.ConfigHome, "rules"), "User", true)
+		addFile(filepath.Join(m.normalUserConfigDirectory(), "CLAUDE.md"), "User", true)
+		addRules(filepath.Join(m.normalUserConfigDirectory(), "rules"), "User", true)
 	}
 	for _, directory := range dirs {
 		if !managedOnly && m.normalHasSource("projectSettings") && !directory.skipProject {
@@ -433,7 +436,13 @@ func (m *ExplicitUserMemory) discoverNormal(mode string, additional []string, fo
 	}
 	if n.AutoMemoryEnabled {
 		directory := ""
-		if n.AutoMemoryDirectory != nil {
+		if native, ok := m.Files.(NativeMemoryPrimitives); ok {
+			var err error
+			directory, err = native.MemoryDirectory()
+			if err != nil {
+				return nil, err
+			}
+		} else if n.AutoMemoryDirectory != nil {
 			var err error
 			directory, err = n.AutoMemoryDirectory()
 			if err != nil {
@@ -461,6 +470,14 @@ func (m *ExplicitUserMemory) discoverNormal(mode string, additional []string, fo
 	}
 	return deduplicateNormalAgents(result), nil
 }
+
+func (m *ExplicitUserMemory) normalUserConfigDirectory() string {
+	if m.Normal.NativeProcess && m.Normal.NativeConfigDirectory != nil {
+		return m.Normal.NativeConfigDirectory()
+	}
+	return m.ConfigHome
+}
+
 func deduplicateNormalAgents(files []MemoryFile) []MemoryFile {
 	byPath := map[string]MemoryFile{}
 	for _, file := range files {

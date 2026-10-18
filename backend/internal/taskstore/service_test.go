@@ -150,6 +150,7 @@ func TestSeparateProcessesUseSameDurableLockAndRevision(t *testing.T) {
 			defer wg.Done()
 			cmd := exec.Command(executable, "-test.run=^TestTaskStoreProcessHelper$")
 			cmd.Env = []string{"HOME=" + root, "USERPROFILE=" + root, "CLAUDE_CONFIG_DIR=" + root, "CC_HAHA_TASKSTORE_TEST_PROCESS=" + root, "PATH=/usr/bin:/bin", "TMPDIR=" + root}
+			capturePublicGoCoverage(t, cmd)
 			output, e := cmd.CombinedOutput()
 			if e != nil {
 				e = fmt.Errorf("child %w: %s", e, output)

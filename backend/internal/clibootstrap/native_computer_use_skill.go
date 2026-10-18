@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/computerusemcp"
+	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/skillcommands"
 )
@@ -35,7 +36,7 @@ func (m *MainPrint) computerUseSkillEnabled() bool {
 	return value
 }
 func (m *MainPrint) computeComputerUseSkillEnabled() bool {
-	if m.options.Platform != "darwin" && m.options.Platform != "windows" && m.options.Platform != "win32" || !computerUseEnvironmentEnabled(m.options.Native.Environment) {
+	if m.options.Platform != "darwin" && m.options.Platform != "windows" && m.options.Platform != "win32" || !computerUseEnvironmentEnabled(m.options.Native.nativeEnvironmentSnapshot()) {
 		return false
 	}
 	data, e := m.options.Native.readFile(m.computerUseConfigPath())
@@ -71,12 +72,17 @@ func (m *MainPrint) nativeComputerUseSkill() (skillcommands.Definition, bool, er
 	if !m.computerUseSkillEnabled() {
 		return skillcommands.Definition{}, false, nil
 	}
+	definition, err := m.nativeComputerUseSkillDefinition()
+	return definition, err == nil, err
+}
+
+func (m *MainPrint) nativeComputerUseSkillDefinition() (skillcommands.Definition, error) {
 	metadata := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoteMain("prompt")}, protocol.JSONField{Name: "name", Value: quoteMain("computer-use")}, protocol.JSONField{Name: "description", Value: quoteMain("Operate apps on the user's Mac — click, type, scroll and read app state through the accessibility engine. For native desktop apps and cross-app workflows. Prefer a purpose-built MCP server, the Chrome extension, or a CLI when one covers the task.")}, protocol.JSONField{Name: "hasUserSpecifiedDescription", Value: json.RawMessage("true")}, protocol.JSONField{Name: "allowedTools", Value: json.RawMessage(`["mcp__computer-use__js","mcp__computer-use__js_reset"]`)}, protocol.JSONField{Name: "whenToUse", Value: quoteMain("When the user wants something done inside a Mac application — playing music, filling a form, navigating an app UI, reading what is on screen. Invoke this BEFORE the first mcp__computer-use__* call; it carries the workflow those tools assume.")}, protocol.JSONField{Name: "disableModelInvocation", Value: json.RawMessage("false")}, protocol.JSONField{Name: "userInvocable", Value: json.RawMessage("true")}, protocol.JSONField{Name: "contentLength", Value: json.RawMessage("0")}, protocol.JSONField{Name: "source", Value: quoteMain("bundled")}, protocol.JSONField{Name: "loadedFrom", Value: quoteMain("bundled")}, protocol.JSONField{Name: "isHidden", Value: json.RawMessage("false")}, protocol.JSONField{Name: "progressMessage", Value: quoteMain("running")})
 	promptText := computerUseSkillPrompt
 	if m.options.Platform == "windows" || m.options.Platform == "win32" {
 		tools, err := computerusemcp.WindowsDefinitions("pixels")
 		if err != nil {
-			return skillcommands.Definition{}, false, err
+			return skillcommands.Definition{}, err
 		}
 		allowed := []string{}
 		for _, tool := range tools {
@@ -84,7 +90,7 @@ func (m *MainPrint) nativeComputerUseSkill() (skillcommands.Definition, bool, er
 		}
 		allowedRaw, err := json.Marshal(allowed)
 		if err != nil {
-			return skillcommands.Definition{}, false, err
+			return skillcommands.Definition{}, err
 		}
 		metadata.Set("allowedTools", allowedRaw)
 		metadata.Set("description", quoteMain("Operate apps on the user's Windows desktop — click, type, scroll and inspect the display through safety-gated pixel tools. For native desktop apps and cross-app workflows. Prefer a purpose-built MCP server, browser integration, or CLI when one covers the task."))
@@ -101,5 +107,10 @@ func (m *MainPrint) nativeComputerUseSkill() (skillcommands.Definition, bool, er
 		}
 		return prompt, nil
 	})
-	return definition, e == nil, e
+	return definition.WithNativeEnablement(func(scope *cooperative.Scope) (bool, error) {
+		if !scope.BelongsTo(m.Owner) {
+			return false, cooperative.ErrRestricted
+		}
+		return m.computerUseSkillEnabled(), nil
+	}), e
 }

@@ -17,10 +17,25 @@ import (
 	"testing"
 	"time"
 
+	"github.com/NanmiCoder/cc-haha/backend/internal/cliargs"
 	"github.com/NanmiCoder/cc-haha/backend/internal/cliinstallation"
 )
 
 func TestActualGoPublicInstallationAndUpdate(t *testing.T) {
+	actualGoPublicInstallationAndUpdate(t, false)
+}
+
+func TestSamePublicNativeInstallationActionAndUpdate(t *testing.T) {
+	actualGoPublicInstallationAndUpdate(t, true)
+}
+
+func actualGoPublicInstallationAndUpdate(t *testing.T, inProcess bool) {
+	t.Helper()
+	if inProcess {
+		originalVersion := version
+		version = "1.2.3"
+		t.Cleanup(func() { version = originalVersion })
+	}
 	root, err := filepath.EvalSymlinks(t.TempDir())
 	if err != nil {
 		t.Fatal(err)
@@ -29,6 +44,7 @@ func TestActualGoPublicInstallationAndUpdate(t *testing.T) {
 	defer cancel()
 	binary := filepath.Join(root, "actual-Go-install-cli")
 	build := exec.CommandContext(ctx, "go", "build", "-p=4", "-tags=native_process_fixture", "-ldflags", "-X main.version=1.2.3", "-o", binary, ".")
+	capturePublicGoCoverage(t, build)
 	if data, err := build.CombinedOutput(); err != nil {
 		t.Fatal(err, string(data))
 	}
@@ -101,9 +117,17 @@ func TestActualGoPublicInstallationAndUpdate(t *testing.T) {
 		t.Fatal(err)
 	}
 	run := func(path string, args ...string) (int, string, string) {
+		environment := append(resumeErrorEnv(home, root, "http://127.0.0.1:9"), "CC_HAHA_CLI_RELEASE_API="+peer.URL, "PATH="+filepath.Join(home, ".local/bin")+string(os.PathListSeparator)+filepath.Join(home, "private-bin")+string(os.PathListSeparator)+"/usr/bin:/bin")
+		parsed := cliargs.Parse(args, cliargs.Config{Version: version})
+		if inProcess && parsed.Parsed != nil && (parsed.Parsed.Path == "claude install" || parsed.Parsed.Path == "claude update" || parsed.Parsed.Path == "claude doctor") {
+			native := nativeCommandConsumerBoundary(t, root, home, environment)
+			var out, diagnostics bytes.Buffer
+			code := runNativeInstallationCommand(ctx, args, parsed.Parsed, native, &out, &diagnostics)
+			return code, out.String(), diagnostics.String()
+		}
 		command := exec.CommandContext(ctx, path, args...)
 		command.Dir = home
-		command.Env = append(resumeErrorEnv(home, root, "http://127.0.0.1:9"), "CC_HAHA_CLI_RELEASE_API="+peer.URL, "PATH="+filepath.Join(home, ".local/bin")+string(os.PathListSeparator)+filepath.Join(home, "private-bin")+string(os.PathListSeparator)+"/usr/bin:/bin")
+		command.Env = environment
 		code, stdout, stderr := resumeErrorRun(t, command, false)
 		return code, string(stdout), string(stderr)
 	}

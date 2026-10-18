@@ -8,6 +8,7 @@ import path, { join as joinPath } from 'node:path'
 import { promisify } from 'node:util'
 
 import { describe, expect, it } from 'vitest'
+import { readScopeExclusions, recordComputerUseExclusion } from '../../scripts/quality-gate/scope-exclusions'
 import {
   ADAPTER_FLAGS,
   reserveLocalPort,
@@ -681,7 +682,7 @@ describe('build-sidecars cu-helper macOS gating', () => {
     // guard, so non-macOS sidecar builds keep using the Python helper instead of
     // attempting a macOS-only Swift build.
     const guarded = source.match(
-      /if \(process\.platform === 'darwin' && cuHelperArch\) \{\s*await buildCuHelper\(cuHelperArch\)\s*\}/,
+      /if \(process\.platform === 'darwin' && cuHelperArch\) \{\s*if \(computerUseExcluded\) \{[\s\S]*?\} else \{\s*await buildCuHelper\(cuHelperArch\)\s*\}\s*\}/,
     )
     expect(guarded).not.toBeNull()
   })
@@ -705,7 +706,10 @@ describe('build-sidecars cu-helper macOS gating', () => {
   })
 })
 
-describe.skipIf(!compiledSidecarSmokeEnabled || process.platform !== 'darwin')('staged cu-helper resource smoke', () => {
+const computerUseExcluded = readScopeExclusions().includes('computer-use')
+if (compiledSidecarSmokeEnabled && computerUseExcluded) recordComputerUseExclusion('cu-helper-staged-resource-smoke')
+
+describe.skipIf(!compiledSidecarSmokeEnabled || process.platform !== 'darwin' || computerUseExcluded)('staged cu-helper resource smoke', () => {
   it('loads optional cursor resources from a relocated staged app instead of the build tree', async context => {
     const exec = promisify(execFile)
     const sourceApp = path.resolve(import.meta.dirname, '../src-tauri/binaries/cc-haha-computer-use.app')

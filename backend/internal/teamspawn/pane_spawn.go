@@ -20,12 +20,12 @@ func (p *PaneRuntime) SelectBackend(mode string, noninteractive, preferTmux bool
 	if noninteractive || p.mode == "in-process" {
 		return "in-process", nil
 	}
+	inITerm := p.environment["TERM_PROGRAM"] == "iTerm.app" || p.environment["ITERM_SESSION_ID"] != ""
+	if p.mode == "auto" && (p.inProcessFallback || !p.insideTmux && !inITerm) {
+		return "in-process", nil
+	}
 	if p.backend != "" {
 		return p.backend, nil
-	}
-	inITerm := p.environment["TERM_PROGRAM"] == "iTerm.app" || p.environment["ITERM_SESSION_ID"] != ""
-	if p.mode == "auto" && !p.insideTmux && !inITerm {
-		return "in-process", nil
 	}
 	if p.insideTmux {
 		p.backend = "tmux"
@@ -45,8 +45,8 @@ func (p *PaneRuntime) SelectBackend(mode string, noninteractive, preferTmux bool
 		return p.backend, nil
 	}
 	if p.mode == "auto" {
-		p.backend = "in-process"
-		return p.backend, nil
+		p.inProcessFallback = true
+		return "in-process", nil
 	}
 	if inITerm {
 		return "", fmt.Errorf("iTerm2 detected but it2 CLI not installed. Install it2 with: pip install it2")

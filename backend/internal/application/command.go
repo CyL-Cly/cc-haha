@@ -58,6 +58,9 @@ func ParseCommand(args []string, version, cwd, temp string, environments ...map[
 	}
 	accepted["--permission-prompt-tool"] = true
 	accepted["--sdk-url"] = true
+	for _, key := range []string{"--file", "--chrome", "--remote", "--teleport", "--deep-link-origin", "--deep-link-repo", "--deep-link-last-fetch"} {
+		accepted[key] = true
+	}
 	for _, key := range []string{"--debug", "-d", "--debug-file", "--debug-to-stderr"} {
 		accepted[key] = true
 	}
@@ -123,6 +126,16 @@ func ParseCommand(args []string, version, cwd, temp string, environments ...map[
 	}
 	a.PermissionPromptToolName = str("permissionPromptTool")
 	a.SDKURL = str("sdkUrl")
+	a.FileSpecs = list("file")
+	if remote, exists := o["remote"]; exists {
+		value, _ := remote.(string)
+		a.Remote = &value
+	}
+	a.Teleport, a.TeleportWithoutValue = str("teleport"), boolean("teleport")
+	a.DeepLinkOrigin, a.DeepLinkRepo = boolean("deepLinkOrigin"), str("deepLinkRepo")
+	if value, ok := o["deepLinkLastFetch"].(float64); ok {
+		a.DeepLinkLastFetch = &value
+	}
 
 	a.DebugArguments = append([]string{}, args...)
 	a.DebugFormatted = boolean("print") && (str("outputFormat") == "json" || str("outputFormat") == "stream-json")
@@ -216,7 +229,7 @@ func ParseCommand(args []string, version, cwd, temp string, environments ...map[
 	}
 	// Source checks verbose after loadInitialMessages; a resume failure must
 	// reach emitLoadError even without verbose, before this format validation.
-	if command.OutputFormat == "stream-json" && !command.Verbose && !command.Arguments.InitOnly && command.Arguments.RewindFiles == "" && !(command.Print && (command.Arguments.Resume != "" || command.Arguments.ResumeWithoutValue || command.Arguments.Continue)) {
+	if command.OutputFormat == "stream-json" && !command.Verbose && !command.Arguments.InitOnly && command.Arguments.RewindFiles == "" && !(command.Print && (command.Arguments.Resume != "" || command.Arguments.ResumeWithoutValue || command.Arguments.Continue || command.Arguments.Teleport != "" || command.Arguments.TeleportWithoutValue)) {
 		return Command{}, parsed, errors.New("Error: When using --print, --output-format=stream-json requires --verbose")
 	}
 	return command, parsed, nil
@@ -250,6 +263,9 @@ func RunCommand(ctx context.Context, command Command, o Options, in io.Reader, o
 	o.Arguments = command.Arguments
 	o.PaneTeammate = command.PaneTeammate
 	o.HookEvents = command.Print && command.OutputFormat == "stream-json" && command.Verbose
+	if !command.Print && o.Native != nil && o.Native.NativeProcess && o.Native.Environment["CLAUDE_CODE_ENTRYPOINT"] == "" {
+		o.Native.Environment["CLAUDE_CODE_ENTRYPOINT"] = "cli"
+	}
 	if command.Bare {
 		environment := make(map[string]string, len(o.Environment)+1)
 		for key, value := range o.Environment {
@@ -260,6 +276,20 @@ func RunCommand(ctx context.Context, command Command, o Options, in io.Reader, o
 		if o.Native != nil {
 			o.Native.Environment["CLAUDE_CODE_SIMPLE"] = "1"
 		}
+	}
+	var remoteStartup *cliRemoteStartup
+	var pickerFileStartup *clibootstrap.MainPrint
+	if !command.Arguments.InitOnly && !command.Arguments.Continue && (command.Arguments.Teleport != "" || command.Arguments.TeleportWithoutValue || !command.Print && command.Arguments.Remote != nil) {
+		var handled bool
+		command, remoteStartup, handled, err = prepareCLIRemoteStartup(ctx, command, &o, in, out, env)
+		if err != nil {
+			return 1, err
+		}
+		defer remoteStartup.Close()
+		if handled {
+			return 0, nil
+		}
+		o.Arguments = command.Arguments
 	}
 	if command.Print && command.InputFormat == "stream-json" && !command.Arguments.InitOnly {
 		if command.Prompt != "" && command.Arguments.SDKURL == "" {
@@ -276,11 +306,17 @@ func RunCommand(ctx context.Context, command Command, o Options, in io.Reader, o
 				in = strings.NewReader(string(data))
 			}
 		}
-		process, err := clibootstrap.NewMainPrint(clibootstrap.MainPrintOptions{PublicPrintLoadErrors: true, AnalyticsHTTP: o.AnalyticsHTTP, HookEvents: o.HookEvents, ComputerUse: o.ComputerUse, Arguments: o.Arguments, PaneTeammate: o.PaneTeammate, Native: o.Native, PID: os.Getpid(), Version: o.Version, Platform: o.Platform, Input: in, Output: out, Error: o.Stderr})
+		process, err := clibootstrap.NewMainPrint(clibootstrap.MainPrintOptions{SessionIngressAuth: o.SessionIngressAuth, PublicPrintLoadErrors: true, AnalyticsHTTP: o.AnalyticsHTTP, HookEvents: o.HookEvents, ComputerUse: o.ComputerUse, Arguments: o.Arguments, PaneTeammate: o.PaneTeammate, Native: o.Native, PID: os.Getpid(), Version: o.Version, Platform: o.Platform, Input: in, Output: out, Error: o.Stderr})
 		if err != nil {
 			return 1, err
 		}
 		defer process.Close()
+		if err := process.BeginNativeAPIPreconnect(ctx); err != nil {
+			return 1, err
+		}
+		if remoteStartup != nil {
+			process.AdoptCLIStartupFiles(remoteStartup.process)
+		}
 		if command.Arguments.RewindFiles != "" {
 			if err := process.StartSession(ctx); err != nil {
 				return 1, err
@@ -341,6 +377,20 @@ func RunCommand(ctx context.Context, command Command, o Options, in io.Reader, o
 		}
 	}
 	if !command.Print && !command.Arguments.Continue && (command.Arguments.ResumeWithoutValue || command.Arguments.Resume == "" && commandTruthyJSON(command.Arguments.FromPR)) {
+		if len(command.Arguments.FileSpecs) > 0 {
+			// Source awaits its already-running file promise before rendering
+			// the no-ID resume/from-PR chooser, including chooser cancellation.
+			pickerFileStartup, err = clibootstrap.NewMainPrint(clibootstrap.MainPrintOptions{SessionIngressAuth: o.SessionIngressAuth, Arguments: command.Arguments, Native: o.Native, PID: os.Getpid(), Version: o.Version, Platform: o.Platform, Interactive: true, Input: strings.NewReader(""), Output: io.Discard, Error: o.Stderr})
+			if err != nil {
+				return 1, err
+			}
+			defer pickerFileStartup.Close()
+			if err := pickerFileStartup.AwaitCLIStartupFiles(ctx); err != nil {
+				return 1, err
+			}
+			o.SessionIngressAuth = pickerFileStartup.CLIIngressAuth()
+			command.Arguments.FileSpecs = nil
+		}
 		var picked bool
 		command, picked, err = selectCLIResumeFromPicker(ctx, command, o, in, out, env)
 		if err != nil {
@@ -356,6 +406,15 @@ func RunCommand(ctx context.Context, command Command, o Options, in io.Reader, o
 		return 1, err
 	}
 	defer session.Close(context.Background())
+	if err := session.process.BeginNativeAPIPreconnect(ctx); err != nil {
+		return 1, err
+	}
+	if remoteStartup != nil {
+		session.process.AdoptCLIStartupFiles(remoteStartup.process)
+	}
+	if pickerFileStartup != nil {
+		session.process.AdoptCLIStartupFiles(pickerFileStartup)
+	}
 	if command.Arguments.InitOnly {
 		return 0, nil
 	}
@@ -370,6 +429,13 @@ func RunCommand(ctx context.Context, command Command, o Options, in io.Reader, o
 		return 1, errors.New("Error: When using --print, --output-format=stream-json requires --verbose")
 	}
 	if !command.Print {
+		// Source starts downloads without blocking startup, then waits only in
+		// the resume/from-PR/teleport branch immediately before rendering REPL.
+		if !command.Arguments.Continue && (command.Arguments.Resume != "" || command.Arguments.ResumeWithoutValue || commandTruthyJSON(command.Arguments.FromPR)) {
+			if err := session.process.AwaitCLIStartupFiles(ctx); err != nil {
+				return 1, err
+			}
+		}
 		history, fullscreen, bootstrapError := session.initialTUIHistory(ctx)
 		if bootstrapError != nil {
 			return 1, bootstrapError
@@ -378,7 +444,21 @@ func RunCommand(ctx context.Context, command Command, o Options, in io.Reader, o
 		if titleError != nil {
 			return 1, titleError
 		}
-		err = tui.Run(ctx, session, tui.Options{Input: in, Output: out, Environment: env, Title: "Claude Code", TerminalTitle: terminalTitle, InitialDraft: protocol.TrimJavaScriptString(command.Arguments.Prefill), InitialPrompt: command.Prompt, InitialHistory: history, Fullscreen: fullscreen})
+		var terminalSession tui.Session = session
+		var initialRemoteState *tui.TerminalRemoteState
+		if remoteStartup != nil && remoteStartup.created != nil {
+			remote, failure := newTerminalRemoteSession(ctx, session, remoteStartup)
+			if failure != nil {
+				return 1, failure
+			}
+			defer remote.Close(context.Background())
+			terminalSession, history = remote, remote.initialHistory(remoteStartup.prompt)
+			initialRemoteState, failure = remote.initialRemoteState(ctx)
+			if failure != nil {
+				return 1, failure
+			}
+		}
+		err = tui.Run(ctx, terminalSession, tui.Options{ExternalEditor: &tui.ExternalEditor{Resolve: session.process.TerminalPromptEditor}, InitialRemoteState: initialRemoteState, Input: in, Output: out, Environment: env, Title: "Claude Code", TerminalTitle: terminalTitle, InitialDraft: protocol.TrimJavaScriptString(command.Arguments.Prefill), InitialPrompt: command.Prompt, InitialHistory: history, Fullscreen: fullscreen})
 		if err != nil {
 			return 1, err
 		}

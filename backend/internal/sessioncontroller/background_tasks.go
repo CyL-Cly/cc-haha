@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"sort"
+	"sync/atomic"
 
 	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
@@ -25,8 +26,9 @@ type BackgroundTask struct {
 	Promote          func(*cooperative.Scope) error
 	// Stop is the original task-specific workflow kill path. It settles that
 	// same AppState entry, cancels its agents and emits its own notification.
-	Stop  func(*cooperative.Scope, float64) error
-	order uint64
+	Stop            func(*cooperative.Scope, float64) error
+	WorkflowControl func(*cooperative.Scope, string, string) error
+	order           uint64
 }
 type StopBackgroundTaskError struct{ Code, Message string }
 
@@ -56,10 +58,79 @@ func (c *Controller) RegisterBackgroundTaskOnOwner(scope *cooperative.Scope, tas
 		data = MergeAgentReplacement(previous.Data, data)
 		order = previous.order
 	}
-	root.appState.Tasks[id] = &BackgroundTask{Data: data, Cancel: task.Cancel, WorkCancel: task.WorkCancel, IdleCallbacks: append([]func(){}, task.IdleCallbacks...), ReadOutput: task.ReadOutput, ReadActiveOutput: task.ReadActiveOutput, ReadDelta: task.ReadDelta, Join: task.Join, Promote: task.Promote, Stop: task.Stop, order: order}
+	root.appState.Tasks[id] = &BackgroundTask{Data: data, Cancel: task.Cancel, WorkCancel: task.WorkCancel, IdleCallbacks: append([]func(){}, task.IdleCallbacks...), ReadOutput: task.ReadOutput, ReadActiveOutput: task.ReadActiveOutput, ReadDelta: task.ReadDelta, Join: task.Join, Promote: task.Promote, Stop: task.Stop, WorkflowControl: task.WorkflowControl, order: order}
 	root.publishForegroundTasks()
 	return nil
 }
+
+// BackgroundTaskRegistration is an ephemeral startup receipt. Rollback must run
+// on the same actual task Owner; it is never stored in AppState or on disk.
+type BackgroundTaskRegistration struct {
+	Replaced bool
+	// Commit only releases startup custody; it never reads or mutates AppState.
+	Commit   func()
+	Rollback func(*cooperative.Scope) error
+}
+
+// RegisterAgentTaskOnOwner retains the normal task -> name publication order,
+// while preserving the exact overwritten entry for a failed startup. Registering
+// that entry again would run MergeAgentReplacement and lose the prior state.
+func (c *Controller) RegisterAgentTaskOnOwner(scope *cooperative.Scope, task *BackgroundTask, name string) (*BackgroundTaskRegistration, error) {
+	root, e := c.todosController(scope)
+	if e != nil {
+		return nil, e
+	}
+	if task == nil {
+		return nil, errors.New("Agent task registration requires an actual task")
+	}
+	id := task.Data.String("id")
+	previous := root.appState.Tasks[id]
+	oldName, nameExisted := root.appState.AgentNameRegistry[name]
+	if e = c.RegisterBackgroundTaskOnOwner(scope, task); e != nil {
+		return nil, e
+	}
+	admitted := root.appState.Tasks[id]
+	owner := c.options.Bootstrap.Owner()
+	var pending atomic.Bool
+	pending.Store(true)
+	registration := &BackgroundTaskRegistration{Replaced: previous != nil, Commit: func() { pending.Store(false) }}
+	registration.Rollback = func(scope *cooperative.Scope) error {
+		// Like timer finally-cleanup, this already-authorized receipt may undo
+		// its exact registration after the caller's context is cancelled. It
+		// cannot grant new business access or revive a retired Controller.
+		if !scope.BelongsTo(owner) || !c.active || !root.active || !root.BootstrapOwns(owner) {
+			return cooperative.ErrRestricted
+		}
+		if !pending.CompareAndSwap(true, false) {
+			return nil
+		}
+		// An independently replaced/deleted task owns its subsequent state.
+		if root.appState.Tasks[id] != admitted {
+			return nil
+		}
+		if previous == nil {
+			delete(root.appState.Tasks, id)
+		} else {
+			root.appState.Tasks[id] = previous
+		}
+		if name != "" && root.appState.AgentNameRegistry[name] == id {
+			if nameExisted {
+				root.appState.AgentNameRegistry[name] = oldName
+			} else {
+				delete(root.appState.AgentNameRegistry, name)
+			}
+		}
+		root.publishForegroundTasks()
+		return nil
+	}
+	if name != "" {
+		if e = c.RegisterAgentNameOnOwner(scope, name, id); e != nil {
+			return nil, errors.Join(e, registration.Rollback(scope))
+		}
+	}
+	return registration, nil
+}
+
 func (c *Controller) BackgroundTaskOnOwner(scope *cooperative.Scope, id string) (*BackgroundTask, error) {
 	root, e := c.todosController(scope)
 	if e != nil {
@@ -69,7 +140,7 @@ func (c *Controller) BackgroundTaskOnOwner(scope *cooperative.Scope, id string) 
 	if task == nil {
 		return nil, nil
 	}
-	return &BackgroundTask{Data: cloneBackgroundData(task.Data), Cancel: task.Cancel, WorkCancel: task.WorkCancel, IdleCallbacks: append([]func(){}, task.IdleCallbacks...), ReadOutput: task.ReadOutput, ReadActiveOutput: task.ReadActiveOutput, ReadDelta: task.ReadDelta, Join: task.Join, Promote: task.Promote, Stop: task.Stop, order: task.order}, nil
+	return &BackgroundTask{Data: cloneBackgroundData(task.Data), Cancel: task.Cancel, WorkCancel: task.WorkCancel, IdleCallbacks: append([]func(){}, task.IdleCallbacks...), ReadOutput: task.ReadOutput, ReadActiveOutput: task.ReadActiveOutput, ReadDelta: task.ReadDelta, Join: task.Join, Promote: task.Promote, Stop: task.Stop, WorkflowControl: task.WorkflowControl, order: task.order}, nil
 }
 func (c *Controller) BackgroundTasksOnOwner(scope *cooperative.Scope) ([]protocol.JSONObject, error) {
 	root, e := c.todosController(scope)
@@ -131,7 +202,7 @@ func (c *Controller) StopBackgroundTaskOnOwner(scope *cooperative.Scope, id stri
 		return protocol.JSONObject{}, &StopBackgroundTaskError{"not_running", "Task " + id + " is not running (status: " + status + ")"}
 	}
 	kind := text(task.Data.Get("type"))
-	if kind == "local_workflow" && task.Stop != nil {
+	if (kind == "local_workflow" || kind == "remote_agent" && c.options.NativeTools) && task.Stop != nil {
 		if e := task.Stop(scope, now); e != nil {
 			return protocol.JSONObject{}, e
 		}

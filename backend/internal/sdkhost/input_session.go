@@ -104,10 +104,24 @@ func (task *inputTask) next(scope *cooperative.Scope) error {
 					task.drainRequested = true
 				}
 			case "interrupt", "end_session":
+				task.host.cancelSDKPromptSuggestion()
 				err = task.host.sessionInboxStopControl(scope, result.Value, task.cancelModel)
 				if request.String("subtype") == "end_session" && err == nil {
-					task.closed = true
-					task.notify()
+					// Source breaks its for-await only after the input iterator's
+					// asynchronous return closes the active raw producer. The ACK
+					// above precedes that close; ordinary EOF hooks do not run.
+					returned, failure := task.input.Iterator().ReturnUndefined(scope)
+					if failure == nil {
+						_, failure = returned.Then(scope, func(_ *cooperative.Scope, _ IteratorResult[protocol.JSONObject], closeError error) error {
+							task.failure, task.closed = closeError, true
+							task.notify()
+							return nil
+						})
+					}
+					if failure != nil {
+						task.failure, task.closed = failure, true
+						task.notify()
+					}
 					return nil
 				}
 			case "send_agent_message":
@@ -209,11 +223,15 @@ func (h *Host) RunStream(scope *cooperative.Scope, modelContext context.Context,
 	if err := task.next(scope); err != nil {
 		return err
 	}
+	runStarted := false
 	for {
 		if task.failure != nil {
 			return task.failure
 		}
 		var initial *protocol.JSONObject
+		var turnContext context.Context
+		var interruptModel context.CancelCauseFunc
+		var cancelModel context.CancelFunc
 		if run != nil && run.active && !task.drainRequested {
 			queued, e := h.options.Controller.HasMainThreadQueuedCommandOnOwner(scope)
 			if e != nil {
@@ -224,14 +242,45 @@ func (h *Host) RunStream(scope *cooperative.Scope, modelContext context.Context,
 			}
 		}
 		if task.drainRequested {
-			endInputContext := h.beginInputContext(modelContext)
+			if !runStarted {
+				if err := run.begin(scope); err != nil {
+					return err
+				}
+				if err := h.awaitSDKRunMCPUpdate(scope); err != nil {
+					return err
+				}
+				runStarted = true
+			}
+			// Source drainCommandQueue creates the turn AbortController before
+			// entering ask/processUserInput. Priority-now input can cancel during
+			// those actual async reactions, before the first provider request.
+			turnContext, interruptModel = context.WithCancelCause(modelContext)
+			cancelModel = func() { interruptModel(context.Canceled) }
+			task.cancelModel, task.interruptModel = cancelModel, interruptModel
+			h.nativeSDKPermissionAbort = cancelModel
+			endInputContext := h.beginInputContext(turnContext)
+			queued, queueError := h.options.Controller.HasMainThreadQueuedCommandOnOwner(scope)
+			if queueError != nil {
+				endInputContext()
+				cancelModel()
+				return queueError
+			}
+			if queued {
+				h.cancelSDKPromptSuggestion()
+			}
 			initial, err = h.serial.BeginDequeued(scope)
 			endInputContext()
 			if err != nil {
+				cancelModel()
 				return err
 			}
 		}
 		if initial == nil {
+			if cancelModel != nil {
+				cancelModel()
+				task.cancelModel, task.interruptModel = nil, nil
+				h.nativeSDKPermissionAbort = nil
+			}
 			task.drainRequested = false
 			if err = h.FlushHeldBackgroundResult(scope); err != nil {
 				return err
@@ -239,8 +288,12 @@ func (h *Host) RunStream(scope *cooperative.Scope, modelContext context.Context,
 			if finished, err := run.finish(scope); err != nil {
 				return err
 			} else if finished {
+				if !run.active {
+					runStarted = false
+				}
 				continue
 			}
+			runStarted = false
 			if h.options.Print != nil && h.options.Print.NativeLeaderInbox != nil && !h.isAgent() && h.options.Print.TeamWorker == nil {
 				pending, e := h.options.Print.NativeLeaderInbox(modelContext, scope, task.closed)
 				if e != nil {
@@ -252,7 +305,7 @@ func (h *Host) RunStream(scope *cooperative.Scope, modelContext context.Context,
 				}
 			}
 			if task.closed {
-				return nil
+				return h.finishSDKPromptSuggestionInput(scope)
 			}
 			task.wake = make(chan struct{})
 			if err = scope.AwaitPromise(task.wake); err != nil {
@@ -260,20 +313,13 @@ func (h *Host) RunStream(scope *cooperative.Scope, modelContext context.Context,
 			}
 			continue
 		}
-		if run != nil && !run.active {
-			if err := run.begin(scope); err != nil {
-				return err
-			}
-		}
 		run.setPhase("draining_commands")
-		turnContext, interruptModel := context.WithCancelCause(modelContext)
-		cancelModel := func() { interruptModel(context.Canceled) }
-		task.cancelModel = cancelModel
-		task.interruptModel = interruptModel
-		h.nativeSDKPermissionAbort = cancelModel
 		err = h.consumeASK(scope, turnContext, initial, options)
 		if err == nil {
 			err = h.options.Controller.CompletedCommandLifecycle(scope)
+		}
+		if err == nil {
+			h.launchSDKPromptSuggestion(scope)
 		}
 		retainHookSignal := err == nil && h.nativePermissionHooks.RetainTurnCancel(scope, cancelModel)
 		if !retainHookSignal {
@@ -286,6 +332,29 @@ func (h *Host) RunStream(scope *cooperative.Scope, modelContext context.Context,
 			return err
 		}
 	}
+}
+
+// print.run awaits updateSdkMcp once before its dequeue loop. Even the real
+// empty-config body returns an async promise; the input task keeps consuming
+// control replies independently while this same owner awaits that return.
+func (h *Host) awaitSDKRunMCPUpdate(scope *cooperative.Scope) error {
+	if h.options.NativeSDKPrepareTurn == nil {
+		return nil
+	}
+	returned, err := NewOwnerFuture[struct{}](h.options.Owner)
+	if err != nil {
+		return err
+	}
+	if failure := h.options.NativeSDKPrepareTurn(scope); failure != nil {
+		err = returned.Reject(scope, failure)
+	} else {
+		err = returned.Resolve(scope, struct{}{})
+	}
+	if err != nil {
+		return err
+	}
+	_, err = returned.Await(scope)
+	return err
 }
 
 func (h *Host) consumeASK(scope *cooperative.Scope, modelContext context.Context, initial *protocol.JSONObject, options StreamOptions) (resultErr error) {
@@ -408,13 +477,9 @@ func (h *Host) consumeASK(scope *cooperative.Scope, modelContext context.Context
 		err = submit.Complete(scope)
 	}
 	if err == nil {
-		err = scope.AwaitPromise(completed.Done())
+		_, err = completed.Await(scope)
 	}
 	h.emitIterator = nil
-	if err != nil {
-		return err
-	}
-	_, err = completed.Wait(context.Background())
 	return err
 }
 

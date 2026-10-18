@@ -22,6 +22,7 @@ import (
 	"github.com/NanmiCoder/cc-haha/backend/internal/ownerasync"
 	"github.com/NanmiCoder/cc-haha/backend/internal/protocol"
 	"github.com/NanmiCoder/cc-haha/backend/internal/provider"
+	"github.com/NanmiCoder/cc-haha/backend/internal/providernative"
 	"github.com/NanmiCoder/cc-haha/backend/internal/providerproxy"
 	"github.com/NanmiCoder/cc-haha/backend/internal/queryhooks"
 	"github.com/NanmiCoder/cc-haha/backend/internal/queryloop"
@@ -101,6 +102,7 @@ type Options struct {
 	OriginalEnv                   map[string]string
 	Runtime                       provider.SourceRuntime
 	TLSState                      *tlsconfig.State
+	NativeHTTPPool                *providernative.Pool
 	NativeOpenAI                  func(*cooperative.Scope) *provider.OpenAICodexConfig
 	NativeGrok                    func(*cooperative.Scope) *provider.GrokOAuthConfig
 	NativeAPIKeySource            func(*cooperative.Scope) (string, error)
@@ -112,7 +114,12 @@ type Options struct {
 	Output                        Output
 	OnPhase                       func(string)
 	ObserveRequest                func(string, http.Header, json.RawMessage)
-	ObserveModelInput             func(requestretry.Input)
+	// ObserveFetch is the actual SDK fetch boundary, after client/key lookup.
+	// It receives detached input and cannot supply replacement transport data.
+	ObserveFetch        func(tracecapture.FetchInput)
+	ObserveNativeFetch  func(provider.OwnerNativeEvent)
+	ObserveModelInput   func(requestretry.Input)
+	ObserveModelFailure func(error)
 	// UnhandledRecord receives only fire-and-forget Record rejections on the canonical owner.
 	UnhandledRecord func(*cooperative.Scope, error)
 	// PermissionRejections is borrowed from the same process/Owner when supplied.
@@ -120,12 +127,15 @@ type Options struct {
 	PermissionRejections *ownerasync.IgnoredRejections
 }
 type Host struct {
+	agentSummary                             *nativeAgentSummary
+	nativeQueryTools                         *nativeQueryTools
 	nativePermissionPromptTool               *queryloop.RegisteredTool
 	nativeAutoModeModels                     *cooperative.NativeAutoModeModels
 	autoConsecutiveDenials, autoTotalDenials int
 	internalFastSettings                     *protocol.JSONObject
 	nativeModelValidationModels              *cooperative.NativeModelValidationModels
 	nativeSideQuestionModels                 *cooperative.NativeSideQuestionModels
+	sdkSuggestions                           *nativeSDKSuggestions
 	nativeAutoDreamModels                    *cooperative.NativeAutoDreamModels
 	nativeCompactModels                      *cooperative.NativeCompactModels
 	nativeCompactFailures                    float64
@@ -151,6 +161,7 @@ type Host struct {
 	originalTools                            []protocol.JSONObject
 	mcpServers                               []protocol.JSONObject
 	options                                  Options
+	nativeSDKSettingsReader                  *clistartupenv.NativeSDKSettingsReader
 	serial                                   *sessioncontroller.SerialASK
 	pending                                  *sessioncontroller.PendingWriter
 	preflight                                *querypreflight.Service
@@ -176,6 +187,8 @@ type Host struct {
 	nativePromptHookModels                   *cooperative.NativePromptHookModels
 	nativeAgentHookModels                    *cooperative.NativeAgentHookModels
 	nativeInsightsModels                     *cooperative.NativeInsightsModels
+	nativeRemoteTitleModels                  *cooperative.NativeRemoteTitleModels
+	nativeComputerUseCleanup                 *cooperative.NativeComputerUseCleanup
 	lastOutputType                           string
 	lastOutputIsError                        bool
 	closing                                  bool
@@ -267,7 +280,7 @@ func newHost(scope *cooperative.Scope, options Options) (*Host, error) {
 	}
 	if scope != nil {
 		if options.Print != nil && options.Print.NativeProcess {
-			err = sdkpermissions.ValidateNativeWithBindings(merged, options.Print.Registry.HasNativePluginBindings(), options.Print.NativeMCP != nil, options.Print.Tools != nil && options.Print.Tools.HasWebFetchBindings(), options.Print.Tools != nil && options.Print.Tools.HasWebSearchBindings(), options.Print.Permissions.NativeStartup.Owns(options.Owner), options.Print.Tools != nil && options.Print.Tools.HasWorktreeBindings(), options.Print.Hooks.HasNativeCommandBindings(options.Owner), options.Print.NativeSystemContext != nil, nativeTeamExecutionBound(scope, options), nativeAuthHelperBound(scope, options), nativeCloudSettingsBound(scope, options), nativeWorkflowKeywordBound(options), options.Print.Tools != nil && options.Print.Tools.HasInternalReadableBindings(), options.Print.Tools != nil && options.Print.Tools.HasSandboxBindings(), options.Print.NativeTypedModelSettings != nil && options.Print.NativeTypedModelSettings(scope), options.Print.NativeMainAgentSettings != nil && options.Print.NativeMainAgentSettings(scope), nativePlanSettingsBound(options), options.Print.NativeSpinnerVerb != nil, options.Print.NativeThinkingSummaryBeta != nil, options.Print.NativeAutoDream != nil && options.Print.CloseNativeAutoDream != nil)
+			err = sdkpermissions.ValidateNativeWithBindings(merged, options.Print.Registry.HasNativePluginBindings(), options.Print.NativeMCP != nil, options.Print.Tools != nil && options.Print.Tools.HasWebFetchBindings(), options.Print.Tools != nil && options.Print.Tools.HasWebSearchBindings(), options.Print.Permissions.NativeStartup.Owns(options.Owner), options.Print.Tools != nil && options.Print.Tools.HasWorktreeBindings(), options.Print.Hooks.HasNativeCommandBindings(options.Owner), options.Print.NativeSystemContext != nil, nativeTeamExecutionBound(scope, options), nativeAuthHelperBound(scope, options), nativeCloudSettingsBound(scope, options), nativeWorkflowKeywordBound(options), options.Print.Tools != nil && options.Print.Tools.HasInternalReadableBindings(), options.Print.Tools != nil && options.Print.Tools.HasSandboxBindings(), options.Print.NativeTypedModelSettings != nil && options.Print.NativeTypedModelSettings(scope), options.Print.NativeMainAgentSettings != nil && options.Print.NativeMainAgentSettings(scope), nativePlanSettingsBound(options), options.Print.NativeSpinnerVerb != nil, options.Print.NativeThinkingSummaryBeta != nil, options.Print.NativeAutoDream != nil && options.Print.CloseNativeAutoDream != nil, options.Print.NativeStatusLineSettings != nil && options.Print.NativeStatusLineSettings(scope))
 		} else {
 			err = sdkpermissions.ValidateNeutral(merged)
 		}
@@ -293,6 +306,7 @@ func newHost(scope *cooperative.Scope, options Options) (*Host, error) {
 			permissionInput.NativeWorkflowBindings = options.Print.Tools != nil && options.Print.Tools.HasWorkflowBindings()
 			permissionInput.NativeTeamToolBindings = options.Print.Tools != nil && options.Print.Tools.HasTeamBindings()
 			permissionInput.NativeImageBindings = options.Print.Tools != nil && options.Print.Tools.HasImageBindings()
+			permissionInput.NativeLSPBindings = options.Print.Tools != nil && options.Print.Tools.HasLSPBindings()
 			if options.Print.Tools != nil {
 				permissionInput.NativeImageEnabled, e = options.Print.Tools.ImageToolsEnabled(scope)
 				if e != nil {
@@ -314,6 +328,7 @@ func newHost(scope *cooperative.Scope, options Options) (*Host, error) {
 			permissionInput.NativeAutoDreamBindings = options.Print.NativeAutoDream != nil && options.Print.CloseNativeAutoDream != nil
 			permissionInput.NativeThinkingSummaryBindings = options.Print.NativeThinkingSummaryBeta != nil
 			permissionInput.NativeModelCommandBindings = options.Print.NativeTypedModelSettings != nil && options.Print.NativeTypedModelSettings(scope)
+			permissionInput.NativeStatusLineBindings = options.Print.NativeStatusLineSettings != nil && options.Print.NativeStatusLineSettings(scope)
 			permissionInput.NativeMainAgentBindings = options.Print.NativeMainAgentSettings != nil && options.Print.NativeMainAgentSettings(scope)
 			permissionInput.NativeSandboxBindings = options.Print.Tools != nil && options.Print.Tools.HasSandboxBindings()
 		}
@@ -407,6 +422,14 @@ func newHost(scope *cooperative.Scope, options Options) (*Host, error) {
 			}
 		}
 		if options.Print.NativeProcess {
+			host.nativeComputerUseCleanup, err = cooperative.NewNativeComputerUseCleanup(scope, options.Owner)
+			if err != nil {
+				return nil, err
+			}
+			host.sdkSuggestions, err = newNativeSDKSuggestions(scope, options.Owner)
+			if err != nil {
+				return nil, err
+			}
 			host.nativeAutoDreamModels, err = cooperative.NewNativeAutoDreamModels(scope, options.Owner)
 			if err != nil {
 				return nil, err
@@ -429,6 +452,16 @@ func newHost(scope *cooperative.Scope, options Options) (*Host, error) {
 				return nil, err
 			}
 			host.nativeInsightsModels, err = cooperative.NewNativeInsightsModels(scope, options.Owner)
+			if err != nil {
+				return nil, err
+			}
+			host.nativeRemoteTitleModels, err = cooperative.NewNativeRemoteTitleModels(scope, options.Owner)
+			if err != nil {
+				return nil, err
+			}
+		}
+		if options.Print.NativeAgentSummary != nil {
+			host.agentSummary, err = newNativeAgentSummary(scope, host)
 			if err != nil {
 				return nil, err
 			}
@@ -539,7 +572,23 @@ func (h *Host) initMessageOnOwner(scope *cooperative.Scope, model string) (proto
 	if !scope.BelongsTo(h.options.Owner) {
 		return protocol.JSONObject{}, cooperative.ErrRestricted
 	}
+	var catalog *NativeInitCatalog
+	if h.options.Print != nil && h.options.Print.BeginNativeInitCatalog != nil {
+		pending, err := h.options.Print.BeginNativeInitCatalog(scope)
+		if err != nil {
+			return protocol.JSONObject{}, err
+		}
+		value, err := pending.Await(scope)
+		if err != nil {
+			return protocol.JSONObject{}, err
+		}
+		catalog = &value
+	}
 	message := h.initMessageForModel(model)
+	if catalog != nil {
+		message.Set("skills", raw(catalog.Skills))
+		message.Set("plugins", raw(catalog.Plugins))
+	}
 	if h.options.NativeAPIKeySource != nil {
 		source, err := h.options.NativeAPIKeySource(scope)
 		if err != nil {
@@ -550,12 +599,18 @@ func (h *Host) initMessageOnOwner(scope *cooperative.Scope, model string) (proto
 	return message, nil
 }
 func (h *Host) RunOne(scope *cooperative.Scope, modelContext context.Context, sdk protocol.JSONObject) (failure error) {
+	defer func() {
+		if failure == nil {
+			h.launchSDKPromptSuggestion(scope)
+		}
+	}()
 	if !scope.BelongsTo(h.options.Owner) || modelContext == nil {
 		return cap("ASK owner/model context")
 	}
 	if h.closing {
 		return cooperative.ErrClosed
 	}
+	h.cancelSDKPromptSuggestion()
 	endInputContext := h.beginInputContext(modelContext)
 	initial, err := h.serial.Begin(scope, sdk)
 	endInputContext()
@@ -616,6 +671,48 @@ func (h *Host) RunDequeued(scope *cooperative.Scope, modelContext context.Contex
 }
 
 func (h *Host) runAccepted(scope *cooperative.Scope, modelContext context.Context, initial *protocol.JSONObject) (failure error) {
+	finishQueryTools := h.beginNativeQueryTools(scope)
+	defer func() {
+		if err := finishQueryTools(); failure == nil {
+			failure = err
+		}
+	}()
+	defer func() {
+		if h.emitIterator == nil {
+			err := h.serial.Finally(scope)
+			if failure == nil {
+				failure = err
+			}
+		}
+	}()
+	var promptPrefix *sessioncontroller.RawContext
+	systemContext := protocol.NewJSONObject()
+	if h.serial.HasPendingNativeInput(scope, initial) {
+		// QueryEngine.submitMessage builds its real prompt/context prefix before
+		// processUserInput. Keep that same snapshot for the later model projection.
+		if h.emitIterator == nil && h.options.NativeSDKPrepareTurn != nil {
+			if err := h.options.NativeSDKPrepareTurn(scope); err != nil {
+				return err
+			}
+		}
+		if err := h.captureToolSearchCatalogue(scope); err != nil {
+			return err
+		}
+		prefix, system, err := h.nativeFetchSystemPromptParts(scope, h.captureInferenceSettings().model)
+		if err != nil {
+			return err
+		}
+		promptPrefix, systemContext = &prefix, system
+	}
+	// Source ask's actual first demand enters QueryEngine.submitMessage. The
+	// native dequeuer retains the command; this same owned ASK producer now
+	// runs processUserInput, with the turn's original abort lifetime.
+	endInputContext := h.beginInputContext(modelContext)
+	failure = h.serial.PrepareAcceptedInput(scope, initial)
+	endInputContext()
+	if failure != nil {
+		return failure
+	}
 	h.permissionDenials = nil
 	previousHookSignal := h.nativePermissionHookSignal
 	h.nativePermissionHookSignal = modelContext
@@ -623,10 +720,15 @@ func (h *Host) runAccepted(scope *cooperative.Scope, modelContext context.Contex
 
 	computerUseCleaned := false
 	cleanupComputerUse := func(_ context.Context) error {
-		if h.isAgent() || h.options.Print == nil || h.options.Print.NativeMCP == nil || !h.options.Print.NativeMCP.HasComputerUse() {
+		if h.isAgent() || h.options.Print == nil || h.options.Print.NativeMCP == nil {
 			return nil
 		}
 		computerUseCleaned = true
+		if h.nativeComputerUseCleanup != nil {
+			return h.nativeComputerUseCleanup.Run(scope, func(cleanupScope *cooperative.Scope, cleanupContext context.Context) error {
+				return h.options.Print.NativeMCP.EndTurnOwnerContext(cleanupScope, cleanupContext)
+			})
+		}
 		return h.options.Print.NativeMCP.EndTurnOwner(scope)
 	}
 	defer func() {
@@ -634,10 +736,10 @@ func (h *Host) runAccepted(scope *cooperative.Scope, modelContext context.Contex
 			_ = cleanupComputerUse(context.Background())
 		}
 	}()
-	// Source run() awaits updateSdkMcp after initialize has enqueued its ACK.
-	// Connecting here lets the input task deliver handshake responses without
-	// blocking initialize, and refreshes the tools before the ASK catalogue.
-	if h.options.NativeSDKPrepareTurn != nil {
+	// The streaming ASK's concrete iterator belongs to RunStream, whose drain
+	// already awaited updateSdkMcp before dequeue. Direct RunOne/RunDequeued and
+	// terminal/agent consumers retain their existing preparation here.
+	if h.emitIterator == nil && promptPrefix == nil && h.options.NativeSDKPrepareTurn != nil {
 		if err := h.options.NativeSDKPrepareTurn(scope); err != nil {
 			return err
 		}
@@ -686,14 +788,6 @@ func (h *Host) runAccepted(scope *cooperative.Scope, modelContext context.Contex
 		h.permissionMode = permissions.String("mode")
 	}
 
-	defer func() {
-		if h.emitIterator == nil {
-			err := h.serial.Finally(scope)
-			if failure == nil {
-				failure = err
-			}
-		}
-	}()
 	if local := h.serial.LocalInputResult(); local != nil {
 		return h.runLocalInput(scope, local)
 	}
@@ -708,7 +802,7 @@ func (h *Host) runAccepted(scope *cooperative.Scope, modelContext context.Contex
 	if err := h.prepareNativeTeamWorker(scope, modelContext); err != nil {
 		return err
 	}
-	if prompt := h.serial.PromptInputResult(); prompt != nil && prompt.NoQuery {
+	if prompt := h.serial.PromptInputResult(); prompt != nil && (prompt.NoQuery || prompt.TerminalLocalJSX || h.observesNativeTeammateInput(prompt)) {
 		if observer := h.options.Print.OnLocalInputMessages; observer != nil {
 			messages := make([]protocol.JSONObject, len(prompt.Messages))
 			for index, message := range prompt.Messages {
@@ -718,7 +812,9 @@ func (h *Host) runAccepted(scope *cooperative.Scope, modelContext context.Contex
 				return err
 			}
 		}
-		return h.runLocalOutput(scope, &sessioncontroller.LocalInputResult{Text: prompt.NoQueryResultText, StartMillis: prompt.StartMillis}, false)
+		if prompt.NoQuery {
+			return h.runLocalOutput(scope, &sessioncontroller.LocalInputResult{Text: prompt.NoQueryResultText, StartMillis: prompt.StartMillis}, false)
+		}
 	}
 	if h.options.Print != nil && (h.options.Print.InputAttachments != nil || h.options.Print.PlanAttachments != nil) && !(h.serial.PromptInputResult() != nil && h.serial.PromptInputResult().AttachmentsHandled) {
 		history := h.serial.History()
@@ -771,22 +867,8 @@ func (h *Host) runAccepted(scope *cooperative.Scope, modelContext context.Contex
 			return err
 		}
 		h.options.OnPhase("Record:returned")
-		if h.isAgent() || pendingSessionInput {
-			if _, err = initialRecord.Await(scope); err != nil {
-				return err
-			}
-			h.options.OnPhase("Record:fulfilled")
-			if pendingSessionInput {
-				flush, e := h.pending.Flush(scope)
-				if e != nil {
-					return e
-				}
-				if e = flush.Await(scope); e != nil {
-					return e
-				}
-			}
-		} else {
-			h.observeRecord(scope, initialRecord)
+		if err = h.awaitInitialTranscript(scope, initialRecord, pendingSessionInput); err != nil {
+			return err
 		}
 	}
 
@@ -810,8 +892,10 @@ func (h *Host) runAccepted(scope *cooperative.Scope, modelContext context.Contex
 			return nil
 		}
 	}
-	if err := h.captureToolSearchCatalogue(scope); err != nil {
-		return err
+	if promptPrefix == nil {
+		if err := h.captureToolSearchCatalogue(scope); err != nil {
+			return err
+		}
 	}
 	contextInput := requestcontext.Context{Tools: h.originalTools, Thinking: requestcontext.Thinking{Type: "disabled"}, Options: requestcontext.Options{Model: inference.model}, Host: requestcontext.Host{Profile: requestcontext.DirectRelayProfile, Env: h.requestEnvironment, SDKBetas: h.options.SDKBetas, TTLAllowlist: []string{}}}
 	deviceID, err := h.requestDeviceID(scope)
@@ -865,19 +949,41 @@ func (h *Host) runAccepted(scope *cooperative.Scope, modelContext context.Contex
 			return err
 		}
 	}
-	resolved, err := h.serial.Raw(contextInput)
-	if err != nil {
-		return err
-	}
-	systemContext := protocol.NewJSONObject()
-	if h.options.Print != nil && h.options.Print.NativeSystemContext != nil {
-		systemContext, err = h.options.Print.NativeSystemContext(scope)
+	var resolved sessioncontroller.RawContext
+	if promptPrefix != nil {
+		resolved = *promptPrefix
+		prompt := resolved.Context.SystemPrompt
+		resolved.Context = contextInput
+		resolved.Context.Host.SessionID = h.options.Controller.SessionID()
+		resolved.Context.Options.QuerySource = h.querySource()
+		resolved.Context.Options.IsNonInteractiveSession = true
+		resolved.Context.SystemPrompt = prompt
+	} else {
+		resolved, err = h.serial.Raw(contextInput)
 		if err != nil {
 			return err
+		}
+		if h.options.Print != nil && h.options.Print.NativeSystemContext != nil {
+			systemContext, err = h.options.Print.NativeSystemContext(scope)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	if h.options.Print != nil && h.options.Print.AppendSystemPrompt != "" {
 		resolved.Context.SystemPrompt = append(append([]json.RawMessage{}, resolved.Context.SystemPrompt...), quote(h.options.Print.AppendSystemPrompt))
+	}
+
+	// runAgent exposes cache-safe values before starting the provider loop.
+	// Retain no initial messages: each timer tick reloads actual disk history.
+	if h.agentSummary != nil && !h.agentSummary.started {
+		contextCopy, e := h.serial.Resolve(context.Background(), resolved, nil)
+		if e != nil {
+			return e
+		}
+		if e = h.startAgentSummary(scope, nativeSideQuestionCache{request: requestretry.Input{Context: contextCopy, Runtime: h.options.Runtime}, raw: resolved, systemContext: systemContext}); e != nil {
+			return e
+		}
 	}
 	var checkpointMessageID json.RawMessage
 	if h.options.Print != nil && h.options.Print.FileHistory != nil && !h.isAgent() {
@@ -938,6 +1044,11 @@ func (h *Host) runAccepted(scope *cooperative.Scope, modelContext context.Contex
 	currentMessageTtftMillis := float64(0)
 	preflightEnv := map[string]string{}
 	for key, value := range h.requestEnvironment {
+		// Custom headers are consumed by the SDK client constructor. They do
+		// not define a query preflight environment policy.
+		if key == "ANTHROPIC_CUSTOM_HEADERS" {
+			continue
+		}
 		if key != "CLAUDE_CODE_SIMPLE" && (h.options.Print == nil || !h.options.Print.NativeProcess || nativePreflightEnvironment(key)) {
 			preflightEnv[key] = value
 		}
@@ -1033,6 +1144,7 @@ func (h *Host) runAccepted(scope *cooperative.Scope, modelContext context.Contex
 			}
 			return result, e
 		},
+		RefreshTools: func() error { return h.refreshNativeQueryTools(scope, &resolved) },
 		ResolveModelInput: func(_ context.Context, round queryloop.Round) (requestretry.Input, error) {
 			history := []protocol.JSONObject{}
 			for _, message := range round.History {
@@ -1072,6 +1184,9 @@ func (h *Host) runAccepted(scope *cooperative.Scope, modelContext context.Contex
 			if e != nil {
 				return requestretry.Input{}, e
 			}
+			if e := h.options.Controller.RefreshNativeParentRequestOnOwner(scope, &input); e != nil {
+				return requestretry.Input{}, e
+			}
 			original := requestretry.Input{Context: input, Runtime: h.options.Runtime, ResolvedFastMode: fast}
 			h.recordUserContextSnapshot(scope, resolved.UserContext)
 			h.rememberSideQuestionCandidate(original, resolved, systemContext, round.Tracking)
@@ -1101,6 +1216,9 @@ func (h *Host) runAccepted(scope *cooperative.Scope, modelContext context.Contex
 			return result, e
 		},
 	}
+	if h.options.Print != nil && h.options.Print.NativeProcess {
+		loopHost.OnNativeQuota = h.options.Print.NativeQuotaStatus
+	}
 	loopHost.Request = h.requestDependencies(scope)
 	if h.options.Print != nil {
 		if err = h.installPrintBatch(scope, &loopHost, inference.model, func(round queryloop.Round) queryhooks.Context { return hookContext(round, nil) }); err != nil {
@@ -1109,6 +1227,11 @@ func (h *Host) runAccepted(scope *cooperative.Scope, modelContext context.Contex
 	}
 
 	askConsumerWithoutBudget := func(value queryloop.Yield) (requestretry.NoticeAction, error) {
+		if print := h.options.Print; print != nil && print.NativeProcess && print.NativeInteractive && print.NativeTerminalSpinner != nil {
+			if e := print.NativeTerminalSpinner(scope, value); e != nil {
+				return 0, e
+			}
+		}
 		if value.RequestStart {
 			return requestretry.Resume, nil
 		}
@@ -1220,7 +1343,8 @@ func (h *Host) runAccepted(scope *cooperative.Scope, modelContext context.Contex
 		if message.Type() == "attachment" && object(message.Record.Get("attachment")).String("type") == "queued_command" && h.options.Print != nil && h.options.Print.NativeProcess {
 			return h.acceptQueuedCommand(scope, message, &askHistory, persistSession)
 		}
-		if message.Type() == "attachment" && (attachments.Ultracode(message.Record.Get("attachment")) || retainedPlanAttachment(message.Record.Get("attachment")) || retainedSkillAttachment(message.Record.Get("attachment")) || h.options.Print != nil && h.options.Print.NativeProcess && (object(message.Record.Get("attachment")).String("type") == "teammate_mailbox" || object(message.Record.Get("attachment")).String("type") == "hook_stopped_continuation" || object(message.Record.Get("attachment")).String("type") == "hook_blocking_error" || object(message.Record.Get("attachment")).String("type") == "hook_additional_context" || object(message.Record.Get("attachment")).String("type") == "hook_success" || object(message.Record.Get("attachment")).String("type") == "async_hook_response") || attachments.Invisible(message.Record.Get("attachment"))) {
+		nativeLSPDiagnostic := h.retainedNativeLSPAttachment(message.Record.Get("attachment"))
+		if message.Type() == "attachment" && (attachments.Ultracode(message.Record.Get("attachment")) || retainedPlanAttachment(message.Record.Get("attachment")) || retainedSkillAttachment(message.Record.Get("attachment")) || h.options.Print != nil && h.options.Print.NativeProcess && (object(message.Record.Get("attachment")).String("type") == "teammate_mailbox" || object(message.Record.Get("attachment")).String("type") == "hook_stopped_continuation" || object(message.Record.Get("attachment")).String("type") == "hook_blocking_error" || object(message.Record.Get("attachment")).String("type") == "hook_additional_context" || object(message.Record.Get("attachment")).String("type") == "hook_success" || object(message.Record.Get("attachment")).String("type") == "async_hook_response") || attachments.Invisible(message.Record.Get("attachment")) || nativeLSPDiagnostic) {
 			askHistory = append(askHistory, message)
 			if persistSession {
 				future, e := h.serial.BeginRecord(scope, askHistory)
@@ -1235,7 +1359,7 @@ func (h *Host) runAccepted(scope *cooperative.Scope, modelContext context.Contex
 			}
 			return requestretry.Resume, nil
 		}
-		if (message.Type() == "progress" && (retainedWebProgress(message.Record) || retainedTaskOutputProgress(message.Record) || retainedNativeBashProgress(message.Record))) || h.options.Print != nil && h.options.Print.NativeProcess && messages.IsNativeHookRecord(message.Record) {
+		if (message.Type() == "progress" && (retainedWebProgress(message.Record) || retainedTaskOutputProgress(message.Record) || retainedNativeBashProgress(message.Record) || h.options.Print != nil && h.options.Print.NativeProcess && retainedNativeSkillProgress(message.Record))) || h.options.Print != nil && h.options.Print.NativeProcess && messages.IsNativeHookRecord(message.Record) {
 			// Source keeps progress in mutableMessages and records it inline;
 			// its normalizer emits only the original variant-specific SDK messages.
 			if e := h.serial.Accept(scope, message); e != nil {
@@ -1414,15 +1538,21 @@ func (h *Host) completeCheckpointForMessage(scope *cooperative.Scope, messageID 
 	if err := scope.AwaitFulfilledCatch(); err != nil {
 		return err
 	}
-	future, err := h.pending.Flush(scope)
+	exported, err := h.beginFlushSessionStorage(scope)
 	if err != nil {
 		return err
 	}
-	err = future.Await(scope)
+	_, err = exported.Await(scope)
 	h.options.OnPhase("checkpoint:settled")
 	return err
 }
 func (h *Host) Close(ctx context.Context) error {
+	if e := h.CloseAgentSummaries(ctx); e != nil {
+		return e
+	}
+	if err := h.closeSDKPromptSuggestions(ctx); err != nil {
+		return err
+	}
 	if e := h.CloseAutoDream(ctx); e != nil {
 		return e
 	}
@@ -1480,6 +1610,12 @@ func (h *Host) Shutdown(scope *cooperative.Scope) error {
 // Join is administrative resource teardown after the retained exit snapshot,
 // not Source cleanup and not an implicit all-Record flush.
 func (h *Host) Join(ctx context.Context) error {
+	if e := h.CloseAgentSummaries(ctx); e != nil {
+		return e
+	}
+	if err := h.closeSDKPromptSuggestions(ctx); err != nil {
+		return err
+	}
 	if e := h.CloseAutoDream(ctx); e != nil {
 		return e
 	}

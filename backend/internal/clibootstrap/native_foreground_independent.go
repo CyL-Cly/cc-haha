@@ -34,6 +34,7 @@ type nativeForegroundAgent struct {
 	result                        *ownerasync.OwnerFuture[builtintools.AgentRunResult]
 	oldDone, taskDone             chan struct{}
 	promoted, registered          bool
+	skillFork                     bool
 	unregisterCleanup             runtimecleanup.Unregister
 	stopAuto                      func()
 	oldContext                    context.Context
@@ -41,13 +42,26 @@ type nativeForegroundAgent struct {
 	taskContext                   context.Context
 }
 
-func (m *MainPrint) startNativeForegroundAgent(ctx context.Context, scope *cooperative.Scope, request builtintools.AgentRequest) (*ownerasync.OwnerFuture[builtintools.AgentRunResult], error) {
+func (m *MainPrint) startNativeForegroundAgent(ctx context.Context, scope *cooperative.Scope, request builtintools.AgentRequest, forkProfiles ...*nativeSkillForkProfile) (*ownerasync.OwnerFuture[builtintools.AgentRunResult], error) {
 	if !scope.BelongsTo(m.Owner) || m.nativeModelSelector == nil || m.prompt == nil {
 		return nil, cooperative.ErrRestricted
 	}
-	releaseSlot, e := m.reserveOrdinarySubagent()
-	if e != nil {
-		return nil, e
+	if len(forkProfiles) > 1 || len(forkProfiles) == 1 && forkProfiles[0] == nil {
+		return nil, cooperative.ErrRestricted
+	}
+	var fork *nativeSkillForkProfile
+	if len(forkProfiles) == 1 {
+		fork = forkProfiles[0]
+	}
+	// reserveSubagentSlot is an AgentTool wrapper, not Source runAgent.
+	// Direct forked Skill/slash calls therefore use no AgentTool slot.
+	releaseSlot := func() {}
+	var e error
+	if fork == nil {
+		releaseSlot, e = m.reserveOrdinarySubagent()
+		if e != nil {
+			return nil, e
+		}
 	}
 	transferred := false
 	defer func() {
@@ -112,21 +126,30 @@ func (m *MainPrint) startNativeForegroundAgent(ctx context.Context, scope *coope
 	if e != nil {
 		return fail(e)
 	}
+	if fork != nil {
+		if e = fork.bind(&o); e != nil {
+			return fail(e)
+		}
+	}
 	result, e := ownerasync.NewOwnerFuture[builtintools.AgentRunResult](m.Owner)
 	if e != nil {
 		return fail(e)
 	}
-	streamID, e := nativeAgentID()
-	if e != nil {
-		return fail(e)
+	streamID := ""
+	if fork == nil {
+		streamID, e = nativeAgentID()
+		if e != nil {
+			return fail(e)
+		}
 	}
 	oldCtx, cancelOld := context.WithCancelCause(context.Background())
 	taskCtx, cancelTask := context.WithCancelCause(context.Background())
-	state := &nativeForegroundAgent{releaseSlot: releaseSlot, parent: m, id: id, directory: directory, streamID: streamID, request: request, tree: tree, start: m.options.Native.NowMillis(), progress: m.nativeAgentProgress(request, tree.CWD), result: result, oldDone: make(chan struct{}), taskDone: make(chan struct{}), oldContext: oldCtx, cancelOld: cancelOld, taskContext: taskCtx, cancelTask: cancelTask}
+	state := &nativeForegroundAgent{skillFork: fork != nil, releaseSlot: releaseSlot, parent: m, id: id, directory: directory, streamID: streamID, request: request, tree: tree, start: m.options.Native.NowMillis(), progress: m.nativeAgentProgress(request, tree.CWD), result: result, oldDone: make(chan struct{}), taskDone: make(chan struct{}), oldContext: oldCtx, cancelOld: cancelOld, taskContext: taskCtx, cancelTask: cancelTask}
+	o.DetachedAgent.agentSummary = request.AgentToolInvocation && m.nativeSDKAgentSummaryEnabled.Load() && !skillTruthy(m.options.Native.Environment["CLAUDE_CODE_DISABLE_BACKGROUND_TASKS"])
 	o.DetachedAgent.isBackgrounded = state.backgrounded.Load
 	o.DetachedAgent.iteratorReady = func(childScope *cooperative.Scope) error {
 		return bridgeAgentVoid(state.child, m, childScope, func(parentScope *cooperative.Scope) error {
-			if !state.registered && !skillTruthy(m.options.Native.Environment["CLAUDE_CODE_DISABLE_BACKGROUND_TASKS"]) {
+			if fork == nil && !state.registered && !skillTruthy(m.options.Native.Environment["CLAUDE_CODE_DISABLE_BACKGROUND_TASKS"]) {
 				return state.register(parentScope)
 			}
 			return nil
@@ -150,7 +173,7 @@ func (m *MainPrint) startNativeForegroundAgent(ctx context.Context, scope *coope
 				}
 				return nil
 			}
-			if !state.registered && !skillTruthy(m.options.Native.Environment["CLAUDE_CODE_DISABLE_BACKGROUND_TASKS"]) {
+			if fork == nil && !state.registered && !skillTruthy(m.options.Native.Environment["CLAUDE_CODE_DISABLE_BACKGROUND_TASKS"]) {
 				if e := state.register(parentScope); e != nil {
 					return e
 				}
@@ -164,10 +187,23 @@ func (m *MainPrint) startNativeForegroundAgent(ctx context.Context, scope *coope
 					return e
 				}
 				state.messages = append(state.messages, queryloop.Message{Record: original.Clone()})
+				if yield.Message.Type() == "assistant" {
+					if e := state.observeCompletedAssistantSpinner(parentScope, data); e != nil {
+						return e
+					}
+				}
 			}
 			last := state.progress.observe(data)
 			if state.progress.failure != nil {
 				return state.progress.failure
+			}
+			if state.registered && o.DetachedAgent.agentSummary {
+				if e := m.updateNativeAgentProgress(parentScope, id, state.progress); e != nil {
+					return e
+				}
+			}
+			if fork != nil && fork.progress != nil {
+				return fork.progress(parentScope, id, request.Prompt, data)
 			}
 			if state.registered && last != "" {
 				if e := m.emitForegroundAgentProgress(parentScope, id, request, state.start, state.progress, last); e != nil {
@@ -201,6 +237,9 @@ func (m *MainPrint) startNativeForegroundAgent(ctx context.Context, scope *coope
 		var path string
 		e = child.Owner.Run(context.Background(), func(childScope *cooperative.Scope) error {
 			if e := child.hook.EmptyEvent("SubagentStart", id); e != nil {
+				return e
+			}
+			if e := child.installNativeIndependentAgentSkills(ctx, childScope); e != nil {
 				return e
 			}
 			var e error
@@ -270,6 +309,9 @@ func (m *MainPrint) startNativeForegroundAgent(ctx context.Context, scope *coope
 }
 
 func (state *nativeForegroundAgent) emit(kind string, data json.RawMessage, failure error) error {
+	if state.skillFork {
+		return nil
+	}
 	event := protocol.NewJSONObject(protocol.JSONField{Name: "type", Value: quoteMain("system")}, protocol.JSONField{Name: "subtype", Value: quoteMain("agent_run_message")}, protocol.JSONField{Name: "run_agent_id", Value: quoteMain(state.id)}, protocol.JSONField{Name: "stream_id", Value: quoteMain(state.streamID)}, protocol.JSONField{Name: "target_agent_id", Value: quoteMain(state.id)}, protocol.JSONField{Name: "event_kind", Value: quoteMain(kind)}, protocol.JSONField{Name: "uuid", Value: quoteMain(uuidMain())}, protocol.JSONField{Name: "session_id", Value: quoteMain(state.parent.Controller.SessionID())})
 	if data != nil {
 		event.Set("message", data)
@@ -289,13 +331,15 @@ func (state *nativeForegroundAgent) register(scope *cooperative.Scope) error {
 		state.cancelTask(e)
 		state.cancelOld(e)
 	}
-	if e := m.beginForegroundAgentTask(scope, state.id, state.path, state.request, cancel, state.taskDone); e != nil {
+	registration, e := m.prepareNativeAgentTask(scope, state.id, state.path, state.request, cancel, state.taskDone, false)
+	if e != nil {
 		return e
 	}
 	stop, e := m.bindNativeForegroundPromotionAction(scope, state.id, state.promote)
 	if e != nil {
-		return e
+		return errors.Join(e, registration.Rollback(scope))
 	}
+	registration.Commit()
 	state.stopAuto = stop
 	state.registered = true
 	return nil
@@ -328,6 +372,9 @@ func (state *nativeForegroundAgent) run(ref *ownerasync.NativeReference) {
 		history, e = child.Host.OriginalHistoryOnOwner(scope)
 		return e
 	})
+	if e := child.Host.CloseAgentSummaries(context.Background()); failure == nil {
+		failure = e
+	}
 	_ = child.Owner.Run(context.Background(), func(scope *cooperative.Scope) error {
 		return child.killAgentOwnedShells(scope, state.id)
 	})

@@ -20,7 +20,14 @@ import (
 func TestNativeCommandUsesRealSharedHarnessForTextJSONAndSDK(t *testing.T) {
 	for _, format := range []string{"text", "json", "stream-json"} {
 		t.Run(format, func(t *testing.T) {
-			provider := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { response(w, "cli", "", nil, "SHARED CLI") }))
+			provider := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				// The original CLI init HEAD is distinct from model POSTs.
+				if r.Method == http.MethodHead {
+					w.WriteHeader(http.StatusNoContent)
+					return
+				}
+				response(w, "cli", "", nil, "SHARED CLI")
+			}))
 			defer provider.Close()
 			o := nativeSessionOptions(t, provider.URL)
 			args := []string{"--print", "--model", "fixture-model", "--tools", "Read,Write,Edit,Bash,Glob,Grep", "--system-prompt", "Actual shared CLI test.", "--thinking", "disabled", "--output-format", format}
@@ -59,6 +66,12 @@ func TestNativeCommandRetainsCompletedTextBeforeStreamError(t *testing.T) {
 	for _, format := range []string{"text", "json", "stream-json"} {
 		t.Run(format, func(t *testing.T) {
 			provider := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				// The original CLI init HEAD is distinct from model POSTs.
+				if r.Method == http.MethodHead {
+					w.WriteHeader(http.StatusNoContent)
+					return
+				}
+
 				w.Header().Set("Content-Type", "text/event-stream")
 				for _, event := range []map[string]any{
 					{"type": "message_start", "message": map[string]any{"id": "partial-text", "type": "message", "role": "assistant", "model": "fixture-model", "content": []any{}, "stop_reason": nil, "stop_sequence": nil, "usage": map[string]any{"input_tokens": 1, "output_tokens": 0}}},
@@ -100,6 +113,12 @@ func TestNativeCommandRetainsCompletedTextBeforeStreamError(t *testing.T) {
 func TestNativeCommandRetainsCompletedTextAfterPhysicalSocketResetWithoutResend(t *testing.T) {
 	var requests atomic.Int32
 	provider := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		requests.Add(1)
 		_, _ = io.ReadAll(r.Body)
 		connection, _, err := w.(http.Hijacker).Hijack()
@@ -142,6 +161,12 @@ func TestNativeCommandRetainsCompletedTextAfterPhysicalSocketResetWithoutResend(
 func TestBarePublicCommandUsesOnlyOriginalThreeToolsAndSkipsProjectMemory(t *testing.T) {
 	var captured []byte
 	provider := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		captured, _ = io.ReadAll(r.Body)
 		response(w, "bare-public", "", nil, "BARE_SHARED_OK")
 	}))

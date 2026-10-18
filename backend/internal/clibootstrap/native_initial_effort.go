@@ -15,7 +15,7 @@ func (m *MainPrint) initialNativeEffort() (json.RawMessage, error) {
 	if m.mainThreadAgent != nil && m.mainThreadAgent.definition != nil && m.mainThreadAgent.definition.Effort != nil {
 		return append(json.RawMessage(nil), m.mainThreadAgent.definition.Effort...), nil
 	}
-	settings, err := m.Startup.GetInitialSettings()
+	settings, err := m.nativeSDKInitialSettings()
 	if err != nil || settings == nil {
 		return nil, err
 	}

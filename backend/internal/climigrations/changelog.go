@@ -8,6 +8,9 @@ import (
 )
 
 func (s *Service) startChangelog() (*ChangelogTask, error) {
+	if s.native != nil {
+		return s.startNativeChangelog()
+	}
 	s.emit(Event{"kind": "changelogStart"})
 	config, err := s.options.Global.Get()
 	if err != nil {

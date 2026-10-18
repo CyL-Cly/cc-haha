@@ -45,14 +45,22 @@ func (m *MainCommand) AuthLogout(ctx context.Context, scope *cooperative.Scope, 
 	}); err != nil {
 		return cliauth.Result{ExitCode: 1, Stderr: "Failed to log out.\n"}, nil
 	}
+	m.clearNativeCommandLegacyAPIKey()
 	_ = m.Secure.Delete(ctx)
 	m.Secure.Clear()
+	m.commandClaudeTokens = nil
 	m.Settings.InvalidateSettingsCache()
-	remote := filepath.Join(m.Native.Environment["CLAUDE_CONFIG_DIR"], "remote-settings.json")
-	if err := m.Native.check("logout remote settings cache", remote); err != nil {
-		return cliauth.Result{}, err
+	if m.remoteManaged != nil {
+		if err := m.remoteManaged.clear(scope); err != nil {
+			return cliauth.Result{}, err
+		}
+	} else {
+		remote := filepath.Join(m.Native.ConfigHomeDirectory(), "remote-settings.json")
+		if err := m.Native.check("logout remote settings cache", remote); err != nil {
+			return cliauth.Result{}, err
+		}
+		_ = os.Remove(remote)
 	}
-	_ = os.Remove(remote)
 	if err := m.Global.Save(func(current *protocol.JSONObject) (*protocol.JSONObject, error) {
 		next := current.Clone()
 		next.Delete("oauthAccount")

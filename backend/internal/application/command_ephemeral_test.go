@@ -19,6 +19,12 @@ func TestActualPublicCLIResumeAtForkAndNoSessionPersistenceUsesSharedModelConsum
 	const appendix = "PUBLIC_CLI_APPEND_SYSTEM_4521"
 	var requests atomic.Int32
 	provider := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// The original CLI init HEAD is distinct from model POSTs.
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		data, e := io.ReadAll(r.Body)
 		if e != nil {
 			t.Error(e)

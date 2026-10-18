@@ -43,10 +43,11 @@ type AttemptState struct {
 	CrossedSideEffectBoundary bool
 	CommittedOutput           bool
 	ServerToolUseStarted      bool
+	PartialMessage            bool
 }
 
 func (c *Controller) AttemptState() AttemptState {
-	return AttemptState{CompletedMessages: len(c.created), CrossedSideEffectBoundary: c.crossed, CommittedOutput: c.committed, ServerToolUseStarted: c.serverToolStarted}
+	return AttemptState{CompletedMessages: len(c.created), CrossedSideEffectBoundary: c.crossed, CommittedOutput: c.committed, ServerToolUseStarted: c.serverToolStarted, PartialMessage: c.start != nil && !c.messageStop}
 }
 func (c *Controller) FlushProducerErrorWithoutToolUse(emit Emit) error {
 	if c.closed {

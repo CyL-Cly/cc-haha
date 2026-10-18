@@ -1,6 +1,10 @@
 package sessioncontroller
 
-import "github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
+import (
+	"encoding/json"
+
+	"github.com/NanmiCoder/cc-haha/backend/internal/cooperative"
+)
 
 // Source getTaskListId uses team context first. This native branch is entered
 // by an actual standalone main/child context; teammate producers stay separate.
@@ -22,7 +26,15 @@ func (c *Controller) TaskListIDOnOwner(scope *cooperative.Scope, agentID string)
 	if teamList != "" {
 		return teamList, nil
 	}
-	if id := c.options.ResumeOptions.Environment["CLAUDE_CODE_TASK_LIST_ID"]; id != "" {
+	id := c.options.ResumeOptions.Environment["CLAUDE_CODE_TASK_LIST_ID"]
+	if c.nativeTaskEnvironment != nil {
+		// The original getter samples process.env after resolving team context.
+		// An absent/empty live property falls through to agent/session identity;
+		// it cannot revive a value from the immutable launch map.
+		id = ""
+		_ = json.Unmarshal(c.nativeTaskEnvironment.Get("CLAUDE_CODE_TASK_LIST_ID"), &id)
+	}
+	if id != "" {
 		return id, nil
 	}
 	if agentID != "" {
