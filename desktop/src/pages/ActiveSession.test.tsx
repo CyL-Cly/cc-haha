@@ -215,6 +215,9 @@ describe('ActiveSession trajectory view', () => {
     render(<ActiveSession sessionId={id} />)
     const list = screen.getByTestId('message-list')
     const input = screen.getByTestId('chat-input')
+    const decisions = screen.getByTestId('session-decision-dock')
+    expect(decisions).toHaveClass('px-6')
+    expect(decisions.firstElementChild).toHaveClass('max-w-[var(--chat-content-max-width)]')
     // Never mounted (so never fetched) until the user opens it.
     expect(screen.queryByTestId('trajectory-view')).not.toBeInTheDocument()
 
@@ -229,6 +232,8 @@ describe('ActiveSession trajectory view', () => {
     expect(screen.getByTestId('chat-input')).toBe(input)
     expect(input).toHaveAttribute('data-visible', 'false')
     expect(screen.getByTestId('session-composer-slot')).toHaveClass('hidden')
+    expect(screen.getByTestId('session-decision-dock')).toBe(decisions)
+    expect(decisions).toHaveClass('hidden')
 
     fireEvent.click(screen.getByRole('tab', { name: 'Chat' }))
     expect(screen.getByTestId('trajectory-view')).toBe(trajectory)
@@ -238,6 +243,7 @@ describe('ActiveSession trajectory view', () => {
     expect(screen.getByTestId('chat-input')).toBe(input)
     expect(input).toHaveAttribute('data-visible', 'true')
     expect(screen.getByTestId('session-composer-slot')).not.toHaveClass('hidden')
+    expect(decisions).not.toHaveClass('hidden')
   })
 
   it('marks 对话 while a card waits there and the trajectory hides it', async () => {

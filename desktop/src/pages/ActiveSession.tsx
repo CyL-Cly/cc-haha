@@ -1,3 +1,4 @@
+import { SessionDelegationCard } from '@/components/sessionDelegation/SessionDelegationCard'
 import { AgentTeamsPlanCard } from '@/components/agentTeams/AgentTeamsPlanCard'
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { RefObject } from 'react'
@@ -948,6 +949,7 @@ export function ActiveSession({ sessionId, active = true }: { sessionId?: string
             <>
               {!isMobileLayout && (
                 <SessionChatHeader
+                  mobileLayout={isMobileLayout}
                   title={headerTitle}
                   compact={showRightPanel}
                   metadata={headerMetadata}
@@ -1036,9 +1038,17 @@ export function ActiveSession({ sessionId, active = true }: { sessionId?: string
             />
           ) : null}
 
-          {active && activeTabId && <div className="mx-auto w-full max-w-[900px] shrink-0 px-4">
-            <AgentTeamsPlanCard key={activeTabId} sessionId={activeTabId} />
-          </div>}
+          {active && activeTabId && (
+            <div
+              data-testid="session-decision-dock"
+              className={`${showTrajectory ? 'hidden' : ''} min-h-0 shrink-0 ${isMobileLayout ? 'px-3' : showRightPanel ? 'px-4' : 'px-6'}`}
+            >
+              <div className="mx-auto w-full min-w-0 max-w-[var(--chat-content-max-width)] max-h-[min(45dvh,440px)] space-y-2 overflow-y-auto overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <AgentTeamsPlanCard key={activeTabId} sessionId={activeTabId} />
+                <SessionDelegationCard key={`delegation:${activeTabId}`} sessionId={activeTabId} />
+              </div>
+            </div>
+          )}
 
           {/*
             轨迹 is for reading: a reply sent from it would land in the hidden
