@@ -1312,6 +1312,7 @@ export const kr: Record<TranslationKey, string> = {
   'settings.activity.streamEmpty': '최근 90일간 토큰 사용 내역이 없습니다',
   'settings.activity.peakOn': '최고 {amount} · {date}',
   'settings.activity.otherModels': '기타 모델',
+  'settings.activity.moreModels': '그 외 {count}개 모델',
   'settings.activity.day.close': '일별 상세 닫기',
   'settings.activity.day.rankOfPeak': '{rank}위 · 최고치의 {percent}',
   'settings.activity.day.average': '일평균 {amount}',

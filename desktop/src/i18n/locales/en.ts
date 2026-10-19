@@ -1308,6 +1308,7 @@ Row 9, all 8 cells: continuing from straight down, turning left through lower-le
   'settings.activity.streamEmpty': 'No token usage in the last 90 days',
   'settings.activity.peakOn': 'Peak {amount} · {date}',
   'settings.activity.otherModels': 'Other models',
+  'settings.activity.moreModels': '{count} more models',
   'settings.activity.day.close': 'Close day details',
   'settings.activity.day.rankOfPeak': 'No. {rank} · {percent} of peak',
   'settings.activity.day.average': 'Avg {amount}',

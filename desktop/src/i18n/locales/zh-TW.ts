@@ -1309,6 +1309,7 @@ export const zh: Record<TranslationKey, string> = {
   'settings.activity.streamEmpty': '近 90 天沒有 Token 用量',
   'settings.activity.peakOn': '峰值 {amount} · {date}',
   'settings.activity.otherModels': '其他模型',
+  'settings.activity.moreModels': '另外 {count} 個模型',
   'settings.activity.day.close': '關閉當天詳情',
   'settings.activity.day.rankOfPeak': '第 {rank} 高 · 佔峰值 {percent}',
   'settings.activity.day.average': '日均 {amount}',

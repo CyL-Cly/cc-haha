@@ -1310,6 +1310,7 @@ export const jp: Record<TranslationKey, string> = {
   'settings.activity.streamEmpty': '直近90日のトークン使用はありません',
   'settings.activity.peakOn': '最大 {amount} · {date}',
   'settings.activity.otherModels': 'その他のモデル',
+  'settings.activity.moreModels': 'ほか {count} モデル',
   'settings.activity.day.close': 'この日の詳細を閉じる',
   'settings.activity.day.rankOfPeak': '{rank} 位 · ピークの {percent}',
   'settings.activity.day.average': '日平均 {amount}',
