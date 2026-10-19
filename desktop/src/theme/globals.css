@@ -2548,8 +2548,9 @@ body.sidebar-resizing * {
    see, so its offsets would run short by one gap per turn. */
 .chat-turn-rail--none {
   padding-top: 24px;
-  /* The prompt's hover actions hang below the bubble (absolutely positioned,
-     24px tall) and must land inside this box: `--cv` rows paint-contain, so
+  /* The prompt's hover actions hang below the bubble (a zero-height row whose
+     24px of buttons overflow downward) and must land inside this box: `--cv`
+     rows paint-contain, so
      anything past the padding edge is clipped. The bar does not add height;
      it borrows the gap that separates the prompt from its reply. */
   padding-bottom: 24px;
