@@ -1406,6 +1406,10 @@ function bindSessionTurnObserver(sessionId: string): void {
       stopLateNonAgentTaskIfRequested(sessionId, taskLifecycle)
       closeLateNonAgentTaskAfterRuntimeExit(sessionId, taskLifecycle)
       closeStoppedAgentsAfterRuntimeExit(sessionId, message)
+      // Renderer output reaches this through translateCliMessage. A delegated
+      // worker starts with no page open, and its init is the only signal that
+      // moves its title from the launch placeholder into the worktree transcript.
+      cacheSessionInitMetadata(sessionId, message)
       if (!sessionStartupPromises.has(sessionId)) {
         refreshBackgroundTaskDisconnectCeiling(sessionId)
         // Control-only sessions never had a renderer disconnect. Observe their
