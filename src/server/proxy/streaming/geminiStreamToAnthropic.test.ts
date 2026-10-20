@@ -129,6 +129,24 @@ describe('geminiStreamToAnthropic', () => {
     }
   })
 
+  test('cancels the upstream request when the client stops reading', async () => {
+    let upstreamCancelled: unknown
+    const encoder = new TextEncoder()
+    const upstream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ candidates: [{ content: { role: 'model', parts: [{ text: 'Working' }] } }] })}\n\n`))
+        // Never closes: the model is still generating.
+      },
+      cancel(reason) {
+        upstreamCancelled = reason ?? 'cancelled'
+      },
+    })
+    const reader = geminiStreamToAnthropic(upstream, MODEL, noContinuation).getReader()
+    expect(new TextDecoder().decode((await reader.read()).value)).toContain('message_start')
+    await reader.cancel('user stopped')
+    expect(upstreamCancelled).toBe('user stopped')
+  })
+
   test('keeps partial text when a safety stop follows visible output', async () => {
     const output = await events(geminiStreamToAnthropic(sse(
       { candidates: [{ content: { role: 'model', parts: [{ text: 'Here is' }] }, finishReason: 'RECITATION' }] },

@@ -4591,6 +4591,79 @@ describe('OpenCode Go preset request contract', () => {
     }
   })
 
+  test('reports every Gemini failure to the CLI as an error, never as a reply', async () => {
+    const { provider } = await createProvider()
+    const originalFetch = globalThis.fetch
+    const sse = (chunk: unknown) => new Response(`data: ${JSON.stringify(chunk)}\r\n\r\n`, {
+      headers: { 'Content-Type': 'text/event-stream' },
+    })
+    const cases: Array<{
+      name: string
+      stream: boolean
+      upstream: Array<() => Response>
+      status: number
+      message: string
+    }> = [
+      {
+        name: 'quota exhausted',
+        stream: false,
+        upstream: [() => Response.json({ error: { code: 429, message: 'Resource exhausted', status: 'RESOURCE_EXHAUSTED' } }, { status: 429 })],
+        // The upstream status reaches the CLI so its rate-limit retry applies.
+        status: 429,
+        message: 'Upstream returned HTTP 429: {"error":{"code":429,"message":"Resource exhausted"',
+      },
+      {
+        name: 'connection failure',
+        stream: true,
+        upstream: [() => { throw new TypeError('fetch failed') }],
+        status: 502,
+        message: 'fetch failed',
+      },
+      {
+        name: 'stream without a body',
+        stream: true,
+        upstream: [() => new Response(null, { status: 200 })],
+        status: 502,
+        message: 'Upstream returned no body for stream',
+      },
+      {
+        name: 'safety stop with no output',
+        stream: false,
+        upstream: [() => Response.json({ candidates: [{ finishReason: 'SAFETY' }] })],
+        status: 502,
+        message: 'Gemini stopped with SAFETY',
+      },
+      {
+        name: 'refused continuation',
+        stream: true,
+        upstream: [
+          () => sse({ candidates: [{ content: { role: 'model', parts: [{ text: 'Partial' }] }, finishReason: 'CONTINUATION', continuationToken: 'token-1' }] }),
+          () => Response.json({ error: { code: 500, message: 'backend unavailable', status: 'INTERNAL' } }, { status: 500 }),
+        ],
+        // Headers were already sent; the failure arrives as the stream's error event.
+        status: 200,
+        message: 'Gemini continuation returned HTTP 500: backend unavailable',
+      },
+    ]
+    try {
+      for (const { name, stream, upstream, status, message } of cases) {
+        let call = 0
+        globalThis.fetch = (async () => upstream[call++]!()) as unknown as typeof fetch
+        const response = await proxy(provider.id, {
+          model: 'gemini-4-argon-contributor', max_tokens: 32, stream, messages: [{ role: 'user', content: 'hello' }],
+        })
+        expect(response.status, name).toBe(status)
+        const text = await response.text()
+        const reported = response.headers.get('content-type')?.includes('json') ? JSON.parse(text).error.message : text
+        expect(reported, name).toContain(message)
+        expect(text, name).not.toContain('message_stop')
+        expect(call, name).toBe(upstream.length)
+      }
+    } finally {
+      globalThis.fetch = originalFetch
+    }
+  })
+
   test('omits the session header rather than sending an empty one without a conversation', async () => {
     const { provider } = await createProvider()
     const calls: UpstreamCall[] = []

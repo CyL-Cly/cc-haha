@@ -314,10 +314,12 @@ function documentParts(block: Extract<AnthropicContentBlock, { type: 'document' 
     }
     return parts.filter(part => part.inlineData || part.text)
   }
+  // The reference already names the document, so only its context is prefixed.
+  const contextPrefix = block.context ? `[Document context: ${block.context}]\n` : ''
   const label = block.title ?? (source.type === 'url' ? source.url : 'file')
   return [{
     text: source.type === 'url'
-      ? `${provenance}[Document: ${label}](${source.url})`
-      : `${provenance}[Document: ${label} omitted — file-based source]`,
+      ? `${contextPrefix}[Document: ${label}](${source.url})`
+      : `${contextPrefix}[Document: ${label} omitted — file-based source]`,
   }]
 }

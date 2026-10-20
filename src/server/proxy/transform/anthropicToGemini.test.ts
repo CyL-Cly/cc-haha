@@ -54,7 +54,11 @@ describe('anthropicToGemini', () => {
           input_schema: {
             $schema: 'https://json-schema.org/draft/2020-12/schema',
             type: 'object',
-            properties: { file_path: { type: 'string' }, limit: { type: 'integer', minimum: 0, exclusiveMinimum: true } },
+            properties: {
+              file_path: { type: 'string' },
+              limit: { type: 'integer', minimum: 0, exclusiveMinimum: true },
+              ratio: { type: 'number', maximum: 1, exclusiveMaximum: true },
+            },
             required: ['file_path', 'ghost'],
           },
         },
@@ -68,7 +72,11 @@ describe('anthropicToGemini', () => {
         description: 'Read a file',
         parametersJsonSchema: {
           type: 'object',
-          properties: { file_path: { type: 'string' }, limit: { type: 'integer', exclusiveMinimum: 0 } },
+          properties: {
+            file_path: { type: 'string' },
+            limit: { type: 'integer', exclusiveMinimum: 0 },
+            ratio: { type: 'number', exclusiveMaximum: 1 },
+          },
           required: ['file_path'],
         },
       }],
@@ -172,6 +180,99 @@ describe('anthropicToGemini', () => {
         },
       }],
     })
+  })
+
+  test('keeps documents, search results and unfetchable media visible to Gemini', () => {
+    const body = anthropicToGemini(request({
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'document', title: 'Spec', context: 'v2', source: { type: 'base64', media_type: 'application/pdf', data: 'JVBE' } },
+          { type: 'document', source: { type: 'text', media_type: 'text/plain', data: 'plain body' } },
+          { type: 'document', title: 'Notes', source: { type: 'content', content: 'inline notes' } },
+          {
+            type: 'document',
+            source: {
+              type: 'content',
+              content: [
+                { type: 'text', text: 'figure:' },
+                { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: 'BBBB' } },
+                { type: 'text', text: '' },
+              ],
+            },
+          },
+          { type: 'document', source: { type: 'url', url: 'https://example.test/a.pdf' } },
+          { type: 'document', title: 'Upload', source: { type: 'file', file_id: 'file_1' } },
+          { type: 'search_result', source: 'https://example.test', title: 'Result', content: [{ type: 'text', text: 'snippet' }] },
+          // Gemini fetches no URLs and cannot read Anthropic Files API references.
+          { type: 'image', source: { type: 'url', url: 'https://example.test/cat.png' } },
+          { type: 'image', source: { type: 'file', file_id: 'file_2' } },
+        ],
+      }],
+    }))
+    expect(body.contents).toEqual([{
+      role: 'user',
+      parts: [
+        { text: '[Document: Spec]\n[Document context: v2]\n' },
+        { inlineData: { mimeType: 'application/pdf', data: 'JVBE' } },
+        { text: 'plain body' },
+        { text: '[Document: Notes]\n' },
+        { text: 'inline notes' },
+        { text: 'figure:' },
+        { inlineData: { mimeType: 'image/jpeg', data: 'BBBB' } },
+        { text: '[Document: https://example.test/a.pdf](https://example.test/a.pdf)' },
+        { text: '[Document: Upload omitted — file-based source]' },
+        { text: 'Result — snippet — https://example.test' },
+        { text: '[Image: https://example.test/cat.png]' },
+        { text: '[Image omitted: file-based image source is not supported by this endpoint.]' },
+      ],
+    }])
+  })
+
+  test('replays a call whose input was recorded as a JSON string', () => {
+    const body = anthropicToGemini(request({
+      messages: [
+        { role: 'user', content: 'go' },
+        {
+          role: 'assistant',
+          content: [
+            { type: 'text', text: '' },
+            { type: 'thinking', thinking: '' },
+            { type: 'tool_use', id: 'a', name: 'Bash', input: '{"command":"ls"}' as unknown as Record<string, unknown> },
+            { type: 'tool_use', id: 'b', name: 'Bash', input: '{not json' as unknown as Record<string, unknown> },
+          ],
+        },
+      ],
+    }))
+    expect(body.contents[1]!.parts.map(part => part.functionCall?.args)).toEqual([{ command: 'ls' }, {}])
+  })
+
+  test('sends sampling only when the endpoint accepts it, and asks for JSON output by schema', () => {
+    const schema = { type: 'object', properties: { title: { type: 'string' } } }
+    const withSampling = anthropicToGemini(
+      request({ temperature: 0.2, top_p: 0.9, output_config: { format: { type: 'json_schema', schema } } }),
+      { budgetSource: 'default', requestCompatibility: { sampling: 'supported' } },
+    )
+    expect(withSampling.generationConfig).toEqual({
+      temperature: 0.2,
+      topP: 0.9,
+      responseMimeType: 'application/json',
+      responseJsonSchema: schema,
+    })
+    // Claude Code always sends sampling params; most compatible upstreams reject them.
+    expect(anthropicToGemini(request({ temperature: 0.2 }), { budgetSource: 'default' }).generationConfig).toBeUndefined()
+  })
+
+  test('maps every tool_choice and drops one naming an unknown tool', () => {
+    const tools = [{ name: 'Read', input_schema: { type: 'object' } }]
+    expect(anthropicToGemini(request({ tools, tool_choice: { type: 'auto' } })).toolConfig)
+      .toEqual({ functionCallingConfig: { mode: 'AUTO' } })
+    expect(anthropicToGemini(request({ tools, tool_choice: { type: 'any' } })).toolConfig)
+      .toEqual({ functionCallingConfig: { mode: 'ANY' } })
+    expect(anthropicToGemini(request({ tools, tool_choice: 'none' })).toolConfig)
+      .toEqual({ functionCallingConfig: { mode: 'NONE' } })
+    expect(anthropicToGemini(request({ tools, tool_choice: { type: 'tool', name: 'Write' } })).toolConfig).toBeUndefined()
+    expect(anthropicToGemini(request({ tools })).toolConfig).toBeUndefined()
   })
 
   test('round-trips its signature envelope and ignores anything else', () => {
