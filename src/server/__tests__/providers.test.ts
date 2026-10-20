@@ -4429,6 +4429,16 @@ describe('OpenCode Go preset request contract', () => {
           usage: { input_tokens: 3, output_tokens: 1 },
         })
       }
+      const geminiResponse = {
+        candidates: [{ content: { role: 'model', parts: [{ text: 'ok' }] }, finishReason: 'STOP' }],
+        usageMetadata: { promptTokenCount: 3, candidatesTokenCount: 1, totalTokenCount: 4 },
+      }
+      if (url.endsWith(':generateContent')) return Response.json(geminiResponse)
+      if (url.endsWith(':streamGenerateContent?alt=sse')) {
+        return new Response(`data: ${JSON.stringify(geminiResponse)}\r\n\r\n`, {
+          headers: { 'Content-Type': 'text/event-stream' },
+        })
+      }
       return Response.json({ error: 'Wrong request endpoint' }, { status: 404 })
     }) as typeof fetch
     return () => { globalThis.fetch = originalFetch }
@@ -4492,7 +4502,7 @@ describe('OpenCode Go preset request contract', () => {
     const calls: UpstreamCall[] = []
     const restore = stubUpstream(calls)
     try {
-      for (const model of ['glm-5.3', 'minimax-m3', 'grok-4.6']) {
+      for (const model of ['glm-5.3', 'minimax-m3', 'grok-4.6', 'gemini-4-argon-contributor']) {
         calls.length = 0
         const response = await proxy(provider.id, {
           model, max_tokens: 32, messages: [{ role: 'user', content: 'hello' }],
@@ -4506,6 +4516,78 @@ describe('OpenCode Go preset request contract', () => {
       }
     } finally {
       restore()
+    }
+  })
+
+  // The gateway rejects Gemini on every OpenAI and Anthropic path with
+  // `ModelProtocolUnsupported`; it serves it only over Google generateContent,
+  // which lives outside /zen/go/v1.
+  test('serves Gemini over Google generateContent with the Gemini credential header', async () => {
+    const { provider } = await createProvider()
+    const calls: UpstreamCall[] = []
+    const restore = stubUpstream(calls)
+    try {
+      // The id as the CLI sends it for a 1M-context slot.
+      const response = await proxy(provider.id, {
+        model: 'gemini-4-argon-contributor[1m]', max_tokens: 32, messages: [{ role: 'user', content: 'hello' }],
+      })
+      expect(response.status).toBe(200)
+      expect(await response.json()).toMatchObject({
+        type: 'message', model: 'gemini-4-argon-contributor', stop_reason: 'end_turn',
+        content: [{ type: 'text', text: 'ok' }],
+      })
+      expect(calls).toHaveLength(1)
+      expect(calls[0].url).toBe('https://opencode.ai/inference/go/google/v1beta/models/gemini-4-argon-contributor:generateContent')
+      expect(calls[0].headers.get('x-goog-api-key')).toBe(apiKey)
+      expect(calls[0].headers.get('authorization')).toBeNull()
+      expect(calls[0].headers.get('x-opencode-session')).toBe(SESSION_ID)
+      expect(calls[0].headers.get('user-agent')).toMatch(/^cc-haha\//)
+      expect(calls[0].body).toEqual({
+        contents: [{ role: 'user', parts: [{ text: 'hello' }] }],
+        generationConfig: { maxOutputTokens: 32 },
+      })
+    } finally {
+      restore()
+    }
+  })
+
+  test('streams Gemini and follows a response split across requests', async () => {
+    const { provider } = await createProvider()
+    const calls: UpstreamCall[] = []
+    const originalFetch = globalThis.fetch
+    const frames = [
+      { candidates: [{ content: { role: 'model', parts: [{ text: 'Hello' }] }, finishReason: 'CONTINUATION', continuationToken: 'token-1' }] },
+      { candidates: [{ content: { role: 'model', parts: [{ text: ' there' }] }, finishReason: 'STOP' }] },
+    ]
+    globalThis.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
+      calls.push({ url: String(input), headers: new Headers(init?.headers), body: JSON.parse(String(init?.body)) })
+      return new Response(`data: ${JSON.stringify(frames[calls.length - 1])}\r\n\r\n`, {
+        headers: { 'Content-Type': 'text/event-stream' },
+      })
+    }) as typeof fetch
+    try {
+      const response = await proxy(provider.id, {
+        model: 'gemini-4-argon-contributor', max_tokens: 32, stream: true,
+        thinking: { type: 'adaptive' }, output_config: { effort: 'xhigh' },
+        messages: [{ role: 'user', content: 'hello' }],
+      })
+      expect(response.status).toBe(200)
+      const text = await response.text()
+      expect(text).toContain('"text":"Hello"')
+      expect(text).toContain('"text":" there"')
+      expect(text).toContain('"stop_reason":"end_turn"')
+      expect(text).toContain('event: message_stop')
+
+      expect(calls).toHaveLength(2)
+      expect(calls[0].url).toBe('https://opencode.ai/inference/go/google/v1beta/models/gemini-4-argon-contributor:streamGenerateContent?alt=sse')
+      expect(calls[0].body.generationConfig.thinkingConfig).toEqual({ includeThoughts: true, thinkingLevel: 'high' })
+      // The continuation is the same request plus the token, on the same session.
+      expect(calls[1].url).toBe(calls[0].url)
+      expect(calls[1].body).toEqual({ ...calls[0].body, continuationToken: 'token-1' })
+      expect(calls[1].headers.get('x-opencode-session')).toBe(SESSION_ID)
+      expect(calls[1].headers.get('x-goog-api-key')).toBe(apiKey)
+    } finally {
+      globalThis.fetch = originalFetch
     }
   })
 
@@ -4604,6 +4686,7 @@ describe('OpenCode Go preset request contract', () => {
         ['glm-5.3', '/chat/completions'],
         ['minimax-m3', '/messages'],
         ['grok-4.6', '/responses'],
+        ['gemini-4-argon-contributor', '/inference/go/google/v1beta/models/gemini-4-argon-contributor:generateContent'],
       ] as const) {
         calls.length = 0
         const result = await service.testProviderConfig({
