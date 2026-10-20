@@ -366,15 +366,19 @@ test('UI Start answers once the batch is launching and the launch finishes on it
   const gate = new Promise<void>(resolve => { release = resolve })
   const create = deps.sessions.create
   deps.sessions.create = async (...args) => { await gate; return create(...args) }
+  // The batch reads launched before each first message is delivered; a slow
+  // start keeps that window open on every machine.
+  deps.runtime.start = async (_, message) => { await Bun.sleep(20); started.push(message) }
   const proposal = await service.propose('root', input())
   const response = await uiPost(`batches/${encodeURIComponent(proposal.id)}/confirm`, { expectedRevision: proposal.revision })
   expect(response.status).toBe(200)
   expect(await response.json()).toMatchObject({ id: proposal.id, state: 'launching' })
   expect(created).toBe(0)
   release()
-  const launched = await until(() => service.listBatches('root'), batches => batches[0]?.state === 'launched')
-  expect(launched[0]?.sessions.every(entry => entry.launched && entry.sessionId)).toBe(true)
-  expect(started).toHaveLength(2)
+  await until(async () => started.length, count => count === 2)
+  const [launched] = await service.listBatches('root')
+  expect(launched?.state).toBe('launched')
+  expect(launched?.sessions.every(entry => entry.launched && entry.sessionId)).toBe(true)
 })
 
 test('UI Start still refuses a stale revision, and a launch failing later is recorded on the batch', async () => {
