@@ -62,9 +62,10 @@ export const en = {
   "agentProfile.standard": "Standard",
   "agentProfile.lean": "Lean · experimental",
   "agentProfile.leanShort": "Lean",
-  "agentProfile.info": "About lean mode",
+  "agentProfile.chipRemove": "Switch back to Standard mode",
   "agentProfile.planUnavailable": "Lean does not support plan mode. Choose another permission mode before sending.",
   "agentProfile.planReset": "Switched to Ask permissions because lean does not support plan mode.",
+  "agentProfile.teamReset": "Lean does not support Agent Teams, so it was turned off.",
   "agentProfile.locked": "Mode is fixed for this conversation. Start a new chat to change it.",
 
   "teamPlan.state.interrupted": "Team interrupted · started work will not be replayed",

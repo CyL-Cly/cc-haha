@@ -64,9 +64,10 @@ export const zh: Record<TranslationKey, string> = {
   "agentProfile.standard": "标准",
   "agentProfile.lean": "精简 · 实验性",
   "agentProfile.leanShort": "精简",
-  "agentProfile.info": "精简模式说明",
+  "agentProfile.chipRemove": "恢复标准模式",
   "agentProfile.planUnavailable": "精简模式不支持计划模式，请先切换权限模式再发送。",
   "agentProfile.planReset": "精简模式不支持计划模式，已切换为询问权限。",
+  "agentProfile.teamReset": "精简模式不支持智能体团队，已关闭。",
   "agentProfile.locked": "模式在创建会话后锁定。如需切换，请新建聊天。",
 
   "teamPlan.state.interrupted": "团队已中断 · 已开始的任务不会自动重跑",

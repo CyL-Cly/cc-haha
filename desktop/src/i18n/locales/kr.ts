@@ -64,9 +64,10 @@ export const kr: Record<TranslationKey, string> = {
   "agentProfile.standard": "표준",
   "agentProfile.lean": "경량 · 실험적",
   "agentProfile.leanShort": "경량",
-  "agentProfile.info": "경량 모드 안내",
+  "agentProfile.chipRemove": "표준 모드로 되돌리기",
   "agentProfile.planUnavailable": "경량 모드에서는 계획 모드를 지원하지 않습니다. 전송 전에 권한 모드를 변경하세요.",
   "agentProfile.planReset": "경량 모드는 계획 모드를 지원하지 않아 권한 확인 모드로 변경했습니다.",
+  "agentProfile.teamReset": "경량 모드는 에이전트 팀을 지원하지 않아 꺼졌습니다.",
   "agentProfile.locked": "대화 생성 후에는 모드가 고정됩니다. 변경하려면 새 채팅을 시작하세요.",
 
 
