@@ -64,9 +64,10 @@ export const jp: Record<TranslationKey, string> = {
   "agentProfile.standard": "標準",
   "agentProfile.lean": "軽量 · 実験的",
   "agentProfile.leanShort": "軽量",
-  "agentProfile.info": "軽量モードについて",
+  "agentProfile.chipRemove": "標準モードに戻す",
   "agentProfile.planUnavailable": "軽量モードではプランモードを利用できません。送信前に権限モードを変更してください。",
   "agentProfile.planReset": "軽量モードはプランモードに対応していないため、権限を確認するモードに変更しました。",
+  "agentProfile.teamReset": "軽量モードはエージェントチームに対応していないため、オフにしました。",
   "agentProfile.locked": "会話作成後はモードを変更できません。変更するには新しいチャットを開始してください。",
 
 
