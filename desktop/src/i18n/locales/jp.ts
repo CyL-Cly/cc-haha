@@ -1057,6 +1057,8 @@ export const jp: Record<TranslationKey, string> = {
   'workspace.diffReview.collapsedSelection': '選択した行は折りたたまれたプレビューの範囲外です。表示中の行を選択し直してください。',
   'attachments.remove': '{name} を削除',
   'attachments.open': '{name} を開く',
+  'attachments.downloadImage': '画像をダウンロード',
+  'attachments.downloadFailed': '画像をダウンロードできませんでした。',
   'attachments.previousImage': '前の画像',
   'attachments.nextImage': '次の画像',
   'attachments.selectionNote': '選択範囲のメモ：{note}',

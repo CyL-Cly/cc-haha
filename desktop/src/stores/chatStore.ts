@@ -7693,7 +7693,12 @@ function replayMatchesCurrentUserMessage(
   replayDisplay: RestoredUserDisplay,
   replayModelContent: string,
 ): boolean {
-  const currentModelContent = (message.modelContent ?? message.content).trim()
+  const storedModelContent = (message.modelContent ?? message.content).trim()
+  // History can hydrate a guide before its delayed replay arrives. It retains
+  // the image source/resize notes in modelContent, whereas replay comparison
+  // already strips them. Normalize both sides without changing the stored
+  // prompt or its attachments.
+  const currentModelContent = stripGeneratedImageMetadataLines(storedModelContent) || storedModelContent
   if (currentModelContent === replayModelContent) return true
   if (
     collapseWhitespaceRuns(currentModelContent) === collapseWhitespaceRuns(replayModelContent)
