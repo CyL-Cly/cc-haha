@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, spyOn, test } from 'bun:test'
+import { isExpectedRoutingCliExit } from './agentModelRouting'
 
 import { createMockOnlyRunners, MOCK_AGENT_SCENARIOS, toolResultsSentUpstream } from './scenarios'
 import { decideReply, UPSTREAM_ERROR_MESSAGE, UPSTREAM_ERROR_TRIGGER, UPSTREAM_REFUSAL_TRIGGER, type MockRequest } from './scriptedModel'
@@ -377,5 +378,31 @@ describe('mock-LLM scenario catalog', () => {
       request([{ type: 'tool_result', content: 'new', is_error: true }]),
     ]
     expect(toolResultsSentUpstream(requests, 1)).toEqual([{ type: 'tool_result', content: 'new', is_error: true }])
+  })
+})
+
+describe('model-routing CLI shutdown', () => {
+  test('accepts the CLI SIGTERM handler exiting with 143 after the fixture stops a completed teammate', () => {
+    // The CLI handles SIGTERM with gracefulShutdown(143), so Bun can report
+    // a normal exit with no signal instead of an unhandled SIGTERM.
+    expect(isExpectedRoutingCliExit(143, null, true)).toBe(true)
+  })
+
+  test('still accepts normal completion and direct SIGTERM termination', () => {
+    expect(isExpectedRoutingCliExit(0, null, false)).toBe(true)
+    expect(isExpectedRoutingCliExit(0, null, true)).toBe(true)
+    expect(isExpectedRoutingCliExit(143, 'SIGTERM', true)).toBe(true)
+  })
+
+  test('rejects termination that the fixture did not request', () => {
+    expect(isExpectedRoutingCliExit(143, null, false)).toBe(false)
+    expect(isExpectedRoutingCliExit(143, 'SIGTERM', false)).toBe(false)
+  })
+
+  test('does not mask crashes, timeout kills, or other signals during cleanup', () => {
+    expect(isExpectedRoutingCliExit(1, null, true)).toBe(false)
+    expect(isExpectedRoutingCliExit(137, 'SIGKILL', true)).toBe(false)
+    expect(isExpectedRoutingCliExit(130, 'SIGINT', true)).toBe(false)
+    expect(isExpectedRoutingCliExit(143, 'SIGKILL', true)).toBe(false)
   })
 })

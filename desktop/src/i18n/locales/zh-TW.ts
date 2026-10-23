@@ -1057,6 +1057,8 @@ export const zh: Record<TranslationKey, string> = {
   'workspace.diffReview.collapsedSelection': '所選行不在收合後的預覽中。請重新選擇可見行以提交此評論。',
   'attachments.remove': '移除 {name}',
   'attachments.open': '開啟 {name}',
+  'attachments.downloadImage': '下載圖片',
+  'attachments.downloadFailed': '圖片下載失敗。',
   'attachments.previousImage': '上一張圖片',
   'attachments.nextImage': '下一張圖片',
   'attachments.selectionNote': '選取範圍備註：{note}',

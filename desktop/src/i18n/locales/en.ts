@@ -1055,6 +1055,8 @@ export const en = {
   'workspace.diffReview.collapsedSelection': 'Selection is outside the collapsed preview. Select visible lines again to submit this comment.',
   'attachments.remove': 'Remove {name}',
   'attachments.open': 'Open {name}',
+  'attachments.downloadImage': 'Download image',
+  'attachments.downloadFailed': 'Could not download this image.',
   'attachments.previousImage': 'Previous image',
   'attachments.nextImage': 'Next image',
   'attachments.selectionNote': 'Selection note: {note}',
