@@ -23,7 +23,7 @@ export type MockReply =
   | {
     kind: 'message'
     content: MockContentBlock[]
-    stopReason: 'end_turn' | 'tool_use'
+    stopReason: 'end_turn' | 'tool_use' | 'refusal'
     /** Delay between streamed text chunks; only the interrupt scenario needs it. */
     chunkDelayMs?: number
   }
@@ -52,6 +52,7 @@ export type MockRequest = {
 /** Prompt that makes the scripted model fail the request the way a provider would. */
 export const UPSTREAM_ERROR_TRIGGER = 'MOCK_UPSTREAM_ERROR'
 export const UPSTREAM_ERROR_MESSAGE = 'mock upstream rejected this request'
+export const UPSTREAM_REFUSAL_TRIGGER = 'MOCK_UPSTREAM_REFUSAL'
 
 function blocksOf(message: RequestMessage | undefined): RequestBlock[] {
   if (!message) return []
@@ -153,6 +154,10 @@ export function decideReply(request: MockRequest): MockReply {
 
   if (prompt.includes(UPSTREAM_ERROR_TRIGGER)) {
     return { kind: 'error', status: 400, errorType: 'invalid_request_error', message: UPSTREAM_ERROR_MESSAGE }
+  }
+
+  if (prompt.includes(UPSTREAM_REFUSAL_TRIGGER)) {
+    return { kind: 'message', content: [], stopReason: 'refusal' }
   }
 
   const isAgentTurn = hasTool(request, 'Write') || hasTool(request, 'Bash')
