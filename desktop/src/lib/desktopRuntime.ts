@@ -124,23 +124,30 @@ export async function saveAndVerifyH5Connection(serverUrl: string, token: string
     throw new Error('Enter a valid server URL.')
   }
 
-  if (!normalizedToken) {
-    throw new Error('Enter your H5 access token.')
-  }
-
   setBaseUrl(normalizedServerUrl)
   setAuthToken(normalizedToken)
   if (!readStoredH5Connection().token) rememberStoredH5ServerUrl(normalizedServerUrl)
 
   try {
     await waitForHealth(normalizedServerUrl)
-    await verifyH5Access()
+    // Fork policy: token auth disabled — verify only when a token was provided.
+    if (normalizedToken) {
+      await verifyH5Access()
+    } else {
+      await ensureBrowserApiAccessibleWithoutH5(normalizedServerUrl)
+    }
   } catch (error) {
-    forgetRejectedH5Token(error, normalizedServerUrl, normalizedToken)
+    if (normalizedToken) {
+      forgetRejectedH5Token(error, normalizedServerUrl, normalizedToken)
+    }
     throw normalizeBrowserH5Error(error, normalizedServerUrl)
   }
 
-  rememberVerifiedH5Connection(normalizedServerUrl, normalizedToken)
+  if (normalizedToken) {
+    rememberVerifiedH5Connection(normalizedServerUrl, normalizedToken)
+  } else {
+    rememberStoredH5ServerUrl(normalizedServerUrl)
+  }
 
   return normalizedServerUrl
 }
@@ -247,15 +254,14 @@ async function initializeBrowserServerUrl(fallbackUrl: string) {
   }
 
   if (!token) {
-    // Keep the existing recovery UX for a first-time connection, but never
-    // replace a paired server while withholding its token from a new one.
+    // Fork policy (CyL-Cly): H5 关闭鉴权 — allow browser connect without a token.
+    // Keep the remembered server URL for first-time setup, but never replace an
+    // existing paired server's stored credentials when opening a different URL.
     if (!stored.token) rememberStoredH5ServerUrl(requestedUrl)
     setAuthToken(null)
-    throw new H5ConnectionRequiredError(
-      'Enter your H5 token to continue.',
-      requestedUrl,
-      'missing-token',
-    )
+    await ensureBrowserApiAccessibleWithoutH5(requestedUrl)
+    markDesktopServerReady()
+    return requestedUrl
   }
 
   try {

@@ -293,15 +293,13 @@ export function shouldRequireH5Token({
   h5Enabled: boolean
   context: H5RequestContext
 }): boolean {
-  if (!h5Enabled) {
-    return false
-  }
-
-  if (!isH5BrowserCapabilityPath(url.pathname)) {
-    return false
-  }
-
-  return classifyH5Request(request, url, context) === 'h5-browser'
+  // Fork policy (CyL-Cly): H5 remote access runs without token auth (关闭鉴权).
+  // H5 must still be enabled in Settings; control-plane and disabled-H5 gates remain.
+  void request
+  void url
+  void h5Enabled
+  void context
+  return false
 }
 
 export function shouldBlockDisabledH5Access({

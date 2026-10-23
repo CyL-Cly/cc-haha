@@ -60,7 +60,7 @@ describe('h5AccessPolicy', () => {
         headers: { Origin: origin },
       })
       expect(classifyH5Request(request, new URL(request.url), localContext)).toBe('h5-browser')
-      expect(shouldRequireH5Token({ request, url: new URL(request.url), h5Enabled: true, context: localContext })).toBe(true)
+      expect(shouldRequireH5Token({ request, url: new URL(request.url), h5Enabled: true, context: localContext })).toBe(false)
     }
   })
 
@@ -118,7 +118,7 @@ describe('h5AccessPolicy', () => {
           headers: { Origin: origin },
         })
         expect(classifyH5Request(request, new URL(request.url), desktopContext)).toBe('h5-browser')
-        expect(shouldRequireH5Token({ request, url: new URL(request.url), h5Enabled: true, context: desktopContext })).toBe(true)
+        expect(shouldRequireH5Token({ request, url: new URL(request.url), h5Enabled: true, context: desktopContext })).toBe(false)
         expect(shouldBlockDisabledH5Access({
           request,
           url: new URL(request.url),
@@ -144,7 +144,7 @@ describe('h5AccessPolicy', () => {
       headers: { Origin: 'https://phone.example' },
     })
     expect(classifyH5Request(request, new URL(request.url), localContext)).toBe('h5-browser')
-    expect(shouldRequireH5Token({ request, url: new URL(request.url), h5Enabled: true, context: localContext })).toBe(true)
+    expect(shouldRequireH5Token({ request, url: new URL(request.url), h5Enabled: true, context: localContext })).toBe(false)
   })
 
   test('does not trust spoofed loopback hosts from remote clients', () => {
@@ -181,7 +181,7 @@ describe('h5AccessPolicy', () => {
       const url = new URL(request.url)
 
       expect(classifyH5Request(request, url, localContext)).toBe('h5-browser')
-      expect(shouldRequireH5Token({ request, url, h5Enabled: true, context: localContext })).toBe(true)
+      expect(shouldRequireH5Token({ request, url, h5Enabled: true, context: localContext })).toBe(false)
       expect(shouldBlockDisabledH5Access({
         request,
         url,
@@ -214,7 +214,7 @@ describe('h5AccessPolicy', () => {
         const url = new URL(request.url)
 
         expect(classifyH5Request(request, url, localContext)).toBe('h5-browser')
-        expect(shouldRequireH5Token({ request, url, h5Enabled: true, context: localContext })).toBe(true)
+        expect(shouldRequireH5Token({ request, url, h5Enabled: true, context: localContext })).toBe(false)
         expect(shouldBlockDisabledH5Access({
           request,
           url,
@@ -498,7 +498,7 @@ describe('h5AccessPolicy', () => {
     }
   })
 
-  test('requires H5 token for LAN browser API, proxy, and chat websocket routes when enabled', () => {
+  test('does not require H5 token for LAN browser API, proxy, and chat websocket routes (auth disabled)', () => {
     for (const pathname of [
       '/api/status',
       '/api/mcp',
@@ -513,7 +513,7 @@ describe('h5AccessPolicy', () => {
         headers: { Origin: 'http://192.168.0.20:3456' },
       })
       expect(classifyH5Request(request, new URL(request.url), remoteContext)).toBe('h5-browser')
-      expect(shouldRequireH5Token({ request, url: new URL(request.url), h5Enabled: true, context: remoteContext })).toBe(true)
+      expect(shouldRequireH5Token({ request, url: new URL(request.url), h5Enabled: true, context: remoteContext })).toBe(false)
     }
   })
 

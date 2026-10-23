@@ -75,11 +75,10 @@ export function H5ConnectionView({
           <Input
             label={t('h5Connect.token')}
             type="password"
-            placeholder="h5_..."
+            placeholder="h5_... (optional)"
             value={token}
             onChange={(event) => setToken(event.target.value)}
             autoComplete="current-password"
-            required
           />
 
           {error ? (

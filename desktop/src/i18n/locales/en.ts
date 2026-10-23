@@ -645,7 +645,7 @@ export const en = {
   'h5Connect.submit': 'Connect',
   'h5Connect.token': 'H5 Token',
   'h5Connect.serverUrl': 'Server URL',
-  'h5Connect.subtitle': 'Enter the server URL and H5 access token from the desktop app.',
+  'h5Connect.subtitle': 'Enter the server URL from the desktop app (this fork disables H5 auth; token is optional).',
   'h5Connect.title': 'Connect to H5 Access',
   'attachments.selectionNoteTitle': 'Requested changes',
   'attachments.selectionBatch': '{count} selected page changes',

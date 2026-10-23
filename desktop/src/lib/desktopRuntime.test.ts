@@ -137,14 +137,12 @@ describe('desktopRuntime browser H5 bootstrap', () => {
       healthOkResponse(),
     ) as typeof fetch
 
-    await expect(initializeDesktopServerUrl()).rejects.toMatchObject({
-      name: 'H5ConnectionRequiredError',
-      serverUrl: 'https://attacker.example/app',
-      reason: 'missing-token',
-    } satisfies Partial<H5ConnectionRequiredError>)
+    // Fork: auth disabled — connects without inheriting the other server's token.
+    await expect(initializeDesktopServerUrl()).resolves.toBe('https://attacker.example/app')
 
     expect(clientMocks.setAuthToken).toHaveBeenLastCalledWith(null)
     expect(clientMocks.postVerify).not.toHaveBeenCalled()
+    expect(window.localStorage.getItem(H5_TOKEN_STORAGE_KEY)).toBe('paired-server-token')
   })
 
   it('reuses a stored H5 token only for its normalized server URL', async () => {
@@ -428,17 +426,13 @@ describe('desktopRuntime browser H5 bootstrap', () => {
     expect(window.localStorage.getItem(H5_TOKEN_STORAGE_KEY)).toBeNull()
   })
 
-  it('requires a token when browser WebUI connects to a LAN-bound server', async () => {
+  it('connects to a LAN-bound server without a token when H5 auth is disabled', async () => {
     window.history.pushState({}, '', '/?serverUrl=http%3A%2F%2F192.168.0.102%3A28670')
     globalThis.fetch = vi.fn().mockResolvedValue(
       healthOkResponse(),
     ) as typeof fetch
 
-    await expect(initializeDesktopServerUrl()).rejects.toMatchObject({
-      name: 'H5ConnectionRequiredError',
-      serverUrl: 'http://192.168.0.102:28670',
-      reason: 'missing-token',
-    } satisfies Partial<H5ConnectionRequiredError>)
+    await expect(initializeDesktopServerUrl()).resolves.toBe('http://192.168.0.102:28670')
 
     expect(clientMocks.setBaseUrl).toHaveBeenLastCalledWith('http://192.168.0.102:28670')
     expect(clientMocks.setAuthToken).toHaveBeenLastCalledWith(null)
@@ -490,7 +484,8 @@ describe('desktopRuntime browser H5 bootstrap', () => {
     localStorage.setItem(H5_TOKEN_STORAGE_KEY, 'paired-token')
     history.replaceState(null, '', '/?serverUrl=https%3A%2F%2Funpaired.example')
     globalThis.fetch = vi.fn().mockImplementation(async () => healthOkResponse()) as typeof fetch
-    await expect(initializeDesktopServerUrl()).rejects.toMatchObject({ reason: 'missing-token' })
+    // Fork: auth disabled — connects without token and does not overwrite stored pairing.
+    await expect(initializeDesktopServerUrl()).resolves.toBe('https://unpaired.example')
     expect(localStorage.getItem(H5_SERVER_URL_STORAGE_KEY)).toBe('https://paired.example')
     expect(localStorage.getItem(H5_TOKEN_STORAGE_KEY)).toBe('paired-token')
   })

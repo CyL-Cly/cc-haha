@@ -645,7 +645,7 @@ export const zh: Record<TranslationKey, string> = {
   'h5Connect.submit': '连接',
   'h5Connect.token': 'H5 令牌',
   'h5Connect.serverUrl': '服务器地址',
-  'h5Connect.subtitle': '输入桌面端提供的服务器地址与 H5 访问令牌。',
+  'h5Connect.subtitle': '输入桌面端提供的服务器地址即可连接（本 fork 已关闭 H5 鉴权，令牌可选）。',
   'h5Connect.title': '连接 H5 访问',
   'attachments.selectionNoteTitle': '修改内容',
   'attachments.selectionBatch': '{count} 个页面修改',
