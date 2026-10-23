@@ -18,6 +18,7 @@ import { join, resolve } from 'node:path'
 
 import { executeAgentFlowAgainstProvider, LIVE_SCENARIO_RUNNERS } from '../agent-flow/live'
 import { startMockLlmServer } from './server'
+import { searchTransportBunOptions } from './searchTransportOptions'
 import { runLeanNotificationProvenanceScenario, runLeanProfileScenario } from './leanProfile'
 import { runAgentModelRoutingScenario } from './agentModelRouting'
 import { createMockOnlyRunners, describeRequests, MOCK_AGENT_SCENARIOS } from './scenarios'
@@ -79,7 +80,11 @@ async function main() {
       seedProviders: false,
       stepTimeoutMs: STEP_TIMEOUT_MS,
       scenarios,
-      runners: { ...LIVE_SCENARIO_RUNNERS, ...createMockOnlyRunners(upstream.requests, upstream.imageRequests) },
+      envOverrides: {
+        BUN_OPTIONS: searchTransportBunOptions(join(rootDir, 'scripts/quality-gate/mock-llm/searchTransport.ts')),
+        MOCK_SEARCH_ORIGIN: upstream.url,
+      },
+      runners: { ...LIVE_SCENARIO_RUNNERS, ...createMockOnlyRunners(upstream.requests, upstream.imageRequests, upstream.searchRequests) },
       // Registered through the same endpoint the desktop "add provider" form uses,
       // so the provider → CLI env wiring is part of what this lane exercises.
       async resolveTarget({ baseUrl }) {

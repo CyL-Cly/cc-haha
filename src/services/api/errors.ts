@@ -30,7 +30,10 @@ import {
   isNonCustomOpusModel,
 } from 'src/utils/model/model.js'
 import { getModelStrings } from 'src/utils/model/modelStrings.js'
-import { getAPIProvider } from 'src/utils/model/providers.js'
+import {
+  getAPIProvider,
+  hasAnthropicCompatibleThirdPartyConfig,
+} from 'src/utils/model/providers.js'
 import { getIsNonInteractiveSession } from '../../bootstrap/state.js'
 import {
   API_PDF_MAX_PAGES,
@@ -1465,6 +1468,15 @@ export function getErrorMessageIfRefusal(
   }
 
   logEvent('tengu_refusal_api_response', {})
+
+  // Compatible providers also emit `refusal`. The stop reason does not tell
+  // us which policy caused it, or make Anthropic model ids valid there.
+  if (hasAnthropicCompatibleThirdPartyConfig()) {
+    return createAssistantAPIErrorMessage({
+      content: `${API_ERROR_MESSAGE_PREFIX}: The selected model (${model}) refused this request. Try rephrasing the request or choosing another model from your configured provider.`,
+      error: 'invalid_request',
+    })
+  }
 
   const baseMessage = getIsNonInteractiveSession()
     ? `${API_ERROR_MESSAGE_PREFIX}: Claude Code is unable to respond to this request, which appears to violate our Usage Policy (https://www.anthropic.com/legal/aup). Try rephrasing the request or attempting a different approach.`
