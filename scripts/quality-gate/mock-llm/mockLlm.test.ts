@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, spyOn, test } from 'bun:test'
 
 import { createMockOnlyRunners, MOCK_AGENT_SCENARIOS, toolResultsSentUpstream } from './scenarios'
-import { decideReply, UPSTREAM_ERROR_MESSAGE, UPSTREAM_ERROR_TRIGGER, type MockRequest } from './scriptedModel'
+import { decideReply, UPSTREAM_ERROR_MESSAGE, UPSTREAM_ERROR_TRIGGER, UPSTREAM_REFUSAL_TRIGGER, type MockRequest } from './scriptedModel'
 import { startMockLlmServer, type MockLlmServer, type RecordedRequest } from './server'
 import { LIVE_AGENT_FLOW_SCENARIOS } from '../agent-flow/liveScenarios'
 
@@ -141,6 +141,16 @@ describe('scripted model', () => {
   test('streams a long count slowly enough to be interrupted', () => {
     const reply = decideReply(agentRequest([{ role: 'user', content: 'Count from 1 to 5, one per line.' }]))
     expect(reply).toMatchObject({ kind: 'message', chunkDelayMs: 40, content: [{ type: 'text', text: '1\n2\n3\n4\n5' }] })
+  })
+
+  test('refuses with the upstream stop reason and accepts a newer prompt', () => {
+    expect(decideReply(agentRequest([{ role: 'user', content: UPSTREAM_REFUSAL_TRIGGER }]))).toEqual({
+      kind: 'message', content: [], stopReason: 'refusal',
+    })
+    expect(decideReply(agentRequest([{ role: 'user', content: [
+      { type: 'text', text: UPSTREAM_REFUSAL_TRIGGER },
+      { type: 'text', text: 'Reply with one short sentence after refusal.' },
+    ] }]))).toMatchObject({ kind: 'message', stopReason: 'end_turn' })
   })
 })
 
@@ -293,6 +303,14 @@ describe('mock Anthropic endpoint', () => {
     expect(response.status).toBe(400)
     expect(await response.json()).toEqual({ type: 'error', error: { type: 'invalid_request_error', message: UPSTREAM_ERROR_MESSAGE } })
     expect(server!.requests[0]!.outcome).toBe('error')
+  })
+
+  test('streams an empty provider refusal without inventing Anthropic text', async () => {
+    const response = await post({ ...agentRequest([{ role: 'user', content: UPSTREAM_REFUSAL_TRIGGER }]), stream: true })
+    const events = parseSse(await response.text())
+    expect(events.map(event => event.event)).toEqual(['message_start', 'message_delta', 'message_stop'])
+    expect(events[1]!.data.delta).toMatchObject({ stop_reason: 'refusal' })
+    expect(server!.requests[0]).toMatchObject({ outcome: 'completed', body: { model: 'mock-model' } })
   })
 
   test('records a client hang-up mid-stream as cancelled', async () => {

@@ -12,7 +12,7 @@ import { join } from 'node:path'
 import type { LiveScenarioRunner } from '../agent-flow/live'
 import { LIVE_AGENT_FLOW_SCENARIOS } from '../agent-flow/liveScenarios'
 import { MOCK_IMAGE_PNG_BASE64, type MockLlmServer, type RecordedRequest } from './server'
-import { UPSTREAM_ERROR_TRIGGER } from './scriptedModel'
+import { UPSTREAM_ERROR_TRIGGER, UPSTREAM_REFUSAL_TRIGGER } from './scriptedModel'
 
 export type MockAgentScenario = { id: string; title: string }
 
@@ -43,6 +43,10 @@ export const MOCK_ONLY_SCENARIOS: readonly MockAgentScenario[] = [
   {
     id: 'mock-upstream-error-recovers',
     title: 'An upstream error ends the turn visibly and the next turn still works',
+  },
+  {
+    id: 'mock-provider-refusal-recovers',
+    title: 'A third-party refusal names the selected model without changing provider and the next turn still works',
   },
 ]
 
@@ -448,6 +452,50 @@ export function createMockOnlyRunners(
         socket.send({ type: 'user_message', content: 'Reply with one short sentence after compact.' })
         await socket.waitFor(m => m.type === 'message_complete', ctx.stepTimeoutMs, 'next turn after reconnect', nextStart)
         if (!streamedText(socket.messages.slice(nextStart)).trim()) throw new Error('no reply after compact and reconnect')
+      } finally {
+        socket.close()
+      }
+    },
+
+    async 'mock-provider-refusal-recovers'(ctx) {
+      const sessionId = await ctx.createSession()
+      const socket = await ctx.openSocket(sessionId)
+      const assertRuntime = async () => {
+        const response = await fetch(`${ctx.baseUrl}/api/sessions/${sessionId}/summary`)
+        if (!response.ok) throw new Error(`reading refusal session runtime failed: ${response.status}`)
+        const session = await response.json() as { runtimeProviderId?: string | null; runtimeModelId?: string }
+        if (session.runtimeProviderId !== ctx.target.providerId || session.runtimeModelId !== ctx.target.modelId) {
+          throw new Error(`Refusal changed the selected provider or model: ${JSON.stringify(session)}`)
+        }
+      }
+      const requestStart = requests.length
+      try {
+        ctx.pinRuntime(socket)
+        const start = socket.messages.length
+        socket.send({ type: 'user_message', content: `${UPSTREAM_REFUSAL_TRIGGER}: refuse this turn.` })
+        await socket.waitFor(m => m.type === 'message_complete', ctx.stepTimeoutMs, 'refused turn completion', start)
+        const errors = socket.messages.slice(start).filter(m => m.type === 'error')
+        const detail = errors.map(m => String(m.message ?? '')).join('\n')
+        if (!/selected model.*refus/i.test(detail)) throw new Error(`Refusal did not identify the selected model: ${detail}`)
+        if (/anthropic\.com|Usage Policy|claude-sonnet|Claude Code/i.test(detail)) {
+          throw new Error(`Third-party refusal was attributed to Anthropic: ${detail}`)
+        }
+        if (requests.slice(requestStart).some(request => request.body.model !== ctx.target.modelId)) {
+          throw new Error('Refusal switched the upstream request model')
+        }
+        await assertRuntime()
+
+        const next = socket.messages.length
+        const recoveryRequestStart = requests.length
+        socket.send({ type: 'user_message', content: 'Reply with one short sentence after refusal.' })
+        await socket.waitFor(m => m.type === 'message_complete', ctx.stepTimeoutMs, 'next turn after refusal', next)
+        if (!streamedText(socket.messages.slice(next)).trim() || socket.messages.slice(next).some(m => m.type === 'error')) {
+          throw new Error('The session did not answer normally after a provider refusal')
+        }
+        if (requests.length === recoveryRequestStart || requests.slice(recoveryRequestStart).some(request => request.body.model !== ctx.target.modelId)) {
+          throw new Error('The turn after refusal did not use the selected upstream model')
+        }
+        await assertRuntime()
       } finally {
         socket.close()
       }
