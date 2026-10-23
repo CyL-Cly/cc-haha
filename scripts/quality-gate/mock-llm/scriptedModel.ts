@@ -171,6 +171,10 @@ export function decideReply(request: MockRequest): MockReply {
     if (hasTool(request, 'ToolSearch') && !results.some(block => block.is_error)) return toolUse('ToolSearch', { query: `select:${toolName}` })
     return text('Late MCP tool is unavailable')
   }
+  if (prompt === 'MOCK_DEEPSEEK_SEARCH' && !results.some(block => toolResultText(block).includes('DEEPSEEK_SUMMARY_REACHED_MODEL') || block.is_error)) {
+    if (hasTool(request, 'WebSearch')) return toolUse('WebSearch', { query: 'DeepSeek fixture' })
+    if (hasTool(request, 'ToolSearch')) return toolUse('ToolSearch', { query: 'select:WebSearch' })
+  }
   const imageTool = prompt.startsWith('MOCK_IMAGE_EDIT ') ? 'ImageEdit' : 'ImageGen'
   if (prompt.startsWith('MOCK_IMAGE_')) {
     // A deferred tool may first be loaded by ToolSearch. The next request must

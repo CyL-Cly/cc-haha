@@ -17,6 +17,7 @@ import { UPSTREAM_ERROR_TRIGGER, UPSTREAM_REFUSAL_TRIGGER } from './scriptedMode
 export type MockAgentScenario = { id: string; title: string }
 
 export const MOCK_ONLY_SCENARIOS: readonly MockAgentScenario[] = [
+  { id: 'mock-deepseek-web-search', title: 'DeepSeek standalone search returns summaries through the real CLI to the model' },
   { id: 'mock-mcp-late-reconnect', title: 'Reconnect a late-starting MCP service into an already running CLI session' },
   { id: 'mock-session-delegation-review', title: 'Real CLI yields for model allocation and starts a child only after UI confirmation' },
   {
@@ -86,8 +87,45 @@ function streamedText(messages: ReadonlyArray<{ type: string; text?: unknown }>)
 export function createMockOnlyRunners(
   requests: readonly RecordedRequest[],
   imageRequests: MockLlmServer['imageRequests'] = [],
+  searchRequests: MockLlmServer['searchRequests'] = [],
 ): Record<string, LiveScenarioRunner> {
   return {
+    async 'mock-deepseek-web-search'(ctx) {
+      const settingsUrl = `${ctx.baseUrl}/api/settings/user`
+      const originalResponse = await fetch(settingsUrl)
+      if (!originalResponse.ok) throw new Error('reading sandbox settings failed')
+      const original = await originalResponse.json() as { webSearch?: unknown }
+      const update = async (webSearch: unknown) => {
+        const response = await fetch(settingsUrl, {
+          method: 'PUT', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ webSearch }),
+        })
+        if (!response.ok) throw new Error(`updating search settings failed: ${response.status}`)
+      }
+      await update({ mode: 'deepseek', deepseekApiKey: 'mock-deepseek-key' })
+      const socket = await ctx.openSocket(await ctx.createSession())
+      try {
+        ctx.pinRuntime(socket)
+        const since = requests.length
+        const searchStart = searchRequests.length
+        socket.send({ type: 'user_message', content: 'MOCK_DEEPSEEK_SEARCH' })
+        const settled = await socket.waitFor(m => m.type === 'permission_request' || m.type === 'message_complete', ctx.stepTimeoutMs, 'DeepSeek search permission or completion')
+        if (settled.type === 'permission_request') {
+          socket.send({ type: 'permission_response', requestId: settled.requestId, allowed: true, rule: 'agent-flow-mock' })
+          await socket.waitFor(m => m.type === 'message_complete', ctx.stepTimeoutMs, 'DeepSeek search completion')
+        }
+        const searches = searchRequests.slice(searchStart)
+        if (searches.length !== 1) throw new Error(`expected one intercepted search, got ${searches.length}`)
+        const search = searches[0]!
+        if (search.headers.get('authorization') !== 'Bearer mock-deepseek-key') throw new Error('search did not use its own fake API key')
+        if (search.body.query !== 'DeepSeek fixture' || search.body.count !== 8 || search.body.need_content !== false) throw new Error(`unexpected search request: ${JSON.stringify(search.body)}`)
+        if (!toolResultsSentUpstream(requests, since).some(result => !result.is_error && contentText(result.content).includes('DEEPSEEK_SUMMARY_REACHED_MODEL'))) throw new Error('search summary did not reach the model')
+        if (!streamedText(socket.messages).includes('DEEPSEEK_SUMMARY_REACHED_MODEL')) throw new Error('search summary did not reach the client')
+      } finally {
+        socket.close()
+        await update(original.webSearch ?? { mode: 'auto' })
+      }
+    },
     async 'mock-mcp-late-reconnect'(ctx) {
       const cwd = realpathSync(ctx.workRoot)
       let ready = false
