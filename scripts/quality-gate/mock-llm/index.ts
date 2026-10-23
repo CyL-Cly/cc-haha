@@ -19,11 +19,13 @@ import { join, resolve } from 'node:path'
 import { executeAgentFlowAgainstProvider, LIVE_SCENARIO_RUNNERS } from '../agent-flow/live'
 import { startMockLlmServer } from './server'
 import { runLeanNotificationProvenanceScenario, runLeanProfileScenario } from './leanProfile'
+import { runAgentModelRoutingScenario } from './agentModelRouting'
 import { createMockOnlyRunners, describeRequests, MOCK_AGENT_SCENARIOS } from './scenarios'
 
 const MOCK_MODEL = 'mock-model'
 const STEP_TIMEOUT_MS = 60_000
 const LEAN_SCENARIO = 'mock-lean-profile'
+const MODEL_ROUTING_SCENARIO = 'mock-agent-model-routing'
 
 function listArg(argv: string[], name: string) {
   const index = argv.indexOf(name)
@@ -36,6 +38,7 @@ async function main() {
   const argv = process.argv.slice(2)
   if (argv.includes('--list')) {
     console.log(`  ${LEAN_SCENARIO.padEnd(32)} Lean CLI tools, recovery, project instructions and request comparison`)
+    console.log(`  ${MODEL_ROUTING_SCENARIO.padEnd(32)} Flash inheritance, saved Claude presets and explicit Agent model selection`)
     for (const scenario of MOCK_AGENT_SCENARIOS) console.log(`  ${scenario.id.padEnd(32)} ${scenario.title}`)
     return
   }
@@ -45,11 +48,16 @@ async function main() {
     ? MOCK_AGENT_SCENARIOS.filter((scenario) => only.includes(scenario.id))
     : MOCK_AGENT_SCENARIOS
   const runLean = only.length === 0 || only.includes(LEAN_SCENARIO)
-  if (scenarios.length === 0 && !runLean) throw new Error(`--only ${only.join(',')} matches no scenario. Use --list.`)
+  const runModelRouting = only.length === 0 || only.includes(MODEL_ROUTING_SCENARIO)
+  if (scenarios.length === 0 && !runLean && !runModelRouting) throw new Error(`--only ${only.join(',')} matches no scenario. Use --list.`)
 
   const rootDir = resolve(import.meta.dir, '../../..')
   const artifactDir = join(rootDir, 'artifacts', 'agent-e2e')
   mkdirSync(artifactDir, { recursive: true })
+  if (runModelRouting) {
+    await runAgentModelRoutingScenario(rootDir, join(artifactDir, 'model-routing'))
+    console.log(`[agent-e2e] PASS ${MODEL_ROUTING_SCENARIO}`)
+  }
   if (runLean) {
     await runLeanProfileScenario(rootDir, artifactDir)
     await runLeanNotificationProvenanceScenario(rootDir, artifactDir)
