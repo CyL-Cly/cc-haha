@@ -1059,6 +1059,8 @@ export const kr: Record<TranslationKey, string> = {
   'workspace.diffReview.collapsedSelection': '선택한 줄이 접힌 미리보기 범위 밖에 있습니다. 표시된 줄을 다시 선택하세요.',
   'attachments.remove': '{name} 제거',
   'attachments.open': '{name} 열기',
+  'attachments.downloadImage': '이미지 다운로드',
+  'attachments.downloadFailed': '이미지를 다운로드하지 못했습니다.',
   'attachments.previousImage': '이전 이미지',
   'attachments.nextImage': '다음 이미지',
   'attachments.selectionNote': '선택 영역 메모: {note}',
