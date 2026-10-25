@@ -53,6 +53,32 @@ describe('per-provider network proxy override', () => {
     return within(screen.getByRole('dialog'))
   }
 
+  it.each([
+    { mode: 'create', browserMode: false },
+    { mode: 'edit', browserMode: false },
+    { mode: 'create', browserMode: true },
+    { mode: 'edit', browserMode: true },
+  ] as const)('places the proxy after the other settings in $mode (browserMode=$browserMode)', async ({ mode, browserMode }) => {
+    vi.mocked(providersApi.list).mockResolvedValue({ providers: [savedProvider], activeId: null })
+    render(<ProviderSettings browserMode={browserMode} />)
+    if (mode === 'create') {
+      fireEvent.click(await screen.findByRole('button', { name: /Add Model/ }))
+    } else {
+      fireEvent.click(within(await screen.findByTestId('provider-saved-proxy-target')).getByRole('button', { name: 'Edit' }))
+    }
+    const dialog = within(screen.getByRole('dialog'))
+    const proxy = dialog.getByRole('radiogroup', { name: 'Network proxy' })
+    const earlierFields = [
+      dialog.getByLabelText(/^API Key/),
+      dialog.getByRole('textbox', { name: /^Main Model/ }),
+      dialog.getByRole('switch', { name: 'Enable image generation' }),
+    ]
+    if (!browserMode) earlierFields.push(dialog.getByRole('textbox', { name: 'Settings JSON' }))
+    for (const field of earlierFields) {
+      expect(field.compareDocumentPosition(proxy) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    }
+  })
+
   it('defaults to follow-global and clears the override on save', async () => {
     const dialog = await openEditDialog(savedProvider)
     expect(dialog.getByRole('radio', { name: 'Follow global' })).toBeChecked()

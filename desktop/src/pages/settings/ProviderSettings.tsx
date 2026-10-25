@@ -1982,51 +1982,6 @@ function ProviderFormModal({ open, onClose, mode, provider, presets, browserMode
           <Input id={baseUrlInputId} required value={baseUrl} onChange={(e) => handleBaseUrlChange(e.target.value)} placeholder={t('settings.providers.baseUrlPlaceholder')} className="font-mono text-[13px]" />
         </div>
 
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-1">
-            <span className={FORM_FIELD_LABEL}>{t('settings.providers.proxyMode')}</span>
-            <Tooltip content={t('settings.providers.proxyModeTooltip')} placement="bottom-start">
-              <IconButton
-                icon={<Info size={12} strokeWidth={2} aria-hidden="true" />}
-                label={t('settings.providers.proxyModeHelp')}
-                showTooltip={false}
-                size="2xs"
-                tone="muted"
-                shape="circle"
-              />
-            </Tooltip>
-          </div>
-          <SegmentedControl<ProviderProxyMode>
-            label={t('settings.providers.proxyMode')}
-            layout="fill"
-            size="sm"
-            value={proxyMode}
-            onChange={setProxyMode}
-            items={[
-              { value: 'follow_global', label: t('settings.providers.proxyModeFollowGlobal') },
-              { value: 'direct', label: t('settings.providers.proxyModeDirect') },
-              { value: 'manual', label: t('settings.providers.proxyModeManual') },
-            ]}
-          />
-          <p className="text-xs leading-[1.5] text-[var(--color-text-tertiary)]">{t('settings.providers.proxyModeHint')}</p>
-          {proxyMode === 'manual' && (
-            <div className="flex flex-col gap-1">
-              <label htmlFor={proxyUrlInputId} className={FORM_FIELD_LABEL}>{t('settings.providers.proxyUrl')}</label>
-              <Input
-                id={proxyUrlInputId}
-                required
-                value={proxyUrl}
-                onChange={(e) => setProxyUrl(e.target.value)}
-                placeholder={t('settings.providers.proxyUrlPlaceholder')}
-                className="font-mono text-[13px]"
-              />
-              {proxyUrlInvalid && (
-                <p role="alert" className="text-xs leading-[1.5] text-[var(--color-error)]">{t('settings.providers.proxyUrlInvalid')}</p>
-              )}
-            </div>
-          )}
-        </div>
-
         <div className="flex flex-col gap-1">
           <label htmlFor="provider-api-key" className={FORM_FIELD_LABEL}>
             {t('settings.providers.apiKey')}
@@ -2479,6 +2434,51 @@ function ProviderFormModal({ open, onClose, mode, provider, presets, browserMode
           value={imageGeneration}
           onChange={setImageGeneration}
         />
+
+        <div className="flex flex-col gap-2 border-t border-[var(--color-border)] pt-4">
+          <div className="flex items-center gap-1">
+            <span className={FORM_FIELD_LABEL}>{t('settings.providers.proxyMode')}</span>
+            <Tooltip content={t('settings.providers.proxyModeTooltip')} placement="bottom-start">
+              <IconButton
+                icon={<Info size={12} strokeWidth={2} aria-hidden="true" />}
+                label={t('settings.providers.proxyModeHelp')}
+                showTooltip={false}
+                size="2xs"
+                tone="muted"
+                shape="circle"
+              />
+            </Tooltip>
+          </div>
+          <SegmentedControl<ProviderProxyMode>
+            label={t('settings.providers.proxyMode')}
+            layout="fill"
+            size="sm"
+            value={proxyMode}
+            onChange={setProxyMode}
+            items={[
+              { value: 'follow_global', label: t('settings.providers.proxyModeFollowGlobal') },
+              { value: 'direct', label: t('settings.providers.proxyModeDirect') },
+              { value: 'manual', label: t('settings.providers.proxyModeManual') },
+            ]}
+          />
+          <p className="text-xs leading-[1.5] text-[var(--color-text-tertiary)]">{t('settings.providers.proxyModeHint')}</p>
+          {proxyMode === 'manual' && (
+            <div className="flex flex-col gap-1">
+              <label htmlFor={proxyUrlInputId} className={FORM_FIELD_LABEL}>{t('settings.providers.proxyUrl')}</label>
+              <Input
+                id={proxyUrlInputId}
+                required
+                value={proxyUrl}
+                onChange={(e) => setProxyUrl(e.target.value)}
+                placeholder={t('settings.providers.proxyUrlPlaceholder')}
+                className="font-mono text-[13px]"
+              />
+              {proxyUrlInvalid && (
+                <p role="alert" className="text-xs leading-[1.5] text-[var(--color-error)]">{t('settings.providers.proxyUrlInvalid')}</p>
+              )}
+            </div>
+          )}
+        </div>
       </div>
       </Modal>
       <ConfirmDialog
